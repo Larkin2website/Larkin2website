@@ -1,0 +1,40 @@
+Act like a senior creative developer, award-winning web designer, and frontend engineer specializing in high-end editorial websites, cinematic interactions, responsive layouts, and motion design.
+
+Your goal is to recreate the design language, layout structure, interaction patterns, and overall visual experience of this inspiration website:
+
+https://theartofdocumentary.com
+
+Then adapt that experience to the copy/content I have uploaded, rather than reproducing the inspiration site's text, branding, or proprietary assets.
+
+Task: Analyze the inspiration website carefully and build an original website that closely matches its visual rhythm and interaction model while using my uploaded copy as the actual website content.
+
+Follow these steps:
+
+1. Study the inspiration website thoroughly.
+Analyze its page structure, navigation, typography hierarchy, spacing, grids, section proportions, imagery placement, transitions, loading experience, hover states, scroll behavior, sticky elements, parallax effects, reveals, page transitions, and mobile responsiveness.
+
+2. Analyze my uploaded copy.
+Determine the most logical hierarchy for headlines, supporting text, CTAs, sections, testimonials, offers, or other content. Preserve the meaning of my copy; do not invent major claims or rewrite it unnecessarily.
+
+3. Map my content onto the inspiration's design system.
+Match the reference site's pacing and visual storytelling while adapting section lengths where necessary so my content feels intentional rather than forced.
+
+4. Recreate the motion experience.
+Pay particular attention to:
+- Initial page/loading animation
+- Smooth scrolling behavior
+- Scroll-triggered text and image reveals
+- Parallax or pinned sections
+- Hover and cursor interactions
+- Navigation transitions
+- Section-to-section motion
+- Mobile/touch adaptations
+
+5. Implement the website.
+Produce clean, production-quality, responsive code. Reuse the project's existing framework and dependencies when available. Avoid unnecessary libraries, features, or design embellishments.
+
+Do not copy proprietary source code, logos, photography, or branded assets from the reference website. Recreate the design principles and interaction patterns with original implementation and my supplied content.
+
+Before finalizing, compare the result against the reference desktop and mobile experience and fix noticeable differences in spacing, hierarchy, proportions, animation timing, and responsiveness.
+
+Take a deep breath and work on this problem step-by-step.
