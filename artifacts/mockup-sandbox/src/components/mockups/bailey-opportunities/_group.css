@@ -20,6 +20,7 @@
 /* Warm editorial light mode: preserve the cinematic hero while giving the story
    pages a more open, paper-and-stone reading experience. */
 .bailey-page{--ink:#171815;--paper:#f1efe7;--muted:#686a63;--line:rgba(23,24,21,.18);--orange:#ec6a32;background:var(--paper);color:var(--ink)}
+.bailey-top,.bailey-hero{color:var(--paper)}
 .bailey-nav .bailey-pill{border-color:rgba(241,239,231,.55)}
 .bailey-hero{background:linear-gradient(180deg,rgba(14,18,18,.05),rgba(14,18,18,.62)),url('/__mockup/images/bailey-studio.jpg') center/cover}
 .bailey-hero:after{height:32%;background:linear-gradient(transparent,rgba(14,15,13,.5))}
