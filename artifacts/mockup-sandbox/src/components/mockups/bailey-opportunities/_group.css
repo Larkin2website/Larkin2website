@@ -16,3 +16,22 @@
 .bailey-culture{padding-bottom:100px}.bailey-culture .bailey-grid{align-items:center}.bailey-culture img{margin:0;aspect-ratio:1/1.1}.bailey-about{background:#d5d4ca;color:var(--ink)}.bailey-about .bailey-copy{color:#3d4039}.bailey-about .bailey-eyebrow{color:#bb4d22}
 .bailey-signup{padding-top:130px;padding-bottom:140px;background:var(--orange);color:#1b110b}.bailey-signup .bailey-title{font-size:clamp(50px,8vw,120px);max-width:850px}.bailey-signup .bailey-eyebrow{color:#562616}.bailey-form{display:flex;max-width:650px;border-bottom:1px solid #3e1c0e;margin-top:55px}.bailey-form input{background:none;border:0;outline:0;flex:1;font:inherit;font-size:22px;padding:15px 0;color:#1b110b}.bailey-form input::placeholder{color:#7d361c}.bailey-form button{border:0;background:#1b110b;color:var(--paper);border-radius:99px;padding:12px 22px;margin:7px 0;font-weight:700;cursor:pointer}.bailey-success{margin-top:18px;font-size:14px}.bailey-foot{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;padding:30px clamp(22px,8vw,120px);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.bailey-reveal{animation:baileyRise .8s both}.bailey-delay{animation-delay:.18s}@keyframes baileyRise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 @media(max-width:720px){.bailey-top{padding:20px 18px}.bailey-nav .bailey-pill:first-child{display:none}.bailey-hero{padding:130px 20px 34px}.bailey-h1{font-size:25vw;margin-bottom:28px}.bailey-sub{font-size:26px}.bailey-intro{font-size:14px}.bailey-actions{display:grid;grid-template-columns:1fr}.bailey-btn{text-align:center}.bailey-scroll{margin-top:50px}.bailey-section{padding:78px 20px}.bailey-grid{grid-template-columns:1fr;gap:44px}.bailey-title{font-size:48px}.bailey-copy{font-size:20px}.bailey-path-grid{grid-template-columns:1fr;margin-top:35px}.bailey-path,.bailey-path:nth-child(odd),.bailey-path:nth-child(even){padding:25px 0;border-right:0;min-height:0}.bailey-path h3{margin-top:22px}.bailey-commit-item{grid-template-columns:35px 1fr;gap:13px}.bailey-commit-item b{font-size:21px}.bailey-commit-item h3{font-size:18px}.bailey-image{margin-top:0}.bailey-signup{padding-top:90px;padding-bottom:95px}.bailey-form input{font-size:17px;width:80px}.bailey-foot{padding:24px 20px}}
+
+/* Warm editorial light mode: preserve the cinematic hero while giving the story
+   pages a more open, paper-and-stone reading experience. */
+.bailey-page{--ink:#171815;--paper:#f1efe7;--muted:#686a63;--line:rgba(23,24,21,.18);--orange:#ec6a32;background:var(--paper);color:var(--ink)}
+.bailey-nav .bailey-pill{border-color:rgba(241,239,231,.55)}
+.bailey-hero{background:linear-gradient(180deg,rgba(14,18,18,.05),rgba(14,18,18,.62)),url('/__mockup/images/bailey-studio.jpg') center/cover}
+.bailey-hero:after{height:32%;background:linear-gradient(transparent,rgba(14,15,13,.5))}
+.bailey-intro{color:#f1efe7}
+.bailey-btn.secondary{border-color:rgba(241,239,231,.65)}
+.bailey-scroll{color:#e0ded4}
+.bailey-production{background:#e5e3da}
+.bailey-quote{color:var(--ink)}
+.bailey-commit{background:#dcdcd3}
+.bailey-commit-list{border-color:var(--line)}
+.bailey-commit-item{border-color:var(--line)}
+.bailey-commit-item b{color:#bb4d22}
+.bailey-commit-item p{color:#686a63}
+.bailey-culture{background:#efede5}
+.bailey-about{background:#cfd0c6}
