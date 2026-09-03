@@ -301,10 +301,6 @@ function Home() {
               <MaskedLink href="#paths" testId="link-production-opportunities">Explore opportunities</MaskedLink>
             </div>
           </div>
-          <figure className="larkin2-media-reveal" data-reveal>
-            <img className="larkin2-image" src="/larkin2-opportunities/images/bailey-craft.jpg" width="1600" height="1032" loading="lazy" alt="Hands working with a practical light and camera equipment on set" data-testid="img-production-craft" />
-            <figcaption className="larkin2-image-caption"><span>Set craft / North London</span><span>Larkin2 production</span></figcaption>
-          </figure>
         </section>
 
         <section className="larkin2-section larkin2-paths" id="paths" aria-labelledby="paths-title">
