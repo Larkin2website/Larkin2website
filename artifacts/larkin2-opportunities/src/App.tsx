@@ -10,10 +10,9 @@ import "./index.css";
 const queryClient = new QueryClient();
 
 const paths = [
-  ["01", "Never worked in film or TV", "First Credit Work Experience is built for people with no previous professional industry experience. Three days of training before you start, then a paid placement inside a department on the production, then six months of alumni masterclasses after it ends. No CV history required. No contacts required.", "Learn about First Credit"],
-  ["02", "Already directing, want to move into HETV", "The Creative Leadership Shadowing Programme: Director Pathway is for freelance directors with at least one directing or 2nd-unit credit on a distributed feature or an HETV drama. A paid six-week placement, spread across prep, shoot and post.", "Learn about the Director Pathway"],
-  ["03", "Already producing, want to move into HETV", "The Creative Leadership Shadowing Programme: Producer Pathway is for freelance producers with at least three narrative producing credits. A paid placement of up to fourteen weeks, across prep, production and post.", "Learn about the Producer Pathway"],
-  ["04", "Looking for a crew role", "Paid crew positions are posted as the production needs them, across every department from Accounts to VFX. Postings open and close quickly.", "View current role status"],
+  ["01", "Never worked in film or TV", "First Credit Work Experience is built for people with no previous professional industry experience. Three days of training before you start, then a paid placement inside a department on the production, then six months of alumni masterclasses after it ends. No CV history required. No contacts required.", "Learn about First Credit", "bailey-studio.jpg"],
+  ["02", "Already directing, want to move into HETV", "The Creative Leadership Shadowing Programme: Director Pathway is for freelance directors with at least one directing or 2nd-unit credit on a distributed feature or an HETV drama. A paid six-week placement, spread across prep, shoot and post.", "Learn about the Director Pathway", "bailey-craft.jpg"],
+  ["03", "Already producing, want to move into HETV", "The Creative Leadership Shadowing Programme: Producer Pathway is for freelance producers with at least three narrative producing credits. A paid placement of up to fourteen weeks, across prep, production and post.", "Learn about the Producer Pathway", "bailey-crew.jpg"],
 ] as const;
 
 const commitments = [
@@ -304,21 +303,41 @@ function Home() {
         </section>
 
         <section className="larkin2-section larkin2-paths" id="paths" aria-labelledby="paths-title">
-          <div className="larkin2-eyebrow larkin2-reveal" data-reveal>Find your way in / 02</div>
-          <h2 className="larkin2-title larkin2-reveal" data-reveal id="paths-title"><span className="larkin2-mask"><span>Three ways in, depending on where you are starting</span></span></h2>
-          <p className="larkin2-small larkin2-reveal" data-reveal>Not everyone arrives from the same place, so we run separate routes. Find the one that matches where you are now.</p>
-          <div className="larkin2-role-status larkin2-reveal" id="roles" data-reveal>
-            <div><span className="larkin2-status-dot" /> Current role status</div>
-            <strong data-testid="status-crew-roles">Paid crew positions are posted as the production needs them.</strong>
-            <MaskedLink href="#signup" testId="link-role-status-signup">Sign up to hear when something opens</MaskedLink>
+          <div className="larkin2-paths-header larkin2-reveal" data-reveal>
+            <div className="larkin2-paths-intro">
+              <div className="larkin2-eyebrow">Find your way in / 02</div>
+              <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Three ways in, depending on where you are starting</span></span></h2>
+              <p className="larkin2-small">Not everyone arrives from the same place, so we run separate routes. Find the one that matches where you are now.</p>
+            </div>
+            <div className="larkin2-role-status" id="roles">
+              <div className="larkin2-role-status-label"><span className="larkin2-status-dot" /> Current role status</div>
+              <h3 className="larkin2-role-status-title">Looking for a crew role / 04</h3>
+              <strong data-testid="status-crew-roles">Paid crew positions are posted as the production needs them, across every department from Accounts to VFX. Postings open and close quickly.</strong>
+              <div className="larkin2-role-status-actions">
+                <MaskedLink href="#roles" testId="link-opportunity-04">View current role status</MaskedLink>
+                <MaskedLink href="#signup" testId="link-role-status-signup">Sign up to hear when something opens</MaskedLink>
+              </div>
+            </div>
           </div>
           <div className="larkin2-path-grid">
-            {paths.map(([num, title, copy, cta], index) => (
+            {paths.map(([num, title, copy, cta, img], index) => (
               <article className="larkin2-path larkin2-reveal" data-reveal key={num} style={{ "--reveal-delay": `${index * 90}ms` } as CSSProperties} data-testid={`card-opportunity-${num}`}>
-                <span className="larkin2-path-num" data-testid={`text-opportunity-number-${num}`}>{num}</span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-                <MaskedLink href={num === "04" ? "#roles" : "#signup"} testId={`link-opportunity-${num}`}>{cta}</MaskedLink>
+                <div className="larkin2-path-bg">
+                  <img src={`/larkin2-opportunities/images/${img}`} alt="" role="presentation" loading="lazy" />
+                  <div className="larkin2-path-gradient" />
+                </div>
+                <div className="larkin2-path-top">
+                  <span className="larkin2-path-label" data-testid={`text-opportunity-number-${num}`}>Pathway / {num}</span>
+                </div>
+                <div className="larkin2-path-bottom">
+                  <div className="larkin2-path-bottom-main">
+                    <h3>{title}</h3>
+                    <p>{copy}</p>
+                  </div>
+                  <div className="larkin2-path-cta">
+                    <MaskedLink href="#signup" testId={`link-opportunity-${num}`}>{cta}</MaskedLink>
+                  </div>
+                </div>
               </article>
             ))}
           </div>
