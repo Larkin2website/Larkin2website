@@ -221,19 +221,28 @@
 }
 
 .larkin2-hero-shell {
-  position: relative;
-  min-height: 100svh;
-  --hero-progress: 0;
-  background: var(--deep);
-}
-.larkin2-hero-stage {
   position: sticky;
   top: 0;
+  height: 100svh;
+  z-index: 0;
+  --hero-progress: 0;
+  background: var(--deep);
+  overflow: hidden;
+}
+.larkin2-hero-stage {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: flex-end;
-  min-height: 100svh;
   padding: 148px clamp(20px, 7.5vw, 120px) 52px;
-  overflow: hidden;
+}
+.larkin2-hero-media-wrap {
+  position: absolute;
+  inset: 0;
+  transform: translateY(calc(var(--hero-progress) * 15vh)) scale(calc(1 - (var(--hero-progress) * 0.08)));
+  transform-origin: center 40%;
+  filter: brightness(calc(1 - (var(--hero-progress) * 0.7)));
+  will-change: transform, filter;
 }
 .larkin2-hero-media {
   position: absolute;
@@ -241,7 +250,6 @@
   background: url('/larkin2-opportunities/images/bailey-studio.jpg') center / cover no-repeat;
   filter: saturate(.65) contrast(1.05);
   clip-path: ellipse(86% 88% at 50% 43%);
-  transform: translateY(calc(var(--hero-progress) * -3vh)) scale(calc(1.08 - (var(--hero-progress) * .08)));
   animation: larkin2-hero-settle 1.6s var(--ease-cinematic) forwards;
 }
 .larkin2-hero-shade {
@@ -258,7 +266,15 @@
   content: "";
   background: linear-gradient(transparent, var(--stage));
 }
-.larkin2-hero-content { position: relative; z-index: 1; max-width: 1050px; }
+.larkin2-hero-content-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  transform: translateY(calc(var(--hero-progress) * -22vh));
+  opacity: calc(1 - (var(--hero-progress) * 1.6));
+  will-change: transform, opacity;
+}
+.larkin2-hero-content { position: relative; max-width: 1050px; }
 .larkin2-kicker, .larkin2-eyebrow {
   color: var(--orange);
   font-size: 11px;
@@ -293,11 +309,16 @@
 }
 .larkin2-intro { max-width: 390px; margin: 0; color: var(--secondary); font-size: 16px; line-height: 1.55; }
 .larkin2-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 32px; }
-.larkin2-hero-meta {
+.larkin2-hero-meta-wrap {
   position: absolute;
   z-index: 1;
   right: clamp(20px, 4vw, 64px);
   bottom: 54px;
+  transform: translateY(calc(var(--hero-progress) * 12vh));
+  opacity: calc(1 - (var(--hero-progress) * 2));
+  will-change: transform, opacity;
+}
+.larkin2-hero-meta {
   display: flex;
   align-items: center;
   gap: 13px;
@@ -307,6 +328,13 @@
   text-transform: uppercase;
 }
 .larkin2-scroll-line { width: 60px; height: 1px; background: var(--orange); }
+
+#content {
+  position: relative;
+  z-index: 10;
+  background: var(--stage);
+  box-shadow: 0 -30px 80px rgba(0,0,0,0.6);
+}
 
 .larkin2-section {
   position: relative;
@@ -426,8 +454,7 @@
 .larkin2-reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .9s var(--ease-cinematic); transition-delay: var(--reveal-delay, 0ms); }
 .larkin2-reveal.is-visible { opacity: 1; transform: translateY(0); }
 .larkin2-reveal.larkin2-hero-content { opacity: 1; transform: none; animation: larkin2-hero-enter 1s .16s var(--ease-cinematic) both; }
-.larkin2-hero-shell .larkin2-hero-content { opacity: calc(1 - (var(--hero-progress) * .82)); transform: translateY(calc(var(--hero-progress) * -9vh)); }
-.larkin2-hero-shell .larkin2-hero-meta { opacity: calc(1 - (var(--hero-progress) * .7)); transform: translateY(calc(var(--hero-progress) * 4vh)); }
+/* Old scroll transforms moved to wrapper classes */
 .larkin2-media-reveal { overflow: hidden; opacity: 0; transform: translateY(48px); transition: opacity 1s ease, transform 1s var(--ease-cinematic); }
 .larkin2-media-reveal .larkin2-image { transform: scale(1.12); transition: transform 1.1s var(--ease-cinematic); }
 .larkin2-media-reveal.is-visible { opacity: 1; transform: translateY(0); }
@@ -458,8 +485,8 @@
   .larkin2-mobile-nav a span { color: var(--orange); font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: .13em; }
   .larkin2-mobile-contact { display: flex; justify-content: space-between; gap: 20px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.4; }
   .larkin2-mobile-contact a { color: var(--ink); white-space: nowrap; }
-  .larkin2-hero-shell { min-height: 100svh; }
-  .larkin2-hero-stage { min-height: 100svh; align-items: flex-end; padding: 128px 20px 92px; }
+  .larkin2-hero-shell { height: 100svh; }
+  .larkin2-hero-stage { align-items: flex-end; padding: 128px 20px 92px; }
   .larkin2-hero-media { inset: 0 8px 0; background-position: 57% center; clip-path: ellipse(94% 86% at 50% 43%); }
   .larkin2-hero-shade { background: linear-gradient(90deg, rgba(8,10,12,.76), rgba(8,10,12,.24)), linear-gradient(0deg, rgba(8,10,12,.96), rgba(8,10,12,.18) 70%); }
   .larkin2-kicker { margin-bottom: 22px; font-size: 10px; }
@@ -468,7 +495,8 @@
   .larkin2-intro { font-size: 15px; }
   .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 28px; }
   .larkin2-btn { justify-content: center; width: 100%; }
-  .larkin2-hero-meta { right: 20px; bottom: 31px; left: 20px; justify-content: space-between; font-size: 9px; }
+  .larkin2-hero-meta-wrap { right: 20px; bottom: 31px; left: 20px; }
+  .larkin2-hero-meta { justify-content: space-between; font-size: 9px; }
   .larkin2-scroll-line { width: 28px; }
   .larkin2-section { padding: 80px 20px; }
   .larkin2-section-intro, .larkin2-grid, .larkin2-signup-layout { grid-template-columns: 1fr; gap: 45px; }
@@ -506,4 +534,5 @@
   .larkin2-reveal, .larkin2-media-reveal, .larkin2-mask > span { opacity: 1; transform: none; }
   .larkin2-media-reveal .larkin2-image { transform: none; }
   .larkin2-intro-overlay { display: none; }
+  .larkin2-hero-media-wrap, .larkin2-hero-content-wrap, .larkin2-hero-meta-wrap { transform: none !important; opacity: 1 !important; filter: none !important; }
 }

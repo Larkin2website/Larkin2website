@@ -121,7 +121,7 @@ function Home() {
         const current = window.scrollY;
         const heroShell = heroShellRef.current;
         if (heroShell) {
-          const travel = Math.max(1, heroShell.offsetHeight - window.innerHeight);
+          const travel = Math.max(1, heroShell.offsetHeight);
           heroShell.style.setProperty("--hero-progress", Math.min(1, Math.max(0, current / travel)).toFixed(3));
         }
         setScrolled(current > 38);
@@ -257,21 +257,27 @@ function Home() {
 
       <section ref={heroShellRef} className="larkin2-hero-shell" aria-labelledby="hero-title">
         <div className="larkin2-hero-stage">
-          <div className="larkin2-hero-media" role="img" aria-label="Film crew working with practical lights and camera equipment on a London production" data-testid="img-hero-studio" />
+          <div className="larkin2-hero-media-wrap">
+            <div className="larkin2-hero-media" role="img" aria-label="Film crew working with practical lights and camera equipment on a London production" data-testid="img-hero-studio" />
+          </div>
           <div className="larkin2-hero-shade" />
-          <div className="larkin2-hero-content larkin2-reveal">
-            <div className="larkin2-kicker"><span className="larkin2-dot" /> Official opportunities / London</div>
-            <h1 className="larkin2-h1" id="hero-title"><span className="larkin2-mask"><span>Larkin2</span></span></h1>
-            <div className="larkin2-sub larkin2-mask"><span>Roles &amp; Opportunities</span></div>
-            <p className="larkin2-intro larkin2-mask"><span>Your central hub for jobs, training and development on Larkin2.</span></p>
-            <div className="larkin2-actions">
-              <MaskedLink href="#roles" className="larkin2-btn" testId="link-hero-role-status">View current role status</MaskedLink>
-              <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
-              <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
+          <div className="larkin2-hero-content-wrap">
+            <div className="larkin2-hero-content larkin2-reveal">
+              <div className="larkin2-kicker"><span className="larkin2-dot" /> Official opportunities / London</div>
+              <h1 className="larkin2-h1" id="hero-title"><span className="larkin2-mask"><span>Larkin2</span></span></h1>
+              <div className="larkin2-sub larkin2-mask"><span>Roles &amp; Opportunities</span></div>
+              <p className="larkin2-intro larkin2-mask"><span>Your central hub for jobs, training and development on Larkin2.</span></p>
+              <div className="larkin2-actions">
+                <MaskedLink href="#roles" className="larkin2-btn" testId="link-hero-role-status">View current role status</MaskedLink>
+                <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
+                <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
+              </div>
             </div>
           </div>
-          <div className="larkin2-hero-meta">
-            <span>Scroll to enter the production</span><span className="larkin2-scroll-line" aria-hidden="true" /><span>01 — 06</span>
+          <div className="larkin2-hero-meta-wrap">
+            <div className="larkin2-hero-meta">
+              <span>Scroll to enter the production</span><span className="larkin2-scroll-line" aria-hidden="true" /><span>01 — 06</span>
+            </div>
           </div>
         </div>
       </section>
