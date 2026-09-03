@@ -773,7 +773,9 @@
 
 .larkin2-culture { padding-bottom: clamp(100px, 12vw, 170px); }
 .larkin2-culture .larkin2-grid { align-items: center; }
-.larkin2-culture figure { margin: 0; }
+.larkin2-culture figure {
+  margin: 0 calc(clamp(20px, 7.5vw, 120px) * -1) 0 0;
+}
 .larkin2-culture figure .larkin2-image { aspect-ratio: 1 / 1.1; }
 .larkin2-culture .larkin2-link {
   min-height: 46px;
@@ -908,6 +910,7 @@
   .larkin2-commit-row-main h3 { font-size: 28px; margin-bottom: 12px; }
   .larkin2-commit-row-main p { font-size: 16px; }
   .larkin2-culture figure .larkin2-image { aspect-ratio: 1 / 1.08; }
+  .larkin2-culture figure { margin-inline: -20px; }
   .larkin2-rule { margin-top: 48px; }
   .larkin2-signup { padding-top: 86px; padding-bottom: 96px; }
   .larkin2-signup .larkin2-title { font-size: clamp(50px, 14vw, 68px); }
