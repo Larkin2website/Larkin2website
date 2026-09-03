@@ -169,15 +169,6 @@
   color: var(--secondary);
   transition: color .3s ease;
 }
-.larkin2-nav-link::before {
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  margin: 0 9px 2px 0;
-  border-radius: 50%;
-  background: var(--orange);
-  content: "";
-}
 .larkin2-nav-link:hover { color: var(--ink); }
 .larkin2-top .larkin2-header-cta {
   grid-column: 3;
