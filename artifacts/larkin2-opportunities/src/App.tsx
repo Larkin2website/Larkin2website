@@ -10,9 +10,9 @@ import "./index.css";
 const queryClient = new QueryClient();
 
 const paths = [
-  ["01", "Never worked in film or TV", "First Credit Work Experience is built for people with no previous professional industry experience. Three days of training before you start, then a paid placement inside a department on the production, then six months of alumni masterclasses after it ends. No CV history required. No contacts required.", "Learn about First Credit", "bailey-studio.jpg"],
-  ["02", "Already directing, want to move into HETV", "The Creative Leadership Shadowing Programme: Director Pathway is for freelance directors with at least one directing or 2nd-unit credit on a distributed feature or an HETV drama. A paid six-week placement, spread across prep, shoot and post.", "Learn about the Director Pathway", "bailey-craft.jpg"],
-  ["03", "Already producing, want to move into HETV", "The Creative Leadership Shadowing Programme: Producer Pathway is for freelance producers with at least three narrative producing credits. A paid placement of up to fourteen weeks, across prep, production and post.", "Learn about the Producer Pathway", "bailey-crew.jpg"],
+  ["01", "Never worked in film or TV", "Three days of training, a paid production placement and six months of alumni masterclasses. No experience or industry contacts required.", "Learn about First Credit", "bailey-studio.jpg"],
+  ["02", "Already directing, want to move into HETV", "A paid six-week placement across prep, shoot and post for freelance directors with a qualifying screen credit.", "Learn about the Director Pathway", "bailey-craft.jpg"],
+  ["03", "Already producing, want to move into HETV", "A paid placement of up to fourteen weeks across prep, production and post for experienced freelance producers.", "Learn about the Producer Pathway", "bailey-crew.jpg"],
 ] as const;
 
 const commitments = [
