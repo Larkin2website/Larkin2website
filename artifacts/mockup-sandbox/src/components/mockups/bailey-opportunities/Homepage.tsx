@@ -81,6 +81,7 @@ export function Homepage() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuPanelRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const heroShellRef = useRef<HTMLElement>(null);
   const lastScrollY = useRef(0);
 
   const finishIntro = () => {
@@ -111,6 +112,11 @@ export function Homepage() {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         const current = window.scrollY;
+          const heroShell = heroShellRef.current;
+          if (heroShell) {
+            const travel = Math.max(1, heroShell.offsetHeight - window.innerHeight);
+            heroShell.style.setProperty("--hero-progress", Math.min(1, Math.max(0, current / travel)).toFixed(3));
+          }
         setScrolled(current > 38);
         if (current < 20 || current < lastScrollY.current - 5) {
           setHeaderHidden(false);
@@ -249,7 +255,7 @@ export function Homepage() {
         </div>
       </aside>
 
-      <section className="bailey-hero-shell" id="top" aria-labelledby="hero-title">
+       <section ref={heroShellRef} className="bailey-hero-shell" id="top" aria-labelledby="hero-title">
         <div className="bailey-hero-stage">
           <div className="bailey-hero-media" role="img" aria-label="Film crew working with practical lights and camera equipment on a London production" />
           <div className="bailey-hero-shade" />
