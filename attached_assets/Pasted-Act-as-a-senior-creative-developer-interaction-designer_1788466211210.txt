@@ -1,0 +1,1003 @@
+Act as a senior creative developer, interaction designer, UX designer and front-end engineer. Build a polished, original website for **Larkin2** using the existing content, routes and assets in this Replit project.
+
+Use https://www.dickclark.com as a reference for its cinematic presentation, typography, component structure, transitions and motion language. Take inspiration from its principles, but do not copy its branding, text, photographs, videos, logos, source code or exact page layouts. The completed website must clearly belong to Larkin2.
+
+## 1. Brand-name rules
+
+The official site and brand name is:
+
+**Larkin2**
+
+Use this exact spelling and capitalisation throughout the website.
+
+Do not display it as:
+
+* Larkin 2
+* larkin2
+* LARKIN2
+
+The lowercase form may only be used where technically required, such as a domain, URL, username, file name or code identifier.
+
+Use “Larkin2” in:
+
+* Browser titles
+* Page metadata
+* Navigation
+* Logo alternative text
+* Footer copyright text
+* Social-sharing metadata
+* Contact forms
+* Accessibility labels
+* Loading screens
+* Any visible brand references
+
+## 2. Project objective
+
+Create a premium, dark, media-led website that feels confident, cinematic and editorial.
+
+The experience should combine:
+
+* A restrained black-and-white visual system
+* One carefully controlled accent colour
+* Large editorial typography
+* Strong use of photography or video
+* Smooth scrolling
+* Masked text reveals
+* Scroll-triggered image reveals
+* Refined hover interactions
+* Cinematic page transitions
+* Responsive layouts
+* Excellent accessibility
+* Reliable fallbacks for slower devices and browsers without WebGL
+
+Do not create a generic corporate template. The visual hierarchy, spacing and movement should feel intentionally designed for Larkin2.
+
+## 3. Before changing the project
+
+First inspect the existing application and determine:
+
+* The current framework and build system
+* Existing routes
+* Existing components
+* Current styling approach
+* Available images, videos, logos and fonts
+* Existing Larkin2 copy and calls to action
+* Whether the site is already responsive
+* Whether routing is client-side or server-side
+
+Preserve working functionality and existing content unless a change is necessary for this design direction.
+
+Use the existing project stack. If this is a new project without a defined stack, use:
+
+* React
+* TypeScript
+* Vite
+* React Router for internal routes
+* Semantic HTML
+* CSS variables
+* CSS Modules or a clearly structured global stylesheet
+
+Use libraries only when they provide a genuine benefit. Avoid unnecessary dependencies.
+
+## 4. Originality requirements
+
+The Dick Clark Productions website is a design reference only.
+
+Do not:
+
+* Copy its logo
+* Reuse its photographs, footage or programme logos
+* Copy its written content
+* Recreate its pages pixel for pixel
+* Use entertainment-related language unless it fits Larkin2
+* Extract or reproduce its proprietary source code
+* Duplicate every transition without considering Larkin2’s content
+* Use a custom cursor unless specifically requested
+* Invent testimonials, statistics, partners, clients or achievements
+
+Use the real Larkin2 content already supplied in the project. If content is missing, use clearly marked placeholders rather than inventing factual claims.
+
+Use British English throughout the website.
+
+## 5. Visual direction
+
+Larkin2 should feel:
+
+* Cinematic
+* Minimal
+* Sophisticated
+* Contemporary
+* Editorial
+* Energetic without becoming chaotic
+* Premium without relying on decorative effects
+* Credible and easy to navigate
+
+The dark background should behave like a stage on which Larkin2’s typography, messaging and media become the focus.
+
+Avoid:
+
+* Glassmorphism
+* Excessive gradients
+* Large drop shadows
+* Neon effects
+* Random floating objects
+* Excessive rounded cards
+* Decorative animations without a purpose
+* Generic dashboard styling
+* Overcrowded sections
+* Stock-template visual patterns
+
+## 6. Colour system
+
+Use these values as the starting palette. Adapt the accent colour only if Larkin2 already has an established brand colour.
+
+```css
+--colour-background: #111111;
+--colour-background-deep: #000000;
+--colour-text: #fffcfc;
+--colour-text-muted: #6b6767;
+--colour-text-secondary: #cec2c2;
+--colour-border: #353232;
+--colour-accent: #d63032;
+```
+
+Rules:
+
+* Use `#111111` for the principal page background.
+* Use pure black primarily for the footer, transitions and deeper visual layers.
+* Use off-white instead of stark white for most text.
+* Use muted grey for inactive navigation, metadata and secondary information.
+* Use the accent colour sparingly for active states, small dots, indicators and important interaction feedback.
+* Do not turn entire sections red.
+* Maintain accessible contrast throughout.
+* Keep visual effects restrained so the Larkin2 content remains the focus.
+
+## 7. Typography
+
+Use the existing Larkin2 typeface if one is available.
+
+If the project includes a properly licensed copy of PP Neue Montreal or a similar grotesk typeface, use it. Otherwise use a high-quality alternative such as Inter, Manrope or another modern neutral sans-serif.
+
+Recommended scale:
+
+```css
+--font-display: clamp(3.5rem, 7vw, 7.5rem);
+--font-heading-large: clamp(2.75rem, 5vw, 5.5rem);
+--font-heading: clamp(2rem, 3.4vw, 3.5rem);
+--font-body-large: clamp(1.25rem, 1.8vw, 2rem);
+--font-body: clamp(1rem, 1.15vw, 1.2rem);
+--font-label: 0.75rem;
+```
+
+Typography rules:
+
+* Display headings should use regular or medium weight, not heavy bold.
+* Use slightly negative letter spacing on very large headings.
+* Keep display-heading line height between 0.95 and 1.05.
+* Keep body line height between 1.45 and 1.65.
+* Keep long text blocks between 35 and 60 characters wide.
+* Use uppercase only for short navigation labels, categories and metadata.
+* Do not capitalise ordinary words unnecessarily.
+* Give headings generous space and allow them to become primary visual elements.
+* Avoid placing important text inside images.
+* Ensure all important text remains selectable and accessible.
+
+## 8. Layout system
+
+Create a reusable container:
+
+```css
+width: min(94vw, 1600px);
+margin-inline: auto;
+```
+
+Suggested spacing:
+
+* Desktop section spacing: 96px to 160px
+* Tablet section spacing: 80px to 120px
+* Mobile section spacing: 64px to 96px
+* Desktop page padding: approximately 40px
+* Mobile page padding: 18px to 22px
+* Component gaps: 16px, 24px, 32px, 48px and 64px
+
+Use CSS Grid for major editorial layouts and Flexbox for smaller alignments.
+
+The layout should feel spacious but not empty. Large blank areas should support hierarchy or motion rather than simply filling the screen.
+
+## 9. Global motion tokens
+
+Create reusable motion variables:
+
+```css
+--ease-out-cinematic: cubic-bezier(0.23, 1, 0.32, 1);
+--ease-smooth: cubic-bezier(0.43, 0, 0.57, 1);
+--duration-fast: 300ms;
+--duration-control: 400ms;
+--duration-reveal: 800ms;
+--duration-media: 1000ms;
+--duration-long: 1200ms;
+```
+
+Motion hierarchy:
+
+* Small hover feedback: 300 to 400ms
+* Text and control entrance: 700 to 900ms
+* Image and video entrance: 900 to 1200ms
+* Page transition: 600 to 900ms
+* Avoid unnecessarily long animations.
+* Use consistent easing across the entire project.
+* Never animate every element simply because it is possible.
+
+Create reusable animation primitives instead of writing unrelated animation logic for every section.
+
+## 10. Fixed header
+
+Build a fixed header that includes:
+
+* Larkin2 logo or wordmark on the left
+* Main navigation in the centre or right
+* A pill-shaped primary CTA
+* A small accent dot identifying the active page
+* A mobile menu button below 768px
+
+Desktop behaviour:
+
+* Begin transparent over the page.
+* After the user scrolls approximately 40px, fade in a subtle dark vertical gradient behind the header.
+* When scrolling down deliberately, move the header to `translateY(-110%)`.
+* When the user scrolls up, reveal it again.
+* Use a transition of approximately 600ms with the cinematic easing.
+* Do not hide the header while keyboard focus is inside it.
+* Keep the logo and CTA readable over all media.
+
+Mobile behaviour:
+
+* Replace the desktop navigation with a Menu button.
+* Open a full-screen or nearly full-screen dark navigation panel from the right.
+* Animate it from `translateX(100%)` to `translateX(0)`.
+* Use approximately 800ms with the cinematic easing.
+* Change the Menu button into a Close button.
+* Trap keyboard focus inside the open menu.
+* Close the menu with Escape.
+* Prevent page scrolling while the menu is open.
+* Restore focus to the menu button after closing.
+* Include the main CTA and essential contact information in the mobile menu.
+
+## 11. Button and link interactions
+
+For important text links and buttons, create a masked text-swap effect:
+
+* Place two copies of the visible label inside an overflow-hidden wrapper.
+* The first label occupies the normal position.
+* The second label begins directly below it.
+* On hover or focus, move the first label upwards and bring the second label into place.
+* Use a 300 to 400ms transition.
+* Mark the duplicate visual label with `aria-hidden="true"` so screen readers do not announce the text twice.
+* Keep one accessible name on the parent link or button.
+
+For pill buttons:
+
+* Include a small accent dot or arrow.
+* On hover, slightly shift the text horizontally.
+* Allow the dot or arrow background to expand subtly.
+* Do not use large scaling effects.
+
+For circular carousel arrows:
+
+* Keep the arrow visible by default.
+* On hover, move the original arrow out of the circle.
+* Bring a second arrow in from the opposite direction.
+* Scale a circular background from approximately `0.2` to `1`.
+* Keep the full interaction near 400ms.
+* Ensure buttons have at least a 44px interactive area.
+
+## 12. Opening sequence
+
+Create a brief opening sequence for the first visit during a browser session.
+
+The sequence should:
+
+* Fill the viewport with a dark background.
+* Display a short Larkin2 brand statement in the centre.
+* Place a small blinking accent dot between two parts of the sentence.
+* Blink the dot with a one-second step animation.
+* Transition into the hero after essential content is ready.
+* Last approximately 1.2 to 2 seconds under normal conditions.
+
+Important safeguards:
+
+* Do not show the sequence on every internal route change.
+* Store completion in session storage.
+* Never make the user wait for every video to download.
+* Set a strict maximum duration of approximately 2.5 seconds.
+* If media or JavaScript fails, immediately reveal the normal page.
+* Do not leave the website trapped behind the intro.
+* Skip or greatly simplify the sequence when reduced motion is enabled.
+
+Use a concise, original statement relevant to Larkin2.
+
+Suggested format:
+
+“[FIRST PART] • [SECOND PART]”
+
+Do not reuse any statement from the reference website.
+
+## 13. Cinematic homepage hero
+
+Create a hero that occupies the first viewport and immediately explains Larkin2.
+
+Recommended structure:
+
+* Outer hero wrapper: approximately 150vh to 175vh
+* Sticky visual stage: `100svh`
+* Additional scroll spacer: approximately 50vh to 75vh
+* Full-bleed image or muted video layer
+* Dark overlay for readability
+* Large Larkin2 heading
+* Supporting paragraph
+* Primary action
+* Optional media or content controls near the bottom
+
+Desktop composition:
+
+* Position the heading toward the left.
+* Keep it to approximately 8 to 11 characters per line where practical.
+* Keep supporting copy to approximately 35 characters per line.
+* Place the content in a two-column grid where appropriate.
+* Keep the media full-bleed.
+* Position carousel controls at the bottom centre if multiple media items exist.
+
+Mobile composition:
+
+* Centre the content or align it left according to the Larkin2 identity.
+* Reduce the amount of empty space.
+* Make the hero content readable without requiring scroll.
+* Use a poster image in place of heavy video where appropriate.
+* Avoid tiny controls at the bottom edge.
+
+If multiple hero items exist:
+
+* Store them in a clean data array.
+* Each item should support a title, media source, poster, label, link and accessible description.
+* Provide previous and next buttons.
+* Provide a visible current-item indicator.
+* Support keyboard-arrow navigation.
+* Support touch swiping.
+* Pause automatic advancement while hovered, focused or hidden.
+* Do not rotate faster than every six seconds.
+
+## 14. WebGL requirements
+
+Use Three.js or another WebGL layer only if curved video warping, media distortion or advanced canvas transitions are genuinely necessary.
+
+WebGL must be progressive enhancement, not a requirement for accessing Larkin2.
+
+Before creating a renderer:
+
+* Detect WebGL support.
+* Catch renderer-creation errors.
+* Check reduced-motion preferences.
+* Check for low-power or constrained devices where practical.
+
+If WebGL is unavailable:
+
+* Render a normal HTML `<video>` or `<img>` carousel.
+* Preserve headings, controls and navigation.
+* Remove distortion effects.
+* Keep the page fully usable.
+* Never leave an empty canvas or permanent loading screen.
+* Never keep scrolling disabled because WebGL failed.
+
+Build and test the non-WebGL version first. Add WebGL only after the normal version is complete.
+
+## 15. Text reveal system
+
+Create three reusable reveal styles.
+
+### Large heading reveal
+
+* Split the heading by line.
+* Wrap each line in an overflow-hidden mask.
+* Begin the visible line at `translateY(108%)`.
+* Animate it to `translateY(0)`.
+* Use approximately 800ms.
+* Stagger words by approximately 90ms.
+* Stagger lines by approximately 100ms.
+
+### Supporting-text reveal
+
+* Split supporting copy by visual line where practical.
+* Begin each line at `translateY(105%)` with zero opacity.
+* Animate it to its natural position and full opacity.
+* Use approximately 1000 to 1200ms.
+* Stagger lines by 100ms.
+
+### Horizontal word reveal
+
+* Begin words at `translateX(100px)`.
+* Start with muted grey and reduced opacity.
+* Move them to their normal position.
+* Change their colour gradually to off-white.
+* Use approximately 1000ms.
+
+Accessibility requirements:
+
+* Preserve the complete readable sentence in the semantic heading or paragraph.
+* Mark generated word and line wrappers as `aria-hidden="true"`.
+* Use an `aria-label` or visually hidden original string if necessary.
+* Do not make screen readers read every word as a separate item.
+* Do not split text when reduced motion is enabled.
+
+## 16. Image build-on animation
+
+Create a reusable image-reveal component.
+
+Initial state:
+
+* Outer image container at `translateY(50%)`
+* Inner image at `translateY(10%) scale(1.4)`
+* Optional opacity reduction
+* Container clipped with `overflow: hidden`
+
+Revealed state:
+
+* Outer container returns to `translateY(0)`
+* Inner image returns to `translateY(0) scale(1)`
+* Transition lasts approximately one second
+* Use the cinematic easing
+
+When several cards appear together:
+
+* Stagger each card by approximately 150ms.
+* Trigger the sequence once when the section enters the viewport.
+* Do not replay it every time the user scrolls a few pixels.
+
+All images must:
+
+* Have explicit width and height
+* Use responsive `srcset` where available
+* Have meaningful alternative text
+* Use `object-fit: cover` where cropping is intended
+* Lazy-load below-the-fold assets
+* Avoid layout shifts
+
+## 17. Editorial statement section
+
+After the hero, include a concise Larkin2 brand statement.
+
+Design:
+
+* Centre the statement within a generous dark section.
+* Keep the text width between 30 and 40 characters.
+* Use a large but restrained heading size.
+* Reveal words or lines progressively.
+* Include one clear supporting CTA beneath it.
+* Do not place several paragraphs here.
+
+This section should explain what Larkin2 does and why it matters in one strong statement.
+
+## 18. Featured-content switcher
+
+If Larkin2 has articles, opportunities, projects, services or case studies, create a featured-content switcher.
+
+Desktop layout:
+
+* Large media panel on one side
+* Three to five content titles on the other
+* Date, category or short metadata above each title
+* Active item in off-white
+* Inactive items in muted grey
+* Thin progress lines separating items
+
+Interaction:
+
+* When the active item changes, reveal the new media from bottom to top using `clip-path: inset(100% 0 0)`.
+* Animate to `clip-path: inset(0)`.
+* Begin the image at `scale(1.15)` and settle at `scale(1)`.
+* Use approximately one second.
+* Change the text colour over 300ms.
+* If automatic advancement is used, make the progress bar accurately represent the remaining time.
+* Pause advancement on hover, focus, tab inactivity and reduced-motion mode.
+* Let users select any item manually.
+
+Mobile layout:
+
+* Stack media above the list.
+* Remove automatic advancement if it becomes distracting.
+* Keep all titles readable.
+* Do not hide important information behind hover.
+
+## 19. Horizontal media-card carousel
+
+Create a horizontal carousel for Larkin2 projects, services, opportunities, programmes, products or case studies.
+
+Each card should contain:
+
+* Poster image
+* Optional preview video
+* Title
+* Accessible link
+* Dark gradient over the lower portion
+* Consistent aspect ratio
+* Restrained corner radius between 6px and 10px
+
+Desktop hover:
+
+* Begin the preview video below the card at `translateY(100%)`.
+* Move the still-image wrapper upwards to approximately `translateY(-60%)`.
+* Reduce the still image to approximately 20% opacity.
+* Bring the video to `translateY(0)`.
+* Use a one-second transition.
+* Begin video playback only after meaningful hover intent.
+* Stop and reset playback when the pointer leaves.
+
+Touch behaviour:
+
+* Do not depend on hover.
+* Display the poster image normally.
+* Provide an explicit play or preview control if video preview is necessary.
+* Allow horizontal swiping.
+* Avoid hijacking vertical page scrolling.
+
+Carousel behaviour:
+
+* Support dragging, arrow buttons and keyboard navigation.
+* Maintain clear focus states.
+* Disable an arrow when no further movement is possible.
+* Use scroll snapping or controlled transforms.
+* Avoid infinite movement unless the loop is seamless and accessible.
+
+## 20. Logo or partner marquee
+
+If Larkin2 has genuine clients, partners, categories or programmes, create a continuous horizontal marquee.
+
+Behaviour:
+
+* Move slowly and continuously.
+* Duplicate the content only for visual looping.
+* Hide duplicated items from assistive technology.
+* Pause movement when the user hovers or focuses inside the marquee.
+* Pause when the browser tab is inactive.
+* Stop movement when reduced motion is enabled.
+
+Optional desktop hover:
+
+* Dim non-hovered logos to approximately 30% opacity.
+* Keep the hovered logo at full opacity.
+* Reveal a small floating image associated with that item.
+* Fade the preview in over approximately 600ms.
+* Keep the preview inside the viewport.
+
+On mobile, use a static horizontally scrollable list instead of continuous animation.
+
+## 21. Statistics section
+
+If Larkin2 has verified statistics, create a split statistics section.
+
+Possible layout:
+
+* Large supporting image on the left
+* Three statistic rows on the right
+* Thin dividers between rows
+* Small uppercase label
+* Large number
+* Smaller unit or suffix
+
+Animation:
+
+* Count from zero to the verified final value once when the section enters view.
+* Use a duration between one and 1.8 seconds.
+* Do not repeatedly count when the user scrolls away and back.
+* Under reduced motion, show the final values immediately.
+* Do not use fabricated statistics.
+
+## 22. Interactive timeline
+
+Only include this component if Larkin2 has meaningful chronological information.
+
+Desktop layout:
+
+* Full-height or near-full-height section
+* Relevant archival or project image
+* Large year
+* Short description
+* Vertical progress line
+* List of milestone years
+* Small accent dot marking the active year
+
+Behaviour:
+
+* Moving through the timeline updates the active year, text and image.
+* Animate changing year digits inside overflow-hidden digit masks.
+* Move the progress thumb along the timeline.
+* Change inactive years from muted grey to off-white when active.
+* Reveal the active accent dot by scaling it from `0.5` to `1`.
+* Crossfade or vertically reveal the new image.
+* Keep transitions near 500 to 750ms.
+
+Do not trap users in scroll-jacking behaviour.
+
+Mobile behaviour:
+
+* Convert the timeline into a normal vertical sequence, accordion or horizontal snap list.
+* Allow users to reach the rest of the page with ordinary scrolling.
+* Do not require precise dragging.
+
+## 23. Archive and content-grid pages
+
+For Larkin2 news, articles, opportunities, projects or case studies, create:
+
+* Large page heading
+* One featured item
+* Filter controls
+* Sort control if genuinely useful
+* Responsive content grid
+* Pagination or a clear Load More action
+
+Responsive grid:
+
+* One column on mobile
+* Two columns on tablet
+* Three columns on desktop
+
+Featured item:
+
+* Use a large image area.
+* On desktop, it can occupy approximately 70 to 80vh.
+* Apply a dark bottom gradient behind its title.
+* Display date or category.
+* Include one clear link.
+
+Filter behaviour:
+
+* Use pill-shaped buttons.
+* On desktop, open options through a 400ms vertical clipping reveal.
+* Rotate the sort arrow 180 degrees when open.
+* Add a small accent dot beside the selected or hovered option.
+* Shift the option text approximately 14px to the right.
+* On mobile, use a native `<select>` for reliability.
+* Update results without losing keyboard focus.
+* Reflect filter state in the URL where practical.
+
+Card hover:
+
+* Scale the image from `1` to approximately `1.08`.
+* Reveal the “Learn more” label from below.
+* Fade in a small accent dot.
+* Ensure the complete card is a clearly labelled link.
+* Provide the same information without hover.
+
+## 24. Page transitions
+
+Create a route transition inspired by a cinematic curtain or stage wipe.
+
+Structure:
+
+* Fixed overlay covering the entire viewport
+* Very high z-index
+* Black background or SVG path
+* Pointer events disabled when inactive
+
+Preferred effect:
+
+* Use an SVG path whose edge curves as it crosses the viewport.
+* Cover the old page.
+* Change the route only after the viewport is covered.
+* Reveal the new page by reversing the wipe.
+* Keep the complete transition between 600 and 900ms.
+* Prevent double navigation during the transition.
+
+Fallback:
+
+* Use a simple 250ms black fade if SVG animation is unavailable.
+* Disable the wipe under reduced motion.
+* Never delay navigation indefinitely.
+* Do not apply the full transition to browser back and forward if it causes broken history behaviour.
+
+## 25. Footer reveal
+
+On desktop, create an optional footer-uncover effect:
+
+* Place the footer at the bottom of the viewport.
+* Keep it fixed behind the primary page content.
+* Give the scrollable content a higher stacking level and solid background.
+* Add a spacer equal to the measured footer height.
+* As the content ends, reveal the footer underneath it.
+
+Use `ResizeObserver` to keep the spacer synchronised with the actual footer height.
+
+On mobile:
+
+* Keep the footer in normal document flow.
+* Do not use the fixed reveal if it creates clipping or excessive empty space.
+
+Footer content:
+
+* Larkin2 brand mark
+* Short Larkin2 statement
+* Grouped navigation
+* Social links
+* Contact route
+* Legal links
+* Copyright information
+
+Animate the footer divider from left to right and reveal links with a restrained stagger.
+
+## 26. Responsive behaviour
+
+Use mobile-first CSS.
+
+Primary breakpoints:
+
+* Mobile: below 768px
+* Tablet: 768px to 1023px
+* Desktop: 1024px and above
+* Large desktop: above 1440px
+
+At every breakpoint:
+
+* Avoid horizontal page overflow.
+* Keep body text at least 16px.
+* Keep interactive labels at least 14px.
+* Keep touch targets at least 44px.
+* Ensure headings do not overlap.
+* Avoid text being cropped by animation masks.
+* Ensure media maintains meaningful framing.
+* Avoid fixed heights for text-heavy components.
+* Test with 200% text zoom.
+* Use `100svh` instead of relying only on `100vh` for mobile full-screen sections.
+
+## 27. Reduced motion
+
+Implement a proper reduced-motion mode.
+
+Use:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+Also adjust JavaScript:
+
+* Do not split text for animation.
+* Do not start continuous marquees.
+* Do not automatically advance carousels.
+* Do not use parallax.
+* Do not initialise decorative WebGL.
+* Display final statistic values immediately.
+* Replace page wipes with an immediate route change or short fade.
+* Keep all content visible and functional.
+
+## 28. Video handling
+
+All automatically playing videos must be:
+
+* Muted
+* `playsInline`
+* Looping only where appropriate
+* Paused when outside the viewport
+* Paused when the tab is hidden
+* Accompanied by a poster image
+* Lazy-loaded when below the fold
+
+Provide a visible pause control for prominent background video.
+
+Do not autoplay video with sound.
+
+Avoid loading every carousel video during the initial page request. Load the current video first, then preload only the next likely item.
+
+## 29. Accessibility
+
+Meet WCAG 2.2 AA principles where practical.
+
+Requirements:
+
+* Semantic headings in the correct hierarchy
+* One meaningful `h1` per page
+* Keyboard-operable navigation and carousels
+* Visible focus indicators
+* Accurate button and link names
+* Alternative text for informative images
+* Empty alt text for decorative imagery
+* Form labels that remain available to assistive technology
+* Escape-key support for menus and dialogs
+* Focus trapping where required
+* No duplicated accessible labels from animated text
+* No essential information available only on hover
+* No colour-only state indicators
+* Sufficient contrast
+* Logical tab order
+* Skip-to-content link
+* Correct `aria-current="page"` on active navigation
+* Announce carousel changes only when the user initiates them
+* Do not cause screen readers to announce continuous automatic updates
+
+## 30. Performance and reliability
+
+Optimise for a fast first meaningful render.
+
+Requirements:
+
+* Show the page shell and meaningful Larkin2 content before optional animation code finishes.
+* Use responsive images.
+* Compress large media.
+* Use modern image formats where supported.
+* Preload only the principal font and hero poster.
+* Use `font-display: swap`.
+* Lazy-load below-the-fold media.
+* Avoid unnecessary rerenders on scroll.
+* Use `requestAnimationFrame` for visual scroll calculations.
+* Use Intersection Observer for in-view triggers.
+* Clean up event listeners and animation instances.
+* Apply `will-change` only while an element is actively animating.
+* Avoid sending React state updates on every scroll frame.
+* Ensure animations remain smooth on mid-range mobile devices.
+* Do not let third-party scripts block rendering.
+* Do not ship console errors.
+
+Target outcomes:
+
+* No blank initial screen
+* No cumulative layout shifts caused by missing image dimensions
+* No broken page when JavaScript partially fails
+* No permanent scroll lock
+* No dependence on WebGL for core content
+* No animation that prevents users from clicking or navigating
+
+## 31. Component architecture
+
+Organise the implementation into reusable components resembling:
+
+* `SiteHeader`
+* `MobileNavigation`
+* `IntroOverlay`
+* `PageTransition`
+* `CinematicHero`
+* `SplitTextReveal`
+* `ImageReveal`
+* `MaskedTextLink`
+* `CarouselArrow`
+* `FeaturedContentSwitcher`
+* `MediaCardCarousel`
+* `LogoMarquee`
+* `StatisticsSection`
+* `Timeline`
+* `ContentFilters`
+* `ContentGrid`
+* `SiteFooter`
+
+Create central data files for:
+
+* Navigation
+* Hero slides
+* Featured content
+* Projects, opportunities or services
+* Statistics
+* Timeline entries
+* Footer groups
+
+Do not hardcode repeated content separately in multiple components.
+
+Create a central motion configuration so durations and easing can be updated without editing every component.
+
+## 32. Content rules
+
+Use the current project’s real Larkin2 content as the source of truth.
+
+The homepage should normally include only:
+
+1. Header
+2. Cinematic hero
+3. Concise editorial Larkin2 statement
+4. Featured services, opportunities, work or content
+5. Optional media-card carousel
+6. One clear conversion section
+7. Footer
+
+Only add statistics, marquees, timelines or archives when real content justifies them.
+
+Every page should have one clear purpose and one principal next action.
+
+Do not add filler copy simply to occupy the design.
+
+## 33. Metadata
+
+Set appropriate metadata for every route.
+
+Homepage example:
+
+```html
+<title>Larkin2 | [CONCISE VALUE PROPOSITION]</title>
+<meta
+  name="description"
+  content="[CLEAR DESCRIPTION OF WHAT LARKIN2 OFFERS AND WHO IT SERVES]"
+/>
+```
+
+Also configure:
+
+* Open Graph title
+* Open Graph description
+* Open Graph image
+* Canonical URL
+* Twitter/X sharing metadata
+* Favicon
+* Theme colour
+* Appropriate structured data where relevant
+
+Do not invent claims in the metadata.
+
+## 34. Testing requirements
+
+Test at these minimum viewport sizes:
+
+* 390 × 844
+* 768 × 1024
+* 1024 × 768
+* 1440 × 900
+* 1920 × 1080
+
+Test:
+
+* Initial page load
+* Every internal route
+* Header hide and reveal
+* Mobile menu
+* Keyboard navigation
+* Escape-key behaviour
+* Carousels
+* Filters
+* Page transitions
+* Reduced-motion mode
+* Video failure
+* Slow network conditions
+* WebGL disabled
+* Browser back and forward buttons
+* Images missing or loading slowly
+* Text zoom at 200%
+* Very long headings
+* Touch interaction
+* Footer reveal
+
+Verify that:
+
+* The production build completes successfully.
+* There are no console errors.
+* There is no unintended horizontal scrolling.
+* All content remains available without animation.
+* The homepage cannot become trapped on the intro.
+* Navigation works when WebGL fails.
+* Every interactive element is keyboard accessible.
+* Mobile layouts do not rely on hover.
+* Decorative animation never prevents the principal user action.
+* Larkin2 is named consistently throughout the website.
+
+## 35. Final delivery
+
+Do not stop after producing a visual mock-up. Implement the complete responsive experience.
+
+When finished:
+
+* Run the production build.
+* Fix all build and runtime errors.
+* Remove unused placeholder components.
+* Remove unused dependencies.
+* Confirm which routes were completed.
+* Summarise the major components implemented.
+* Explain where Larkin2 content and media can be updated.
+* Identify any placeholders that still require real assets.
+* State which accessibility, responsive and fallback tests were completed.
+
+The final result should borrow the reference website’s confidence, pacing, editorial typography and cinematic motion while remaining an original, accessible and reliable website for **Larkin2**.
