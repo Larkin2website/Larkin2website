@@ -400,9 +400,9 @@
 .larkin2-commit .larkin2-eyebrow, .larkin2-commit .larkin2-link { color: #a43c25; }
 
 .larkin2-paths {
-  background: #111314;
-  color: #f4f1ed;
-  border-top: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--paper-ink);
+  border-top: 1px solid rgba(29,32,32,.19);
   position: relative;
 }
 .larkin2-paths::before {
@@ -412,9 +412,9 @@
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
 }
-.larkin2-paths .larkin2-eyebrow { color: var(--orange); }
-.larkin2-paths .larkin2-title { max-width: 680px; color: #f4f1ed; }
-.larkin2-paths .larkin2-small { max-width: 500px; color: rgba(244,241,237,.6); margin-top: 20px; }
+.larkin2-paths .larkin2-eyebrow { color: #a43c25; }
+.larkin2-paths .larkin2-title { max-width: 680px; color: var(--paper-ink); }
+.larkin2-paths .larkin2-small { max-width: 500px; color: rgba(29,32,32,.68); margin-top: 20px; }
 
 .larkin2-paths-header {
   display: grid;
@@ -423,8 +423,8 @@
   margin-bottom: clamp(60px, 8vw, 100px);
 }
 .larkin2-role-status {
-  background: rgba(244,241,237,0.02);
-  border: 1px solid rgba(244,241,237,0.06);
+  background: rgba(255,255,255,.28);
+  border: 1px solid rgba(29,32,32,.18);
   padding: 35px 40px;
   display: flex;
   flex-direction: column;
@@ -433,7 +433,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--orange);
+  color: #a43c25;
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -444,7 +444,7 @@
   font-size: 24px;
   font-weight: 400;
   letter-spacing: -0.04em;
-  color: #f4f1ed;
+  color: var(--paper-ink);
   margin: 0 0 12px;
 }
 .larkin2-role-status strong {
@@ -452,7 +452,7 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 1.55;
-  color: rgba(244,241,237,0.75);
+  color: rgba(29,32,32,.74);
   margin-bottom: 30px;
 }
 .larkin2-role-status-actions {
@@ -462,6 +462,7 @@
   gap: 14px;
 }
 .larkin2-role-status-actions .larkin2-link { margin: 0; }
+.larkin2-role-status-actions .larkin2-link { color: #a43c25; }
 
 .larkin2-path-grid {
   display: grid;
