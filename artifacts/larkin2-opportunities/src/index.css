@@ -775,6 +775,21 @@
 .larkin2-culture .larkin2-grid { align-items: center; }
 .larkin2-culture figure { margin: 0; }
 .larkin2-culture figure .larkin2-image { aspect-ratio: 1 / 1.1; }
+.larkin2-culture .larkin2-link {
+  min-height: 46px;
+  padding: 14px 20px;
+  border: 1px solid var(--orange);
+  border-radius: 999px;
+  background: var(--orange);
+  color: #080a0c;
+  transition: background-color .3s ease, border-color .3s ease, color .3s ease;
+}
+.larkin2-culture .larkin2-link:hover,
+.larkin2-culture .larkin2-link:focus-visible {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #080a0c;
+}
 .larkin2-rule { margin: 65px 0 0; padding-top: 18px; border-top: 1px solid var(--line); }
 .larkin2-about { background: #1a1e20; }
 .larkin2-about .larkin2-title { max-width: 650px; }
