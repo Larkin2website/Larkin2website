@@ -478,8 +478,26 @@
   align-items: flex-start;
   gap: 14px;
 }
-.larkin2-role-status-actions .larkin2-link { margin: 0; }
-.larkin2-role-status-actions .larkin2-link { color: #a43c25; }
+.larkin2-role-status-actions .larkin2-link {
+  min-height: 42px;
+  margin: 0;
+  padding: 12px 17px;
+  border: 1px solid #a43c25;
+  border-radius: 999px;
+  background: #a43c25;
+  color: var(--ink);
+  transition: background-color .3s ease, border-color .3s ease, color .3s ease;
+}
+.larkin2-role-status-actions .larkin2-link:last-child {
+  background: transparent;
+  color: #7f2e1d;
+}
+.larkin2-role-status-actions .larkin2-link:hover,
+.larkin2-role-status-actions .larkin2-link:focus-visible {
+  border-color: var(--paper-ink);
+  background: var(--paper-ink);
+  color: var(--ink);
+}
 
 .larkin2-path-grid {
   display: grid;
@@ -568,12 +586,20 @@
   flex-shrink: 0;
 }
 .larkin2-path .larkin2-link {
+  min-height: 44px;
   margin: 0;
-  color: #ffffff;
+  padding: 13px 18px;
+  border: 1px solid rgba(244,241,237,.88);
+  border-radius: 999px;
+  background: #f4f1ed;
+  color: #080a0c;
+  transition: background-color .3s ease, border-color .3s ease, color .3s ease;
 }
 .larkin2-path .larkin2-link:hover,
 .larkin2-path .larkin2-link:focus-visible {
-  color: var(--orange);
+  border-color: var(--orange);
+  background: var(--orange);
+  color: #080a0c;
 }
 .larkin2-commit-header {
   display: flex;
