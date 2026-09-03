@@ -467,7 +467,7 @@
 .larkin2-path-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 20px;
+  gap: 0;
   margin-inline: calc(clamp(20px, 7.5vw, 120px) * -1);
 }
 .larkin2-path {
@@ -478,10 +478,10 @@
   justify-content: space-between;
   padding: 36px 40px;
   background: #1a1d1f;
-  border: 1px solid rgba(244,241,237,0.08);
+  border: 0;
 }
-.larkin2-path:nth-child(1) { grid-column: span 7; min-height: 640px; }
-.larkin2-path:nth-child(2) { grid-column: span 5; min-height: 640px; }
+.larkin2-path:nth-child(1) { grid-column: span 7; min-height: 640px; border-right: 1px solid rgba(244,241,237,.62); border-bottom: 1px solid rgba(244,241,237,.62); }
+.larkin2-path:nth-child(2) { grid-column: span 5; min-height: 640px; border-bottom: 1px solid rgba(244,241,237,.62); }
 .larkin2-path:nth-child(3) { grid-column: span 12; min-height: 480px; }
 
 .larkin2-path-bg {
@@ -672,8 +672,9 @@
   .larkin2-image-caption { font-size: 8px; }
   .larkin2-paths-header { grid-template-columns: 1fr; gap: 40px; margin-bottom: 50px; }
   .larkin2-role-status { padding: 28px 24px; }
-  .larkin2-path-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 0; }
-  .larkin2-path, .larkin2-path:nth-child(1), .larkin2-path:nth-child(2), .larkin2-path:nth-child(3) { min-height: 460px; padding: 24px; border: 1px solid rgba(244,241,237,0.08); }
+  .larkin2-path-grid { display: flex; flex-direction: column; gap: 0; margin-top: 0; }
+  .larkin2-path, .larkin2-path:nth-child(1), .larkin2-path:nth-child(2), .larkin2-path:nth-child(3) { min-height: 460px; padding: 24px; border: 0; border-bottom: 1px solid rgba(244,241,237,.62); }
+  .larkin2-path:nth-child(3) { border-bottom: 0; }
   .larkin2-path-bottom { flex-direction: column; align-items: flex-start; gap: 24px; }
   .larkin2-path h3 { margin-top: 0; font-size: 32px; }
   .larkin2-path p { font-size: 15px; }
