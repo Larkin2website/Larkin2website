@@ -222,7 +222,7 @@
 
 .larkin2-hero-shell {
   position: relative;
-  min-height: 156svh;
+  min-height: 100svh;
   --hero-progress: 0;
   background: var(--deep);
 }
@@ -458,7 +458,7 @@
   .larkin2-mobile-nav a span { color: var(--orange); font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: .13em; }
   .larkin2-mobile-contact { display: flex; justify-content: space-between; gap: 20px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.4; }
   .larkin2-mobile-contact a { color: var(--ink); white-space: nowrap; }
-  .larkin2-hero-shell { min-height: 123svh; }
+  .larkin2-hero-shell { min-height: 100svh; }
   .larkin2-hero-stage { min-height: 100svh; align-items: flex-end; padding: 128px 20px 92px; }
   .larkin2-hero-media { inset: 0 8px 0; background-position: 57% center; clip-path: ellipse(94% 86% at 50% 43%); }
   .larkin2-hero-shade { background: linear-gradient(90deg, rgba(8,10,12,.76), rgba(8,10,12,.24)), linear-gradient(0deg, rgba(8,10,12,.96), rgba(8,10,12,.18) 70%); }
