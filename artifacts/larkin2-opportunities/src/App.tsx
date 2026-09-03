@@ -87,7 +87,7 @@ function Home() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuPanelRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
-  const heroShellRef = useRef<HTMLElement>(null);
+  const heroTrackRef = useRef<HTMLElement>(null);
   const lastScrollY = useRef(0);
   const wasMenuOpen = useRef(false);
 
@@ -119,10 +119,11 @@ function Home() {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         const current = window.scrollY;
-        const heroShell = heroShellRef.current;
-        if (heroShell) {
-          const travel = Math.max(1, heroShell.offsetHeight);
-          heroShell.style.setProperty("--hero-progress", Math.min(1, Math.max(0, current / travel)).toFixed(3));
+        const heroTrack = heroTrackRef.current;
+        if (heroTrack) {
+          const travel = Math.max(1, heroTrack.offsetHeight - window.innerHeight);
+          const morphTravel = travel * 0.75;
+          heroTrack.style.setProperty("--hero-progress", Math.min(1, Math.max(0, current / morphTravel)).toFixed(4));
         }
         setScrolled(current > 38);
         if (current < 20 || current < lastScrollY.current - 5) {
@@ -255,11 +256,13 @@ function Home() {
         </div>
       </aside>
 
-      <section ref={heroShellRef} className="larkin2-hero-shell" aria-labelledby="hero-title">
-        <div className="larkin2-hero-stage">
-          <div className="larkin2-hero-media-wrap">
-            <div className="larkin2-hero-media" role="img" aria-label="Film crew working with practical lights and camera equipment on a London production" data-testid="img-hero-studio" />
-          </div>
+      <section ref={heroTrackRef} className="larkin2-hero-track" aria-labelledby="hero-title">
+        <div className="larkin2-hero-sticky">
+          <div className="larkin2-hero-bg" />
+          <div className="larkin2-hero-stage">
+            <div className="larkin2-hero-media-wrap">
+              <div className="larkin2-hero-media" role="img" aria-label="Film crew working with practical lights and camera equipment on a London production" data-testid="img-hero-studio" />
+            </div>
           <div className="larkin2-hero-shade" />
           <div className="larkin2-hero-content-wrap">
             <div className="larkin2-hero-content larkin2-reveal">
@@ -279,6 +282,7 @@ function Home() {
               <span>Scroll to enter the production</span><span className="larkin2-scroll-line" aria-hidden="true" /><span>01 — 06</span>
             </div>
           </div>
+        </div>
         </div>
       </section>
 
