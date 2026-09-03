@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/larkin2-opportunities/"
+title = "Larkin2 Opportunities"
+description = "A cinematic opportunities website for Larkin2, connecting emerging and experienced film and television talent with paid roles, training, and development routes."
+version = "1.0.0"
+id = "artifacts/larkin2-opportunities"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/larkin2-opportunities/" ]
+localPort = 21139
+
+[services.development]
+run = "pnpm --filter @workspace/larkin2-opportunities run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/larkin2-opportunities", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/larkin2-opportunities/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21139"
+BASE_PATH = "/larkin2-opportunities/"
