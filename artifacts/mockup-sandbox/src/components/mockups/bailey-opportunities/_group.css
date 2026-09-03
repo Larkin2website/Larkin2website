@@ -156,6 +156,13 @@
 .bailey-hero-stage {
   position: sticky;
   top: 0;
+  --hero-progress: 0;
+  --hero-scale: 1.04;
+  --hero-crop: 0%;
+  --hero-shade-opacity: 1;
+  --hero-copy-opacity: 1;
+  --hero-copy-y: 0px;
+  --hero-meta-opacity: 1;
   min-height: 100svh;
   display: flex;
   align-items: flex-end;
@@ -167,13 +174,17 @@
   inset: 0;
   background: url('/__mockup/images/bailey-studio.jpg') center / cover no-repeat;
   filter: saturate(.65) contrast(1.05);
-  transform: scale(1.04);
+  transform: scale(var(--hero-scale));
+  clip-path: inset(0 var(--hero-crop) 0 0);
   animation: bailey-hero-settle 1.6s var(--ease-cinematic) forwards;
+  will-change: transform, clip-path;
 }
 .bailey-hero-shade {
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, rgba(8,8,8,.82) 0%, rgba(8,8,8,.43) 52%, rgba(8,8,8,.24) 100%), linear-gradient(0deg, rgba(8,8,8,.95) 0%, rgba(8,8,8,.24) 45%, rgba(8,8,8,.3) 100%);
+  opacity: var(--hero-shade-opacity);
+  will-change: opacity;
 }
 .bailey-hero-shade::after {
   content: "";
@@ -182,7 +193,7 @@
   height: 35%;
   background: linear-gradient(transparent, var(--stage));
 }
-.bailey-hero-content { position: relative; z-index: 1; max-width: 1050px; }
+.bailey-hero-content { position: relative; z-index: 1; max-width: 1050px; opacity: var(--hero-copy-opacity); transform: translateY(var(--hero-copy-y)); will-change: opacity, transform; }
 .bailey-kicker,
 .bailey-eyebrow {
   color: var(--red);
@@ -232,6 +243,7 @@
   font-size: 10px;
   letter-spacing: .15em;
   text-transform: uppercase;
+  opacity: var(--hero-meta-opacity);
 }
 .bailey-scroll-line { width: 60px; height: 1px; background: var(--red); }
 
@@ -433,6 +445,15 @@
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .bailey-hero-shell { min-height: 100svh; }
+  .bailey-hero-stage {
+    --hero-scale: 1.04 !important;
+    --hero-crop: 0% !important;
+    --hero-shade-opacity: 1 !important;
+    --hero-copy-opacity: 1 !important;
+    --hero-copy-y: 0px !important;
+    --hero-meta-opacity: 1 !important;
+  }
   .bailey-page *,
   .bailey-page *::before,
   .bailey-page *::after {

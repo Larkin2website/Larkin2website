@@ -1,0 +1,1 @@
+- [Scoped workspace packages](scoped-workspace-packages.md) — generic package installation may reject monorepo-root adds; target the artifact workspace explicitly.
