@@ -344,17 +344,39 @@ function Home() {
         </section>
 
         <section className="larkin2-section larkin2-commit" id="commitments" aria-labelledby="commit-title">
-          <div className="larkin2-eyebrow larkin2-reveal" data-reveal>The candid commitments / 03</div>
-          <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>What we’ll tell you straight</span></span></h2>
-          <p className="larkin2-small larkin2-reveal" data-reveal>Uncertainty is one of the reasons people give up on this industry before they start. So here is what we commit to before you apply.</p>
-          <div className="larkin2-commit-list">
-            {commitments.map(([num, title, copy], index) => (
-              <div className="larkin2-commit-item larkin2-reveal" data-reveal key={num} style={{ "--reveal-delay": `${index * 70}ms` } as CSSProperties} data-testid={`item-commitment-${num}`}>
-                <b>{num}</b><div><h3>{title}</h3><p>{copy}</p></div>
-              </div>
-            ))}
+          <div className="larkin2-commit-header">
+            <div className="larkin2-commit-header-text">
+              <div className="larkin2-eyebrow larkin2-reveal" data-reveal>The candid commitments / 03</div>
+              <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>What we’ll tell you straight</span></span></h2>
+              <p className="larkin2-small larkin2-reveal" data-reveal>Uncertainty is one of the reasons people give up on this industry before they start. So here is what we commit to before you apply.</p>
+            </div>
+            <div className="larkin2-commit-header-cta larkin2-reveal" data-reveal>
+              <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-commitments-signup">Sign up for updates</MaskedLink>
+            </div>
           </div>
-          <MaskedLink href="#signup" className="larkin2-btn" testId="link-commitments-signup">Sign up for updates</MaskedLink>
+          <div className="larkin2-commit-index">
+            <div className="larkin2-commit-featured larkin2-reveal" data-reveal data-testid={`item-commitment-${commitments[0][0]}`}>
+              <div className="larkin2-commit-featured-media">
+                <img src="/larkin2-opportunities/images/bailey-craft.jpg" alt="Production craft detail" loading="lazy" />
+              </div>
+              <div className="larkin2-commit-featured-content">
+                <div className="larkin2-commit-meta">Commitment / {commitments[0][0]}</div>
+                <h3>{commitments[0][1]}</h3>
+                <p>{commitments[0][2]}</p>
+              </div>
+            </div>
+            <div className="larkin2-commit-list">
+              {commitments.slice(1).map(([num, title, copy], index) => (
+                <div className="larkin2-commit-row larkin2-reveal" data-reveal key={num} style={{ "--reveal-delay": `${index * 70}ms` } as CSSProperties} data-testid={`item-commitment-${num}`}>
+                  <div className="larkin2-commit-meta">Commitment / {num}</div>
+                  <div className="larkin2-commit-row-main">
+                    <h3>{title}</h3>
+                    <p>{copy}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         <section className="larkin2-section larkin2-culture" aria-labelledby="culture-title">

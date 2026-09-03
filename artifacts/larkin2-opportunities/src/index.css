@@ -396,8 +396,22 @@
 .larkin2-production { background: var(--stage); padding-top: clamp(20px, 4vh, 60px); }
 .larkin2-production figure { margin: clamp(70px, 10vw, 145px) 0 0; }
 
-.larkin2-commit { background: var(--paper); color: var(--paper-ink); border-color: rgba(29,32,32,.19); --line: rgba(29,32,32,.2); }
-.larkin2-commit .larkin2-eyebrow, .larkin2-commit .larkin2-link { color: #a43c25; }
+.larkin2-commit {
+  background: var(--stage);
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+}
+.larkin2-commit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+.larkin2-commit > * { position: relative; z-index: 1; }
+
+.larkin2-commit .larkin2-eyebrow { color: var(--orange); }
 
 .larkin2-paths {
   background: var(--paper);
@@ -558,13 +572,121 @@
 .larkin2-path .larkin2-link:focus-visible {
   color: var(--orange);
 }
-.larkin2-commit .larkin2-title { max-width: 530px; }
-.larkin2-commit-list { max-width: 1000px; margin-top: 58px; border-top: 1px solid var(--line); }
-.larkin2-commit-item { display: grid; grid-template-columns: 55px 1fr; gap: 24px; padding: 27px 0; border-bottom: 1px solid var(--line); }
-.larkin2-commit-item b { color: #a43c25; font-family: 'Space Grotesk', sans-serif; font-size: 29px; font-weight: 400; }
-.larkin2-commit-item h3 { margin: 0 0 7px; font-size: 20px; font-weight: 500; letter-spacing: -.035em; }
-.larkin2-commit-item p { max-width: 680px; margin: 0; color: #625e5b; font-size: 14px; line-height: 1.5; }
-.larkin2-commit > .larkin2-btn { margin-top: 40px; }
+.larkin2-commit-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: clamp(60px, 8vw, 100px);
+}
+.larkin2-commit-header-text { max-width: 840px; }
+.larkin2-commit-header-text .larkin2-title {
+  max-width: 100%;
+  font-size: clamp(52px, 7.5vw, 105px);
+  color: #ffffff;
+  margin: 24px 0 20px;
+}
+.larkin2-commit-header-text .larkin2-small {
+  max-width: 580px;
+  color: rgba(244,241,237,.65);
+  margin: 0;
+}
+.larkin2-commit-header-cta { flex-shrink: 0; margin-bottom: 12px; }
+.larkin2-commit-header-cta .larkin2-btn { white-space: nowrap; }
+
+.larkin2-commit-index {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.larkin2-commit-meta {
+  color: var(--orange);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.larkin2-commit-featured {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(40px, 6vw, 90px);
+  padding: clamp(40px, 6vw, 80px) 0;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+}
+.larkin2-commit-featured-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1.4;
+  background: #111314;
+}
+.larkin2-commit-featured-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.6) contrast(1.05);
+  transition: transform 1.2s var(--ease-cinematic);
+}
+.larkin2-commit-featured:hover .larkin2-commit-featured-media img {
+  transform: scale(1.04);
+}
+.larkin2-commit-featured-content h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(34px, 4.2vw, 52px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  margin: 0 0 20px;
+  line-height: 1.05;
+}
+.larkin2-commit-featured-content p {
+  color: rgba(244,241,237,.7);
+  font-size: clamp(17px, 1.8vw, 21px);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 580px;
+}
+
+.larkin2-commit-list {
+  display: flex;
+  flex-direction: column;
+}
+.larkin2-commit-row {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 40px;
+  padding: clamp(35px, 4vw, 50px) 0;
+  border-bottom: 1px solid var(--line);
+}
+.larkin2-commit-row:last-child {
+  border-bottom: none;
+}
+.larkin2-commit-row .larkin2-commit-meta {
+  margin: 0;
+  padding-top: 8px;
+}
+.larkin2-commit-row-main {
+  max-width: 800px;
+}
+.larkin2-commit-row-main h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  margin: 0 0 16px;
+  line-height: 1.1;
+}
+.larkin2-commit-row-main p {
+  color: rgba(244,241,237,.7);
+  font-size: clamp(16px, 1.6vw, 19px);
+  line-height: 1.5;
+  margin: 0;
+}
 
 .larkin2-culture { padding-bottom: clamp(100px, 12vw, 170px); }
 .larkin2-culture .larkin2-grid { align-items: center; }
@@ -678,10 +800,15 @@
   .larkin2-path-bottom { flex-direction: column; align-items: flex-start; gap: 24px; }
   .larkin2-path h3 { margin-top: 0; font-size: 32px; }
   .larkin2-path p { font-size: 15px; }
-  .larkin2-commit-list { margin-top: 42px; }
-  .larkin2-commit-item { grid-template-columns: 37px 1fr; gap: 12px; padding: 24px 0; }
-  .larkin2-commit-item b { font-size: 21px; }
-  .larkin2-commit-item h3 { font-size: 18px; }
+  .larkin2-commit-header { flex-direction: column; align-items: flex-start; gap: 32px; }
+  .larkin2-commit-header-cta { margin-bottom: 0; width: 100%; }
+  .larkin2-commit-header-cta .larkin2-btn { display: flex; width: 100%; justify-content: center; }
+  .larkin2-commit-featured { grid-template-columns: 1fr; gap: 32px; padding: 40px 0; }
+  .larkin2-commit-featured-media { margin: 0 -20px; aspect-ratio: 1.2; }
+  .larkin2-commit-row { grid-template-columns: 1fr; gap: 14px; padding: 32px 0; }
+  .larkin2-commit-row .larkin2-commit-meta { padding-top: 0; margin-bottom: 0; font-size: 9px; }
+  .larkin2-commit-row-main h3 { font-size: 28px; margin-bottom: 12px; }
+  .larkin2-commit-row-main p { font-size: 16px; }
   .larkin2-culture figure .larkin2-image { aspect-ratio: 1 / 1.08; }
   .larkin2-rule { margin-top: 48px; }
   .larkin2-signup { padding-top: 86px; padding-bottom: 96px; }
