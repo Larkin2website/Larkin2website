@@ -237,7 +237,7 @@
 }
 .larkin2-hero-media {
   position: absolute;
-  inset: 0 clamp(12px, 5.5vw, 90px) clamp(28px, 8vh, 86px);
+  inset: 0 clamp(12px, 5.5vw, 90px) 0;
   background: url('/larkin2-opportunities/images/bailey-studio.jpg') center / cover no-repeat;
   filter: saturate(.65) contrast(1.05);
   clip-path: ellipse(86% 88% at 50% 43%);
@@ -460,7 +460,7 @@
   .larkin2-mobile-contact a { color: var(--ink); white-space: nowrap; }
   .larkin2-hero-shell { min-height: 123svh; }
   .larkin2-hero-stage { min-height: 100svh; align-items: flex-end; padding: 128px 20px 92px; }
-  .larkin2-hero-media { inset: 0 8px 30px; background-position: 57% center; clip-path: ellipse(94% 86% at 50% 43%); }
+  .larkin2-hero-media { inset: 0 8px 0; background-position: 57% center; clip-path: ellipse(94% 86% at 50% 43%); }
   .larkin2-hero-shade { background: linear-gradient(90deg, rgba(8,10,12,.76), rgba(8,10,12,.24)), linear-gradient(0deg, rgba(8,10,12,.96), rgba(8,10,12,.18) 70%); }
   .larkin2-kicker { margin-bottom: 22px; font-size: 10px; }
   .larkin2-h1 { margin-bottom: 30px; font-size: 25vw; }
