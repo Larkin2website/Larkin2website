@@ -69,8 +69,10 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
       <LogoLink />
       <nav className="larkin2-nav" aria-label="Main navigation">
         <NavLink href="#paths" testId="link-opportunities">Opportunities</NavLink>
-        <MaskedLink href="#signup" testId="link-signup-nav">Sign up</MaskedLink>
+        <NavLink href="#commitments" testId="link-commitments">Commitments</NavLink>
+        <NavLink href="#about" testId="link-about">About</NavLink>
       </nav>
+      <MaskedLink href="#signup" className="larkin2-header-cta" testId="link-signup-nav">Sign up</MaskedLink>
       <button
         ref={menuButtonRef}
         type="button"

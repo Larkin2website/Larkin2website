@@ -132,9 +132,9 @@
   top: 0;
   right: 0;
   left: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 26px clamp(20px, 4vw, 64px);
   border-bottom: 1px solid transparent;
   font-size: 11px;
@@ -157,7 +157,13 @@
   text-transform: none;
 }
 .larkin2-mark > span { margin-left: 2px; color: var(--orange); }
-.larkin2-nav { display: flex; align-items: center; gap: 28px; }
+.larkin2-nav {
+  display: flex;
+  grid-column: 2;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(24px, 3vw, 48px);
+}
 .larkin2-nav-link {
   position: relative;
   color: var(--secondary);
@@ -173,6 +179,31 @@
   content: "";
 }
 .larkin2-nav-link:hover { color: var(--ink); }
+.larkin2-top .larkin2-header-cta {
+  grid-column: 3;
+  justify-self: end;
+  min-height: 40px;
+  margin-top: 0;
+  padding: 11px 18px;
+  border: 1px solid rgba(244,241,237,.5);
+  border-radius: 999px;
+  background: rgba(244,241,237,.94);
+  color: #080a0c;
+  transition: background-color .3s ease, border-color .3s ease, color .3s ease;
+}
+.larkin2-top .larkin2-header-cta::before {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orange);
+  content: "";
+}
+.larkin2-top .larkin2-header-cta:hover,
+.larkin2-top .larkin2-header-cta:focus-visible {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: #080a0c;
+}
 .larkin2-menu-toggle { display: none; }
 
 .larkin2-link {
@@ -869,9 +900,13 @@
 @keyframes larkin2-blink { 50% { opacity: .25; } }
 
 @media (max-width: 767px) {
-  .larkin2-top { padding: 20px 18px; }
+  .larkin2-top {
+    grid-template-columns: 1fr auto;
+    padding: 20px 18px;
+  }
   .larkin2-nav { display: none; }
-  .larkin2-menu-toggle { display: inline-flex; align-items: center; gap: 9px; padding: 10px 0 10px 10px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+  .larkin2-header-cta { display: none; }
+  .larkin2-menu-toggle { display: inline-flex; grid-column: 2; justify-self: end; align-items: center; gap: 9px; padding: 10px 0 10px 10px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
   .larkin2-menu-toggle i { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
   .larkin2-mobile-menu { position: fixed; z-index: 35; inset: 0; display: flex; flex-direction: column; padding: 21px 18px 25px; background: var(--stage); transform: translateX(100%); transition: transform .8s var(--ease-cinematic); visibility: hidden; }
   .larkin2-mobile-menu.is-open { transform: translateX(0); visibility: visible; }
