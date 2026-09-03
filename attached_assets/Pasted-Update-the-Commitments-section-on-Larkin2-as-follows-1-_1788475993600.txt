@@ -1,0 +1,35 @@
+Update the **Commitments section on Larkin2** as follows:
+
+1. Revert the section to its original background colour from before the latest design change. Retrieve and reuse the original colour value from the existing theme or previous code. Do not introduce a new background colour.
+
+2. Adapt the text styling to work with the restored background:
+
+   * Ensure strong, accessible contrast.
+   * Adjust text colour, size, width, spacing and line breaks where necessary.
+   * Preserve the existing wording and content.
+   * Keep the typography consistent with the rest of the Larkin2 website.
+
+3. Give every commitment its own unique and relevant image. Each image must belong exclusively to its corresponding commitment. Do not reuse one image across multiple commitments.
+
+4. Present every commitment as an individual card or panel containing:
+
+   * The commitment title
+   * Its supporting text
+   * Its corresponding image
+
+5. Implement a scroll-based stacking effect:
+
+   * Display the commitments in a vertical sequence.
+   * As the user scrolls, each new commitment card should move upward and stack over the previous card.
+   * Use `position: sticky` with progressively increasing `z-index` values.
+   * Keep the movement smooth and controlled.
+   * Prevent cards from jumping, flickering or leaving unwanted gaps.
+   * The final card should remain visible until the user scrolls into the next section.
+
+6. Ensure each card has a consistent size, border radius, spacing and image treatment. Images should use `object-fit: cover` and must not appear stretched or distorted.
+
+7. Make the stacking interaction fully responsive. On smaller screens, reduce card dimensions and spacing while keeping the image, title and text readable. If overlapping causes usability problems on mobile, preserve the sticky sequence but reduce the amount of overlap.
+
+8. Respect `prefers-reduced-motion` by displaying the commitments as a normal vertical list when reduced motion is enabled.
+
+Do not change unrelated sections, navigation, fonts, content or global colours. The result should feel like a polished, intentional scroll sequence within the existing Larkin2 design system.

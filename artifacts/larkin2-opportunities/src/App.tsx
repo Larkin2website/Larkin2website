@@ -16,11 +16,11 @@ const paths = [
 ] as const;
 
 const commitments = [
-  ["01", "Every placement on this site is paid.", "Work experience, shadowing, crew roles: all of it. We do not run unpaid placements."],
-  ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts."],
-  ["03", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time."],
-  ["04", "We cannot give individual feedback.", "Application volumes are high enough that personal responses to everyone are not realistic. It is not a reflection of your application."],
-  ["05", "We do not accept speculative CVs.", "Sign up instead and we will tell you the moment something opens."],
+  ["01", "Every placement on this site is paid.", "Work experience, shadowing, crew roles: all of it. We do not run unpaid placements.", "larkin2-commitment-paid.jpg"],
+  ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts.", "larkin2-commitment-open.jpg"],
+  ["03", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time.", "larkin2-commitment-dates.jpg"],
+  ["04", "We cannot give individual feedback.", "Application volumes are high enough that personal responses to everyone are not realistic. It is not a reflection of your application.", "larkin2-commitment-feedback.jpg"],
+  ["05", "We do not accept speculative CVs.", "Sign up instead and we will tell you the moment something opens.", "larkin2-commitment-alerts.jpg"],
 ] as const;
 
 type MaskedLinkProps = {
@@ -354,28 +354,27 @@ function Home() {
               <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-commitments-signup">Sign up for updates</MaskedLink>
             </div>
           </div>
-          <div className="larkin2-commit-index">
-            <div className="larkin2-commit-featured larkin2-reveal" data-reveal data-testid={`item-commitment-${commitments[0][0]}`}>
-              <div className="larkin2-commit-featured-media">
-                <img src="/larkin2-opportunities/images/bailey-craft.jpg" alt="Production craft detail" loading="lazy" />
-              </div>
-              <div className="larkin2-commit-featured-content">
-                <div className="larkin2-commit-meta">Commitment / {commitments[0][0]}</div>
-                <h3>{commitments[0][1]}</h3>
-                <p>{commitments[0][2]}</p>
-              </div>
-            </div>
-            <div className="larkin2-commit-list">
-              {commitments.slice(1).map(([num, title, copy], index) => (
-                <div className="larkin2-commit-row larkin2-reveal" data-reveal key={num} style={{ "--reveal-delay": `${index * 70}ms` } as CSSProperties} data-testid={`item-commitment-${num}`}>
-                  <div className="larkin2-commit-meta">Commitment / {num}</div>
-                  <div className="larkin2-commit-row-main">
+          <div className="larkin2-commit-stack">
+            {commitments.map(([num, title, copy, img], index) => (
+              <article 
+                className="larkin2-commit-card larkin2-reveal" 
+                data-reveal 
+                key={num} 
+                style={{ "--card-index": index, "--reveal-delay": `${index * 70}ms` } as CSSProperties} 
+                data-testid={`item-commitment-${num}`}
+              >
+                <div className="larkin2-commit-card-inner">
+                  <div className="larkin2-commit-card-content">
+                    <div className="larkin2-commit-meta">Commitment / {num}</div>
                     <h3>{title}</h3>
                     <p>{copy}</p>
                   </div>
+                  <div className="larkin2-commit-card-media">
+                    <img src={`/larkin2-opportunities/images/${img}`} alt="" loading="lazy" />
+                  </div>
                 </div>
-              ))}
-            </div>
+              </article>
+            ))}
           </div>
         </section>
 
