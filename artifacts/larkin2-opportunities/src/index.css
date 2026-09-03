@@ -419,6 +419,7 @@
   color: var(--paper-ink);
   border-top: 1px solid rgba(29,32,32,.19);
   position: relative;
+  padding-bottom: 0;
 }
 .larkin2-paths::before {
   content: "";
