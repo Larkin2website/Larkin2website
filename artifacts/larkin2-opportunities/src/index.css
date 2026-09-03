@@ -401,6 +401,7 @@
   color: var(--paper-ink);
   border-top: 1px solid rgba(29,32,32,.19);
   position: relative;
+  padding-bottom: clamp(48px, 6vw, 88px);
 }
 .larkin2-commit::before {
   content: "";
