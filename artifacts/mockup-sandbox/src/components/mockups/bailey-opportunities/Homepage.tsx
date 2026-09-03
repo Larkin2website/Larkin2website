@@ -191,7 +191,7 @@ export function Homepage() {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <main className="bailey-page">
+    <main className="bailey-page" style={{ "--red": "#f26b32" } as CSSProperties}>
       {introVisible && <IntroOverlay onComplete={finishIntro} />}
       <a className="bailey-skip" href="#content">Skip to content</a>
 
