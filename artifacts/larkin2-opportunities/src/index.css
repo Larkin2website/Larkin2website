@@ -395,6 +395,21 @@
 .larkin2-image-caption { display: flex; justify-content: space-between; gap: 20px; margin-top: 12px; color: var(--muted); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
 .larkin2-production { background: var(--stage); padding-top: clamp(20px, 4vh, 60px); }
 .larkin2-production figure { margin: clamp(70px, 10vw, 145px) 0 0; }
+.larkin2-production .larkin2-link {
+  min-height: 46px;
+  padding: 14px 20px;
+  border: 1px solid var(--orange);
+  border-radius: 999px;
+  background: var(--orange);
+  color: #080a0c;
+  transition: background-color .3s ease, border-color .3s ease, color .3s ease;
+}
+.larkin2-production .larkin2-link:hover,
+.larkin2-production .larkin2-link:focus-visible {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #080a0c;
+}
 
 .larkin2-commit {
   background: var(--paper);
