@@ -1,7 +1,4 @@
 import { FormEvent, type CSSProperties, useEffect, useRef, useState } from "react";
-import Lenis from "lenis";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./_group.css";
 
 const paths = [
@@ -84,7 +81,6 @@ export function Homepage() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuPanelRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
-  const heroShellRef = useRef<HTMLElement>(null);
   const lastScrollY = useRef(0);
 
   const finishIntro = () => {
@@ -133,67 +129,6 @@ export function Homepage() {
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [menuOpen]);
-
-  useEffect(() => {
-    const shell = heroShellRef.current;
-    const stage = shell?.querySelector<HTMLElement>(".bailey-hero-stage");
-    if (!shell || !stage) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const canvas = document.createElement("canvas");
-    const webglAvailable = Boolean(
-      canvas.getContext("webgl2") || canvas.getContext("webgl"),
-    );
-    shell.dataset.renderMode = webglAvailable ? "enhanced" : "css";
-
-    if (reduced) {
-      stage.style.setProperty("--hero-progress", "1");
-      return;
-    }
-
-    gsap.registerPlugin(ScrollTrigger);
-    const lenis = new Lenis({
-      lerp: 0.12,
-      smoothWheel: true,
-      wheelMultiplier: 0.9,
-    });
-    const onLenisScroll = () => ScrollTrigger.update();
-    const onTick = (time: number) => lenis.raf(time * 1000);
-
-    lenis.on("scroll", onLenisScroll);
-    gsap.ticker.add(onTick);
-    gsap.ticker.lagSmoothing(0);
-
-    const context = gsap.context(() => {
-      gsap.to(stage, {
-        "--hero-progress": 1,
-        "--hero-scale": 1.22,
-        "--hero-crop": "8%",
-        "--hero-shade-opacity": 0.76,
-        "--hero-copy-opacity": 0,
-        "--hero-copy-y": "-34px",
-        "--hero-meta-opacity": 0.18,
-        ease: "none",
-        scrollTrigger: {
-          trigger: shell,
-          start: "top top",
-          end: () => `+=${Math.max(shell.offsetHeight - window.innerHeight, 1)}`,
-          scrub: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-    }, shell);
-
-    ScrollTrigger.refresh();
-    return () => {
-      context.revert();
-      gsap.ticker.remove(onTick);
-      gsap.ticker.lagSmoothing(500, 33);
-      lenis.off("scroll", onLenisScroll);
-      lenis.destroy();
-      delete shell.dataset.renderMode;
-    };
-  }, []);
 
   useEffect(() => {
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
@@ -314,7 +249,7 @@ export function Homepage() {
         </div>
       </aside>
 
-      <section ref={heroShellRef} className="bailey-hero-shell" id="top" aria-labelledby="hero-title">
+      <section className="bailey-hero-shell" id="top" aria-labelledby="hero-title">
         <div className="bailey-hero-stage">
           <div className="bailey-hero-media" role="img" aria-label="Film crew working with practical lights and camera equipment on a London production" />
           <div className="bailey-hero-shade" />
