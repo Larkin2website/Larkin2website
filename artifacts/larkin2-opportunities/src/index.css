@@ -468,6 +468,7 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 20px;
+  margin-inline: calc(clamp(20px, 7.5vw, 120px) * -1);
 }
 .larkin2-path {
   position: relative;
