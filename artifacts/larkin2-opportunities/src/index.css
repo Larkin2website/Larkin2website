@@ -771,12 +771,38 @@
   }
 }
 
-.larkin2-culture { padding-bottom: clamp(100px, 12vw, 170px); }
-.larkin2-culture .larkin2-grid { align-items: center; }
-.larkin2-culture figure {
-  margin: 0 calc(clamp(20px, 7.5vw, 120px) * -1) 0 0;
+.larkin2-culture {
+  padding: 0;
 }
-.larkin2-culture figure .larkin2-image { aspect-ratio: 1 / 1.1; }
+.larkin2-culture .larkin2-grid {
+  min-height: 100%;
+  align-items: stretch;
+  gap: clamp(44px, 9vw, 150px);
+  padding-left: clamp(20px, 7.5vw, 120px);
+}
+.larkin2-culture .larkin2-grid > div {
+  padding-block: clamp(90px, 12vw, 176px);
+}
+.larkin2-culture figure {
+  position: relative;
+  min-height: 100%;
+  margin: 0;
+}
+.larkin2-culture figure .larkin2-image {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+.larkin2-culture .larkin2-image-caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 12px 16px;
+  background: linear-gradient(transparent, rgba(8,10,12,.76));
+  color: var(--ink);
+}
 .larkin2-culture .larkin2-link {
   min-height: 46px;
   padding: 14px 20px;
@@ -909,8 +935,17 @@
   .larkin2-commit-row .larkin2-commit-meta { padding-top: 0; margin-bottom: 0; font-size: 9px; }
   .larkin2-commit-row-main h3 { font-size: 28px; margin-bottom: 12px; }
   .larkin2-commit-row-main p { font-size: 16px; }
-  .larkin2-culture figure .larkin2-image { aspect-ratio: 1 / 1.08; }
-  .larkin2-culture figure { margin-inline: -20px; }
+  .larkin2-culture .larkin2-grid {
+    gap: 0;
+    padding-left: 0;
+  }
+  .larkin2-culture .larkin2-grid > div {
+    padding: 80px 20px;
+  }
+  .larkin2-culture figure {
+    min-height: 480px;
+    margin: 0;
+  }
   .larkin2-rule { margin-top: 48px; }
   .larkin2-signup { padding-top: 86px; padding-bottom: 96px; }
   .larkin2-signup .larkin2-title { font-size: clamp(50px, 14vw, 68px); }
