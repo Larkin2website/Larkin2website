@@ -172,7 +172,7 @@ export function Home() {
                   <div className="larkin2-hero-left">
                     <h1 className="larkin2-h1" id="hero-title">
                       <span className="larkin2-mask">
-                        <span>Larkin2<span className="larkin2-hero-title-dot" aria-hidden="true" /></span>
+                        <span className="larkin2-hero-wordmark">Larkin2<span className="larkin2-hero-title-dot" aria-hidden="true" /></span>
                       </span>
                     </h1>
                     <div className="larkin2-sub larkin2-mask"><span>Roles &amp; Opportunities</span></div>

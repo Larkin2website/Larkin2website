@@ -357,14 +357,20 @@
   letter-spacing: -.1em;
   line-height: .76;
 }
-.larkin2-hero-title-dot {
+.larkin2-mask > .larkin2-hero-wordmark {
+  position: relative;
   display: inline-block;
-  width: .075em;
-  height: .075em;
-  margin-left: .045em;
+  width: auto;
+  padding-right: .17em;
+}
+.larkin2-hero-title-dot {
+  position: absolute;
+  right: .025em;
+  bottom: .055em;
+  width: .105em;
+  height: .105em;
   border-radius: 50%;
   background: var(--orange);
-  vertical-align: .08em;
   animation: larkin2-blink 1s steps(2, start) infinite;
 }
 .larkin2-sub {
