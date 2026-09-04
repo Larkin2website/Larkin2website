@@ -69,7 +69,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
     cardTitle: "Already directing, want to move into HETV",
     cardCopy: "A paid six-week placement across prep, shoot and post for freelance directors with a qualifying screen credit.",
     cardCta: "Learn about the Director Pathway",
-    image: "bailey-craft.jpg",
+    image: "director-pathway-control-room.webp",
     title: "Creative Leadership Shadowing Programme: Director Pathway",
     shortDescription: "A development programme for experienced directors transitioning into High-End Television (HETV) drama through extended shadowing on a 60Forty Films production.",
     applicationStatus: "Closed",
