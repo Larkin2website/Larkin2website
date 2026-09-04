@@ -203,7 +203,6 @@ export function Home() {
         <section className="larkin2-section larkin2-production" aria-labelledby="production-title">
           <div className="larkin2-section-intro larkin2-reveal" data-reveal>
             <div>
-              <div className="larkin2-eyebrow">The production / 01</div>
               <h2 className="larkin2-title" id="production-title"><span className="larkin2-mask"><span>One place, and it is the real one</span></span></h2>
             </div>
             <div className="larkin2-copy">
@@ -219,7 +218,6 @@ export function Home() {
         <section className="larkin2-section larkin2-paths" id="paths" aria-labelledby="paths-title">
           <div className="larkin2-paths-header larkin2-reveal" data-reveal>
             <div className="larkin2-paths-intro">
-              <div className="larkin2-eyebrow">Find your way in / 02</div>
               <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Three ways in, depending on where you are starting</span></span></h2>
               <p className="larkin2-small">Not everyone arrives from the same place, so we run separate routes. Find the one that matches where you are now.</p>
             </div>
@@ -260,7 +258,6 @@ export function Home() {
         <section className="larkin2-section larkin2-commit" id="commitments" aria-labelledby="commit-title">
           <div className="larkin2-commit-header">
             <div className="larkin2-commit-header-text">
-              <div className="larkin2-eyebrow larkin2-reveal" data-reveal>The candid commitments / 03</div>
               <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>What we’ll tell you straight</span></span></h2>
               <p className="larkin2-small larkin2-reveal" data-reveal>Uncertainty is one of the reasons people give up on this industry before they start. So here is what we commit to before you apply.</p>
             </div>
@@ -295,7 +292,6 @@ export function Home() {
         <section className="larkin2-section larkin2-culture" aria-labelledby="culture-title">
           <div className="larkin2-grid">
             <div className="larkin2-reveal" data-reveal>
-              <div className="larkin2-eyebrow">Production &amp; culture / 04</div>
               <h2 className="larkin2-title" id="culture-title"><span className="larkin2-mask"><span>Who gets to work here</span></span></h2>
               <p className="larkin2-copy">We believe everyone should have the opportunity to work in film and television, regardless of background, experience level, or personal circumstances.</p>
               <MaskedLink href="#paths" testId="link-culture-opportunities">Explore opportunities</MaskedLink>
@@ -311,7 +307,6 @@ export function Home() {
         <section className="larkin2-section larkin2-about" id="about" aria-labelledby="about-title">
           <div className="larkin2-grid">
             <div className="larkin2-reveal" data-reveal>
-              <div className="larkin2-eyebrow">About Larkin2 Opportunities / 05</div>
               <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>The official home for the work behind Larkin2.</span></span></h2>
             </div>
             <div className="larkin2-copy larkin2-reveal" data-reveal>
@@ -328,7 +323,6 @@ export function Home() {
         <section className="larkin2-section larkin2-signup" id="signup" aria-labelledby="signup-title">
           <div className="larkin2-signup-layout larkin2-reveal" data-reveal>
             <div>
-              <div className="larkin2-eyebrow">Stay close / 06</div>
               <h2 className="larkin2-title" id="signup-title"><span className="larkin2-mask"><span>Nothing open right now that fits?</span></span></h2>
             </div>
             <div>
