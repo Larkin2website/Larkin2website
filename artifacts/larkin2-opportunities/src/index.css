@@ -298,7 +298,7 @@
 .larkin2-hero-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(8,10,12,.68), rgba(8,10,12,.3) 52%, rgba(8,10,12,.1)), linear-gradient(0deg, rgba(8,10,12,.78), rgba(8,10,12,.12) 45%, rgba(8,10,12,.2));
+  background: linear-gradient(90deg, rgba(8,10,12,.58), rgba(8,10,12,.22) 52%, rgba(8,10,12,.07)), linear-gradient(0deg, rgba(8,10,12,.68), rgba(8,10,12,.08) 45%, rgba(8,10,12,.14));
 }
 .larkin2-hero-shade::after {
   position: absolute;
@@ -1114,7 +1114,7 @@
       round calc(var(--hero-progress) * 16px)
     );
   }
-  .larkin2-hero-shade { background: linear-gradient(90deg, rgba(8,10,12,.62), rgba(8,10,12,.16)), linear-gradient(0deg, rgba(8,10,12,.78), rgba(8,10,12,.1) 70%); }
+  .larkin2-hero-shade { background: linear-gradient(90deg, rgba(8,10,12,.54), rgba(8,10,12,.12)), linear-gradient(0deg, rgba(8,10,12,.68), rgba(8,10,12,.07) 70%); }
   .larkin2-hero-content-wrap {
     position: absolute;
     inset: 108px 20px 78px;
