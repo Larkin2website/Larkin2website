@@ -29,8 +29,8 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
       onComplete();
       return;
     }
-    const timer = window.setTimeout(onComplete, 2900);
-    const safeTimer = window.setTimeout(onComplete, 3800);
+    const timer = window.setTimeout(onComplete, 3090);
+    const safeTimer = window.setTimeout(onComplete, 4000);
     return () => {
       window.clearTimeout(timer);
       window.clearTimeout(safeTimer);
@@ -82,10 +82,15 @@ export function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
-  const [introVisible, setIntroVisible] = useState(false);
+  const [introVisible, setIntroVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const previewMode = new URLSearchParams(window.location.search).has("no-intro");
+    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches && !previewMode;
+  });
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const heroTrackRef = useRef<HTMLElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const lastScrollY = useRef(0);
 
   const paths = Object.values(OPPORTUNITIES);
@@ -95,15 +100,6 @@ export function Home() {
   }, []);
 
   useEffect(() => {
-    let reduced = false;
-    const previewMode = new URLSearchParams(window.location.search).has("no-intro");
-    try {
-      reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    } catch {
-      reduced = false;
-    }
-    if (!reduced && !previewMode) setIntroVisible(true);
-    
     // Reset document title and meta description on home page mount
     document.title = "Larkin2 Opportunities";
     const metaDesc = document.querySelector('meta[name="description"]');
@@ -111,6 +107,23 @@ export function Home() {
       metaDesc.setAttribute("content", "Official production opportunities for Larkin2. Your central hub for jobs, training and development.");
     }
   }, []);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    if (introVisible) {
+      video.pause();
+      video.currentTime = 0;
+      return;
+    }
+
+    video.currentTime = 0;
+    const playback = video.play();
+    if (playback) playback.catch(() => {
+      // The poster remains visible if the browser blocks autoplay.
+    });
+  }, [introVisible]);
 
   useEffect(() => {
     let frame = 0;
@@ -191,8 +204,8 @@ export function Home() {
           <div className="larkin2-hero-stage">
             <div className="larkin2-hero-media-wrap">
               <video
+                ref={heroVideoRef}
                 className="larkin2-hero-media"
-                autoPlay
                 loop
                 muted
                 playsInline

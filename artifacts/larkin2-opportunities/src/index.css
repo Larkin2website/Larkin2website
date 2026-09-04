@@ -929,7 +929,9 @@
   inset: 0;
   overflow: hidden;
   color: var(--ink);
-  animation: larkin2-intro-release .01s 2.86s linear forwards;
+  animation:
+    larkin2-intro-overlay-fade .28s 2.8s ease forwards,
+    larkin2-intro-release .01s 3.08s linear forwards;
 }
 .larkin2-intro-bg {
   position: absolute;
@@ -1064,6 +1066,9 @@
 @keyframes larkin2-intro-brand-out {
   to { opacity: 0; transform: translateY(-8px); }
 }
+@keyframes larkin2-intro-overlay-fade {
+  to { opacity: 0; }
+}
 @keyframes larkin2-intro-release {
   to { visibility: hidden; pointer-events: none; }
 }
@@ -1099,7 +1104,7 @@
     transform: translateY(calc(var(--hero-progress) * 4svh));
   }
   .larkin2-hero-media {
-    inset: 0 8px 0;
+    inset: 0;
     background-position: 57% center;
     clip-path: inset(
       calc(var(--hero-progress) * 12svh) 
