@@ -349,7 +349,7 @@ export function Home() {
               <p className="larkin2-rule larkin2-small">We work with training providers, community organisations and regional talent networks to reach people who might not otherwise hear about opportunities like these. On set and in the office, we expect respect, collaboration and genuine support.</p>
             </div>
             <figure className="larkin2-media-reveal" data-reveal>
-              <img className="larkin2-image" src="/larkin2-opportunities/images/bailey-crew.jpg" width="1200" height="1320" loading="lazy" alt="Film crew gathered around a monitor on a soundstage" data-testid="img-culture-crew" />
+              <img className="larkin2-image" src="/larkin2-opportunities/images/culture-camera-operator.webp" width="1800" height="1162" loading="lazy" alt="Camera operator monitoring multiple screens on a soundstage" data-testid="img-culture-crew" />
               <figcaption className="larkin2-image-caption"><span>On set / Larkin2</span><span>Production &amp; culture</span></figcaption>
             </figure>
           </div>
