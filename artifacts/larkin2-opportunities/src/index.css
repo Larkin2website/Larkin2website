@@ -515,7 +515,7 @@
   margin-bottom: clamp(60px, 8vw, 100px);
 }
 .larkin2-role-status {
-  align-self: start;
+  align-self: end;
   background: rgba(255,255,255,.28);
   border: 1px solid rgba(29,32,32,.18);
   padding: 35px 40px 22px;
