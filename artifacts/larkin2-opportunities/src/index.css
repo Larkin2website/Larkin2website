@@ -313,7 +313,26 @@
   opacity: calc(1 - (var(--hero-progress) * 1.6));
   will-change: transform, opacity;
 }
-.larkin2-hero-content { position: relative; max-width: 1050px; }
+.larkin2-hero-content { position: relative; width: 100%; }
+.larkin2-hero-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: clamp(40px, 6vw, 120px);
+}
+.larkin2-hero-left {
+  flex: 1 1 auto;
+}
+.larkin2-hero-right {
+  flex: 0 1 400px;
+  padding-bottom: 15px; /* align supporting sentence slightly above the subheading bottom */
+}
+.larkin2-hero-actions-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(40px, 6vh, 90px); /* Push buttons to lower middle */
+  padding-bottom: clamp(30px, 4vh, 60px); /* Clear the absolute-positioned metadata */
+}
 .larkin2-kicker, .larkin2-eyebrow {
   color: var(--orange);
   font-size: 11px;
@@ -347,7 +366,9 @@
   line-height: 1;
 }
 .larkin2-intro { max-width: 390px; margin: 0; color: var(--secondary); font-size: 16px; line-height: 1.55; }
-.larkin2-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 32px; }
+.larkin2-actions { display: flex; flex-wrap: wrap; gap: 11px; }
+.larkin2-about .larkin2-actions { margin-top: 32px; }
+.larkin2-hero-actions-wrap .larkin2-actions { margin-top: 0; justify-content: center; }
 .larkin2-hero-meta-wrap {
   position: absolute;
   z-index: 1;
@@ -912,7 +933,10 @@
   .larkin2-mobile-contact a { color: var(--ink); white-space: nowrap; }
   .larkin2-hero-track { height: 180svh; }
   #content { margin-top: -18svh; }
-  .larkin2-hero-stage { align-items: flex-end; padding: 128px 20px 92px; }
+  .larkin2-hero-stage {
+    align-items: stretch;
+    padding: 0;
+  }
   .larkin2-hero-media-wrap {
     transform: translateY(calc(var(--hero-progress) * 4svh));
   }
@@ -928,11 +952,26 @@
     );
   }
   .larkin2-hero-shade { background: linear-gradient(90deg, rgba(8,10,12,.76), rgba(8,10,12,.24)), linear-gradient(0deg, rgba(8,10,12,.96), rgba(8,10,12,.18) 70%); }
-  .larkin2-kicker { margin-bottom: 22px; font-size: 10px; }
-  .larkin2-h1 { margin-bottom: 30px; font-size: 25vw; }
-  .larkin2-sub { font-size: 28px; }
+  .larkin2-hero-content-wrap {
+    position: absolute;
+    inset: 108px 20px 78px;
+    width: auto;
+  }
+  .larkin2-hero-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .larkin2-hero-split { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 18px; }
+  .larkin2-hero-left { flex: none; }
+  .larkin2-hero-right { flex: none; padding-bottom: 0; }
+  .larkin2-hero-actions-wrap { margin-top: 30px; padding-bottom: 0; }
+  .larkin2-kicker { margin-bottom: 16px; font-size: 9px; }
+  .larkin2-h1 { margin-bottom: 18px; font-size: 24vw; }
+  .larkin2-sub { margin-bottom: 0; font-size: 27px; }
   .larkin2-intro { font-size: 15px; }
-  .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 28px; }
+  .larkin2-actions, .larkin2-hero-actions-wrap .larkin2-actions, .larkin2-about .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 0; }
+  .larkin2-hero-actions-wrap .larkin2-link { margin-top: 0; }
   .larkin2-btn { justify-content: center; width: 100%; }
   .larkin2-hero-meta-wrap { right: 20px; bottom: 31px; left: 20px; }
   .larkin2-hero-meta { justify-content: space-between; font-size: 9px; }

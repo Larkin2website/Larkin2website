@@ -168,14 +168,22 @@ export function Home() {
             <div className="larkin2-hero-shade" />
             <div className="larkin2-hero-content-wrap">
               <div className="larkin2-hero-content larkin2-reveal">
-                <div className="larkin2-kicker"><span className="larkin2-dot" /> Official opportunities / London</div>
-                <h1 className="larkin2-h1" id="hero-title"><span className="larkin2-mask"><span>Larkin2</span></span></h1>
-                <div className="larkin2-sub larkin2-mask"><span>Roles &amp; Opportunities</span></div>
-                <p className="larkin2-intro larkin2-mask"><span>Your central hub for jobs, training and development on Larkin2.</span></p>
-                <div className="larkin2-actions">
-                  <MaskedLink href="#roles" className="larkin2-btn" testId="link-hero-role-status">View current role status</MaskedLink>
-                  <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
-                  <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
+                <div className="larkin2-hero-split">
+                  <div className="larkin2-hero-left">
+                    <div className="larkin2-kicker"><span className="larkin2-dot" /> Official opportunities / London</div>
+                    <h1 className="larkin2-h1" id="hero-title"><span className="larkin2-mask"><span>Larkin2</span></span></h1>
+                    <div className="larkin2-sub larkin2-mask"><span>Roles &amp; Opportunities</span></div>
+                  </div>
+                  <div className="larkin2-hero-right">
+                    <p className="larkin2-intro larkin2-mask"><span>Your central hub for jobs, training and development on Larkin2.</span></p>
+                  </div>
+                </div>
+                <div className="larkin2-hero-actions-wrap">
+                  <div className="larkin2-actions">
+                    <MaskedLink href="#roles" className="larkin2-btn" testId="link-hero-role-status">View current role status</MaskedLink>
+                    <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
+                    <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
+                  </div>
                 </div>
               </div>
             </div>
