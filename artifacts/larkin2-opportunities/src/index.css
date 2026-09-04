@@ -927,67 +927,142 @@
   position: fixed;
   z-index: 60;
   inset: 0;
-  display: grid;
   overflow: hidden;
-  place-items: center;
   color: var(--ink);
-  animation: larkin2-intro-release .01s 1.88s linear forwards;
+  animation: larkin2-intro-release .01s 2.86s linear forwards;
 }
-.larkin2-intro-panel {
+.larkin2-intro-bg {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50.1%;
+  inset: 0;
   background: #000;
-  will-change: transform;
 }
-.larkin2-intro-panel-left {
-  left: 0;
-  transform-origin: left center;
-  animation: larkin2-intro-panel-left .82s 1.08s var(--ease-cinematic) forwards;
+.larkin2-intro-loading {
+  position: absolute;
+  z-index: 3;
+  top: calc(50% - min(116px, 21vw) - 38px);
+  left: 50%;
+  display: flex;
+  gap: 12px;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  animation: larkin2-intro-label-out .28s 1.7s ease forwards;
 }
-.larkin2-intro-panel-right {
-  right: 0;
-  transform-origin: right center;
-  animation: larkin2-intro-panel-right .82s 1.08s var(--ease-cinematic) forwards;
+.larkin2-intro-count-window {
+  overflow: hidden;
+  width: 34px;
+  height: 1.2em;
 }
-.larkin2-intro-wordmark {
-  position: relative;
-  z-index: 1;
+.larkin2-intro-count {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  animation: larkin2-intro-count 1.55s .25s steps(5, end) forwards;
+}
+.larkin2-intro-count > span {
+  flex: 0 0 1.2em;
+}
+.larkin2-intro-aperture {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+  width: min(448px, calc(100vw - 48px));
+  height: min(232px, 52vw);
+  background: #111;
+  transform: translate(-50%, -50%);
+  clip-path: inset(50%);
+  animation: larkin2-intro-aperture 2.82s var(--ease-cinematic) forwards;
+  will-change: width, height, clip-path;
+}
+.larkin2-intro-reel,
+.larkin2-intro-reel img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.larkin2-intro-reel img {
+  object-fit: cover;
+  filter: saturate(.72) contrast(1.04);
+  opacity: 0;
+  transform: translateY(104%);
+  animation: larkin2-intro-frame .62s calc(.34s + (var(--intro-frame) * .3s)) var(--ease-cinematic) both;
+}
+.larkin2-intro-reel .larkin2-intro-final-frame {
+  z-index: 5;
+  object-position: center;
+  animation: larkin2-intro-final-frame .5s 1.52s var(--ease-cinematic) forwards;
+}
+.larkin2-intro-corner {
+  position: absolute;
+  z-index: 7;
+  width: 18px;
+  height: 18px;
+  opacity: 0;
+  animation: larkin2-intro-corner-in .3s .58s ease forwards, larkin2-intro-corner-out .2s 1.82s ease forwards;
+}
+.larkin2-intro-corner.is-top-left { top: 10px; left: 10px; border-top: 1px solid #fff; border-left: 1px solid #fff; }
+.larkin2-intro-corner.is-top-right { top: 10px; right: 10px; border-top: 1px solid #fff; border-right: 1px solid #fff; }
+.larkin2-intro-corner.is-bottom-left { bottom: 10px; left: 10px; border-bottom: 1px solid #fff; border-left: 1px solid #fff; }
+.larkin2-intro-corner.is-bottom-right { right: 10px; bottom: 10px; border-right: 1px solid #fff; border-bottom: 1px solid #fff; }
+.larkin2-intro-brand {
+  position: absolute;
+  z-index: 4;
+  bottom: 24px;
+  left: 24px;
   display: flex;
   align-items: baseline;
-  gap: .09em;
+  gap: 3px;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(28px, 3.8vw, 58px);
-  letter-spacing: -.065em;
+  font-size: 18px;
+  letter-spacing: -.05em;
   opacity: 0;
-  transform: translateY(12px);
-  animation:
-    larkin2-intro-mark-in .48s .14s var(--ease-cinematic) forwards,
-    larkin2-intro-mark-out .32s .86s ease-in forwards;
+  animation: larkin2-intro-brand-in .35s .15s ease forwards, larkin2-intro-brand-out .25s 1.82s ease forwards;
 }
-.larkin2-intro-wordmark i {
-  width: .13em;
-  height: .13em;
+.larkin2-intro-brand i {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--orange);
-  transform: translateY(-.02em);
-  animation: larkin2-blink .7s steps(2, start) infinite;
 }
 
 @keyframes larkin2-hero-settle { from { opacity: .6; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
 @keyframes larkin2-hero-enter { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes larkin2-intro-mark-in {
-  to { opacity: 1; transform: translateY(0); }
+@keyframes larkin2-intro-count {
+  to { transform: translateY(-6em); }
 }
-@keyframes larkin2-intro-mark-out {
+@keyframes larkin2-intro-label-out {
+  to { opacity: 0; transform: translate(-50%, -8px); }
+}
+@keyframes larkin2-intro-aperture {
+  0%, 10% { clip-path: inset(50%); }
+  24%, 66% { width: min(448px, calc(100vw - 48px)); height: min(232px, 52vw); clip-path: inset(0); }
+  100% { width: 100vw; height: 100svh; clip-path: inset(0); }
+}
+@keyframes larkin2-intro-frame {
+  0% { opacity: 1; transform: translateY(104%); }
+  30%, 68% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(-104%); }
+}
+@keyframes larkin2-intro-final-frame {
+  0% { opacity: 1; transform: translateY(104%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes larkin2-intro-corner-in {
+  to { opacity: .9; }
+}
+@keyframes larkin2-intro-corner-out {
+  to { opacity: 0; }
+}
+@keyframes larkin2-intro-brand-in {
+  to { opacity: 1; }
+}
+@keyframes larkin2-intro-brand-out {
   to { opacity: 0; transform: translateY(-8px); }
-}
-@keyframes larkin2-intro-panel-left {
-  to { transform: translateX(-100%); }
-}
-@keyframes larkin2-intro-panel-right {
-  to { transform: translateX(100%); }
 }
 @keyframes larkin2-intro-release {
   to { visibility: hidden; pointer-events: none; }

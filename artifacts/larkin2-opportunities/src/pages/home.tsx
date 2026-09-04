@@ -11,6 +11,13 @@ const commitments = [
 ] as const;
 
 function IntroOverlay({ onComplete }: { onComplete: () => void }) {
+  const introFrames = [
+    "bailey-craft.jpg",
+    "larkin2-commitment-open.jpg",
+    "bailey-crew.jpg",
+    "larkin2-commitment-paid.jpg",
+  ];
+
   useEffect(() => {
     let reduced = false;
     try {
@@ -22,8 +29,8 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
       onComplete();
       return;
     }
-    const timer = window.setTimeout(onComplete, 1900);
-    const safeTimer = window.setTimeout(onComplete, 2800);
+    const timer = window.setTimeout(onComplete, 2900);
+    const safeTimer = window.setTimeout(onComplete, 3800);
     return () => {
       window.clearTimeout(timer);
       window.clearTimeout(safeTimer);
@@ -32,10 +39,38 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="larkin2-intro-overlay" role="status" aria-label="Larkin2 loading" data-testid="status-intro">
-      <div className="larkin2-intro-panel larkin2-intro-panel-left" aria-hidden="true" />
-      <div className="larkin2-intro-panel larkin2-intro-panel-right" aria-hidden="true" />
-      <div className="larkin2-intro-wordmark">
-        <span>Larkin2</span><i aria-hidden="true" />
+      <div className="larkin2-intro-bg" aria-hidden="true" />
+      <div className="larkin2-intro-loading" aria-hidden="true">
+        <span>Loading</span>
+        <span className="larkin2-intro-count-window">
+          <span className="larkin2-intro-count">
+            <span>00</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
+          </span>
+        </span>
+      </div>
+      <div className="larkin2-intro-aperture" aria-hidden="true">
+        <div className="larkin2-intro-reel">
+          {introFrames.map((frame, index) => (
+            <img
+              key={frame}
+              src={`/larkin2-opportunities/images/${frame}`}
+              alt=""
+              style={{ "--intro-frame": index } as CSSProperties}
+            />
+          ))}
+          <img
+            className="larkin2-intro-final-frame"
+            src="/larkin2-opportunities/videos/hero-poster.webp"
+            alt=""
+          />
+        </div>
+        <span className="larkin2-intro-corner is-top-left" />
+        <span className="larkin2-intro-corner is-top-right" />
+        <span className="larkin2-intro-corner is-bottom-left" />
+        <span className="larkin2-intro-corner is-bottom-right" />
+      </div>
+      <div className="larkin2-intro-brand" aria-hidden="true">
+        <span>Larkin2</span><i />
       </div>
     </div>
   );
@@ -57,7 +92,7 @@ export function Home() {
 
   const finishIntro = useCallback(() => {
     try {
-      window.sessionStorage.setItem("larkin2-intro-seen-v2", "true");
+      window.sessionStorage.setItem("larkin2-intro-seen-v3", "true");
     } catch {
       // Session storage may be unavailable in privacy-restricted previews.
     }
@@ -69,7 +104,7 @@ export function Home() {
     let reduced = false;
     const previewMode = new URLSearchParams(window.location.search).has("no-intro");
     try {
-      seen = window.sessionStorage.getItem("larkin2-intro-seen-v2") === "true";
+      seen = window.sessionStorage.getItem("larkin2-intro-seen-v3") === "true";
       reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     } catch {
       seen = false;
