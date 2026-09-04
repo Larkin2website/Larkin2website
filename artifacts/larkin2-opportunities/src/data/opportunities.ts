@@ -24,7 +24,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
     cardTitle: "Never worked in film or TV",
     cardCopy: "Three days of training, a paid production placement and six months of alumni masterclasses. No experience or industry contacts required.",
     cardCta: "Learn about First Credit",
-    image: "bailey-studio.jpg",
+    image: "first-credit-camera.webp",
     title: "First Credit Work Experience",
     shortDescription: "The First Credit Work Experience Programme provides individuals with little or no industry access an entry point into Film & Television. The initiative supports graduates, school leavers, and career changers by combining structured training with practical, on-set experience on a High-End Television (HETV) drama production.",
     applicationStatus: "Closed",
