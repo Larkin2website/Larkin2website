@@ -22,8 +22,8 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
       onComplete();
       return;
     }
-    const timer = window.setTimeout(onComplete, 1450);
-    const safeTimer = window.setTimeout(onComplete, 2400);
+    const timer = window.setTimeout(onComplete, 1900);
+    const safeTimer = window.setTimeout(onComplete, 2800);
     return () => {
       window.clearTimeout(timer);
       window.clearTimeout(safeTimer);
@@ -32,11 +32,10 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="larkin2-intro-overlay" role="status" aria-label="Larkin2 loading" data-testid="status-intro">
+      <div className="larkin2-intro-panel larkin2-intro-panel-left" aria-hidden="true" />
+      <div className="larkin2-intro-panel larkin2-intro-panel-right" aria-hidden="true" />
       <div className="larkin2-intro-wordmark">
-        <span>Larkin2</span><i aria-hidden="true" /><span>Opportunities</span>
-      </div>
-      <div className="larkin2-intro-foot">
-        <span>Official production opportunities</span><span>London</span>
+        <span>Larkin2</span><i aria-hidden="true" />
       </div>
     </div>
   );
@@ -58,7 +57,7 @@ export function Home() {
 
   const finishIntro = useCallback(() => {
     try {
-      window.sessionStorage.setItem("larkin2-intro-seen", "true");
+      window.sessionStorage.setItem("larkin2-intro-seen-v2", "true");
     } catch {
       // Session storage may be unavailable in privacy-restricted previews.
     }
@@ -70,7 +69,7 @@ export function Home() {
     let reduced = false;
     const previewMode = new URLSearchParams(window.location.search).has("no-intro");
     try {
-      seen = window.sessionStorage.getItem("larkin2-intro-seen") === "true";
+      seen = window.sessionStorage.getItem("larkin2-intro-seen-v2") === "true";
       reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     } catch {
       seen = false;
