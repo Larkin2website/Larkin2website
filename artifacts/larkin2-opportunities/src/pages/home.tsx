@@ -3,7 +3,7 @@ import { OPPORTUNITIES } from "../data/opportunities";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 
 const commitments = [
-  ["01", "Every placement on this site is paid.", "Work experience, shadowing, crew roles: all of it. We do not run unpaid placements.", "larkin2-commitment-paid.jpg"],
+  ["01", "Every placement on this site is paid.", "Work experience, shadowing, crew roles: all of it. We do not run unpaid placements.", "commitment-paid-camera-crew.webp"],
   ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts.", "larkin2-commitment-open.jpg"],
   ["03", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time.", "larkin2-commitment-dates.jpg"],
   ["04", "We cannot give individual feedback.", "Application volumes are high enough that personal responses to everyone are not realistic. It is not a reflection of your application.", "larkin2-commitment-feedback.jpg"],
