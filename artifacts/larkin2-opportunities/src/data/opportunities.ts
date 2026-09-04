@@ -115,7 +115,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
     cardTitle: "Already producing, want to move into HETV",
     cardCopy: "A paid placement of up to fourteen weeks across prep, production and post for experienced freelance producers.",
     cardCta: "Learn about the Producer Pathway",
-    image: "bailey-crew.jpg",
+    image: "producer-pathway-monitor.webp",
     title: "Creative Leadership Shadowing Programme: Producer Pathway",
     shortDescription: "A shadowing programme for experienced producers seeking to progress into High-End Television (HETV) drama through an extended, paid placement on Season 2 of a 60Forty Films production.",
     applicationStatus: "Closed",
