@@ -7,7 +7,7 @@ const commitments = [
   ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts.", "commitment-open-camera.webp"],
   ["03", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time.", "commitment-dates-calendar.webp"],
   ["04", "We cannot give individual feedback.", "Application volumes are high enough that personal responses to everyone are not realistic. It is not a reflection of your application.", "larkin2-commitment-feedback.jpg"],
-  ["05", "We do not accept speculative CVs.", "Sign up instead and we will tell you the moment something opens.", "larkin2-commitment-alerts.jpg"],
+  ["05", "We do not accept speculative CVs.", "Sign up instead and we will tell you the moment something opens.", "commitment-alerts-slate.webp"],
 ] as const;
 
 function IntroOverlay({ onComplete }: { onComplete: () => void }) {
