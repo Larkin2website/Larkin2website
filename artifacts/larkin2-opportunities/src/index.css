@@ -352,7 +352,7 @@
   max-width: 1100px;
   margin: 0 0 28px;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(72px, 13vw, 190px);
+  font-size: clamp(64px, 8.5vw, 128px);
   font-weight: 400;
   letter-spacing: -.1em;
   line-height: .76;
@@ -978,7 +978,7 @@
   .larkin2-hero-right { flex: none; padding-bottom: 0; }
   .larkin2-hero-actions-wrap { margin-top: 30px; padding-bottom: 0; }
   .larkin2-kicker { margin-bottom: 16px; font-size: 9px; }
-  .larkin2-h1 { margin-bottom: 18px; font-size: 21vw; }
+  .larkin2-h1 { margin-bottom: 18px; font-size: 17vw; }
   .larkin2-sub { margin-bottom: 0; font-size: 27px; }
   .larkin2-intro { font-size: 15px; }
   .larkin2-actions, .larkin2-hero-actions-wrap .larkin2-actions, .larkin2-about .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 0; }
