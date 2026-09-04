@@ -381,7 +381,7 @@
   letter-spacing: -.065em;
   line-height: 1;
 }
-.larkin2-intro { max-width: 390px; margin: 0; color: var(--secondary); font-size: 16px; line-height: 1.55; }
+.larkin2-intro { max-width: 390px; margin: 0; color: var(--secondary); font-size: clamp(18px, 1.5vw, 22px); line-height: 1.48; }
 .larkin2-actions { display: flex; flex-wrap: wrap; gap: 11px; }
 .larkin2-about .larkin2-actions { margin-top: 32px; }
 .larkin2-hero-actions-wrap .larkin2-actions { margin-top: 0; justify-content: center; }
@@ -986,7 +986,7 @@
   .larkin2-kicker { margin-bottom: 16px; font-size: 9px; }
   .larkin2-h1 { margin-bottom: 18px; font-size: 17vw; }
   .larkin2-sub { margin-bottom: 0; font-size: 27px; }
-  .larkin2-intro { font-size: 15px; }
+  .larkin2-intro { font-size: 17px; }
   .larkin2-actions, .larkin2-hero-actions-wrap .larkin2-actions, .larkin2-about .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 0; }
   .larkin2-hero-actions-wrap .larkin2-link { margin-top: 0; }
   .larkin2-btn { justify-content: center; width: 100%; }
