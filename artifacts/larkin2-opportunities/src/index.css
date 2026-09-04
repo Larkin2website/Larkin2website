@@ -457,7 +457,7 @@
 }
 .larkin2-image { display: block; width: 100%; height: auto; aspect-ratio: 1.55; object-fit: cover; filter: saturate(.72) contrast(1.05); }
 .larkin2-image-caption { display: flex; justify-content: space-between; gap: 20px; margin-top: 12px; color: var(--muted); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
-.larkin2-production { background: var(--stage); padding-top: clamp(20px, 4vh, 60px); }
+.larkin2-production { background: #171b1d; padding-top: clamp(20px, 4vh, 60px); }
 .larkin2-production figure { margin: clamp(70px, 10vw, 145px) 0 0; }
 .larkin2-production .larkin2-link {
   min-height: 46px;
