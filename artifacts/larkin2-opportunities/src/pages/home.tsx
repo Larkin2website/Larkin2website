@@ -222,7 +222,6 @@ export function Home() {
               <p className="larkin2-small">Not everyone arrives from the same place, so we run separate routes. Find the one that matches where you are now.</p>
             </div>
             <div className="larkin2-role-status" id="roles">
-              <div className="larkin2-role-status-label"><span className="larkin2-status-dot" /> Current role status</div>
               <h3 className="larkin2-role-status-title">Looking for a crew role / 04</h3>
               <strong data-testid="status-crew-roles">Paid crew positions are posted as the production needs them, across every department from Accounts to VFX. Postings open and close quickly.</strong>
               <div className="larkin2-role-status-actions">
