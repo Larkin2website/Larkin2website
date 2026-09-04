@@ -372,9 +372,10 @@
 .larkin2-hero-meta-wrap {
   position: absolute;
   z-index: 1;
-  right: clamp(20px, 4vw, 64px);
+  right: auto;
   bottom: 54px;
-  transform: translateY(calc(var(--hero-progress) * 12vh));
+  left: 50%;
+  transform: translate(-50%, calc(var(--hero-progress) * 12vh));
   opacity: calc(1 - (var(--hero-progress) * 2));
   will-change: transform, opacity;
 }
@@ -973,8 +974,8 @@
   .larkin2-actions, .larkin2-hero-actions-wrap .larkin2-actions, .larkin2-about .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 0; }
   .larkin2-hero-actions-wrap .larkin2-link { margin-top: 0; }
   .larkin2-btn { justify-content: center; width: 100%; }
-  .larkin2-hero-meta-wrap { right: 20px; bottom: 31px; left: 20px; }
-  .larkin2-hero-meta { justify-content: space-between; font-size: 9px; }
+  .larkin2-hero-meta-wrap { right: auto; bottom: 31px; left: 50%; width: max-content; }
+  .larkin2-hero-meta { justify-content: center; font-size: 9px; }
   .larkin2-scroll-line { width: 28px; }
   .larkin2-section { padding: 80px 20px; }
   .larkin2-section-intro, .larkin2-grid, .larkin2-signup-layout { grid-template-columns: 1fr; gap: 45px; }
