@@ -1098,7 +1098,7 @@
   .larkin2-hero-track { height: 180svh; }
   #content { margin-top: -18svh; }
   .larkin2-hero-stage {
-    align-items: stretch;
+    align-items: flex-end;
     padding: 0;
   }
   .larkin2-hero-media-wrap {
@@ -1115,31 +1115,35 @@
       round calc(var(--hero-progress) * 16px)
     );
   }
-  .larkin2-hero-shade { background: linear-gradient(90deg, rgba(8,10,12,.5), rgba(8,10,12,.1)), linear-gradient(0deg, rgba(8,10,12,.64), rgba(8,10,12,.06) 70%); }
+  .larkin2-hero-shade { background: linear-gradient(0deg, rgba(8,10,12,0.9) 0%, rgba(8,10,12,0.5) 25%, rgba(8,10,12,0) 60%); }
   .larkin2-hero-content-wrap {
     position: absolute;
-    inset: 108px 20px 78px;
+    inset: auto 20px 84px;
     width: auto;
+    transform: translateY(calc(var(--hero-progress) * -12vh));
   }
   .larkin2-hero-content {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
   }
-  .larkin2-hero-split { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 18px; }
+  .larkin2-hero-split { flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 14px; }
   .larkin2-hero-left { flex: none; }
-  .larkin2-hero-right { flex: none; padding-bottom: 0; }
-  .larkin2-hero-actions-wrap { margin-top: 30px; padding-bottom: 0; }
+  .larkin2-hero-right { flex: none; padding-bottom: 0; max-width: 90%; }
+  .larkin2-hero-actions-wrap { margin-top: 24px; padding-bottom: 0; justify-content: flex-start; }
   .larkin2-kicker { margin-bottom: 16px; font-size: 9px; }
-  .larkin2-h1 { margin-bottom: 18px; font-size: 17vw; }
-  .larkin2-sub { margin-bottom: 0; font-size: 27px; }
-  .larkin2-intro { font-size: 17px; }
-  .larkin2-actions, .larkin2-hero-actions-wrap .larkin2-actions, .larkin2-about .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 0; }
-  .larkin2-hero-actions-wrap .larkin2-link { margin-top: 0; }
+  .larkin2-h1 { margin-bottom: 6px; font-size: 13vw; line-height: 0.92; letter-spacing: -0.06em; }
+  .larkin2-sub { margin-bottom: 0; font-size: 22px; }
+  .larkin2-intro { font-size: 15px; line-height: 1.45; }
+  .larkin2-actions, .larkin2-about .larkin2-actions { display: grid; grid-template-columns: 1fr; gap: 9px; margin-top: 0; }
   .larkin2-btn { justify-content: center; width: 100%; }
-  .larkin2-hero-meta-wrap { right: auto; bottom: 31px; left: 50%; width: max-content; }
-  .larkin2-hero-meta { justify-content: center; font-size: 9px; }
-  .larkin2-scroll-line { width: 28px; }
+  .larkin2-hero-actions-wrap .larkin2-actions { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: flex-start; margin-top: 0; }
+  .larkin2-hero-actions-wrap .larkin2-link { margin-top: 0; }
+  .larkin2-hero-actions-wrap .larkin2-btn { width: auto; min-height: 38px; padding: 8px 14px; font-size: 11px; font-weight: 500; }
+  .larkin2-hero-meta-wrap { right: 20px; bottom: 24px; left: 20px; width: auto; transform: translate(0, calc(var(--hero-progress) * 8vh)); }
+  .larkin2-hero-meta { justify-content: space-between; width: 100%; font-size: 9px; }
+  .larkin2-hero-meta > span:first-child { flex: 0 1 auto; }
+  .larkin2-scroll-line { flex: 1 1 auto; width: auto; margin: 0 12px; }
   .larkin2-section { padding: 80px 20px; }
   .larkin2-section-intro, .larkin2-grid, .larkin2-signup-layout { grid-template-columns: 1fr; gap: 45px; }
   .larkin2-title { margin-top: 17px; font-size: clamp(45px, 13vw, 62px); }
