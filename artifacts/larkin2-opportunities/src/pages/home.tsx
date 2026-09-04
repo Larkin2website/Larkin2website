@@ -91,25 +91,18 @@ export function Home() {
   const paths = Object.values(OPPORTUNITIES);
 
   const finishIntro = useCallback(() => {
-    try {
-      window.sessionStorage.setItem("larkin2-intro-seen-v3", "true");
-    } catch {
-      // Session storage may be unavailable in privacy-restricted previews.
-    }
     setIntroVisible(false);
   }, []);
 
   useEffect(() => {
-    let seen = false;
     let reduced = false;
     const previewMode = new URLSearchParams(window.location.search).has("no-intro");
     try {
-      seen = window.sessionStorage.getItem("larkin2-intro-seen-v3") === "true";
       reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     } catch {
-      seen = false;
+      reduced = false;
     }
-    if (!seen && !reduced && !previewMode) setIntroVisible(true);
+    if (!reduced && !previewMode) setIntroVisible(true);
     
     // Reset document title and meta description on home page mount
     document.title = "Larkin2 Opportunities";
