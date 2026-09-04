@@ -163,7 +163,19 @@ export function Home() {
           <div className="larkin2-hero-bg" />
           <div className="larkin2-hero-stage">
             <div className="larkin2-hero-media-wrap">
-              <div className="larkin2-hero-media" role="img" aria-label="Film crew working with practical lights and camera equipment on a London production" data-testid="img-hero-studio" />
+              <video
+                className="larkin2-hero-media"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                poster="/larkin2-opportunities/videos/hero-poster.webp"
+                aria-hidden="true"
+                data-testid="video-hero-background"
+              >
+                <source src="/larkin2-opportunities/videos/hero-loop.mp4" type="video/mp4" />
+              </video>
             </div>
             <div className="larkin2-hero-shade" />
             <div className="larkin2-hero-content-wrap">

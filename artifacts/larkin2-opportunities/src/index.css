@@ -279,7 +279,11 @@
 .larkin2-hero-media {
   position: absolute;
   inset: 0 clamp(12px, 5.5vw, 90px) 0;
-  background: url('/larkin2-opportunities/images/bailey-studio.jpg') center / cover no-repeat;
+  width: calc(100% - clamp(12px, 5.5vw, 90px));
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+  object-position: center;
   filter: saturate(.65) contrast(1.05) brightness(calc(1 - (var(--hero-progress) * 0.15)));
   clip-path: inset(
     calc(var(--hero-progress) * 10svh) 
