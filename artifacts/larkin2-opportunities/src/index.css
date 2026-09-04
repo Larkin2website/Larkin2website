@@ -254,12 +254,12 @@
   top: 0;
   height: 100svh;
   overflow: hidden;
-  background: var(--stage);
+  background: #171b1d;
 }
 .larkin2-hero-bg {
   position: absolute;
   inset: 0;
-  background: var(--deep);
+  background: #171b1d;
   opacity: calc(1 - (var(--hero-progress) * 1.5));
   pointer-events: none;
 }
