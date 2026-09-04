@@ -307,7 +307,7 @@
   left: 0;
   height: 35%;
   content: "";
-  background: linear-gradient(transparent, var(--stage));
+  background: linear-gradient(transparent, #171b1d);
 }
 .larkin2-hero-content-wrap {
   position: relative;
