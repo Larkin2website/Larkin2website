@@ -1648,11 +1648,18 @@
 }
 
 @media (max-width: 600px) {
-  .roles-detail-hero {
-    padding-top: 56px;
+  .roles-detail-page .roles-detail-hero {
+    padding-top: 92px;
   }
   .roles-detail-back {
+    position: relative;
+    z-index: 2;
+    display: inline-flex !important;
+    align-items: center;
+    min-height: 44px;
     margin-bottom: 44px;
+    visibility: visible;
+    opacity: 1;
   }
   .roles-detail-title {
     font-size: clamp(44px, 14vw, 68px);
