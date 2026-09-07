@@ -471,11 +471,14 @@ export function Home() {
               <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>What we’ll tell you straight</span></span></h2>
               <p className="larkin2-small larkin2-reveal" data-reveal>Uncertainty is one of the reasons people give up on this industry before they start. So here is what we commit to before you apply.</p>
             </div>
-            <div className="larkin2-commit-header-cta larkin2-reveal" data-reveal>
+            <div className="larkin2-commit-header-cta is-desktop larkin2-reveal" data-reveal>
               <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-commitments-signup">Sign up for updates</MaskedLink>
             </div>
           </div>
           <CommitmentsCarousel />
+          <div className="larkin2-commit-header-cta is-mobile larkin2-reveal" data-reveal>
+            <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-commitments-signup-mobile">Sign up for updates</MaskedLink>
+          </div>
         </section>
 
         <section className="larkin2-section larkin2-culture" aria-labelledby="culture-title">

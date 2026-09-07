@@ -700,7 +700,8 @@
   color: rgba(29,32,32,.68);
   margin: 0;
 }
-.larkin2-commit-header-cta { flex-shrink: 0; margin-bottom: 12px; }
+.larkin2-commit-header-cta { display: flex; justify-content: flex-end; margin-bottom: 0; }
+.larkin2-commit-header-cta.is-mobile { display: none; }
 .larkin2-commit-header-cta .larkin2-btn { white-space: nowrap; }
 .larkin2-commit-header-cta .larkin2-btn.secondary {
   border-color: rgba(29,32,32,.36);
@@ -1615,7 +1616,8 @@ select.roles-filter-input {
   .larkin2-path h3 { margin-top: 0; font-size: 32px; }
   .larkin2-path p { font-size: 15px; }
   .larkin2-commit-header { flex-direction: column; align-items: flex-start; gap: 32px; }
-  .larkin2-commit-header-cta { margin-bottom: 0; width: 100%; }
+  .larkin2-commit-header-cta.is-desktop { display: none; }
+  .larkin2-commit-header-cta.is-mobile { display: flex; margin-bottom: 0; width: 100%; }
   .larkin2-commit-header-cta .larkin2-btn { display: flex; width: 100%; justify-content: center; }
   .larkin2-commit-featured { grid-template-columns: 1fr; gap: 32px; padding: 40px 0; }
   .larkin2-commit-featured-media { margin: 0 -20px; aspect-ratio: 1.2; }
