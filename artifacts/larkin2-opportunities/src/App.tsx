@@ -10,6 +10,7 @@ import { scrollToHash } from "./utils/navigation";
 
 import { Home } from "./pages/home";
 import { RolesPage } from "./pages/roles";
+import { RoleDetailPage } from "./pages/role-detail";
 import { OpportunityPage } from "./pages/opportunity";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,9 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/roles" component={RolesPage} />
+        <Route path="/roles/:id">
+          {(params) => <RoleDetailPage id={params.id} />}
+        </Route>
         <Route path="/opportunities/:id">
           {(params) => <OpportunityPage id={params.id} />}
         </Route>

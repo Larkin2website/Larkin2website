@@ -165,7 +165,7 @@ export function RolesPage() {
                   </div>
 
                   <div className="roles-card-action">
-                    <MaskedLink href={role.url} testId={`link-role-${role.id}`} target="_blank" rel="noopener noreferrer">
+                    <MaskedLink href={`/roles/${role.id}`} testId={`link-role-${role.id}`}>
                       View details
                     </MaskedLink>
                   </div>

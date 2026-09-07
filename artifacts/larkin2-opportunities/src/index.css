@@ -1190,8 +1190,22 @@ select.roles-filter-input {
 .roles-status-indicator.is-closed { background: #a43c25; }
 .roles-card-action .larkin2-link {
   margin: 0;
-  min-height: 40px;
-  padding: 10px 16px;
+  min-height: 44px;
+  padding: 12px 18px;
+  border-color: var(--orange);
+  background: var(--orange);
+  color: #171b1d;
+  font-weight: 700;
+}
+.roles-card-action .larkin2-link:hover,
+.roles-card-action .larkin2-link:focus-visible {
+  border-color: #55261c;
+  background: #55261c;
+  color: var(--ink);
+}
+.roles-card-action .larkin2-link:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
 }
 .roles-empty {
   padding: 80px 40px;
@@ -1205,6 +1219,207 @@ select.roles-filter-input {
   font-size: 24px;
   color: var(--ink);
   margin: 0 0 10px;
+}
+
+.roles-detail-page #content {
+  margin-top: 0 !important;
+  padding-top: var(--header-h);
+}
+.roles-detail-hero {
+  padding-top: clamp(76px, 8vw, 128px);
+  background: #101315;
+}
+.roles-detail-back {
+  display: inline-flex;
+  margin-bottom: clamp(56px, 7vw, 100px);
+  color: var(--secondary);
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.roles-detail-back:hover,
+.roles-detail-back:focus-visible {
+  color: var(--orange);
+}
+.roles-detail-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, .5fr);
+  gap: clamp(60px, 10vw, 160px);
+  align-items: end;
+}
+.roles-detail-badges {
+  margin: 26px 0 18px;
+}
+.roles-detail-title {
+  max-width: 980px;
+  margin: 0;
+  color: var(--ink);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(50px, 7.2vw, 112px);
+  font-weight: 500;
+  letter-spacing: -.07em;
+  line-height: .88;
+}
+.roles-detail-summary {
+  max-width: 760px;
+  margin: 38px 0 0;
+  color: var(--secondary);
+  font-size: clamp(18px, 1.7vw, 24px);
+  line-height: 1.5;
+}
+.roles-detail-meta {
+  border-top: 1px solid var(--line);
+}
+.roles-detail-meta > div {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.roles-detail-meta span {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.roles-detail-meta strong {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+.roles-detail-meta .roles-status-indicator {
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.roles-detail-content {
+  display: grid;
+  grid-template-columns: minmax(260px, .65fr) minmax(0, 1.35fr);
+  gap: clamp(60px, 10vw, 170px);
+  align-items: start;
+}
+.roles-detail-sidebar {
+  position: sticky;
+  top: calc(var(--header-h) + 28px);
+}
+.roles-detail-status {
+  padding: 30px;
+  border-top: 3px solid var(--muted);
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+.roles-detail-status.is-open {
+  border-top-color: var(--orange);
+}
+.roles-detail-status .larkin2-eyebrow {
+  color: #6d554d;
+}
+.roles-detail-status h2 {
+  margin: 22px 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(24px, 2.1vw, 32px);
+  letter-spacing: -.04em;
+  line-height: 1.08;
+}
+.roles-detail-status p {
+  margin: 0 0 14px;
+  color: #6d554d;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.roles-detail-status .roles-detail-alert-link {
+  margin-top: 20px;
+  border-color: #171b1d;
+  color: #171b1d;
+}
+.roles-detail-main {
+  min-width: 0;
+}
+.roles-detail-block {
+  padding: 0 0 58px;
+  margin: 0 0 58px;
+  border-bottom: 1px solid var(--line);
+}
+.roles-detail-block:last-child {
+  margin-bottom: 0;
+}
+.roles-detail-block h2 {
+  margin: 0 0 30px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(30px, 3vw, 48px);
+  font-weight: 500;
+  letter-spacing: -.045em;
+}
+.roles-detail-block ul {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.roles-detail-block li {
+  position: relative;
+  padding-left: 26px;
+  color: var(--secondary);
+  font-size: 17px;
+  line-height: 1.65;
+}
+.roles-detail-block li::before {
+  content: "";
+  position: absolute;
+  top: .72em;
+  left: 0;
+  width: 8px;
+  height: 2px;
+  background: var(--orange);
+}
+.roles-detail-list {
+  margin: 0;
+}
+.roles-detail-list > div {
+  display: grid;
+  grid-template-columns: minmax(120px, .35fr) 1fr;
+  gap: 30px;
+  padding: 21px 0;
+  border-top: 1px solid var(--line);
+}
+.roles-detail-list > div:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.roles-detail-list dt {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.roles-detail-list dd {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.roles-detail-footer {
+  background: var(--orange);
+  color: #171b1d;
+}
+.roles-detail-footer h2 {
+  max-width: 800px;
+  margin: 18px 0 36px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(38px, 5vw, 72px);
+  font-weight: 500;
+  letter-spacing: -.055em;
+  line-height: .98;
+}
+.roles-detail-footer .larkin2-eyebrow {
+  color: #55261c;
+}
+.roles-detail-footer .roles-detail-footer-link {
+  border-color: #171b1d;
+  color: #171b1d;
 }
 
 @media (max-width: 900px) {
@@ -1278,6 +1493,51 @@ select.roles-filter-input {
   }
   .roles-card-action {
     margin-top: 10px;
+  }
+  .roles-card-action .larkin2-link {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .roles-detail-hero-grid,
+  .roles-detail-content {
+    grid-template-columns: 1fr;
+    gap: 52px;
+  }
+  .roles-detail-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .roles-detail-hero {
+    padding-top: 56px;
+  }
+  .roles-detail-back {
+    margin-bottom: 44px;
+  }
+  .roles-detail-title {
+    font-size: clamp(44px, 14vw, 68px);
+  }
+  .roles-detail-summary {
+    margin-top: 28px;
+    font-size: 17px;
+  }
+  .roles-detail-content {
+    gap: 48px;
+  }
+  .roles-detail-status {
+    padding: 24px 20px;
+  }
+  .roles-detail-block {
+    padding-bottom: 42px;
+    margin-bottom: 42px;
+  }
+  .roles-detail-block li {
+    font-size: 16px;
+  }
+  .roles-detail-list > div {
+    grid-template-columns: 1fr;
+    gap: 9px;
   }
 }
 
