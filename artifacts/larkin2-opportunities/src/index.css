@@ -1499,12 +1499,16 @@
   line-height: 1.55;
 }
 .roles-detail-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr);
+  align-items: center;
+  gap: clamp(48px, 7vw, 120px);
   background: var(--orange);
   color: #171b1d;
 }
 .roles-detail-footer h2 {
-  max-width: 800px;
-  margin: 18px 0 36px;
+  max-width: 760px;
+  margin: 18px 0 0;
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(38px, 5vw, 72px);
   font-weight: 500;
@@ -1514,9 +1518,24 @@
 .roles-detail-footer .larkin2-eyebrow {
   color: #55261c;
 }
-.roles-detail-footer .roles-detail-footer-link {
+.roles-detail-footer .roles-chat-search {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  align-items: stretch;
+  text-align: left;
+}
+.roles-detail-footer .roles-chat-input {
+  border-color: rgba(23,27,29,.42);
+  background: rgba(244,241,237,.88);
+  box-shadow: 0 8px 28px rgba(85,38,28,.12);
+}
+.roles-detail-footer .roles-chat-input:focus {
   border-color: #171b1d;
-  color: #171b1d;
+  box-shadow: 0 0 0 1px #171b1d;
+}
+.roles-detail-footer .roles-chat-hint {
+  color: rgba(23,27,29,.68);
 }
 
 @media (max-width: 900px) {
@@ -1618,6 +1637,10 @@
   .roles-detail-content {
     grid-template-columns: 1fr;
     gap: 52px;
+  }
+  .roles-detail-footer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 42px;
   }
   .roles-detail-sidebar {
     position: static;

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
+import { RoleSearchComposer } from "../components/role-search-composer";
 import { ROLES } from "../data/roles";
 
 export function RolesPage() {
@@ -10,7 +11,7 @@ export function RolesPage() {
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get("q") ?? "");
 
   useEffect(() => {
     document.title = "Roles | Larkin2 Opportunities";
@@ -72,42 +73,13 @@ export function RolesPage() {
         </section>
 
         <section className="roles-filters larkin2-section">
-          <div className="roles-chat-search">
-            <div className="roles-chat-prompt">
-              <span className="roles-chat-label">Role finder</span>
-              <p>What kind of role are you looking for?</p>
-            </div>
-            <form className="roles-chat-composer" role="search" onSubmit={event => event.preventDefault()}>
-              <label htmlFor="search-roles">Search roles by keyword</label>
-              <input
-                id="search-roles"
-                type="search"
-                className="roles-chat-input"
-                placeholder="Message the role finder"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                autoComplete="off"
-                data-testid="input-roles-search"
-              />
-              {search && (
-                <button
-                  type="button"
-                  className="roles-chat-clear"
-                  onClick={() => setSearch("")}
-                  aria-label="Clear role search"
-                  data-testid="button-clear-roles-search"
-                >
-                  <span aria-hidden="true">×</span>
-                </button>
-              )}
-              <button type="submit" className="roles-chat-send" aria-label="Search roles">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 19V5M6.5 10.5 12 5l5.5 5.5" />
-                </svg>
-              </button>
-            </form>
-            <span className="roles-chat-hint">Try “camera”, “part time” or “closed”</span>
-          </div>
+          <RoleSearchComposer
+            id="search-roles"
+            value={search}
+            onChange={setSearch}
+            inputTestId="input-roles-search"
+            clearTestId="button-clear-roles-search"
+          />
         </section>
 
         <section className="roles-list larkin2-section">

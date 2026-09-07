@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { MobileMenu, SiteFooter, SiteHeader, MaskedLink } from "../components/layout";
+import { RoleSearchComposer } from "../components/role-search-composer";
 import { ROLES_BY_ID } from "../data/roles";
 import NotFound from "./not-found";
 
@@ -12,6 +13,8 @@ export function RoleDetailPage({ id }: { id: string }) {
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const [roleSearch, setRoleSearch] = useState("");
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     if (!role) return;
@@ -121,10 +124,21 @@ export function RoleDetailPage({ id }: { id: string }) {
           </div>
         </section>
 
-        <section className="roles-detail-footer larkin2-section">
-          <p className="larkin2-eyebrow">Larkin2 opportunities</p>
-          <h2>Explore every role connected to the production.</h2>
-          <MaskedLink href="/roles" className="roles-detail-footer-link" testId="link-role-return">Return to roles</MaskedLink>
+        <section className="roles-detail-footer larkin2-section" id="role-search">
+          <div className="roles-detail-footer-copy">
+            <p className="larkin2-eyebrow">Larkin2 opportunities</p>
+            <h2>Explore every role connected to the production.</h2>
+          </div>
+          <RoleSearchComposer
+            id="search-other-roles"
+            value={roleSearch}
+            onChange={setRoleSearch}
+            onSubmit={query => navigate(query ? `/roles?q=${encodeURIComponent(query)}` : "/roles")}
+            showPrompt={false}
+            inputTestId="input-role-detail-search"
+            clearTestId="button-clear-role-detail-search"
+            className="roles-chat-search-detail"
+          />
         </section>
       </main>
       <SiteFooter />
