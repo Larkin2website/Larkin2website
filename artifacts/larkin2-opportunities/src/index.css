@@ -1057,7 +1057,7 @@
 .roles-filters {
   position: sticky;
   z-index: 20;
-  top: 93px;
+  top: 0;
   padding-top: 0;
   padding-bottom: 40px;
   border-top: none;
@@ -1971,7 +1971,6 @@
 
 @media (max-width: 767px) {
   .roles-page .roles-filters {
-    top: 78px;
     padding: 16px 20px 18px;
   }
   .roles-page .roles-chat-prompt p {
