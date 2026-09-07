@@ -1013,13 +1013,32 @@
 .larkin2-media-reveal { overflow: hidden; opacity: 0; transform: translateY(48px); transition: opacity 1s ease, transform 1s var(--ease-cinematic); }
 
 /* Roles page CSS additions */
+.roles-page,
+.roles-detail-page {
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+.roles-page .larkin2-top,
+.roles-detail-page .larkin2-top {
+  background: #101315;
+  color: var(--ink);
+}
+.roles-page .larkin2-top .larkin2-mark,
+.roles-detail-page .larkin2-top .larkin2-mark {
+  color: var(--ink);
+}
 .roles-page #content {
   margin-top: 0;
   padding-top: clamp(90px, 12vw, 150px);
+  background: var(--paper);
+  color: var(--paper-ink);
 }
 .roles-hero {
   border-top: none;
   padding-bottom: clamp(40px, 6vw, 80px);
+}
+.roles-hero .larkin2-eyebrow {
+  color: #a43c25;
 }
 .roles-title {
   font-family: 'Space Grotesk', sans-serif;
@@ -1027,10 +1046,11 @@
   letter-spacing: -.08em;
   margin: 0 0 20px;
   line-height: .85;
+  color: var(--paper-ink);
 }
 .roles-intro {
   max-width: 580px;
-  color: var(--secondary);
+  color: rgba(29,32,32,.72);
   font-size: clamp(18px, 1.5vw, 22px);
   line-height: 1.48;
 }
@@ -1043,7 +1063,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  background: var(--paper);
+  background: rgba(255,255,255,.32);
+  border: 1px solid rgba(29,32,32,.16);
   padding: 25px 30px;
   border-radius: 4px;
 }
@@ -1098,7 +1119,7 @@ select.roles-filter-input {
   font-size: 12px;
   letter-spacing: .15em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: rgba(29,32,32,.58);
   margin-bottom: 30px;
 }
 .roles-grid {
@@ -1112,12 +1133,14 @@ select.roles-filter-input {
   align-items: center;
   gap: 30px;
   padding: 35px 40px;
-  background: #101315;
-  border: 1px solid var(--line);
-  transition: border-color .3s ease;
+  background: rgba(255,255,255,.24);
+  border: 1px solid rgba(29,32,32,.2);
+  color: var(--paper-ink);
+  transition: border-color .3s ease, background-color .3s ease;
 }
 .roles-card:hover {
-  border-color: rgba(244,241,237,.3);
+  border-color: rgba(29,32,32,.46);
+  background: rgba(255,255,255,.4);
 }
 .roles-card-main {
   display: flex;
@@ -1134,30 +1157,30 @@ select.roles-filter-input {
   letter-spacing: .12em;
   text-transform: uppercase;
   padding: 4px 8px;
-  background: var(--line);
-  color: var(--secondary);
+  background: rgba(29,32,32,.1);
+  color: rgba(29,32,32,.7);
   border-radius: 2px;
 }
 .roles-badge.is-urgent {
-  background: rgba(244,119,63,.15);
-  color: var(--orange);
+  background: rgba(244,119,63,.18);
+  color: #8e321f;
 }
 .roles-badge.is-featured {
-  background: rgba(244,241,237,.1);
-  color: var(--ink);
+  background: var(--paper-ink);
+  color: var(--paper);
 }
 .roles-card-title {
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(22px, 2vw, 28px);
   margin: 0;
-  color: var(--ink);
+  color: var(--paper-ink);
   letter-spacing: -.03em;
 }
 .roles-card-meta {
   display: flex;
   gap: 16px;
   font-size: 13px;
-  color: var(--secondary);
+  color: rgba(29,32,32,.68);
 }
 .roles-card-meta span {
   display: flex;
@@ -1169,7 +1192,7 @@ select.roles-filter-input {
   display: block;
   width: 4px;
   height: 4px;
-  background: var(--line);
+  background: rgba(29,32,32,.28);
   border-radius: 50%;
 }
 .roles-card-status {
@@ -1179,6 +1202,7 @@ select.roles-filter-input {
   font-size: 11px;
   letter-spacing: .15em;
   text-transform: uppercase;
+  color: var(--paper-ink);
 }
 .roles-status-indicator {
   width: 8px;
@@ -1204,42 +1228,45 @@ select.roles-filter-input {
   color: var(--ink);
 }
 .roles-card-action .larkin2-link:focus-visible {
-  outline: 2px solid var(--orange);
+  outline: 2px solid #55261c;
   outline-offset: 4px;
 }
 .roles-empty {
   padding: 80px 40px;
   text-align: center;
-  background: #101315;
-  border: 1px dashed var(--line);
-  color: var(--secondary);
+  background: rgba(255,255,255,.24);
+  border: 1px dashed rgba(29,32,32,.3);
+  color: rgba(29,32,32,.68);
 }
 .roles-empty-title {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 24px;
-  color: var(--ink);
+  color: var(--paper-ink);
   margin: 0 0 10px;
 }
 
 .roles-detail-page #content {
   margin-top: 0 !important;
   padding-top: var(--header-h);
+  background: var(--paper);
+  color: var(--paper-ink);
 }
 .roles-detail-hero {
   padding-top: clamp(76px, 8vw, 128px);
-  background: #101315;
+  background: var(--paper);
+  border-color: rgba(29,32,32,.19);
 }
 .roles-detail-back {
   display: inline-flex;
   margin-bottom: clamp(56px, 7vw, 100px);
-  color: var(--secondary);
+  color: rgba(29,32,32,.62);
   font-size: 12px;
   letter-spacing: .1em;
   text-transform: uppercase;
 }
 .roles-detail-back:hover,
 .roles-detail-back:focus-visible {
-  color: var(--orange);
+  color: #a43c25;
 }
 .roles-detail-hero-grid {
   display: grid;
@@ -1253,7 +1280,7 @@ select.roles-filter-input {
 .roles-detail-title {
   max-width: 980px;
   margin: 0;
-  color: var(--ink);
+  color: var(--paper-ink);
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(50px, 7.2vw, 112px);
   font-weight: 500;
@@ -1263,22 +1290,22 @@ select.roles-filter-input {
 .roles-detail-summary {
   max-width: 760px;
   margin: 38px 0 0;
-  color: var(--secondary);
+  color: rgba(29,32,32,.72);
   font-size: clamp(18px, 1.7vw, 24px);
   line-height: 1.5;
 }
 .roles-detail-meta {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(29,32,32,.2);
 }
 .roles-detail-meta > div {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 20px;
   padding: 18px 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(29,32,32,.2);
 }
 .roles-detail-meta span {
-  color: var(--muted);
+  color: rgba(29,32,32,.55);
   font-size: 10px;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -1287,7 +1314,7 @@ select.roles-filter-input {
   display: flex;
   align-items: center;
   gap: 9px;
-  color: var(--ink);
+  color: var(--paper-ink);
   font-size: 13px;
   font-weight: 500;
 }
@@ -1300,6 +1327,7 @@ select.roles-filter-input {
   grid-template-columns: minmax(260px, .65fr) minmax(0, 1.35fr);
   gap: clamp(60px, 10vw, 170px);
   align-items: start;
+  background: var(--paper);
 }
 .roles-detail-sidebar {
   position: sticky;
@@ -1308,7 +1336,10 @@ select.roles-filter-input {
 .roles-detail-status {
   padding: 30px;
   border-top: 3px solid var(--muted);
-  background: var(--paper);
+  background: rgba(255,255,255,.42);
+  border-right: 1px solid rgba(29,32,32,.14);
+  border-bottom: 1px solid rgba(29,32,32,.14);
+  border-left: 1px solid rgba(29,32,32,.14);
   color: var(--paper-ink);
 }
 .roles-detail-status.is-open {
@@ -1341,7 +1372,7 @@ select.roles-filter-input {
 .roles-detail-block {
   padding: 0 0 58px;
   margin: 0 0 58px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(29,32,32,.2);
 }
 .roles-detail-block:last-child {
   margin-bottom: 0;
@@ -1352,6 +1383,7 @@ select.roles-filter-input {
   font-size: clamp(30px, 3vw, 48px);
   font-weight: 500;
   letter-spacing: -.045em;
+  color: var(--paper-ink);
 }
 .roles-detail-block ul {
   display: grid;
@@ -1363,7 +1395,7 @@ select.roles-filter-input {
 .roles-detail-block li {
   position: relative;
   padding-left: 26px;
-  color: var(--secondary);
+  color: rgba(29,32,32,.76);
   font-size: 17px;
   line-height: 1.65;
 }
@@ -1384,20 +1416,20 @@ select.roles-filter-input {
   grid-template-columns: minmax(120px, .35fr) 1fr;
   gap: 30px;
   padding: 21px 0;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(29,32,32,.2);
 }
 .roles-detail-list > div:last-child {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(29,32,32,.2);
 }
 .roles-detail-list dt {
-  color: var(--muted);
+  color: rgba(29,32,32,.56);
   font-size: 10px;
   letter-spacing: .12em;
   text-transform: uppercase;
 }
 .roles-detail-list dd {
   margin: 0;
-  color: var(--secondary);
+  color: rgba(29,32,32,.76);
   font-size: 16px;
   line-height: 1.55;
 }
