@@ -119,7 +119,7 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
           onClick={() => setIsOpen(!isOpen)}
           data-testid="button-nav-opportunities"
         >
-          Opportunities <span aria-hidden="true" className="larkin2-chevron">↓</span>
+          OPPORTUNITIES <span aria-hidden="true" className="larkin2-chevron">↓</span>
         </button>
         
         <div className={`larkin2-nav-sub ${isOpen ? "is-open" : ""}`}>
