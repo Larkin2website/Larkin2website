@@ -1,0 +1,1 @@
+- [Avoid decorative top bars](visual-motifs.md) — Larkin2 panels should not use thick top-edge accent bars; rely on spacing, type, tone, and subtle borders.
