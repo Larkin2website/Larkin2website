@@ -1055,9 +1055,15 @@
   line-height: 1.48;
 }
 .roles-filters {
+  position: sticky;
+  z-index: 20;
+  top: 93px;
   padding-top: 0;
   padding-bottom: 40px;
   border-top: none;
+  border-bottom: 1px solid rgba(29,32,32,.12);
+  background: var(--paper);
+  box-shadow: 0 16px 28px rgba(29,32,32,.05);
 }
 .roles-chat-search {
   display: flex;
@@ -1964,6 +1970,17 @@
 @keyframes larkin2-blink { 50% { opacity: .25; } }
 
 @media (max-width: 767px) {
+  .roles-page .roles-filters {
+    top: 78px;
+    padding: 16px 20px 18px;
+  }
+  .roles-page .roles-chat-prompt p {
+    margin: 6px 0 14px;
+    font-size: clamp(24px, 7.5vw, 30px);
+  }
+  .roles-page .roles-chat-hint {
+    margin-top: 8px;
+  }
   .larkin2-top {
     grid-template-columns: 1fr auto;
     padding: 20px 18px;
