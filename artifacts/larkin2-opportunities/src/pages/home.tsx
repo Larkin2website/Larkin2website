@@ -2,6 +2,8 @@ import { type FormEvent, type CSSProperties, useCallback, useEffect, useRef, use
 import { OPPORTUNITIES } from "../data/opportunities";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 
+let hasVisitedHomeThisPageLoad = false;
+
 const commitments = [
   ["01", "Every placement on this site is paid.", "Work experience, shadowing, crew roles: all of it. We do not run unpaid placements.", "commitment-paid-camera-crew.webp"],
   ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts.", "commitment-open-camera.webp"],
@@ -266,8 +268,10 @@ export function Home() {
   const [headerHidden, setHeaderHidden] = useState(false);
   const [introVisible, setIntroVisible] = useState(() => {
     if (typeof window === "undefined") return false;
+    const isFirstHomeVisit = !hasVisitedHomeThisPageLoad;
+    hasVisitedHomeThisPageLoad = true;
     const previewMode = new URLSearchParams(window.location.search).has("no-intro");
-    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches && !previewMode;
+    return isFirstHomeVisit && !window.matchMedia("(prefers-reduced-motion: reduce)").matches && !previewMode;
   });
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const headerRef = useRef<HTMLElement>(null);
