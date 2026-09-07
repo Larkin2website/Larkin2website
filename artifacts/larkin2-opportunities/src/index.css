@@ -941,6 +941,7 @@
   height: 100%;
   aspect-ratio: auto;
 }
+.larkin2-culture-media-mobile { display: none; }
 .larkin2-culture .larkin2-image-caption {
   position: absolute;
   right: 0;
@@ -1633,9 +1634,13 @@ select.roles-filter-input {
   .larkin2-culture .larkin2-grid > div {
     padding: 80px 20px;
   }
-  .larkin2-culture figure {
+  .larkin2-culture .larkin2-culture-media-desktop {
+    display: none;
+  }
+  .larkin2-culture .larkin2-culture-media-mobile {
+    display: block;
     min-height: 480px;
-    margin: 0;
+    margin: 0 -20px 48px;
   }
   .larkin2-rule { margin-top: 48px; }
   .larkin2-signup { padding-top: 86px; padding-bottom: 96px; }

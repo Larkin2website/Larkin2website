@@ -485,11 +485,15 @@ export function Home() {
           <div className="larkin2-grid">
             <div className="larkin2-reveal" data-reveal>
               <h2 className="larkin2-title" id="culture-title"><span className="larkin2-mask"><span>Who gets to work here</span></span></h2>
+              <figure className="larkin2-culture-media-mobile">
+                <img className="larkin2-image" src="/larkin2-opportunities/images/culture-camera-operator.webp" width="1800" height="1162" loading="lazy" alt="Camera operator monitoring multiple screens on a soundstage" data-testid="img-culture-crew-mobile" />
+                <figcaption className="larkin2-image-caption"><span>On set / Larkin2</span><span>Production &amp; culture</span></figcaption>
+              </figure>
               <p className="larkin2-copy">We believe everyone should have the opportunity to work in film and television, regardless of background, experience level, or personal circumstances.</p>
               <MaskedLink href="#paths" testId="link-culture-opportunities">Explore opportunities</MaskedLink>
               <p className="larkin2-rule larkin2-small">We work with training providers, community organisations and regional talent networks to reach people who might not otherwise hear about opportunities like these. On set and in the office, we expect respect, collaboration and genuine support.</p>
             </div>
-            <figure className="larkin2-media-reveal" data-reveal>
+            <figure className="larkin2-media-reveal larkin2-culture-media-desktop" data-reveal>
               <img className="larkin2-image" src="/larkin2-opportunities/images/culture-camera-operator.webp" width="1800" height="1162" loading="lazy" alt="Camera operator monitoring multiple screens on a soundstage" data-testid="img-culture-crew" />
               <figcaption className="larkin2-image-caption"><span>On set / Larkin2</span><span>Production &amp; culture</span></figcaption>
             </figure>
