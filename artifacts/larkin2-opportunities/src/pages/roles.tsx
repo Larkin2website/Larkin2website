@@ -74,39 +74,39 @@ export function RolesPage() {
         <section className="roles-filters larkin2-section">
           <div className="roles-chat-search">
             <div className="roles-chat-prompt">
-              <span className="roles-chat-mark" aria-hidden="true">L2</span>
-              <div>
-                <span className="roles-chat-label">Role finder</span>
-                <p>What kind of role are you looking for?</p>
-              </div>
+              <span className="roles-chat-label">Role finder</span>
+              <p>What kind of role are you looking for?</p>
             </div>
-            <div className="roles-chat-composer">
+            <form className="roles-chat-composer" role="search" onSubmit={event => event.preventDefault()}>
               <label htmlFor="search-roles">Search roles by keyword</label>
-              <div className="roles-chat-input-wrap">
-                <input
-                  id="search-roles"
-                  type="search"
-                  className="roles-chat-input"
-                  placeholder='Try “camera”, “part time” or “closed”'
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  autoComplete="off"
-                  data-testid="input-roles-search"
-                />
-                {search && (
-                  <button
-                    type="button"
-                    className="roles-chat-clear"
-                    onClick={() => setSearch("")}
-                    aria-label="Clear role search"
-                    data-testid="button-clear-roles-search"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-              <span className="roles-chat-hint">Searches titles, departments, role types and status.</span>
-            </div>
+              <input
+                id="search-roles"
+                type="search"
+                className="roles-chat-input"
+                placeholder="Message the role finder"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                autoComplete="off"
+                data-testid="input-roles-search"
+              />
+              {search && (
+                <button
+                  type="button"
+                  className="roles-chat-clear"
+                  onClick={() => setSearch("")}
+                  aria-label="Clear role search"
+                  data-testid="button-clear-roles-search"
+                >
+                  <span aria-hidden="true">×</span>
+                </button>
+              )}
+              <button type="submit" className="roles-chat-send" aria-label="Search roles">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 19V5M6.5 10.5 12 5l5.5 5.5" />
+                </svg>
+              </button>
+            </form>
+            <span className="roles-chat-hint">Try “camera”, “part time” or “closed”</span>
           </div>
         </section>
 
