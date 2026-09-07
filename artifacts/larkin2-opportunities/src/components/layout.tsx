@@ -192,11 +192,15 @@ export function SiteFooter() {
 
 export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
   const [location] = useLocation();
+  const [opportunitiesOpen, setOpportunitiesOpen] = useState(false);
   const menuPanelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const lockedScrollY = useRef(0);
   
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setOpportunitiesOpen(false);
+    setMenuOpen(false);
+  };
 
   const MobileLink = ({ href, children, testId, num }: any) => {
     const handleClick = (e: React.MouseEvent) => {
@@ -234,6 +238,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
     
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        setOpportunitiesOpen(false);
         setMenuOpen(false);
         return;
       }
@@ -280,13 +285,25 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
       <nav className="larkin2-mobile-nav" aria-label="Mobile main navigation">
         <MobileLink href="/" testId="link-mobile-home" num="01">Home</MobileLink>
         <div className="larkin2-mobile-group">
-          <span className="larkin2-mobile-group-title">02 Opportunities</span>
-          <div className="larkin2-mobile-sub">
-            <MobileLink href="/roles" testId="link-mobile-roles">Roles</MobileLink>
-            <MobileLink href="/opportunities/first-credit" testId="link-mobile-first-credit">First Credit</MobileLink>
-            <MobileLink href="/opportunities/director-pathway" testId="link-mobile-director">Director Pathway</MobileLink>
-            <MobileLink href="/opportunities/producer-pathway" testId="link-mobile-producer">Producer Pathway</MobileLink>
-          </div>
+          <button
+            type="button"
+            className="larkin2-mobile-group-title"
+            aria-expanded={opportunitiesOpen}
+            aria-controls="mobile-opportunities-submenu"
+            onClick={() => setOpportunitiesOpen((open) => !open)}
+            data-testid="button-mobile-opportunities"
+          >
+            <span>02 Opportunities</span>
+            <span className="larkin2-mobile-group-icon" aria-hidden="true">+</span>
+          </button>
+          {opportunitiesOpen && (
+            <div className="larkin2-mobile-sub" id="mobile-opportunities-submenu">
+              <MobileLink href="/roles" testId="link-mobile-roles">Roles</MobileLink>
+              <MobileLink href="/opportunities/first-credit" testId="link-mobile-first-credit">First Credit</MobileLink>
+              <MobileLink href="/opportunities/director-pathway" testId="link-mobile-director">Director Pathway</MobileLink>
+              <MobileLink href="/opportunities/producer-pathway" testId="link-mobile-producer">Producer Pathway</MobileLink>
+            </div>
+          )}
         </div>
         <MobileLink href="#commitments" testId="link-mobile-commitments" num="03">Our commitments</MobileLink>
         <MobileLink href="#about" testId="link-mobile-about" num="04">About Larkin2</MobileLink>

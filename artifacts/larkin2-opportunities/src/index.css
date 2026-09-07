@@ -1290,12 +1290,33 @@ select.roles-filter-input {
 /* mobile nav overrides */
 .larkin2-mobile-group { margin: 10px 0; }
 .larkin2-mobile-group-title {
-  display: block;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
   font-size: 11px;
   color: var(--secondary);
   letter-spacing: .12em;
   text-transform: uppercase;
   margin-bottom: 12px;
+  cursor: pointer;
+}
+.larkin2-mobile-group-title:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+}
+.larkin2-mobile-group-icon {
+  color: var(--orange);
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+  transition: transform .3s ease;
+}
+.larkin2-mobile-group-title[aria-expanded="true"] .larkin2-mobile-group-icon {
+  transform: rotate(45deg);
 }
 .larkin2-mobile-sub {
   display: flex;
