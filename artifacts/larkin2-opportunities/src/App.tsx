@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import "./index.css";
 
 import { Home } from "./pages/home";
+import { RolesPage } from "./pages/roles";
 import { OpportunityPage } from "./pages/opportunity";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ function Router() {
       <ScrollManager />
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/roles" component={RolesPage} />
         <Route path="/opportunities/:id">
           {(params) => <OpportunityPage id={params.id} />}
         </Route>

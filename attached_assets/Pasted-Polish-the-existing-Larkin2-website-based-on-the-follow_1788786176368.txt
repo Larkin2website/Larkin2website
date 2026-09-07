@@ -1,0 +1,64 @@
+Polish the existing Larkin2 website based on the following feedback. Focus on mobile responsiveness, navigation alignment and the commitments layout. Preserve the existing brand colours, typography, content and overall design.
+
+Inspect the current implementation and reproduce the issues before making changes.
+
+### 1. Correct mobile dimensions and alignment
+
+The mobile version currently feels slightly out of proportion. Review the page section by section and correct:
+
+* Elements that extend beyond the screen or cause horizontal scrolling.
+* Headings, images, buttons and cards that appear oversized or cramped.
+* Inconsistent side margins, padding and gaps between sections.
+* Awkward text wrapping, clipped content and excessive empty space.
+* Fixed heights that prevent sections from accommodating their content.
+
+Make layouts adapt naturally to the available screen width. Preserve image proportions and ensure important subjects are not cropped incorrectly. Account for mobile browser bars when sizing full-screen sections.
+
+Do not simply shrink the desktop layout. Adjust column arrangements, spacing and element sizes appropriately for mobile.
+
+### 2. Fix menu behaviour and navigation destinations
+
+Opening the menu and navigating to sections should feel precise and coordinated.
+
+* Opening or closing the menu must not unexpectedly move the underlying page.
+* Ensure every menu link points to the correct page or section.
+* For links within the same page, position the destination heading clearly below the fixed or sticky header.
+* Calculate the scroll offset using the actual header height at each breakpoint.
+* Coordinate menu closing, background scroll unlocking and navigation so they do not cause competing movements, double jumps or incorrect landing positions.
+* Ensure the menu fully closes after selecting a destination.
+* Check whether existing smooth-scrolling or scroll-animation logic conflicts with anchor navigation. Resolve conflicts within the current implementation.
+* Verify navigation remains accurate after images load, the viewport changes or the phone rotates.
+
+Apply the same checks to buttons and other links that scroll to sections.
+
+### 3. Simplify the commitments section
+
+Reconsider the previous overlapping-card treatment. The numbered commitments should be easy to follow, with no visual collisions.
+
+Use a clean, non-overlapping vertical sequence as the revised layout, particularly on mobile. This replaces the earlier requirement for cards to overlap as they stack.
+
+For each commitment:
+
+* Keep its number, title, supporting text and dedicated image together.
+* Preserve the existing wording, order and unique image.
+* Give the number a clearly defined position so it cannot overlap the heading or another commitment.
+* Use consistent alignment and spacing to separate it from the next commitment.
+* Allow enough height for all content to remain visible.
+
+Remove sticky positioning or stacking logic that causes commitments to cover one another. Remove any leftover animation spacers that create unnecessary gaps. Subtle entrance animations are acceptable, but content must remain readable without animation.
+
+### 4. Verify the finished result
+
+Check representative widths of 360, 390, 430, 768, 1024 and 1440 pixels, plus mobile landscape.
+
+Confirm that:
+
+* There is no unintended horizontal scrolling or clipped content.
+* Every menu destination lands at the correct position.
+* Repeatedly opening, closing and using the menu causes no page jumps.
+* Every commitment is fully readable and visually separate.
+* Scrolling works smoothly in both directions.
+* Reduced-motion preferences are respected.
+* The mobile fixes do not introduce desktop layout problems.
+
+Keep changes limited to these issues. After implementation, summarise what changed, what was tested and any remaining limitations.

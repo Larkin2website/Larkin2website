@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 
-export function MaskedLink({ href, children, className = "", testId, onClick }: any) {
+export function MaskedLink({ href, children, className = "", testId, onClick, target, rel }: any) {
   const [location] = useLocation();
   const isHash = href.startsWith("#");
   const isInternal = href.startsWith("/");
@@ -18,7 +18,7 @@ export function MaskedLink({ href, children, className = "", testId, onClick }: 
 
   if (isInternal) {
     return (
-      <Link href={href} className={`larkin2-link ${className}`} onClick={onClick} aria-label={children} data-testid={testId}>
+      <Link href={href} className={`larkin2-link ${className}`} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
         {content}
       </Link>
     );
@@ -27,13 +27,13 @@ export function MaskedLink({ href, children, className = "", testId, onClick }: 
   if (isHash) {
     if (location === "/") {
       return (
-        <a className={`larkin2-link ${className}`} href={href} onClick={onClick} aria-label={children} data-testid={testId}>
+        <a className={`larkin2-link ${className}`} href={href} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
           {content}
         </a>
       );
     } else {
       return (
-        <Link href={`/${href}`} className={`larkin2-link ${className}`} onClick={onClick} aria-label={children} data-testid={testId}>
+        <Link href={`/${href}`} className={`larkin2-link ${className}`} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
           {content}
         </Link>
       );
@@ -41,7 +41,7 @@ export function MaskedLink({ href, children, className = "", testId, onClick }: 
   }
 
   return (
-    <a className={`larkin2-link ${className}`} href={href} onClick={onClick} aria-label={children} data-testid={testId}>
+    <a className={`larkin2-link ${className}`} href={href} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId} target={target} rel={rel}>
       {content}
     </a>
   );
@@ -54,6 +54,9 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
     if (href.startsWith("#") && location !== "/") {
       return <Link href={`/${href}`} className="larkin2-nav-link" data-testid={testId}>{children}</Link>;
     }
+    if (href.startsWith("/")) {
+      return <Link href={href} className="larkin2-nav-link" data-testid={testId}>{children}</Link>;
+    }
     return <a href={href} className="larkin2-nav-link" data-testid={testId}>{children}</a>;
   };
 
@@ -62,13 +65,52 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
       return <a href="#top" className="larkin2-mark" aria-label="Larkin2 home" data-testid="link-home">Larkin2<span aria-hidden="true">.</span></a>;
     }
     return <Link href="/" className="larkin2-mark" aria-label="Larkin2 home" data-testid="link-home">Larkin2<span aria-hidden="true">.</span></Link>;
-  }
+  };
+
+  const OpportunitiesSubmenu = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const timeoutRef = useRef<any>(null);
+  
+    const onEnter = () => {
+      clearTimeout(timeoutRef.current);
+      setIsOpen(true);
+    };
+    
+    const onLeave = () => {
+      timeoutRef.current = setTimeout(() => setIsOpen(false), 150);
+    };
+  
+    return (
+      <div 
+        className="larkin2-nav-group" 
+        onMouseEnter={onEnter} 
+        onMouseLeave={onLeave}
+      >
+        <button 
+          type="button"
+          className="larkin2-nav-link larkin2-nav-trigger"
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen(!isOpen)}
+          data-testid="button-nav-opportunities"
+        >
+          Opportunities <span aria-hidden="true" className="larkin2-chevron">↓</span>
+        </button>
+        
+        <div className={`larkin2-nav-sub ${isOpen ? "is-open" : ""}`}>
+          <NavLink href="/roles" testId="link-nav-roles">Roles</NavLink>
+          <NavLink href="/opportunities/first-credit" testId="link-nav-first-credit">First Credit</NavLink>
+          <NavLink href="/opportunities/director-pathway" testId="link-nav-director">Director Pathway</NavLink>
+          <NavLink href="/opportunities/producer-pathway" testId="link-nav-producer">Producer Pathway</NavLink>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <header ref={headerRef} className={`larkin2-top ${scrolled ? "is-scrolled" : ""} ${headerHidden ? "is-hidden" : ""}`}>
       <LogoLink />
       <nav className="larkin2-nav" aria-label="Main navigation">
-        <NavLink href="#paths" testId="link-opportunities">Opportunities</NavLink>
+        <OpportunitiesSubmenu />
         <NavLink href="#commitments" testId="link-commitments">Commitments</NavLink>
         <NavLink href="#about" testId="link-about">About</NavLink>
       </nav>
@@ -96,6 +138,9 @@ export function SiteFooter() {
     if (href.startsWith("#") && location !== "/") {
       return <Link href={`/${href}`} data-testid={testId}>{children}</Link>;
     }
+    if (href.startsWith("/")) {
+      return <Link href={href} data-testid={testId}>{children}</Link>;
+    }
     return <a href={href} data-testid={testId}>{children}</a>;
   };
 
@@ -104,7 +149,8 @@ export function SiteFooter() {
       <div className="larkin2-foot-brand"><span className="larkin2-mark">Larkin2<span aria-hidden="true">.</span></span><p>Official production opportunities.</p></div>
       <div className="larkin2-foot-col">
         <span>Explore</span>
-        <FooterLink href="#paths" testId="link-footer-opportunities">Opportunities</FooterLink>
+        <FooterLink href="/roles" testId="link-footer-roles">Roles</FooterLink>
+        <FooterLink href="#paths" testId="link-footer-opportunities">Pathways</FooterLink>
         <FooterLink href="#commitments" testId="link-footer-commitments">Commitments</FooterLink>
         <FooterLink href="#about" testId="link-footer-about">About Larkin2</FooterLink>
       </div>
@@ -128,9 +174,12 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
 
   const MobileLink = ({ href, children, testId, num }: any) => {
     if (href.startsWith("#") && location !== "/") {
-      return <Link href={`/${href}`} onClick={closeMenu} data-testid={testId}>{children} <span>{num}</span></Link>;
+      return <Link href={`/${href}`} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
     }
-    return <a href={href} onClick={closeMenu} data-testid={testId}>{children} <span>{num}</span></a>;
+    if (href.startsWith("/")) {
+      return <Link href={href} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
+    }
+    return <a href={href} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</a>;
   };
 
   useEffect(() => {
@@ -185,8 +234,16 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
         </button>
       </div>
       <nav className="larkin2-mobile-nav" aria-label="Mobile main navigation">
-        <MobileLink href="#top" testId="link-mobile-home" num="01">Home</MobileLink>
-        <MobileLink href="#paths" testId="link-mobile-opportunities" num="02">Opportunities</MobileLink>
+        <MobileLink href="/" testId="link-mobile-home" num="01">Home</MobileLink>
+        <div className="larkin2-mobile-group">
+          <span className="larkin2-mobile-group-title">02 Opportunities</span>
+          <div className="larkin2-mobile-sub">
+            <MobileLink href="/roles" testId="link-mobile-roles">Roles</MobileLink>
+            <MobileLink href="/opportunities/first-credit" testId="link-mobile-first-credit">First Credit</MobileLink>
+            <MobileLink href="/opportunities/director-pathway" testId="link-mobile-director">Director Pathway</MobileLink>
+            <MobileLink href="/opportunities/producer-pathway" testId="link-mobile-producer">Producer Pathway</MobileLink>
+          </div>
+        </div>
         <MobileLink href="#commitments" testId="link-mobile-commitments" num="03">Our commitments</MobileLink>
         <MobileLink href="#about" testId="link-mobile-about" num="04">About Larkin2</MobileLink>
         <MobileLink href="#signup" testId="link-mobile-signup" num="05">Sign up</MobileLink>
