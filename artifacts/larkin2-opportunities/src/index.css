@@ -419,7 +419,7 @@
 
 .larkin2-section {
   position: relative;
-  padding: clamp(90px, 12vw, 176px) clamp(20px, 7.5vw, 120px);
+  padding: clamp(64px, 8vw, 112px) clamp(20px, 7.5vw, 120px);
   border-top: 1px solid var(--line);
 }
 .larkin2-section-intro, .larkin2-grid, .larkin2-signup-layout {
@@ -526,6 +526,7 @@
   display: flex;
   flex-direction: column;
 }
+.larkin2-role-status.is-mobile { display: none; }
 .larkin2-role-status-label {
   display: flex;
   align-items: center;
@@ -929,7 +930,7 @@
   padding-left: clamp(20px, 7.5vw, 120px);
 }
 .larkin2-culture .larkin2-grid > div {
-  padding-block: clamp(90px, 12vw, 176px);
+  padding-block: clamp(64px, 8vw, 112px);
 }
 .larkin2-culture figure {
   position: relative;
@@ -1598,7 +1599,7 @@ select.roles-filter-input {
   .larkin2-hero-meta { justify-content: space-between; width: 100%; font-size: 9px; }
   .larkin2-hero-meta > span:first-child { flex: 0 1 auto; }
   .larkin2-scroll-line { flex: 1 1 auto; width: auto; margin: 0 12px; }
-  .larkin2-section { padding: 80px 20px; }
+  .larkin2-section { padding: 48px 20px; }
   .larkin2-culture { padding: 0; }
   .larkin2-section-intro, .larkin2-grid, .larkin2-signup-layout { grid-template-columns: 1fr; gap: 45px; }
   .larkin2-title { margin-top: 17px; font-size: clamp(45px, 13vw, 62px); }
@@ -1606,11 +1607,10 @@ select.roles-filter-input {
   .larkin2-quote { margin-top: 39px; font-size: 34px; }
   .larkin2-production figure { margin-top: 68px; }
   .larkin2-image-caption { font-size: 8px; }
-  .larkin2-paths { display: flex; flex-direction: column; }
-  .larkin2-paths-header { display: contents; }
-  .larkin2-paths-intro { order: 1; margin-bottom: 50px; }
-  .larkin2-role-status { order: 3; padding: 28px 24px 20px; }
-  .larkin2-path-grid { order: 2; display: flex; flex-direction: column; gap: 0; margin-top: 0; margin-bottom: 40px; }
+  .larkin2-paths-header { grid-template-columns: 1fr; gap: 0; margin-bottom: 50px; }
+  .larkin2-role-status.is-desktop { display: none; }
+  .larkin2-role-status.is-mobile { display: flex; padding: 28px 24px 20px; }
+  .larkin2-path-grid { display: flex; flex-direction: column; gap: 0; margin-top: 0; margin-bottom: 40px; }
   .larkin2-path, .larkin2-path:nth-child(1), .larkin2-path:nth-child(2), .larkin2-path:nth-child(3) { min-height: 460px; padding: 24px; border: 0; border-bottom: 1px solid rgba(244,241,237,.62); }
   .larkin2-path:nth-child(3) { border-bottom: 0; }
   .larkin2-path-bottom { flex-direction: column; align-items: flex-start; gap: 24px; }
@@ -1632,7 +1632,7 @@ select.roles-filter-input {
     padding-right: 0;
   }
   .larkin2-culture .larkin2-grid > div {
-    padding: 48px 20px 80px;
+    padding: 48px 20px;
   }
   .larkin2-culture .larkin2-culture-media-desktop {
     display: none;
@@ -1644,7 +1644,7 @@ select.roles-filter-input {
     margin: 0 -20px 48px;
   }
   .larkin2-rule { margin-top: 48px; }
-  .larkin2-signup { padding-top: 86px; padding-bottom: 96px; }
+  .larkin2-signup { padding-top: 48px; padding-bottom: 48px; }
   .larkin2-signup .larkin2-title { font-size: clamp(50px, 14vw, 68px); }
   .larkin2-signup-layout { gap: 16px; }
   .larkin2-form { margin-top: 38px; }

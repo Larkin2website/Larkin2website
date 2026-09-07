@@ -455,7 +455,7 @@ export function Home() {
               <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Three ways in, depending on where you are starting</span></span></h2>
               <p className="larkin2-small">Not everyone arrives from the same place, so we run separate routes. Find the one that matches where you are now.</p>
             </div>
-            <div className="larkin2-role-status" id="roles">
+            <div className="larkin2-role-status is-desktop" id="roles">
               <h3 className="larkin2-role-status-title">Looking for a crew role / 04</h3>
               <strong data-testid="status-crew-roles">Paid crew positions are posted as the production needs them, across every department from Accounts to VFX. Postings open and close quickly.</strong>
               <div className="larkin2-role-status-actions">
@@ -485,6 +485,14 @@ export function Home() {
                 </div>
               </article>
             ))}
+          </div>
+          <div className="larkin2-role-status is-mobile">
+            <h3 className="larkin2-role-status-title">Looking for a crew role / 04</h3>
+            <strong>Paid crew positions are posted as the production needs them, across every department from Accounts to VFX. Postings open and close quickly.</strong>
+            <div className="larkin2-role-status-actions">
+              <MaskedLink href="#roles" testId="link-opportunity-04-mobile">View current role status</MaskedLink>
+              <MaskedLink href="#signup" testId="link-role-status-signup-mobile">Sign up to hear when something opens</MaskedLink>
+            </div>
           </div>
         </section>
 
