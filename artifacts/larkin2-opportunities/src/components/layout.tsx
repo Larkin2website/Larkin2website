@@ -293,7 +293,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
             onClick={() => setOpportunitiesOpen((open) => !open)}
             data-testid="button-mobile-opportunities"
           >
-            <span>02 Opportunities</span>
+            <span>Opportunities</span>
             <span className="larkin2-mobile-group-icon" aria-hidden="true">+</span>
           </button>
           {opportunitiesOpen && (
