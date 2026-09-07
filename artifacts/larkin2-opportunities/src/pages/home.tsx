@@ -78,6 +78,9 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
 
 function CommitmentsCarousel() {
   const [active, setActive] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasFocus, setHasFocus] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
   const pointerStartX = useRef<number | null>(null);
   const pointerStartY = useRef<number | null>(null);
   const pointerEndX = useRef<number | null>(null);
@@ -98,11 +101,22 @@ function CommitmentsCarousel() {
     return undefined;
   }, []);
 
+  useEffect(() => {
+    if (reducedMotion || isHovered || hasFocus || isInteracting) return;
+
+    const timer = window.setTimeout(() => {
+      setActive((current) => (current + 1) % commitments.length);
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [active, reducedMotion, isHovered, hasFocus, isInteracting]);
+
   const resetPointer = () => {
     pointerStartX.current = null;
     pointerStartY.current = null;
     pointerEndX.current = null;
     pointerEndY.current = null;
+    setIsInteracting(false);
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -111,6 +125,7 @@ function CommitmentsCarousel() {
     pointerStartY.current = e.clientY;
     pointerEndX.current = e.clientX;
     pointerEndY.current = e.clientY;
+    setIsInteracting(true);
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
@@ -156,6 +171,14 @@ function CommitmentsCarousel() {
       className="larkin2-carousel larkin2-reveal" 
       data-reveal
       onKeyDown={handleKeyDown}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocusCapture={() => setHasFocus(true)}
+      onBlurCapture={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          setHasFocus(false);
+        }
+      }}
       tabIndex={0}
       aria-label="Commitments carousel"
       role="region"
