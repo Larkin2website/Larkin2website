@@ -11,9 +11,6 @@ export function RolesPage() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const [search, setSearch] = useState("");
-  const [deptFilter, setDeptFilter] = useState("All");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     document.title = "Roles | Larkin2 Opportunities";
@@ -41,19 +38,15 @@ export function RolesPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [menuOpen]);
 
-  const departments = useMemo(() => ["All", ...Array.from(new Set(ROLES.map(r => r.department)))], []);
-  const types = useMemo(() => ["All", ...Array.from(new Set(ROLES.map(r => r.roleType)))], []);
-  const statuses = useMemo(() => ["All", ...Array.from(new Set(ROLES.map(r => r.status)))], []);
-
   const filteredRoles = useMemo(() => {
+    const terms = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    if (terms.length === 0) return ROLES;
+
     return ROLES.filter(r => {
-      const matchSearch = r.title.toLowerCase().includes(search.toLowerCase()) || r.department.toLowerCase().includes(search.toLowerCase());
-      const matchDept = deptFilter === "All" || r.department === deptFilter;
-      const matchType = typeFilter === "All" || r.roleType === typeFilter;
-      const matchStatus = statusFilter === "All" || r.status === statusFilter;
-      return matchSearch && matchDept && matchType && matchStatus;
+      const searchableRole = [r.title, r.department, r.roleType, r.status].join(" ").toLowerCase();
+      return terms.every(term => searchableRole.includes(term));
     });
-  }, [search, deptFilter, typeFilter, statusFilter]);
+  }, [search]);
 
   return (
     <div className="larkin2-page roles-page" id="top">
@@ -79,55 +72,41 @@ export function RolesPage() {
         </section>
 
         <section className="roles-filters larkin2-section">
-          <div className="roles-filters-bar">
-             <div className="roles-filter-group">
-                <label htmlFor="search-roles">Search roles</label>
-                <input 
-                   id="search-roles"
-                   type="text" 
-                   className="roles-filter-input" 
-                   placeholder="Keyword or department..."
-                   value={search}
-                   onChange={e => setSearch(e.target.value)}
-                   data-testid="input-roles-search"
+          <div className="roles-chat-search">
+            <div className="roles-chat-prompt">
+              <span className="roles-chat-mark" aria-hidden="true">L2</span>
+              <div>
+                <span className="roles-chat-label">Role finder</span>
+                <p>What kind of role are you looking for?</p>
+              </div>
+            </div>
+            <div className="roles-chat-composer">
+              <label htmlFor="search-roles">Search roles by keyword</label>
+              <div className="roles-chat-input-wrap">
+                <input
+                  id="search-roles"
+                  type="search"
+                  className="roles-chat-input"
+                  placeholder='Try “camera”, “part time” or “closed”'
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  autoComplete="off"
+                  data-testid="input-roles-search"
                 />
-             </div>
-             <div className="roles-filter-group">
-                <label htmlFor="dept-filter">Department</label>
-                <select 
-                   id="dept-filter"
-                   className="roles-filter-input"
-                   value={deptFilter}
-                   onChange={e => setDeptFilter(e.target.value)}
-                   data-testid="select-roles-dept"
-                >
-                   {departments.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-             </div>
-             <div className="roles-filter-group">
-                <label htmlFor="type-filter">Role Type</label>
-                <select 
-                   id="type-filter"
-                   className="roles-filter-input"
-                   value={typeFilter}
-                   onChange={e => setTypeFilter(e.target.value)}
-                   data-testid="select-roles-type"
-                >
-                   {types.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-             </div>
-             <div className="roles-filter-group">
-                <label htmlFor="status-filter">Status</label>
-                <select 
-                   id="status-filter"
-                   className="roles-filter-input"
-                   value={statusFilter}
-                   onChange={e => setStatusFilter(e.target.value)}
-                   data-testid="select-roles-status"
-                >
-                   {statuses.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-             </div>
+                {search && (
+                  <button
+                    type="button"
+                    className="roles-chat-clear"
+                    onClick={() => setSearch("")}
+                    aria-label="Clear role search"
+                    data-testid="button-clear-roles-search"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <span className="roles-chat-hint">Searches titles, departments, role types and status.</span>
+            </div>
           </div>
         </section>
 
@@ -138,8 +117,8 @@ export function RolesPage() {
 
           {filteredRoles.length === 0 ? (
             <div className="roles-empty" data-testid="container-roles-empty">
-              <h3 className="roles-empty-title">No roles match your criteria</h3>
-              <p>Try adjusting your filters or search term to see more results.</p>
+              <h3 className="roles-empty-title">No roles match that search</h3>
+              <p>Try a different title, department, role type or status.</p>
             </div>
           ) : (
             <div className="roles-grid">
