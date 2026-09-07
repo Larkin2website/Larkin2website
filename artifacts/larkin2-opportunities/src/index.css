@@ -144,7 +144,7 @@
 }
 .larkin2-top.is-scrolled {
   border-color: rgba(244,241,237,.09);
-  background: linear-gradient(180deg, rgba(8,10,12,.96), rgba(8,10,12,.7) 72%, transparent);
+  background: #101315;
 }
 .larkin2-top.is-hidden { transform: translateY(-110%); }
 .larkin2-mark {
