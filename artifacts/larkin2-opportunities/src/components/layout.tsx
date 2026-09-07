@@ -123,7 +123,6 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
         </button>
         
         <div className={`larkin2-nav-sub ${isOpen ? "is-open" : ""}`}>
-          <NavLink href="/roles" testId="link-nav-roles">Roles</NavLink>
           <NavLink href="/opportunities/first-credit" testId="link-nav-first-credit">First Credit</NavLink>
           <NavLink href="/opportunities/director-pathway" testId="link-nav-director">Director Pathway</NavLink>
           <NavLink href="/opportunities/producer-pathway" testId="link-nav-producer">Producer Pathway</NavLink>
@@ -136,6 +135,7 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
     <header ref={headerRef} className={`larkin2-top ${scrolled ? "is-scrolled" : ""} ${headerHidden ? "is-hidden" : ""}`}>
       <LogoLink />
       <nav className="larkin2-nav" aria-label="Main navigation">
+        <NavLink href="/roles" testId="link-nav-roles">Roles</NavLink>
         <OpportunitiesSubmenu />
         <NavLink href="#commitments" testId="link-commitments">Commitments</NavLink>
         <NavLink href="#about" testId="link-about">About</NavLink>
@@ -284,6 +284,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
       </div>
       <nav className="larkin2-mobile-nav" aria-label="Mobile main navigation">
         <MobileLink href="/" testId="link-mobile-home" num="01">Home</MobileLink>
+        <MobileLink href="/roles" testId="link-mobile-roles">Roles</MobileLink>
         <div className="larkin2-mobile-group">
           <button
             type="button"
@@ -298,7 +299,6 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
           </button>
           {opportunitiesOpen && (
             <div className="larkin2-mobile-sub" id="mobile-opportunities-submenu">
-              <MobileLink href="/roles" testId="link-mobile-roles">Roles</MobileLink>
               <MobileLink href="/opportunities/first-credit" testId="link-mobile-first-credit">First Credit</MobileLink>
               <MobileLink href="/opportunities/director-pathway" testId="link-mobile-director">Director Pathway</MobileLink>
               <MobileLink href="/opportunities/producer-pathway" testId="link-mobile-producer">Producer Pathway</MobileLink>
