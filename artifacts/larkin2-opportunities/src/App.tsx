@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import { Route, Switch, useLocation, Router as WouterRouter } from "wouter";
 import { useEffect } from "react";
 import "./index.css";
+import { scrollToHash } from "./utils/navigation";
 
 import { Home } from "./pages/home";
 import { RolesPage } from "./pages/roles";
@@ -17,15 +18,20 @@ function ScrollManager() {
   const [location] = useLocation();
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      setTimeout(() => {
-        const el = document.querySelector(hash);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      window.scrollTo(0, 0);
-    }
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        scrollToHash(hash);
+      } else {
+        window.scrollTo(0, 0);
+      }
+    };
+
+    handleHash();
+
+    // Optionally handle native hash changes (like back/forward buttons)
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
   }, [location]);
 
   return null;

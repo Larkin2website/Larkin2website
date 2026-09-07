@@ -356,7 +356,7 @@
   max-width: 1100px;
   margin: 0 0 28px;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(64px, 8.5vw, 128px);
+  font-size: clamp(48px, 12vw, 128px);
   font-weight: 400;
   letter-spacing: -.1em;
   line-height: .76;
@@ -431,7 +431,7 @@
   max-width: 740px;
   margin: 19px 0 35px;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(45px, 6.2vw, 92px);
+  font-size: clamp(36px, 8vw, 92px);
   font-weight: 400;
   letter-spacing: -.075em;
   line-height: .95;
@@ -451,7 +451,7 @@
   margin: 47px 0 1px;
   color: var(--ink);
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(27px, 3.4vw, 54px);
+  font-size: clamp(24px, 6vw, 54px);
   letter-spacing: -.065em;
   line-height: 1;
 }
@@ -691,7 +691,7 @@
 .larkin2-commit-header-text { max-width: 840px; }
 .larkin2-commit-header-text .larkin2-title {
   max-width: 100%;
-  font-size: clamp(52px, 7.5vw, 105px);
+  font-size: clamp(40px, 9vw, 105px);
   color: var(--paper-ink);
   margin: 24px 0 20px;
 }
@@ -710,18 +710,39 @@
   border-color: var(--paper-ink);
 }
 
-.larkin2-commit-stack {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+/* Carousel styling replaces the old overlapping stack */
+.larkin2-carousel {
   margin-top: clamp(40px, 6vw, 80px);
   padding-bottom: clamp(60px, 8vw, 120px);
+  outline: none;
 }
-
-.larkin2-commit-card {
-  position: relative;
-  z-index: calc(var(--card-index) + 1);
+.larkin2-carousel:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 8px;
+}
+.larkin2-carousel-viewport {
+  overflow: hidden;
+  border-radius: 12px;
+}
+.larkin2-carousel-track {
+  display: flex;
+  touch-action: pan-y;
+  user-select: none;
+  will-change: transform;
+}
+.larkin2-carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  display: flex;
+  /* Visibility hidden when inactive is managed via aria-hidden selector below if needed, 
+     but keeping it block ensures height calculation works */
+}
+.larkin2-carousel-slide[aria-hidden="true"] {
+  /* Prevent focus on inactive slides */
+  visibility: hidden;
+}
+.larkin2-carousel-slide[aria-hidden="false"] {
+  visibility: visible;
 }
 
 .larkin2-commit-card-inner {
@@ -732,7 +753,8 @@
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
-  transition: transform 0.6s var(--ease-cinematic);
+  height: 100%;
+  width: 100%;
 }
 
 .larkin2-commit-card-content {
@@ -747,7 +769,7 @@
   flex: 1;
   position: relative;
   min-height: 280px;
-  border-top: 1px solid rgba(29,32,32,.08);
+  border-bottom: 1px solid rgba(29,32,32,.08);
 }
 
 .larkin2-commit-card-media img {
@@ -786,54 +808,114 @@
   max-width: 520px;
 }
 
-@media (min-width: 768px) {
-  .larkin2-commit-stack {
-    gap: 0;
-  }
-  
-  .larkin2-commit-card {
-    position: sticky;
-    top: calc(140px + (var(--card-index) * 35px));
-    margin-bottom: 80px;
-  }
-  
-  .larkin2-commit-card:last-child {
-    margin-bottom: 0;
-  }
+/* Controls */
+.larkin2-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+}
 
+.larkin2-carousel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(29,32,32,.2);
+  background: var(--ink);
+  color: var(--paper-ink);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.larkin2-carousel-btn:hover:not(:disabled) {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+.larkin2-carousel-btn:focus-visible,
+.larkin2-carousel-dot:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+}
+.larkin2-carousel-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.larkin2-carousel-pagination {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.larkin2-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.larkin2-carousel-dot {
+  position: relative;
+  width: 28px;
+  height: 44px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.larkin2-carousel-dot::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(29,32,32,.2);
+  content: "";
+  transform: translate(-50%, -50%);
+  transition: background-color .3s ease, transform .3s ease;
+}
+.larkin2-carousel-dot.is-active::after {
+  background: var(--orange);
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+.larkin2-carousel-indicator {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--paper-ink);
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
   .larkin2-commit-card-inner {
     flex-direction: row;
     align-items: stretch;
-    height: 480px;
+    min-height: 480px;
   }
   
   .larkin2-commit-card-media {
     max-width: 50%;
-    border-top: none;
+    border-bottom: none;
     border-left: 1px solid rgba(29,32,32,.08);
+  }
+  .larkin2-carousel-controls {
+    justify-content: flex-end;
+    gap: 30px;
   }
 }
 
 @media (max-width: 767px) {
-  .larkin2-commit-card {
-    position: sticky;
-    top: calc(100px + (var(--card-index) * 20px));
-    margin-bottom: 40px;
+  .larkin2-commit-card-inner {
+    flex-direction: column-reverse;
   }
-  
-  .larkin2-commit-card:last-child {
-    margin-bottom: 0;
+  .larkin2-commit-card-media {
+    min-height: 220px;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .larkin2-commit-stack {
-    gap: 40px;
-  }
-  .larkin2-commit-card {
-    position: static;
-    margin-bottom: 0;
-  }
+  .larkin2-carousel-pagination { gap: 8px; }
 }
 
 .larkin2-culture {
@@ -889,7 +971,7 @@
 .larkin2-about .larkin2-copy { color: var(--secondary); }
 .larkin2-signup { border-color: rgba(8,10,12,.32); background: var(--orange); }
 .larkin2-signup-layout { grid-template-columns: 1.1fr .9fr; }
-.larkin2-signup .larkin2-title { max-width: 820px; font-size: clamp(52px, 7.5vw, 120px); }
+.larkin2-signup .larkin2-title { max-width: 820px; font-size: clamp(42px, 9vw, 120px); }
 .larkin2-signup .larkin2-eyebrow { color: #55261c; }
 .larkin2-signup .larkin2-copy { color: #3e211b; }
 .larkin2-signup .larkin2-small { color: #67372e; }
@@ -1117,6 +1199,62 @@ select.roles-filter-input {
 }
 
 @media (max-width: 900px) {
+  .larkin2-path-grid {
+    display: flex;
+    flex-direction: column;
+  }
+  .larkin2-path:nth-child(1),
+  .larkin2-path:nth-child(2),
+  .larkin2-path:nth-child(3) {
+    min-height: 420px;
+    border-right: none;
+    border-bottom: 1px solid rgba(244,241,237,.62);
+  }
+  .larkin2-path:nth-child(3) {
+    border-bottom: none;
+  }
+  .larkin2-path-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  
+  .larkin2-culture .larkin2-grid {
+    padding-right: clamp(20px, 7.5vw, 120px);
+  }
+  .larkin2-culture .larkin2-grid > div {
+    padding-bottom: 0;
+  }
+  
+  .larkin2-hero-split {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+  }
+  .larkin2-hero-right {
+    flex: 1 1 auto;
+    padding-bottom: 0;
+  }
+  .larkin2-section-intro, .larkin2-grid, .larkin2-signup-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .larkin2-paths-header {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .larkin2-role-status {
+    align-self: stretch;
+  }
+  .larkin2-commit-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+  }
+  .larkin2-foot {
+    grid-template-columns: 1fr 1fr;
+  }
+  
   .roles-card {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -1134,6 +1272,12 @@ select.roles-filter-input {
   }
 }
 
+@media (max-width: 600px) {
+  .larkin2-foot {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* mobile nav overrides */
 .larkin2-mobile-group { margin: 10px 0; }
 .larkin2-mobile-group-title {
@@ -1148,11 +1292,16 @@ select.roles-filter-input {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
   padding-left: 12px;
   border-left: 1px solid var(--line);
 }
 .larkin2-mobile-sub a {
-  font-size: clamp(24px, 6vw, 36px);
+  min-width: 0;
+  font-size: clamp(18px, 5.2vw, 24px);
+  line-height: 1.08;
+  white-space: normal;
+  overflow-wrap: anywhere;
   color: var(--ink);
 }
 .larkin2-mobile-sub a span {
@@ -1387,7 +1536,7 @@ select.roles-filter-input {
   .larkin2-header-cta { display: none; }
   .larkin2-menu-toggle { display: inline-flex; grid-column: 2; justify-self: end; align-items: center; gap: 9px; padding: 10px 0 10px 10px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
   .larkin2-menu-toggle i { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
-  .larkin2-mobile-menu { position: fixed; z-index: 35; inset: 0; display: flex; flex-direction: column; padding: 21px 18px 25px; background: var(--stage); transform: translateX(100%); transition: transform .8s var(--ease-cinematic); visibility: hidden; }
+  .larkin2-mobile-menu { position: fixed; z-index: 35; inset: 0; display: flex; min-width: 0; flex-direction: column; overflow-x: hidden; overflow-y: auto; padding: 21px 18px 25px; background: var(--stage); transform: translateX(100%); transition: transform .8s var(--ease-cinematic); visibility: hidden; }
   .larkin2-mobile-menu.is-open { transform: translateX(0); visibility: visible; }
   .larkin2-mobile-menu-head { display: flex; align-items: center; justify-content: space-between; }
   .larkin2-mobile-label { color: var(--muted); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
@@ -1612,6 +1761,9 @@ select.roles-filter-input {
 @media (max-width: 900px) {
   .opp-content-layout {
     grid-template-columns: 1fr;
+  }
+  .opp-status-card {
+    position: static;
   }
 }
 

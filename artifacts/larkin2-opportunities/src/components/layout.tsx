@@ -1,10 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
+import { scrollToHash } from "../utils/navigation";
 
 export function MaskedLink({ href, children, className = "", testId, onClick, target, rel }: any) {
   const [location] = useLocation();
   const isHash = href.startsWith("#");
   const isInternal = href.startsWith("/");
+
+  const handleHashClick = (e: React.MouseEvent) => {
+    if (onClick) onClick(e);
+    if (isHash && location === "/") {
+      e.preventDefault();
+      history.pushState(null, '', href);
+      scrollToHash(href);
+    }
+  };
 
   const content = (
     <>
@@ -27,7 +37,7 @@ export function MaskedLink({ href, children, className = "", testId, onClick, ta
   if (isHash) {
     if (location === "/") {
       return (
-        <a className={`larkin2-link ${className}`} href={href} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
+        <a className={`larkin2-link ${className}`} href={href} onClick={handleHashClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
           {content}
         </a>
       );
@@ -51,18 +61,34 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
   const [location] = useLocation();
   
   const NavLink = ({ href, children, testId }: any) => {
+    const handleHashClick = (e: React.MouseEvent) => {
+      if (href.startsWith("#") && location === "/") {
+        e.preventDefault();
+        history.pushState(null, '', href);
+        scrollToHash(href);
+      }
+    };
+
     if (href.startsWith("#") && location !== "/") {
       return <Link href={`/${href}`} className="larkin2-nav-link" data-testid={testId}>{children}</Link>;
     }
     if (href.startsWith("/")) {
       return <Link href={href} className="larkin2-nav-link" data-testid={testId}>{children}</Link>;
     }
-    return <a href={href} className="larkin2-nav-link" data-testid={testId}>{children}</a>;
+    return <a href={href} className="larkin2-nav-link" onClick={handleHashClick} data-testid={testId}>{children}</a>;
   };
 
   const LogoLink = () => {
+    const handleHashClick = (e: React.MouseEvent) => {
+      if (location === "/") {
+        e.preventDefault();
+        history.pushState(null, '', "#top");
+        scrollToHash("#top");
+      }
+    };
+
     if (location === "/") {
-      return <a href="#top" className="larkin2-mark" aria-label="Larkin2 home" data-testid="link-home">Larkin2<span aria-hidden="true">.</span></a>;
+      return <a href="#top" className="larkin2-mark" onClick={handleHashClick} aria-label="Larkin2 home" data-testid="link-home">Larkin2<span aria-hidden="true">.</span></a>;
     }
     return <Link href="/" className="larkin2-mark" aria-label="Larkin2 home" data-testid="link-home">Larkin2<span aria-hidden="true">.</span></Link>;
   };
@@ -168,29 +194,42 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
   const [location] = useLocation();
   const menuPanelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const wasOpen = useRef(false);
+  const lockedScrollY = useRef(0);
   
   const closeMenu = () => setMenuOpen(false);
 
   const MobileLink = ({ href, children, testId, num }: any) => {
+    const handleClick = (e: React.MouseEvent) => {
+      if (href.startsWith("#") && location === "/") {
+        e.preventDefault();
+        
+        closeMenu();
+        
+        history.pushState(null, '', href);
+        scrollToHash(href);
+      } else {
+        closeMenu();
+      }
+    };
+
     if (href.startsWith("#") && location !== "/") {
       return <Link href={`/${href}`} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
     }
     if (href.startsWith("/")) {
       return <Link href={href} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
     }
-    return <a href={href} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</a>;
+    return <a href={href} onClick={handleClick} data-testid={testId}>{children} {num && <span>{num}</span>}</a>;
   };
 
   useEffect(() => {
-    if (!menuOpen) {
-      document.body.style.overflow = "";
-      if (wasOpen.current) menuButtonRef?.current?.focus();
-      wasOpen.current = false;
-      return;
-    }
-    wasOpen.current = true;
+    if (!menuOpen) return;
+
+    lockedScrollY.current = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${lockedScrollY.current}px`;
+    document.body.style.width = "100%";
     document.body.style.overflow = "hidden";
+    
     closeButtonRef.current?.focus();
     
     const onKeyDown = (event: KeyboardEvent) => {
@@ -214,8 +253,13 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
     
     document.addEventListener("keydown", onKeyDown);
     return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
       document.body.style.overflow = "";
+      window.scrollTo(0, lockedScrollY.current);
       document.removeEventListener("keydown", onKeyDown);
+      if (menuButtonRef?.current?.isConnected) menuButtonRef.current.focus();
     };
   }, [menuOpen, setMenuOpen, menuButtonRef]);
 

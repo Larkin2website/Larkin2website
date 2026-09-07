@@ -76,6 +76,165 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
   );
 }
 
+function CommitmentsCarousel() {
+  const [active, setActive] = useState(0);
+  const pointerStartX = useRef<number | null>(null);
+  const pointerStartY = useRef<number | null>(null);
+  const pointerEndX = useRef<number | null>(null);
+  const pointerEndY = useRef<number | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    let mql: MediaQueryList;
+    try {
+      mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+      setReducedMotion(mql.matches);
+      const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    } catch {
+      setReducedMotion(false);
+    }
+    return undefined;
+  }, []);
+
+  const resetPointer = () => {
+    pointerStartX.current = null;
+    pointerStartY.current = null;
+    pointerEndX.current = null;
+    pointerEndY.current = null;
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    pointerStartX.current = e.clientX;
+    pointerStartY.current = e.clientY;
+    pointerEndX.current = e.clientX;
+    pointerEndY.current = e.clientY;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (pointerStartX.current === null) return;
+    pointerEndX.current = e.clientX;
+    pointerEndY.current = e.clientY;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (
+      pointerStartX.current === null ||
+      pointerStartY.current === null ||
+      pointerEndX.current === null ||
+      pointerEndY.current === null
+    ) return;
+    const diffX = pointerStartX.current - pointerEndX.current;
+    const diffY = pointerStartY.current - pointerEndY.current;
+    
+    if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX > 0 && active < commitments.length - 1) {
+        setActive(p => p + 1);
+      } else if (diffX < 0 && active > 0) {
+        setActive(p => p - 1);
+      }
+    }
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    resetPointer();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") {
+      setActive(p => Math.min(commitments.length - 1, p + 1));
+    } else if (e.key === "ArrowLeft") {
+      setActive(p => Math.max(0, p - 1));
+    }
+  };
+
+  return (
+    <div 
+      className="larkin2-carousel larkin2-reveal" 
+      data-reveal
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      aria-label="Commitments carousel"
+      role="region"
+    >
+      <div className="larkin2-carousel-viewport">
+        <div 
+          className="larkin2-carousel-track" 
+          style={{ 
+            transform: `translateX(-${active * 100}%)`, 
+            transition: reducedMotion ? 'none' : 'transform 0.6s var(--ease-cinematic)' 
+          }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={resetPointer}
+        >
+          {commitments.map(([num, title, copy, img], index) => (
+            <div 
+              className="larkin2-carousel-slide" 
+              aria-hidden={active !== index} 
+              key={num}
+              data-testid={`item-commitment-${num}`}
+            >
+              <div className="larkin2-commit-card-inner">
+                <div className="larkin2-commit-card-content">
+                  <div className="larkin2-commit-meta">Commitment / {num}</div>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </div>
+                <div className="larkin2-commit-card-media">
+                  <img src={`/larkin2-opportunities/images/${img}`} alt="" loading={index === 0 ? "eager" : "lazy"} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="larkin2-carousel-controls">
+        <button 
+          className="larkin2-carousel-btn" 
+          onClick={() => setActive(p => Math.max(0, p - 1))} 
+          disabled={active === 0}
+          aria-label="Previous commitment"
+          data-testid="button-commitment-previous"
+        >
+          ←
+        </button>
+        <div className="larkin2-carousel-pagination">
+          <div className="larkin2-carousel-dots">
+            {commitments.map((_, i) => (
+              <button 
+                key={i}
+                className={`larkin2-carousel-dot ${active === i ? "is-active" : ""}`}
+                onClick={() => setActive(i)}
+                aria-label={`Go to commitment ${i + 1}`}
+                aria-current={active === i ? "true" : "false"}
+                data-testid={`button-commitment-dot-${i + 1}`}
+              />
+            ))}
+          </div>
+          <div className="larkin2-carousel-indicator">
+            0{active + 1} / 0{commitments.length}
+          </div>
+        </div>
+        <button 
+          className="larkin2-carousel-btn" 
+          onClick={() => setActive(p => Math.min(commitments.length - 1, p + 1))} 
+          disabled={active === commitments.length - 1}
+          aria-label="Next commitment"
+          data-testid="button-commitment-next"
+        >
+          →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function Home() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -316,28 +475,7 @@ export function Home() {
               <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-commitments-signup">Sign up for updates</MaskedLink>
             </div>
           </div>
-          <div className="larkin2-commit-stack">
-            {commitments.map(([num, title, copy, img], index) => (
-              <article 
-                className="larkin2-commit-card larkin2-reveal" 
-                data-reveal 
-                key={num} 
-                style={{ "--card-index": index, "--reveal-delay": `${index * 70}ms` } as CSSProperties} 
-                data-testid={`item-commitment-${num}`}
-              >
-                <div className="larkin2-commit-card-inner">
-                  <div className="larkin2-commit-card-content">
-                    <div className="larkin2-commit-meta">Commitment / {num}</div>
-                    <h3>{title}</h3>
-                    <p>{copy}</p>
-                  </div>
-                  <div className="larkin2-commit-card-media">
-                    <img src={`/larkin2-opportunities/images/${img}`} alt="" loading="lazy" />
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+          <CommitmentsCarousel />
         </section>
 
         <section className="larkin2-section larkin2-culture" aria-labelledby="culture-title">
