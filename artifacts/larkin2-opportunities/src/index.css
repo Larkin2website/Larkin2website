@@ -1552,8 +1552,16 @@ select.roles-filter-input {
   .larkin2-menu-close { padding: 10px 0 10px 10px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
   .larkin2-menu-close span { margin-left: 7px; color: var(--orange); font-size: 18px; line-height: 0; vertical-align: -2px; }
   .larkin2-mobile-nav { display: flex; flex-direction: column; margin: auto 0; }
-  .larkin2-mobile-nav a { display: flex; align-items: baseline; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--line); font-family: 'Space Grotesk', sans-serif; font-size: clamp(30px, 10vw, 47px); letter-spacing: -.065em; }
+  .larkin2-mobile-nav a { display: flex; align-items: baseline; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--line); font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 8vw, 36px); letter-spacing: -.065em; }
   .larkin2-mobile-nav a span { color: var(--orange); font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: .13em; }
+  .larkin2-mobile-nav .larkin2-mobile-group { margin: 6px 0; }
+  .larkin2-mobile-nav .larkin2-mobile-group-title { margin-bottom: 6px; }
+  .larkin2-mobile-nav .larkin2-mobile-sub { gap: 2px; padding-left: 10px; }
+  .larkin2-mobile-nav .larkin2-mobile-sub a {
+    padding: 8px 0;
+    font-size: clamp(17px, 4.8vw, 21px);
+    letter-spacing: -.035em;
+  }
   .larkin2-mobile-contact { display: flex; justify-content: space-between; gap: 20px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.4; }
   .larkin2-mobile-contact a { color: var(--ink); white-space: nowrap; }
   .larkin2-hero-track { height: 180svh; }
