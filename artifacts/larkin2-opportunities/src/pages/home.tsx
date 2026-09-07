@@ -421,7 +421,7 @@ export function Home() {
                 </div>
                 <div className="larkin2-hero-actions-wrap">
                   <div className="larkin2-actions">
-                    <MaskedLink href="#roles" className="larkin2-btn" testId="link-hero-role-status">View current role status</MaskedLink>
+                    <MaskedLink href="/roles" className="larkin2-btn" testId="link-hero-role-status">View current role status</MaskedLink>
                     <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
                     <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
                   </div>
@@ -463,7 +463,7 @@ export function Home() {
               <h3 className="larkin2-role-status-title">Looking for a crew role / 04</h3>
               <strong data-testid="status-crew-roles">Paid crew positions are posted as the production needs them, across every department from Accounts to VFX. Postings open and close quickly.</strong>
               <div className="larkin2-role-status-actions">
-                <MaskedLink href="#roles" testId="link-opportunity-04">View current role status</MaskedLink>
+                <MaskedLink href="/roles" testId="link-opportunity-04">View current role status</MaskedLink>
                 <MaskedLink href="#signup" testId="link-role-status-signup">Sign up to hear when something opens</MaskedLink>
               </div>
             </div>
@@ -494,7 +494,7 @@ export function Home() {
             <h3 className="larkin2-role-status-title">Looking for a crew role / 04</h3>
             <strong>Paid crew positions are posted as the production needs them, across every department from Accounts to VFX. Postings open and close quickly.</strong>
             <div className="larkin2-role-status-actions">
-              <MaskedLink href="#roles" testId="link-opportunity-04-mobile">View current role status</MaskedLink>
+              <MaskedLink href="/roles" testId="link-opportunity-04-mobile">View current role status</MaskedLink>
               <MaskedLink href="#signup" testId="link-role-status-signup-mobile">Sign up to hear when something opens</MaskedLink>
             </div>
           </div>
@@ -544,7 +544,7 @@ export function Home() {
               <p>This is the official home for every live role, work experience placement, shadowing programme and industry event connected to Larkin2. It is run by the production itself, not a third-party jobs board, which means what you see here is what is genuinely open.</p>
               <p>Whether you have crewed a dozen HETV dramas or have never been on a set, this is where you start.</p>
               <div className="larkin2-actions">
-                <MaskedLink href="#roles" className="larkin2-btn" testId="link-about-role-status">View current role status</MaskedLink>
+                <MaskedLink href="/roles" className="larkin2-btn" testId="link-about-role-status">View current role status</MaskedLink>
                 <MaskedLink href="mailto:opportunities@baileyopportunities.com" className="larkin2-btn secondary" testId="link-about-contact">Contact us</MaskedLink>
               </div>
             </div>
