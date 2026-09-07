@@ -1597,6 +1597,7 @@ select.roles-filter-input {
   .larkin2-hero-meta > span:first-child { flex: 0 1 auto; }
   .larkin2-scroll-line { flex: 1 1 auto; width: auto; margin: 0 12px; }
   .larkin2-section { padding: 80px 20px; }
+  .larkin2-culture { padding: 0; }
   .larkin2-section-intro, .larkin2-grid, .larkin2-signup-layout { grid-template-columns: 1fr; gap: 45px; }
   .larkin2-title { margin-top: 17px; font-size: clamp(45px, 13vw, 62px); }
   .larkin2-copy { font-size: 19px; }
@@ -1623,6 +1624,7 @@ select.roles-filter-input {
   .larkin2-culture .larkin2-grid {
     gap: 0;
     padding-left: 0;
+    padding-right: 0;
   }
   .larkin2-culture .larkin2-grid > div {
     padding: 80px 20px;
