@@ -893,6 +893,12 @@
 }
 
 @media (min-width: 768px) {
+  .larkin2-commit {
+    padding-bottom: clamp(32px, 4vw, 56px);
+  }
+  .larkin2-carousel {
+    padding-bottom: clamp(24px, 3vw, 44px);
+  }
   .larkin2-commit-card-inner {
     flex-direction: row;
     align-items: stretch;
