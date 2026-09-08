@@ -185,6 +185,11 @@ export function SiteFooter() {
         <FooterLink href="#signup" testId="link-footer-signup">Sign up for updates</FooterLink>
         <a href="mailto:opportunities@baileyopportunities.com" data-testid="link-footer-contact">Contact us ↗</a>
       </div>
+      <div className="larkin2-foot-col">
+        <span>Legal</span>
+        <FooterLink href="/privacy" testId="link-footer-privacy">Privacy Notice</FooterLink>
+        <FooterLink href="/terms" testId="link-footer-terms">Terms &amp; Conditions</FooterLink>
+      </div>
       <div className="larkin2-foot-bottom"><span>London / UK</span><span>© 60Forty Films</span><span>Official Larkin2 opportunities</span></div>
     </footer>
   );

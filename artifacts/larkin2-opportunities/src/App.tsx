@@ -12,6 +12,7 @@ import { Home } from "./pages/home";
 import { RolesPage } from "./pages/roles";
 import { RoleDetailPage } from "./pages/role-detail";
 import { OpportunityPage } from "./pages/opportunity";
+import { PrivacyNoticePage, TermsPage } from "./pages/legal";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,8 @@ function Router() {
         <Route path="/opportunities/:id">
           {(params) => <OpportunityPage id={params.id} />}
         </Route>
+        <Route path="/privacy" component={PrivacyNoticePage} />
+        <Route path="/terms" component={TermsPage} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>
