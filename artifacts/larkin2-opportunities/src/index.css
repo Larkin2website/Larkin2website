@@ -2085,6 +2085,7 @@
 
 @media (max-width: 767px) {
   .roles-page .roles-filters {
+    position: static;
     padding: 16px 20px 18px;
   }
   .roles-page .roles-chat-prompt p {
