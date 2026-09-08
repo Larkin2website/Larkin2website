@@ -13,6 +13,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { PageHeader } from "@/components/brand";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 export default function DashboardPage() {
   const { data: dashboard, isLoading, error } = useGetPortalDashboard();
@@ -21,12 +32,15 @@ export default function DashboardPage() {
     return (
       <div className="space-y-5 sm:space-y-6 animate-pulse">
         <PageHeader title="Dashboard" subtitle="Overview of your publishing operations" className="rounded-[28px] border border-border bg-card p-5 sm:p-7" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 rounded-[28px]">
-          {[1, 2, 3, 4].map(i => (
-            <Card key={i} className="bg-[#171b1d] border-[#2a2f31] rounded-[22px]">
-              <CardHeader className="h-24" />
-            </Card>
-          ))}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 rounded-[28px]">
+          <Card className="xl:col-span-2 bg-[#171b1d] border-[#2a2f31] rounded-[28px] h-[350px]" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[1, 2, 3, 4].map(i => (
+              <Card key={i} className="bg-[#171b1d] border-[#2a2f31] rounded-[22px]">
+                <CardHeader className="h-[150px]" />
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -48,7 +62,7 @@ export default function DashboardPage() {
   const { counts, recentOpportunities, recentActivity } = dashboard;
 
   return (
-    <div className="space-y-5 sm:space-y-6 min-w-0">
+    <div className="space-y-5 sm:space-y-6 min-w-0 pb-12">
       <PageHeader
         title="Dashboard"
         subtitle="Overview of your publishing operations"
@@ -62,28 +76,51 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 min-w-0">
-        <StatCard 
-          title="Published Roles" 
-          value={counts.published} 
-          icon={CheckCircle2} 
-          description={`${counts.closingSoon} closing soon`}
-        />
-        <StatCard 
-          title="Drafts" 
-          value={counts.draft} 
-          icon={FileText} 
-        />
-        <StatCard 
-          title="Filled" 
-          value={counts.filled} 
-          icon={Briefcase}
-        />
-        <StatCard 
-          title="Archived" 
-          value={counts.archived} 
-          icon={Archive} 
-        />
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 min-w-0">
+        <div className="xl:col-span-2 rounded-[28px] border border-border bg-card p-5 sm:p-7 min-w-0 flex flex-col">
+          <div className="flex flex-wrap gap-4 justify-between items-start mb-8">
+            <div>
+              <h2 className="font-mono text-xl font-medium tracking-tight">Role Snapshot</h2>
+              <p className="text-sm text-muted-foreground mt-1">Current distribution of all roles</p>
+            </div>
+            <div className="text-right">
+               <div className="font-mono text-4xl font-medium tracking-tight">{counts.total}</div>
+               <div className="text-[10px] uppercase tracking-[0.15em] text-[#85898a] mt-1">Total Roles</div>
+            </div>
+          </div>
+
+          <div className="flex-1 min-h-[220px]">
+            <SnapshotChart counts={counts} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
+          <StatCard
+            title="Published"
+            value={counts.published}
+            total={counts.total}
+            icon={CheckCircle2}
+            description={`${counts.closingSoon} closing soon`}
+          />
+          <StatCard
+            title="Drafts"
+            value={counts.draft}
+            total={counts.total}
+            icon={FileText}
+          />
+          <StatCard
+            title="Filled"
+            value={counts.filled}
+            total={counts.total}
+            icon={Briefcase}
+          />
+          <StatCard
+            title="Archived"
+            value={counts.archived}
+            total={counts.total}
+            icon={Archive}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 min-w-0">
@@ -131,10 +168,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="space-y-5 min-w-0 rounded-[28px] border border-border bg-card p-5 sm:p-6">
-          <h2 className="font-mono text-xl font-medium tracking-tight border-b border-border pb-4 break-words">Activity Log</h2>
+        <div className="space-y-5 min-w-0 rounded-[28px] border border-border bg-card p-5 sm:p-6 flex flex-col h-full">
+          <h2 className="font-mono text-xl font-medium tracking-tight border-b border-border pb-4 break-words shrink-0">Activity Log</h2>
           
-          <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0 overflow-hidden rounded-[20px]">
+          <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0 overflow-hidden rounded-[20px] flex-1">
             <div className="divide-y divide-[#2a2f31]">
               {recentActivity.length === 0 ? (
                 <div className="p-8 text-center text-sm text-muted-foreground break-words">
@@ -146,7 +183,7 @@ export default function DashboardPage() {
                     <div className="mt-1 w-2 h-2 rounded-full bg-primary shrink-0" />
                     <div className="min-w-0">
                       <p className="text-sm text-[#e9e5df] leading-snug break-words">
-                        <span className="font-medium text-white">{activity.actorName}</span>
+                        <span className="font-medium text-foreground">{activity.actorName}</span>
                         {" "}
                         <span className="text-[#85898a]">{formatAction(activity.action)}</span>
                       </p>
@@ -166,19 +203,144 @@ export default function DashboardPage() {
   );
 }
 
-function StatCard({ title, value, description, icon: Icon }: { title: string, value: number, description?: string, icon: any }) {
+type DashboardCounts = {
+  total: number;
+  draft: number;
+  published: number;
+  closingSoon: number;
+  closed: number;
+  filled: number;
+  archived: number;
+};
+
+function SnapshotChart({ counts }: { counts: DashboardCounts }) {
+  const data = [
+    { label: "Draft", value: counts.draft, fill: "#1d2020" },
+    { label: "Published", value: counts.published, fill: "#f4773f" },
+    { label: "Closed", value: counts.closed, fill: "#85898a" },
+    { label: "Filled", value: counts.filled, fill: "#e9e5df", stroke: "#625d58" },
+    { label: "Archived", value: counts.archived, fill: "#2a2f31" },
+  ];
+
   return (
-    <Card className="bg-[#171b1d] border border-[#2a2f31] rounded-[22px] shadow-none min-w-0 flex flex-col h-full">
-      <CardHeader className="flex flex-row items-center justify-between pb-4 pt-6 px-6 space-y-0 shrink-0 min-w-0">
-        <CardTitle className="text-[11px] font-medium text-[#85898a] uppercase tracking-[0.15em] truncate pr-2">
+    <div
+      className="relative h-full w-full min-h-[220px]"
+      role="img"
+      aria-label={`Role status distribution: ${counts.draft} draft, ${counts.published} published, ${counts.closed} closed, ${counts.filled} filled, and ${counts.archived} archived`}
+      data-testid="chart-role-status"
+    >
+      {counts.total === 0 ? (
+        <div className="flex h-full min-h-[220px] items-center justify-center rounded-[20px] border border-dashed border-border">
+          <div className="text-center">
+            <p className="font-mono text-lg font-medium">No roles yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">Status distribution will appear here.</p>
+          </div>
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            margin={{ top: 24, right: 0, left: -20, bottom: 0 }}
+            accessibilityLayer
+          >
+            <CartesianGrid
+              vertical={false}
+              stroke="hsl(var(--border))"
+              strokeDasharray="3 5"
+            />
+            <XAxis
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#625d58", fontSize: 10 }}
+              interval={0}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              allowDecimals={false}
+              width={40}
+              tick={{ fill: "#625d58", fontSize: 10 }}
+            />
+            <Tooltip
+              cursor={{ fill: "rgba(29, 32, 32, 0.05)" }}
+              contentStyle={{
+                background: "#1d2020",
+                border: "0",
+                borderRadius: "12px",
+                color: "#f4f1ed",
+                fontSize: "12px",
+              }}
+              itemStyle={{ color: "#f4f1ed" }}
+              formatter={(value: number) => [`${value} roles`, "Current total"]}
+            />
+            <Bar dataKey="value" maxBarSize={48} radius={[24, 24, 24, 24]}>
+              <LabelList
+                dataKey="value"
+                position="top"
+                fill="#1d2020"
+                fontSize={12}
+                fontWeight={600}
+              />
+              {data.map((entry) => (
+                <Cell
+                  key={entry.label}
+                  fill={entry.fill}
+                  stroke={entry.stroke ?? entry.fill}
+                  strokeWidth={entry.stroke ? 1 : 0}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+  total,
+  description,
+  icon: Icon,
+}: {
+  title: string;
+  value: number;
+  total: number;
+  description?: string;
+  icon: typeof CheckCircle2;
+}) {
+  const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+
+  return (
+    <Card
+      className="bg-[#171b1d] border border-[#2a2f31] rounded-[22px] shadow-none min-w-0 flex flex-col h-full"
+      data-testid={`card-stat-${title.toLowerCase()}`}
+    >
+      <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5 space-y-0 shrink-0 min-w-0">
+        <CardTitle className="text-[10px] sm:text-[11px] font-medium text-[#85898a] uppercase tracking-[0.15em] truncate pr-2">
           {title}
         </CardTitle>
         <Icon className="w-4 h-4 text-primary shrink-0" />
       </CardHeader>
-      <CardContent className="px-6 pb-6 min-w-0 flex-1 flex flex-col justify-end">
-        <div className="font-mono text-4xl font-medium tracking-tight text-foreground truncate">{value}</div>
+      <CardContent className="px-5 pb-5 min-w-0 flex-1 flex flex-col justify-end">
+        <div className="flex items-end justify-between gap-3">
+          <div className="font-mono text-3xl sm:text-4xl font-medium tracking-tight text-foreground truncate">{value}</div>
+          <span className="text-[10px] text-[#85898a] uppercase tracking-wider">{percentage}%</span>
+        </div>
+        <div
+          className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#ded9d1]"
+          role="img"
+          aria-label={`${title}: ${value} of ${total} roles, ${percentage} percent`}
+        >
+          <div
+            className="h-full rounded-full bg-primary transition-[width] duration-700"
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
         {description && (
-          <p className="text-[11px] text-primary mt-2 font-medium tracking-wide break-words">{description}</p>
+          <p className="text-[10px] sm:text-[11px] text-primary mt-1.5 font-medium tracking-wide break-words">{description}</p>
         )}
       </CardContent>
     </Card>
