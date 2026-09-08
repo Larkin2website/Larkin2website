@@ -1,0 +1,1136 @@
+# Build Brief: Opportunities Management Portal
+
+## 1. Context
+
+We have an existing client website that has already been designed and built in this Replit project.
+
+The public website is the primary customer-facing website and should remain intact.
+
+One section of the existing website is a fully designed and implemented **Roles / Opportunities page**. This page is the public-facing careers/opportunities experience and is the part of the website that the new internal Opportunities Portal will manage.
+
+The existing Roles/Opportunities page currently contains the frontend presentation of available roles/opportunities and links users to Airtable for applications.
+
+We now need to build an **authenticated internal Opportunities Management Portal** that allows authorized client staff to manage the opportunities displayed on the public website.
+
+The portal should eventually allow the client to perform CRUD operations on opportunities without needing to edit the website code or manually modify the public page.
+
+---
+
+# 2. Important Architectural Direction
+
+Do NOT treat this as simply another page added to the existing website.
+
+We want this to be a **modular internal application connected to the public website through a clean API/backend layer**.
+
+The architecture should be designed so that:
+
+1. The existing public website remains the public-facing application.
+2. The Opportunities Portal is an internal authenticated application.
+3. The Opportunities Portal manages the data displayed on the public Roles/Opportunities page.
+4. The public website retrieves published opportunities through an API.
+5. The database becomes the source of truth for opportunities.
+6. Airtable should no longer be treated as the primary source of opportunity data.
+7. The architecture should be portable and should not unnecessarily depend on Replit-specific infrastructure.
+8. The architecture should leave room for a future CRM application without tightly coupling CRM functionality into the Opportunities Portal.
+
+Think of this as:
+
+```text
+                    CLIENT PLATFORM
+                          |
+          +---------------+----------------+
+          |                                |
+          v                                v
+   PUBLIC WEBSITE                 OPPORTUNITIES PORTAL
+          |                                |
+          |                                |
+          +------------ API ---------------+
+                         |
+                         v
+                    PostgreSQL
+                         |
+                         v
+                  Shared Services
+```
+
+The CRM is NOT being implemented yet.
+
+However, the architecture should make it possible to introduce:
+
+```text
+                         API / BACKEND
+                              |
+                +-------------+-------------+
+                |                           |
+                v                           v
+       Opportunities Module          Future CRM Module
+```
+
+without requiring a major rewrite.
+
+---
+
+# 3. First Priority: Inspect the Existing Project
+
+Before writing or changing code:
+
+1. Inspect the entire existing project structure.
+2. Identify the framework and current architecture.
+3. Identify the frontend entry points.
+4. Identify the existing Roles/Opportunities page.
+5. Identify all components used by the Roles/Opportunities page.
+6. Identify how opportunity/role data is currently represented.
+7. Determine whether the existing website already has an API/backend.
+8. Determine whether there is already a database.
+9. Determine whether authentication infrastructure already exists.
+10. Determine whether there are existing reusable UI components, layouts, forms, tables, modals, notifications, etc.
+11. Determine how environment variables are currently managed.
+12. Determine the current build and deployment configuration.
+
+Do NOT rebuild the website.
+
+Do NOT redesign the existing Roles/Opportunities page.
+
+Do NOT replace existing working functionality unnecessarily.
+
+Reuse existing components and conventions wherever appropriate.
+
+Before making major architectural changes, understand what already exists.
+
+---
+
+# 4. Existing Roles / Opportunities Page
+
+The existing Roles/Opportunities page is important.
+
+Treat it as the **public presentation layer for the Opportunities module**.
+
+The portal we are building must eventually manage the data displayed by this page.
+
+For example, if the public page currently displays:
+
+* Role title
+* Department
+* Location
+* Employment type
+* Description
+* Requirements
+* Responsibilities
+* Application information
+* Deadline
+* Status
+
+then these should become fields in the Opportunities data model where appropriate.
+
+Do not blindly copy the existing frontend structure into the database.
+
+First inspect the existing page and determine the actual data structure required.
+
+The public page should ultimately be able to consume data such as:
+
+```json
+{
+  "id": "...",
+  "title": "Senior Product Manager",
+  "slug": "senior-product-manager",
+  "department": "Product",
+  "location": "Accra, Ghana",
+  "employmentType": "Full-time",
+  "description": "...",
+  "responsibilities": [],
+  "requirements": [],
+  "deadline": "...",
+  "status": "published",
+  "applicationUrl": "...",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+```
+
+This is only an example.
+
+Inspect the existing Roles page and design the actual schema based on the real content and requirements.
+
+---
+
+# 5. Application Architecture
+
+Build the Opportunities Portal as a modular internal application.
+
+The preferred conceptual structure is:
+
+```text
+/apps
+    /website
+    /opportunities
+
+/services
+    /api
+
+/packages
+    /ui
+    /auth
+    /database
+    /validation
+    /types
+```
+
+If the current project structure/framework does not support exactly this structure, do not force it unnecessarily.
+
+Instead, preserve the existing architecture while establishing clear logical boundaries such as:
+
+```text
+Website
+  |
+  +-- Public Pages
+  |
+  +-- Roles / Opportunities
+              |
+              v
+        Opportunities API
+              |
+              v
+           Database
+
+
+Opportunities Portal
+  |
+  +-- Authentication
+  +-- Dashboard
+  +-- Opportunities
+  +-- Users / Permissions
+```
+
+The important requirement is **separation of concerns**, not a particular folder naming convention.
+
+---
+
+# 6. Backend / API
+
+Create a clean backend/API layer for the Opportunities module.
+
+The API should eventually support operations such as:
+
+```text
+GET    /api/opportunities
+GET    /api/opportunities/:id
+POST   /api/opportunities
+PUT    /api/opportunities/:id
+PATCH  /api/opportunities/:id
+DELETE /api/opportunities/:id
+```
+
+Also support publishing/status operations where appropriate, for example:
+
+```text
+PATCH /api/opportunities/:id/publish
+PATCH /api/opportunities/:id/archive
+```
+
+However, do not unnecessarily create duplicate endpoints if normal update operations can handle these states cleanly.
+
+The API should distinguish between:
+
+### Public operations
+
+The public website should only be able to retrieve opportunities intended for public display.
+
+For example:
+
+```text
+GET /api/public/opportunities
+GET /api/public/opportunities/:slug
+```
+
+The public API should not expose internal metadata.
+
+### Internal operations
+
+Authenticated portal users can:
+
+```text
+GET
+POST
+PUT/PATCH
+DELETE
+```
+
+opportunities according to their permissions.
+
+---
+
+# 7. Database
+
+Use PostgreSQL if a database is not already established.
+
+Design the database with proper relational structure rather than storing the entire opportunity as an unstructured JSON object.
+
+At minimum, evaluate the need for:
+
+### opportunities
+
+Possible fields:
+
+```text
+id
+title
+slug
+department
+location
+employment_type
+description
+responsibilities
+requirements
+qualifications
+salary_information
+application_url
+deadline
+status
+published_at
+created_at
+updated_at
+created_by
+updated_by
+```
+
+Do not blindly implement every field above.
+
+Inspect the existing Roles page and determine what is actually needed.
+
+Use appropriate data types.
+
+For fields such as:
+
+* responsibilities
+* requirements
+* qualifications
+
+use an appropriate structured representation rather than a large block of unvalidated text if the frontend requires individual items.
+
+---
+
+# 8. Opportunity Status
+
+The system should support a clear lifecycle.
+
+At minimum consider:
+
+```text
+Draft
+Published
+Closed
+Archived
+```
+
+The exact implementation can be adjusted based on the existing website.
+
+Important behavior:
+
+### Draft
+
+* Visible in the internal portal
+* NOT visible publicly
+
+### Published
+
+* Visible on the public Roles/Opportunities page
+* Available through the public API
+
+### Closed
+
+* No longer accepting applications
+* May remain publicly visible if the business wants to show that the role has closed
+
+### Archived
+
+* Hidden from the public website
+* Retained internally for historical purposes
+
+Do not permanently delete records unless there is a deliberate reason to do so.
+
+Prefer soft deletion/archive behavior for business records.
+
+---
+
+# 9. Opportunities Portal UI
+
+Create a professional internal admin portal.
+
+The portal should have its own application shell/navigation while reusing the existing design system where appropriate.
+
+Initial navigation:
+
+```text
+Dashboard
+Opportunities
+    - All Opportunities
+    - Create Opportunity
+    - Drafts
+    - Published
+    - Closed / Archived
+
+Settings
+```
+
+Do not build unnecessary modules yet.
+
+The CRM is NOT part of this build.
+
+---
+
+# 10. Dashboard
+
+Create an initial dashboard showing useful opportunity statistics.
+
+For example:
+
+```text
+Total Opportunities
+Published
+Drafts
+Closing Soon
+Closed
+```
+
+Also provide a recent opportunities list.
+
+The dashboard should be useful but not over-engineered.
+
+---
+
+# 11. Opportunities List
+
+Create a management table/list.
+
+Each opportunity should show useful fields such as:
+
+```text
+Title
+Department
+Location
+Employment Type
+Status
+Deadline
+Last Updated
+Actions
+```
+
+Provide:
+
+* Search
+* Filtering
+* Sorting where useful
+* Status filtering
+* Pagination if required
+
+Actions should include:
+
+```text
+View
+Edit
+Publish
+Unpublish
+Close
+Archive
+Delete
+```
+
+Only show actions appropriate to the current status and user's permissions.
+
+---
+
+# 12. Create / Edit Opportunity
+
+Build a reusable opportunity form.
+
+The form should support all fields required by the existing public Roles/Opportunities page.
+
+The UX should make it easy for a non-technical client administrator to create an opportunity.
+
+Include:
+
+* Clear labels
+* Validation
+* Required/optional field distinction
+* Helpful placeholders
+* Error messages
+* Save as Draft
+* Publish
+
+If rich text is required for descriptions, responsibilities, or requirements, use an appropriate editor while ensuring that content is safely sanitized before public rendering.
+
+Do not allow arbitrary HTML to create an XSS vulnerability.
+
+---
+
+# 13. Preview
+
+Where practical, provide a preview of an opportunity before publishing.
+
+Ideally the administrator should be able to see:
+
+```text
+How this opportunity will appear on the public Roles page
+```
+
+This should reuse the existing public opportunity presentation components where possible.
+
+The goal is to avoid a situation where the admin creates an opportunity without knowing how it will appear publicly.
+
+---
+
+# 14. Authentication
+
+The portal must NOT be publicly accessible.
+
+Implement authenticated access.
+
+At minimum:
+
+```text
+Login
+Logout
+Session management
+Protected routes
+Password security
+```
+
+If the existing project already has authentication infrastructure, reuse it instead of creating a second authentication system.
+
+Do not expose admin APIs without authentication.
+
+---
+
+# 15. Roles and Permissions
+
+The architecture should support role-based authorization.
+
+Initially, consider:
+
+### Super Admin
+
+Can:
+
+* create opportunities
+* edit opportunities
+* publish
+* close
+* archive
+* delete
+* manage portal users
+
+### Opportunity Manager / Editor
+
+Can:
+
+* create opportunities
+* edit opportunities
+* save drafts
+* publish if permitted
+* close/archive if permitted
+
+### Viewer
+
+Can:
+
+* view opportunities
+* view dashboard
+* cannot modify data
+
+Do not overbuild permissions if the client's exact organizational structure is not yet known.
+
+The system should be structured so additional roles can easily be introduced later.
+
+---
+
+# 16. Audit Logging
+
+Because this is an internal management portal, important actions should be auditable.
+
+Consider an audit log recording:
+
+```text
+User
+Action
+Resource
+Resource ID
+Timestamp
+Previous value
+New value
+```
+
+At minimum track actions such as:
+
+```text
+Created opportunity
+Updated opportunity
+Published opportunity
+Closed opportunity
+Archived opportunity
+Deleted opportunity
+```
+
+Do not expose sensitive internal audit information through the public API.
+
+---
+
+# 17. Airtable
+
+The current website links applicants to Airtable.
+
+Do not immediately remove or break the existing Airtable application process.
+
+For this first implementation:
+
+1. Preserve the current application URL functionality.
+2. Store the application URL as part of the opportunity where appropriate.
+3. Allow administrators to update that URL through the portal.
+4. Make the application URL configurable per opportunity.
+
+The architecture should allow us to replace Airtable later if the client decides they want applications to be handled directly inside the platform.
+
+For now:
+
+```text
+Applicant
+    |
+    v
+Public Opportunity
+    |
+    v
+Application URL
+    |
+    v
+Airtable
+```
+
+Later this could become:
+
+```text
+Applicant
+    |
+    v
+Public Opportunity
+    |
+    v
+Internal Application System
+```
+
+Do not implement the latter unless specifically requested.
+
+---
+
+# 18. Public Website Integration
+
+This is one of the most important parts of the task.
+
+The existing public Roles/Opportunities page should eventually stop depending on hard-coded opportunity data.
+
+Instead:
+
+```text
+Public Roles Page
+        |
+        v
+Public Opportunities API
+        |
+        v
+PostgreSQL
+```
+
+The portal:
+
+```text
+Admin Portal
+        |
+        v
+Authenticated Opportunities API
+        |
+        v
+PostgreSQL
+```
+
+Both use the same source of truth.
+
+Do NOT create two separate opportunity datasets.
+
+Do NOT duplicate opportunities between the portal and website.
+
+---
+
+# 19. API Security
+
+The public API should expose only information necessary for public opportunity listings.
+
+Never expose:
+
+* admin users
+* passwords
+* authentication tokens
+* audit logs
+* internal notes
+* internal IDs if they are sensitive
+* private metadata
+
+Validate all incoming data.
+
+Use server-side authorization rather than relying on frontend permissions.
+
+The frontend should never be considered a security boundary.
+
+---
+
+# 20. Validation
+
+Use shared validation schemas where practical.
+
+For example:
+
+```text
+OpportunityCreateSchema
+OpportunityUpdateSchema
+OpportunityPublishSchema
+```
+
+Validation must happen server-side.
+
+Client-side validation should complement server-side validation, not replace it.
+
+Validate:
+
+* title
+* slug
+* dates
+* URLs
+* status
+* required fields
+* text lengths
+* structured arrays
+* any other relevant fields
+
+---
+
+# 21. Error Handling
+
+Implement consistent API errors.
+
+For example:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "OPPORTUNITY_NOT_FOUND",
+    "message": "Opportunity not found"
+  }
+}
+```
+
+Do not expose stack traces or database errors to users.
+
+Log technical errors server-side.
+
+---
+
+# 22. API Design for Future CRM
+
+The CRM is not fully specified yet.
+
+Do not build CRM functionality.
+
+However, make the architecture capable of eventually supporting:
+
+```text
+/api/opportunities
+/api/applications
+/api/contacts
+/api/companies
+/api/leads
+/api/activities
+```
+
+without mixing all of these into one giant controller/service.
+
+Use modular backend organization such as:
+
+```text
+modules/
+    opportunities/
+        controller
+        service
+        repository
+        validation
+        routes
+
+    auth/
+        controller
+        service
+        ...
+
+    users/
+        ...
+
+    crm/
+        # future
+```
+
+The CRM module should be possible to add later without rewriting the Opportunities module.
+
+---
+
+# 23. Shared Components
+
+Where the existing website already has a design system, reuse it.
+
+Do not create an entirely unrelated visual language for the portal unless the existing design clearly does not support an internal admin interface.
+
+Create reusable components for things such as:
+
+```text
+Button
+Input
+Select
+Modal
+Dialog
+Table
+Badge
+Toast
+Form
+Card
+Pagination
+Loading state
+Empty state
+Error state
+```
+
+Avoid unnecessary duplication.
+
+---
+
+# 24. Responsiveness
+
+The portal is primarily an internal desktop application, but it should still be responsive.
+
+Prioritize:
+
+1. Desktop
+2. Laptop
+3. Tablet
+
+Mobile should remain usable but does not need to have the same level of optimization as the public website.
+
+---
+
+# 25. Performance
+
+Do not fetch unnecessary data.
+
+Use:
+
+* pagination
+* filtering
+* server-side querying where appropriate
+* appropriate database indexes
+* caching only where it provides real value
+
+Public opportunity retrieval should be lightweight.
+
+---
+
+# 26. Database Indexes
+
+Consider indexes for fields frequently used in queries, such as:
+
+```text
+status
+slug
+deadline
+department
+created_at
+updated_at
+```
+
+Only add indexes that make sense for the actual query patterns.
+
+---
+
+# 27. Environment Configuration
+
+Use environment variables for configuration and secrets.
+
+Do not hardcode:
+
+* database credentials
+* API keys
+* JWT secrets
+* email credentials
+* Airtable credentials
+* external service secrets
+
+Create/update an appropriate `.env.example` containing variable names but no secrets.
+
+---
+
+# 28. Replit Considerations
+
+The application will initially be developed and potentially deployed on Replit.
+
+However, design it so that it can later be moved to infrastructure controlled by the client.
+
+Avoid unnecessary architectural dependence on proprietary Replit functionality.
+
+The application should be able to run using standard infrastructure such as:
+
+```text
+Node.js
+PostgreSQL
+Object Storage
+Standard HTTP APIs
+Environment Variables
+```
+
+If Replit-specific functionality is used because it provides clear value, isolate that dependency behind a service/interface where practical.
+
+---
+
+# 29. Deployment Independence
+
+Keep these concerns separated:
+
+```text
+Application code
+Database
+File storage
+Authentication
+Email
+External integrations
+Deployment configuration
+```
+
+The goal is that a future migration should involve configuration/infrastructure changes rather than rewriting business logic.
+
+---
+
+# 30. Testing
+
+Add appropriate tests for critical functionality.
+
+At minimum test:
+
+### API
+
+* create opportunity
+* retrieve opportunities
+* retrieve published opportunities
+* update opportunity
+* publish opportunity
+* close opportunity
+* archive opportunity
+* unauthorized access
+* invalid data
+
+### Business logic
+
+* draft opportunities do not appear publicly
+* archived opportunities do not appear publicly
+* closed opportunities behave according to the defined public visibility rules
+* users cannot perform unauthorized actions
+
+### Frontend
+
+Test the important opportunity creation/editing flows.
+
+Do not spend excessive time building a huge test suite before the basic architecture works.
+
+---
+
+# 31. Seed / Development Data
+
+Create a small set of development/sample opportunities so that the portal can be properly tested.
+
+Clearly mark or isolate seed/demo data so that it cannot accidentally appear on the production public website.
+
+Do not insert fake opportunities into production automatically.
+
+---
+
+# 32. Migration Considerations
+
+Before replacing the current Roles page data source:
+
+1. Identify all existing opportunities currently represented on the website.
+2. Identify their existing Airtable/application links.
+3. Map them into the new opportunity schema.
+4. Create a migration/seed process where appropriate.
+5. Verify that public presentation remains equivalent.
+6. Only then switch the public page to the new API.
+
+Do not break the existing website while the portal is being developed.
+
+---
+
+# 33. Important Scope Boundary
+
+For this implementation, DO NOT build:
+
+* CRM functionality
+* applicant tracking system
+* employee management
+* payroll
+* recruitment workflow automation
+* advanced analytics
+* email marketing
+* messaging system
+* complex workflow automation
+* mobile application
+
+These may be future modules.
+
+The current goal is:
+
+> Build a production-quality Opportunities Management Portal and establish the API/backend foundation that connects it to the existing public Roles/Opportunities page.
+
+---
+
+# 34. Development Strategy
+
+Work in stages.
+
+## Phase 1 — Inspect
+
+First inspect the existing project and explain:
+
+* current framework
+* existing application structure
+* existing Roles page implementation
+* current data source
+* existing backend
+* existing database
+* existing authentication
+* recommended integration point
+
+Do not make destructive changes.
+
+## Phase 2 — Architecture
+
+Establish the modular structure and database/API foundations.
+
+## Phase 3 — Backend
+
+Implement:
+
+* database schema
+* migrations
+* opportunity model
+* validation
+* services
+* API routes
+* authentication/authorization
+* error handling
+
+## Phase 4 — Portal
+
+Implement:
+
+* login
+* protected layout
+* dashboard
+* opportunity list
+* create
+* edit
+* view
+* publish
+* close
+* archive
+* appropriate permissions
+
+## Phase 5 — Public Integration
+
+Connect the existing Roles/Opportunities page to the new API.
+
+Preserve its existing visual design.
+
+The public page should continue to look and behave the same unless changes are necessary to support dynamic data.
+
+## Phase 6 — Testing
+
+Test the complete workflow:
+
+```text
+Admin logs in
+       ↓
+Creates opportunity
+       ↓
+Saves draft
+       ↓
+Edits opportunity
+       ↓
+Publishes opportunity
+       ↓
+Opportunity appears on public Roles page
+       ↓
+Applicant clicks application link
+       ↓
+Airtable application process opens
+       ↓
+Admin closes opportunity
+       ↓
+Public behavior reflects closed status
+```
+
+---
+
+# 35. Definition of Done
+
+The first version is complete when:
+
+* The existing website still works.
+* The existing Roles/Opportunities page still looks correct.
+* Authorized users can log into the portal.
+* Unauthorized users cannot access the portal.
+* Administrators can create opportunities.
+* Administrators can edit opportunities.
+* Administrators can publish opportunities.
+* Administrators can close/archive opportunities.
+* Opportunities are stored in PostgreSQL.
+* Public opportunities are retrieved through an API.
+* Draft/private opportunities are not exposed publicly.
+* Existing Airtable application links continue to work.
+* The public Roles page uses the new opportunity data source.
+* API authorization is enforced server-side.
+* Important opportunity changes are auditable.
+* The code is modular enough to add the future CRM without redesigning the entire system.
+* The application does not unnecessarily depend on Replit-specific infrastructure.
+* No existing website functionality has been unnecessarily broken or rewritten.
+
+---
+
+# 36. Final Instruction to Agent
+
+Start by inspecting the existing codebase thoroughly.
+
+Do not immediately start generating the portal UI.
+
+First understand the existing Roles/Opportunities implementation and the current application architecture.
+
+Then propose the exact implementation plan based on what you find.
+
+After that, implement the architecture incrementally.
+
+Prioritize:
+
+1. Correct integration with the existing Roles/Opportunities page.
+2. Clean API boundaries.
+3. Proper database design.
+4. Authentication and authorization.
+5. Maintainability.
+6. Deployment portability.
+7. Good admin UX.
+
+Do not make assumptions about the future CRM.
+
+Build the Opportunities module so that the CRM can be added later as an independent module/application.
+
+Most importantly:
+
+**The existing Roles/Opportunities page is the public frontend of the Opportunities module. The new portal is the internal management frontend of that same module. They must ultimately operate from the same source of truth.**
