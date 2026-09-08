@@ -1,12 +1,50 @@
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Larkin2Wordmark } from "@/components/brand";
 import { ArrowRight } from "lucide-react";
 
+const videoBasePath = `${import.meta.env.BASE_URL}videos`;
+
 export default function LandingPage() {
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updateMotionPreference = () => setReduceMotion(motionPreference.matches);
+
+    motionPreference.addEventListener("change", updateMotionPreference);
+    return () => motionPreference.removeEventListener("change", updateMotionPreference);
+  }, []);
+
   return (
-    <div className="min-h-[100dvh] bg-[#080a0c] flex flex-col relative text-foreground selection:bg-primary/30 selection:text-primary overflow-y-auto">
-      {/* Cinematic noise overlay */}
+    <div className="min-h-[100dvh] bg-[#080a0c] flex flex-col relative isolate text-foreground selection:bg-primary/30 selection:text-primary overflow-y-auto">
+      <div
+        className="absolute inset-0 z-0 overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: `url("${videoBasePath}/portal-home-poster.webp")` }}
+        aria-hidden="true"
+      >
+        {!reduceMotion && !videoFailed && (
+          <video
+            className="h-full w-full object-cover object-center"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster={`${videoBasePath}/portal-home-poster.webp`}
+            onError={() => setVideoFailed(true)}
+          >
+            <source src={`${videoBasePath}/portal-home-loop.mp4`} type="video/mp4" />
+          </video>
+        )}
+        <div className="absolute inset-0 bg-[#080a0c]/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080a0c]/45 via-[#080a0c]/25 to-[#080a0c]/75" />
+      </div>
+
       <div className="pointer-events-none fixed inset-0 z-40 opacity-[0.035]" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")`
       }} />
