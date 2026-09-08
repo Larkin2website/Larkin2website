@@ -111,37 +111,40 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
     form.setValue("slug", slug, { shouldValidate: true });
   };
 
+  const sharedInputClasses = "bg-[#101315] border-[#2a2f31] rounded-none focus-visible:ring-primary focus-visible:border-primary font-mono text-sm";
+  const sharedLabelClasses = "font-mono text-[10px] uppercase tracking-[0.1em] text-[#85898a] mb-2";
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-12">
         <Tabs defaultValue="basics" className="w-full">
-          <TabsList className="w-full justify-start border-b border-border rounded-none h-12 bg-transparent p-0 mb-6 space-x-6">
-            <TabsTrigger value="basics" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-0 pb-3 pt-2">
+          <TabsList className="w-full justify-start border-b border-[#2a2f31] rounded-none h-14 bg-transparent p-0 mb-8 space-x-8">
+            <TabsTrigger value="basics" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-0 pb-4 pt-2 font-mono text-xs uppercase tracking-wider text-[#85898a] data-[state=active]:text-foreground">
               Basics & Meta
             </TabsTrigger>
-            <TabsTrigger value="content" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-0 pb-3 pt-2">
+            <TabsTrigger value="content" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-0 pb-4 pt-2 font-mono text-xs uppercase tracking-wider text-[#85898a] data-[state=active]:text-foreground">
               Lists & Content
             </TabsTrigger>
-            <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-0 pb-3 pt-2">
+            <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-0 pb-4 pt-2 font-mono text-xs uppercase tracking-wider text-[#85898a] data-[state=active]:text-foreground">
               Key Details
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="basics" className="space-y-6 mt-0 focus-visible:outline-none">
-            <Card>
-              <CardHeader>
-                <CardTitle>Core Information</CardTitle>
+          <TabsContent value="basics" className="space-y-8 mt-0 focus-visible:outline-none">
+            <Card className="bg-[#171b1d] border-[#2a2f31] rounded-none shadow-none">
+              <CardHeader className="border-b border-[#2a2f31] pb-4 pt-6 px-8">
+                <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium">Core Information</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="space-y-8 p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Title</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Access Coordinator" {...field} onBlur={(e) => {
+                          <Input className={sharedInputClasses} placeholder="e.g. Access Coordinator" {...field} onBlur={(e) => {
                             field.onBlur();
                             autoGenerateSlug(e.target.value);
                           }} />
@@ -156,9 +159,9 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     name="slug"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>URL Slug</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>URL Slug</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. access-coordinator" {...field} />
+                          <Input className={sharedInputClasses} placeholder="e.g. access-coordinator" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -170,9 +173,9 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     name="department"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Department</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>Department</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Camera" {...field} />
+                          <Input className={sharedInputClasses} placeholder="e.g. Camera" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -184,9 +187,9 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     name="roleType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Role Type</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>Role Type</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Full Time, Contract" {...field} />
+                          <Input className={sharedInputClasses} placeholder="e.g. Full Time, Contract" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -198,9 +201,9 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     name="publicationLabel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Publication Label (Eyebrow)</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>Publication Label (Eyebrow)</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Opportunities" {...field} />
+                          <Input className={sharedInputClasses} placeholder="e.g. Opportunities" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -213,11 +216,11 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                   name="summary"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Summary</FormLabel>
+                      <FormLabel className={sharedLabelClasses}>Summary</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Brief description shown on cards and at top of page..." 
-                          className="min-h-[100px]"
+                          className={`min-h-[140px] resize-y ${sharedInputClasses}`}
                           {...field} 
                         />
                       </FormControl>
@@ -228,22 +231,22 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Dates & Applications</CardTitle>
+            <Card className="bg-[#171b1d] border-[#2a2f31] rounded-none shadow-none">
+              <CardHeader className="border-b border-[#2a2f31] pb-4 pt-6 px-8">
+                <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium">Dates & Applications</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="space-y-8 p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
                     name="applicationDeadline"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Application Deadline Text</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>Application Deadline Text</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Applications close Sunday at 23:59" {...field} />
+                          <Input className={sharedInputClasses} placeholder="e.g. Applications close Sunday at 23:59" {...field} />
                         </FormControl>
-                        <FormDescription>Shown as plain text</FormDescription>
+                        <FormDescription className="text-xs text-[#85898a] mt-1">Shown as plain text</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -254,9 +257,9 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     name="responseDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Response Date Text (Optional)</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>Response Date Text (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Shortlisted applicants will be contacted by..." {...field} value={field.value || ""} />
+                          <Input className={sharedInputClasses} placeholder="e.g. Shortlisted applicants will be contacted by..." {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -268,11 +271,11 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     name="deadline"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>System Deadline Date (Optional)</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>System Deadline Date (Optional)</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} value={field.value ? field.value.split("T")[0] : ""} />
+                          <Input className={sharedInputClasses} type="date" {...field} value={field.value ? field.value.split("T")[0] : ""} />
                         </FormControl>
-                        <FormDescription>Used for sorting and "closing soon" calculations</FormDescription>
+                        <FormDescription className="text-xs text-[#85898a] mt-1">Used for sorting and "closing soon" calculations</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -283,9 +286,9 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     name="applicationUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>External Application URL (Optional)</FormLabel>
+                        <FormLabel className={sharedLabelClasses}>External Application URL (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://..." {...field} value={field.value || ""} />
+                          <Input className={sharedInputClasses} placeholder="https://..." {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -295,23 +298,23 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Badges & Flags</CardTitle>
+            <Card className="bg-[#171b1d] border-[#2a2f31] rounded-none shadow-none">
+              <CardHeader className="border-b border-[#2a2f31] pb-4 pt-6 px-8">
+                <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium">Badges & Flags</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-8">
+              <CardContent className="p-8">
+                <div className="flex flex-wrap gap-12">
                   <FormField
                     control={form.control}
                     name="urgent"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
-                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} className="border-[#85898a] data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>Urgent Fill</FormLabel>
-                          <FormDescription>Shows urgent badge</FormDescription>
+                          <FormLabel className="font-mono text-xs uppercase tracking-wider">Urgent Fill</FormLabel>
+                          <FormDescription className="text-[10px] text-[#85898a]">Shows urgent badge</FormDescription>
                         </div>
                       </FormItem>
                     )}
@@ -323,11 +326,11 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
-                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} className="border-[#85898a] data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>Featured</FormLabel>
-                          <FormDescription>Highlights on listing</FormDescription>
+                          <FormLabel className="font-mono text-xs uppercase tracking-wider">Featured</FormLabel>
+                          <FormDescription className="text-[10px] text-[#85898a]">Highlights on listing</FormDescription>
                         </div>
                       </FormItem>
                     )}
@@ -339,11 +342,11 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
-                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} className="border-[#85898a] data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>Deadline Extended</FormLabel>
-                          <FormDescription>Shows extension badge</FormDescription>
+                          <FormLabel className="font-mono text-xs uppercase tracking-wider">Deadline Extended</FormLabel>
+                          <FormDescription className="text-[10px] text-[#85898a]">Shows extension badge</FormDescription>
                         </div>
                       </FormItem>
                     )}
@@ -353,38 +356,38 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
             </Card>
           </TabsContent>
 
-          <TabsContent value="content" className="space-y-6 mt-0 focus-visible:outline-none">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle>Content Lists</CardTitle>
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => appendContent({ section: "responsibility", position: contentFields.length, content: "" })}>
-                    <Plus className="w-4 h-4 mr-1" /> Add Responsibility
+          <TabsContent value="content" className="space-y-8 mt-0 focus-visible:outline-none">
+            <Card className="bg-[#171b1d] border-[#2a2f31] rounded-none shadow-none">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#2a2f31] pb-4 pt-6 px-8 gap-4">
+                <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium">Content Lists</CardTitle>
+                <div className="flex flex-wrap gap-3">
+                  <Button type="button" variant="outline" size="sm" className="rounded-none border-[#2a2f31] font-mono text-[10px] uppercase tracking-widest hover:bg-[#101315] hover:text-foreground" onClick={() => appendContent({ section: "responsibility", position: contentFields.length, content: "" })}>
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Responsibility
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => appendContent({ section: "essential", position: contentFields.length, content: "" })}>
-                    <Plus className="w-4 h-4 mr-1" /> Add Essential
+                  <Button type="button" variant="outline" size="sm" className="rounded-none border-[#2a2f31] font-mono text-[10px] uppercase tracking-widest hover:bg-[#101315] hover:text-foreground" onClick={() => appendContent({ section: "essential", position: contentFields.length, content: "" })}>
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Essential
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => appendContent({ section: "desired", position: contentFields.length, content: "" })}>
-                    <Plus className="w-4 h-4 mr-1" /> Add Desired
+                  <Button type="button" variant="outline" size="sm" className="rounded-none border-[#2a2f31] font-mono text-[10px] uppercase tracking-widest hover:bg-[#101315] hover:text-foreground" onClick={() => appendContent({ section: "desired", position: contentFields.length, content: "" })}>
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Desired
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-8">
+              <CardContent className="p-8">
+                <div className="space-y-10">
                   {(["responsibility", "essential", "desired"] as const).map(section => {
                     const sectionFields = contentFields.map((f, i) => ({ ...f, originalIndex: i })).filter(f => f.section === section);
                     if (sectionFields.length === 0) return null;
                     
                     return (
-                      <div key={section} className="space-y-3">
-                        <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
+                      <div key={section} className="space-y-4">
+                        <h3 className="font-mono text-[11px] uppercase tracking-[0.15em] text-primary border-b border-[#2a2f31] pb-3">
                           {section === "responsibility" ? "Responsibilities" : section === "essential" ? "Essential Experience" : "Desired Experience"}
                         </h3>
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           {sectionFields.map((field, localIndex) => (
-                            <div key={field.id} className="flex items-start gap-2">
-                              <div className="mt-2 text-muted-foreground cursor-grab">
-                                <GripVertical className="w-4 h-4" />
+                            <div key={field.id} className="flex items-start gap-4">
+                              <div className="mt-3 text-[#2a2f31] cursor-grab hover:text-primary transition-colors">
+                                <GripVertical className="w-5 h-5" />
                               </div>
                               <div className="flex-1">
                                 <FormField
@@ -393,14 +396,14 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                                   render={({ field: inputField }) => (
                                     <FormItem>
                                       <FormControl>
-                                        <Textarea {...inputField} className="min-h-[60px]" />
+                                        <Textarea {...inputField} className={`min-h-[80px] resize-y ${sharedInputClasses}`} />
                                       </FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )}
                                 />
                               </div>
-                              <Button type="button" variant="ghost" size="icon" className="text-destructive mt-1" onClick={() => removeContent(field.originalIndex)}>
+                              <Button type="button" variant="ghost" size="icon" className="text-[#85898a] hover:text-destructive hover:bg-destructive/10 mt-1" onClick={() => removeContent(field.originalIndex)}>
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
@@ -410,13 +413,13 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     );
                   })}
                   {contentFields.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground bg-muted/20 border border-dashed rounded-lg">
+                    <div className="text-center py-16 text-[#85898a] bg-[#101315] border border-dashed border-[#2a2f31] text-sm">
                       No content items added. Add some responsibilities to begin.
                     </div>
                   )}
                 </div>
                 {form.formState.errors.contentItems?.message && (
-                  <p className="mt-2 text-sm font-medium text-destructive">
+                  <p className="mt-4 text-sm font-medium text-destructive">
                     {form.formState.errors.contentItems.message}
                   </p>
                 )}
@@ -424,29 +427,29 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
             </Card>
           </TabsContent>
 
-          <TabsContent value="details" className="space-y-6 mt-0 focus-visible:outline-none">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle>Key Details Table</CardTitle>
-                <Button type="button" variant="outline" size="sm" onClick={() => appendDetail({ position: detailFields.length, label: "", value: "" })}>
-                  <Plus className="w-4 h-4 mr-1" /> Add Detail
+          <TabsContent value="details" className="space-y-8 mt-0 focus-visible:outline-none">
+            <Card className="bg-[#171b1d] border-[#2a2f31] rounded-none shadow-none">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#2a2f31] pb-4 pt-6 px-8 gap-4">
+                <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium">Key Details Table</CardTitle>
+                <Button type="button" variant="outline" size="sm" className="rounded-none border-[#2a2f31] font-mono text-[10px] uppercase tracking-widest hover:bg-[#101315] hover:text-foreground" onClick={() => appendDetail({ position: detailFields.length, label: "", value: "" })}>
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Add Detail
                 </Button>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+              <CardContent className="p-8">
+                <div className="space-y-4">
                   {detailFields.map((field, index) => (
-                    <div key={field.id} className="flex items-start gap-2 bg-muted/10 p-2 rounded-lg border border-border">
-                      <div className="mt-2 text-muted-foreground cursor-grab px-1">
-                        <GripVertical className="w-4 h-4" />
+                    <div key={field.id} className="flex items-start gap-4 bg-[#101315] p-4 border border-[#2a2f31]">
+                      <div className="mt-3 text-[#2a2f31] cursor-grab hover:text-primary transition-colors">
+                        <GripVertical className="w-5 h-5" />
                       </div>
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
                           name={`details.${index}.label`}
                           render={({ field: inputField }) => (
                             <FormItem className="sm:col-span-1">
                               <FormControl>
-                                <Input placeholder="Label (e.g. Location)" {...inputField} />
+                                <Input placeholder="Label (e.g. Location)" {...inputField} className={sharedInputClasses} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -457,25 +460,25 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                           render={({ field: inputField }) => (
                             <FormItem className="sm:col-span-2">
                               <FormControl>
-                                <Input placeholder="Value (e.g. London / Hybrid)" {...inputField} />
+                                <Input placeholder="Value (e.g. London / Hybrid)" {...inputField} className={sharedInputClasses} />
                               </FormControl>
                             </FormItem>
                           )}
                         />
                       </div>
-                      <Button type="button" variant="ghost" size="icon" className="text-destructive mt-0.5" onClick={() => removeDetail(index)}>
+                      <Button type="button" variant="ghost" size="icon" className="text-[#85898a] hover:text-destructive hover:bg-destructive/10 mt-1" onClick={() => removeDetail(index)}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   ))}
                   {detailFields.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground bg-muted/20 border border-dashed rounded-lg">
+                    <div className="text-center py-16 text-[#85898a] bg-[#101315] border border-dashed border-[#2a2f31] text-sm">
                       No key details added.
                     </div>
                   )}
                 </div>
                 {form.formState.errors.details?.message && (
-                  <p className="mt-2 text-sm font-medium text-destructive">
+                  <p className="mt-4 text-sm font-medium text-destructive">
                     {form.formState.errors.details.message}
                   </p>
                 )}
@@ -484,8 +487,8 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
           </TabsContent>
         </Tabs>
 
-        <div className="flex items-center justify-end gap-4 border-t border-border pt-6 mt-8">
-          <Button type="submit" disabled={isSubmitting} className="min-w-[150px]">
+        <div className="flex items-center justify-end gap-4 border-t border-[#2a2f31] pt-8 mt-12">
+          <Button type="submit" disabled={isSubmitting} className="rounded-full h-14 px-10 font-mono text-xs uppercase tracking-wider font-bold">
             {isSubmitting ? "Saving..." : "Save Opportunity"}
           </Button>
         </div>

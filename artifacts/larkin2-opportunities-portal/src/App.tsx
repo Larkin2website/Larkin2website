@@ -9,6 +9,9 @@ import { AppClerkProvider, clerkBasePath } from '@/lib/clerk';
 import { useAuth, useClerk } from '@clerk/react';
 import { useGetPortalSession } from '@workspace/api-client-react';
 import { PortalLayout } from '@/components/layout/portal-layout';
+import { Larkin2Wordmark } from '@/components/brand';
+import { Loader2, ShieldAlert } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // Pages
 import LandingPage from '@/pages/index';
@@ -37,9 +40,10 @@ function PortalAccessGate({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen grid place-items-center bg-background text-foreground">
-        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
-          Verifying portal access
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
+        <Larkin2Wordmark className="mb-6 opacity-50" />
+        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground animate-pulse">
+          Verifying portal access...
         </p>
       </div>
     );
@@ -47,24 +51,24 @@ function PortalAccessGate({ children }: { children: ReactNode }) {
 
   if (!session) {
     return (
-      <div className="min-h-screen grid place-items-center bg-background px-6 text-foreground">
-        <div className="max-w-lg border border-border bg-card p-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-primary">Larkin2 portal</p>
-          <h1 className="mt-4 text-3xl font-semibold">
-            {status === 403 ? "Access awaiting approval" : "We could not verify your access"}
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 text-foreground">
+        <div className="w-full max-w-md border border-border bg-[#171b1d] p-8 md:p-12 text-center">
+          <Larkin2Wordmark className="mb-8" />
+          <h1 className="font-mono text-2xl font-medium tracking-tight mb-4">
+            {status === 403 ? "Access Awaiting Approval" : "Verification Failed"}
           </h1>
-          <p className="mt-3 text-muted-foreground">
+          <p className="text-sm text-muted-foreground leading-relaxed mb-8">
             {status === 403
               ? "A portal administrator must approve your account before you can view opportunity data."
               : "Please try signing in again. If the problem continues, contact a portal administrator."}
           </p>
-          <button
-            type="button"
-            className="mt-6 bg-primary px-4 py-2 font-semibold text-primary-foreground"
+          <Button
+            variant="outline"
+            className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider"
             onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
           >
             Sign out
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -91,11 +95,11 @@ function PermissionGate({
 
   if (!session?.permissions.includes(permission)) {
     return (
-      <div className="border border-border bg-card p-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-primary">Restricted</p>
-        <h1 className="mt-3 text-2xl font-semibold">You do not have permission to view this page</h1>
-        <p className="mt-2 text-muted-foreground">
-          Ask a Super Admin if your portal responsibilities have changed.
+      <div className="border border-border bg-[#171b1d] p-8 md:p-12 text-center max-w-2xl mx-auto my-12">
+        <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-6" />
+        <h1 className="font-mono text-2xl font-medium tracking-tight mb-4">Restricted Area</h1>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          You do not have permission to view this page. Ask a Super Admin if your portal responsibilities have changed.
         </p>
       </div>
     );

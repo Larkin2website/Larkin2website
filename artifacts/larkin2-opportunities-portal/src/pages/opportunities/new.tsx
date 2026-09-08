@@ -1,46 +1,50 @@
-import { useCreatePortalOpportunity } from "@workspace/api-client-react";
-import { useLocation, Link } from "wouter";
+import { useCreatePortalOpportunity, OpportunityInput } from "@workspace/api-client-react";
+import { Link, useLocation } from "wouter";
 import { OpportunityForm } from "@/components/opportunities/opportunity-form";
-import { ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
+import { PageHeader } from "@/components/brand";
 
 export default function NewOpportunityPage() {
   const [, setLocation] = useLocation();
-  const createOpp = useCreatePortalOpportunity();
+  const create = useCreatePortalOpportunity();
   const { toast } = useToast();
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: OpportunityInput) => {
     try {
-      const result = await createOpp.mutateAsync({ data });
-      toast({ title: "Draft created", description: "The opportunity has been saved as a draft." });
+      const result = await create.mutateAsync({ data });
+      toast({
+        title: "Draft created",
+        description: "Opportunity has been saved as a draft."
+      });
       setLocation(`/opportunities/${result.id}`);
-    } catch (e: any) {
-      toast({ 
-        title: "Error creating opportunity", 
-        description: e.error || "An unexpected error occurred.", 
-        variant: "destructive" 
+    } catch (error: any) {
+      toast({
+        title: "Failed to create",
+        description: error.error || "An unexpected error occurred",
+        variant: "destructive"
       });
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/opportunities">
-          <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full bg-muted/50 hover:bg-accent">
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
+    <div className="space-y-8 pb-20">
+      <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono">
+        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center">
+          <ChevronLeft className="w-3 h-3 mr-1" /> Opportunities
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">New Opportunity</h1>
-          <p className="text-muted-foreground mt-1">Draft a new public role posting.</p>
-        </div>
+        <span>/</span>
+        <span>New</span>
       </div>
+
+      <PageHeader
+        title="Create Opportunity"
+        subtitle="Draft a new public opportunity for the careers portal."
+      />
 
       <OpportunityForm 
         onSubmit={handleSubmit} 
-        isSubmitting={createOpp.isPending} 
+        isSubmitting={create.isPending}
       />
     </div>
   );

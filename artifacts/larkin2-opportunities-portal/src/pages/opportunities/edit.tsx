@@ -1,81 +1,97 @@
 import { 
   useGetPortalOpportunity, 
   useUpdatePortalOpportunity,
-  getGetPortalOpportunityQueryKey 
+  OpportunityInput,
+  getGetPortalOpportunityQueryKey,
+  getListPortalOpportunitiesQueryKey
 } from "@workspace/api-client-react";
-import { useLocation, useParams, Link } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { OpportunityForm } from "@/components/opportunities/opportunity-form";
-import { ChevronLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
+import { ChevronLeft, Loader2, ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/brand";
 
 export default function EditOpportunityPage() {
   const params = useParams();
   const id = params.id as string;
   const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const { data: opportunity, isLoading, error } = useGetPortalOpportunity(id);
-  const updateOpp = useUpdatePortalOpportunity();
+  const { data: opp, isLoading, error } = useGetPortalOpportunity(id);
+  const update = useUpdatePortalOpportunity();
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
-  }
-
-  if (error || !opportunity) {
-    return (
-      <div className="text-center py-20">
-        <h2 className="text-xl font-semibold mb-2">Error loading opportunity</h2>
-        <Button onClick={() => setLocation("/opportunities")}>Back to Opportunities</Button>
-      </div>
-    );
-  }
-
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: OpportunityInput) => {
     try {
-      const result = await updateOpp.mutateAsync({ id, data });
-      
-      // Update cache in place to avoid full refetch
-      queryClient.setQueryData(getGetPortalOpportunityQueryKey(id), result);
-      
-      toast({ title: "Opportunity updated", description: "Changes have been saved successfully." });
+      await update.mutateAsync({ id, data });
+      toast({
+        title: "Changes saved",
+        description: "Opportunity content has been updated."
+      });
+      queryClient.invalidateQueries({ queryKey: getGetPortalOpportunityQueryKey(id) });
+      queryClient.invalidateQueries({ queryKey: getListPortalOpportunitiesQueryKey() });
       setLocation(`/opportunities/${id}`);
-    } catch (e: any) {
-      toast({ 
-        title: "Error updating opportunity", 
-        description: e.error || "An unexpected error occurred.", 
-        variant: "destructive" 
+    } catch (error: any) {
+      toast({
+        title: "Failed to save",
+        description: error.error || "An unexpected error occurred",
+        variant: "destructive"
       });
     }
   };
 
-  // Strip read-only fields for the form
-  const initialValues = {
-    ...opportunity,
-    // Content items come back with IDs, strip them for the form just to match types 
-    // or leave them since hook form handles extra fields generally.
-  };
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-[50vh]"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
+
+  if (error || !opp) {
+    return (
+      <div className="text-center py-32 border border-[#2a2f31] bg-[#171b1d]">
+        <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-6" />
+        <h2 className="font-mono text-2xl font-medium mb-3">Opportunity not found</h2>
+        <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 mt-6" onClick={() => setLocation("/opportunities")}>Back to Opportunities</Button>
+      </div>
+    );
+  }
+
+  if (opp.status === "archived") {
+    return (
+      <div className="text-center py-32 border border-[#2a2f31] bg-[#171b1d]">
+        <ShieldAlert className="w-12 h-12 text-muted-foreground mx-auto mb-6" />
+        <h2 className="font-mono text-2xl font-medium mb-3">Cannot edit archived opportunity</h2>
+        <p className="text-muted-foreground mb-8">Restore this opportunity to draft state before editing.</p>
+        <Link href={`/opportunities/${id}`}>
+          <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8">View Opportunity</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href={`/opportunities/${id}`}>
-          <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full bg-muted/50 hover:bg-accent">
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
+    <div className="space-y-8 pb-20">
+      <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono">
+        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center">
+          <ChevronLeft className="w-3 h-3 mr-1" /> Opportunities
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Edit Content</h1>
-          <p className="text-muted-foreground mt-1">{opportunity.title}</p>
-        </div>
+        <span>/</span>
+        <Link href={`/opportunities/${id}`} className="hover:text-primary transition-colors">
+          {opp.slug}
+        </Link>
+        <span>/</span>
+        <span>Edit</span>
       </div>
 
+      <PageHeader
+        title={`Edit ${opp.title}`}
+        subtitle="Update content, requirements, and metadata for this opportunity."
+      />
+
       <OpportunityForm 
-        initialValues={initialValues}
+        initialValues={opp}
         onSubmit={handleSubmit} 
-        isSubmitting={updateOpp.isPending} 
+        isSubmitting={update.isPending}
       />
     </div>
   );
