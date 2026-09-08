@@ -51,7 +51,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         
         return (
           <Link key={item.href} href={item.href}>
-            <div className={`group flex items-center justify-between px-4 py-3 text-sm transition-all cursor-pointer border-l-2 ${
+            <div className={`group flex items-center justify-between px-4 py-3 text-sm transition-all cursor-pointer border-l-2 min-h-[44px] ${
               isActive 
                 ? "border-primary bg-primary/5 text-foreground font-medium"
                 : "border-transparent text-muted-foreground hover:bg-accent/50 hover:text-foreground"
@@ -69,21 +69,21 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   );
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground selection:bg-primary/30 selection:text-primary">
+    <div className="flex min-h-[100dvh] bg-background text-foreground selection:bg-primary/30 selection:text-primary">
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-64 flex-col border-r border-border bg-[#080a0c]">
-        <div className="h-20 flex items-center px-8 border-b border-border/50">
+        <div className="h-20 flex items-center px-8 border-b border-border/50 shrink-0">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Larkin2Wordmark />
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground ml-2 border-l border-border pl-2">Portal</span>
           </Link>
         </div>
         
-        <nav className="flex-1 py-6 space-y-1">
+        <nav className="flex-1 py-6 space-y-1 overflow-y-auto">
           <NavLinks />
         </nav>
         
-        <div className="p-4 border-t border-border/50 bg-card/30">
+        <div className="p-4 border-t border-border/50 bg-card/30 shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full justify-start gap-3 px-4 py-6 h-auto hover:bg-accent/50">
@@ -114,32 +114,47 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-background relative z-10">
         {/* Mobile Header */}
-        <header className="md:hidden h-16 border-b border-border bg-[#080a0c] flex items-center justify-between px-4 sticky top-0 z-30">
+        <header className="md:hidden h-16 shrink-0 border-b border-border bg-[#080a0c] flex items-center justify-between px-4 sticky top-0 z-30">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Larkin2Wordmark />
           </Link>
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-accent/50 text-foreground">
+              <Button variant="ghost" size="icon" className="h-11 w-11 hover:bg-accent/50 text-foreground">
                 <Menu />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0 bg-[#080a0c] border-r border-border rounded-none">
+            <SheetContent side="left" className="w-[280px] p-0 bg-[#080a0c] border-r border-border rounded-none flex flex-col">
               <SheetTitle className="sr-only">Menu</SheetTitle>
-              <div className="h-16 flex items-center px-6 border-b border-border/50">
+              <div className="h-16 flex items-center px-6 border-b border-border/50 shrink-0">
                 <Larkin2Wordmark />
               </div>
-              <nav className="py-6 space-y-1">
+              <nav className="py-4 space-y-1 flex-1 overflow-y-auto">
                 <div onClick={() => setMobileMenuOpen(false)}>
                   <NavLinks />
                 </div>
               </nav>
+              <div className="p-4 border-t border-border/50 bg-card/30 shrink-0">
+                <div className="flex items-center gap-3 px-2 py-3 mb-2">
+                  <div className="w-10 h-10 rounded-full bg-border flex items-center justify-center shrink-0">
+                    <UserIcon size={16} className="text-muted-foreground" />
+                  </div>
+                  <div className="flex flex-col items-start text-left flex-1 min-w-0">
+                    <span className="text-sm font-medium truncate w-full">{user?.firstName || user?.emailAddresses[0]?.emailAddress}</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground truncate w-full mt-0.5">{session?.member?.role?.replace("_", " ")}</span>
+                  </div>
+                </div>
+                <Button variant="outline" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-border rounded-none h-11 text-xs uppercase tracking-wider font-medium" onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
             </SheetContent>
           </Sheet>
         </header>
         
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-[1200px] mx-auto w-full p-6 md:p-10 lg:p-12">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="max-w-[1200px] mx-auto w-full p-4 sm:p-6 md:p-8 lg:p-12">
             {children}
           </div>
         </div>

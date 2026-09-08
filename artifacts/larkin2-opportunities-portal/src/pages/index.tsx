@@ -5,17 +5,17 @@ import { ArrowRight } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-[100dvh] bg-[#080a0c] flex flex-col relative overflow-hidden text-foreground selection:bg-primary/30 selection:text-primary">
+    <div className="min-h-[100dvh] bg-[#080a0c] flex flex-col relative text-foreground selection:bg-primary/30 selection:text-primary overflow-y-auto overflow-x-hidden">
       {/* Cinematic noise overlay */}
       <div className="pointer-events-none fixed inset-0 z-40 opacity-[0.035]" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")`
       }} />
 
-      <header className="absolute top-0 w-full h-24 flex items-center px-8 lg:px-16 z-20">
+      <header className="w-full h-24 shrink-0 flex items-center px-6 lg:px-16 z-20">
         <Larkin2Wordmark />
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-8 text-center z-10 mt-16">
+      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 py-12 shrink-0">
         <div className="w-full max-w-4xl space-y-12">
           <div className="space-y-6 animate-in slide-in-from-bottom-8 fade-in duration-1000 fill-mode-both ease-[cubic-bezier(0.23,1,0.32,1)]">
             <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-primary flex items-center justify-center gap-3">
@@ -23,7 +23,7 @@ export default function LandingPage() {
               Internal Tooling
               <span className="w-8 h-[1px] bg-primary"></span>
             </div>
-            <h1 className="font-mono text-5xl md:text-7xl lg:text-[110px] leading-[0.9] tracking-tight text-foreground font-medium">
+            <h1 className="font-mono text-4xl sm:text-5xl md:text-7xl lg:text-[110px] leading-[1.05] md:leading-[0.9] tracking-tight text-foreground font-medium break-words">
               Opportunities<br />Portal
             </h1>
           </div>

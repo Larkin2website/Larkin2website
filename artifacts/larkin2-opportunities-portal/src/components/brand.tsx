@@ -11,12 +11,12 @@ export function Larkin2Wordmark({ className = "", dotClassName = "" }: { classNa
 
 export function PageHeader({ title, subtitle, action, className = "" }: { title: ReactNode, subtitle?: ReactNode, action?: ReactNode, className?: string }) {
   return (
-    <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6 mb-8 ${className}`}>
-      <div>
-        <h1 className="font-mono text-3xl md:text-4xl tracking-tight font-medium text-foreground">{title}</h1>
+    <div className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-5 sm:pb-6 mb-6 sm:mb-8 ${className}`}>
+      <div className="min-w-0">
+        <h1 className="font-mono text-2xl sm:text-3xl md:text-4xl tracking-tight font-medium text-foreground break-words">{title}</h1>
         {subtitle && <p className="text-muted-foreground mt-2 text-sm max-w-xl leading-relaxed">{subtitle}</p>}
       </div>
-      {action && <div className="flex-shrink-0">{action}</div>}
+      {action && <div className="flex-shrink-0 w-full sm:w-auto">{action}</div>}
     </div>
   );
 }

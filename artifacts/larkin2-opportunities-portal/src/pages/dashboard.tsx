@@ -21,7 +21,7 @@ export default function DashboardPage() {
     return (
       <div className="space-y-8 animate-pulse">
         <PageHeader title="Dashboard" subtitle="Overview of your publishing operations" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {[1, 2, 3, 4].map(i => (
             <Card key={i} className="bg-[#171b1d] border-[#2a2f31]">
               <CardHeader className="h-24" />
@@ -61,7 +61,7 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard 
           title="Published Roles" 
           value={counts.published} 
@@ -105,22 +105,22 @@ export default function DashboardPage() {
               recentOpportunities.map((opp) => (
                 <Link key={opp.id} href={`/opportunities/${opp.id}`}>
                   <div className="group bg-[#171b1d] border border-[#2a2f31] hover:border-primary/50 transition-colors flex flex-col sm:flex-row cursor-pointer">
-                    <div className="flex-1 p-6">
+                    <div className="flex-1 p-5 sm:p-6 min-w-0">
                       <div className="flex items-center gap-3 mb-3">
                         <StatusBadge status={opp.status} />
-                        <span className="text-[10px] text-primary uppercase tracking-[0.15em] font-medium">
+                        <span className="text-[10px] text-primary uppercase tracking-[0.15em] font-medium truncate">
                           {opp.department}
                         </span>
                       </div>
-                      <h3 className="font-mono text-xl font-medium tracking-tight text-foreground group-hover:text-primary transition-colors mb-2">
+                      <h3 className="font-mono text-lg sm:text-xl font-medium tracking-tight text-foreground group-hover:text-primary transition-colors mb-2 break-words">
                         {opp.title}
                       </h3>
                       <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                         {opp.summary}
                       </p>
                     </div>
-                    <div className="bg-[#101315] p-6 sm:w-48 flex flex-col justify-center border-t sm:border-t-0 sm:border-l border-[#2a2f31]">
-                      <div className="text-[10px] text-[#85898a] mb-2 uppercase tracking-[0.15em]">Deadline</div>
+                    <div className="bg-[#101315] p-5 sm:p-6 sm:w-48 flex flex-row sm:flex-col items-center sm:items-start justify-between sm:justify-center border-t sm:border-t-0 sm:border-l border-[#2a2f31]">
+                      <div className="text-[10px] text-[#85898a] sm:mb-2 uppercase tracking-[0.15em]">Deadline</div>
                       <div className="text-sm font-medium text-foreground">{opp.deadline ? format(new Date(opp.deadline), "MMM d, yyyy") : "Open until filled"}</div>
                     </div>
                   </div>

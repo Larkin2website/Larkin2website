@@ -112,11 +112,11 @@ export default function DetailOpportunityPage() {
 
   if (error || !opp) {
     return (
-      <div className="text-center py-32 border border-[#2a2f31] bg-[#171b1d]">
+      <div className="text-center py-32 border border-[#2a2f31] bg-[#171b1d] px-4">
         <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-6" />
         <h2 className="font-mono text-2xl font-medium mb-3">Opportunity not found</h2>
         <p className="text-muted-foreground mb-8">The opportunity may have been permanently deleted.</p>
-        <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8" onClick={() => setLocation("/opportunities")}>Back to Opportunities</Button>
+        <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 w-full sm:w-auto" onClick={() => setLocation("/opportunities")}>Back to Opportunities</Button>
       </div>
     );
   }
@@ -158,17 +158,17 @@ export default function DetailOpportunityPage() {
   const sortedDetails = [...opp.details].sort((a,b) => a.position - b.position);
 
   const ActionButtons = () => (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
       {canWrite && opp.status !== "archived" && (
-        <Link href={`/opportunities/${id}/edit`}>
-          <Button variant="outline" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider border-border">
+        <Link href={`/opportunities/${id}/edit`} className="w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider border-border">
             <Edit className="w-3.5 h-3.5 mr-2" /> Edit Content
           </Button>
         </Link>
       )}
 
       {canPublish && opp.status === "draft" && (
-        <Button onClick={() => handleTransition("published")} className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider">
+        <Button onClick={() => handleTransition("published")} className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider">
           <PlayCircle className="w-3.5 h-3.5 mr-2" /> Publish
         </Button>
       )}
@@ -176,22 +176,22 @@ export default function DetailOpportunityPage() {
       {canPublish && opp.status === "published" && (
         <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
           <AlertDialogTrigger asChild>
-            <Button className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider">
+            <Button className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider">
               <SlidersHorizontal className="w-3.5 h-3.5 mr-2" /> Change Status
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="max-w-xl bg-[#171b1d] border-border rounded-none">
-            <AlertDialogHeader>
+          <AlertDialogContent className="max-w-xl bg-[#171b1d] border-border rounded-none max-h-[90dvh] overflow-hidden flex flex-col p-4 sm:p-6">
+            <AlertDialogHeader className="shrink-0 text-left">
               <p className="text-[10px] uppercase tracking-[0.18em] text-primary font-mono">Published role</p>
-              <AlertDialogTitle className="font-mono font-medium tracking-tight text-2xl text-foreground">
+              <AlertDialogTitle className="font-mono font-medium tracking-tight text-xl sm:text-2xl text-foreground break-words mt-1">
                 Change the status of “{opp.title}”
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed">
+              <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed mt-2">
                 Choose how this live role should appear. The change takes effect on the public opportunities site immediately.
               </AlertDialogDescription>
             </AlertDialogHeader>
 
-            <div className="my-2 grid gap-2" role="radiogroup" aria-label="New role status">
+            <div className="my-4 grid gap-2 overflow-y-auto shrink min-h-0 pr-1" role="radiogroup" aria-label="New role status">
               {publishedStatusOptions.map((option) => {
                 const selected = selectedStatus === option.status;
                 return (
@@ -229,15 +229,15 @@ export default function DetailOpportunityPage() {
               })}
             </div>
 
-            <AlertDialogFooter>
+            <AlertDialogFooter className="shrink-0 pt-2 flex-col sm:flex-row gap-2 sm:gap-0">
               <AlertDialogCancel
-                className="rounded-none font-mono text-xs uppercase tracking-wider border-border"
+                className="rounded-none font-mono text-xs uppercase tracking-wider border-border h-11 sm:h-10 mt-0 w-full sm:w-auto"
                 disabled={transition.isPending}
               >
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
-                className="rounded-none bg-primary text-[#080a0c] font-mono text-xs font-bold uppercase tracking-wider hover:bg-[#ff8d57]"
+                className="rounded-none bg-primary text-[#080a0c] font-mono text-xs font-bold uppercase tracking-wider hover:bg-[#ff8d57] h-11 sm:h-10 w-full sm:w-auto"
                 disabled={transition.isPending}
                 onClick={(event) => {
                   event.preventDefault();
@@ -259,21 +259,21 @@ export default function DetailOpportunityPage() {
 
       {canPublish && opp.status === "closed" && (
         <>
-          <Button variant="outline" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider border-border" onClick={() => handleTransition("published")}>Re-open</Button>
-          <Button onClick={() => handleTransition("filled")} className="bg-[#e9e5df] text-[#1d2020] hover:bg-white rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider font-bold">
+          <Button variant="outline" className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider border-border" onClick={() => handleTransition("published")}>Re-open</Button>
+          <Button onClick={() => handleTransition("filled")} className="w-full sm:w-auto bg-[#e9e5df] text-[#1d2020] hover:bg-white rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider font-bold">
             Mark Filled
           </Button>
         </>
       )}
 
       {canPublish && opp.status !== "archived" && opp.status !== "published" && (
-        <Button variant="ghost" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground" onClick={() => handleTransition("archived")}>
+        <Button variant="ghost" className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground" onClick={() => handleTransition("archived")}>
           Archive
         </Button>
       )}
 
       {canPublish && opp.status === "archived" && (
-        <Button variant="outline" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider border-border" onClick={() => handleTransition("draft")}>
+        <Button variant="outline" className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider border-border" onClick={() => handleTransition("draft")}>
           Restore to Draft
         </Button>
       )}
@@ -281,18 +281,18 @@ export default function DetailOpportunityPage() {
       {canDelete && opp.status === "archived" && (
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider">
+            <Button variant="destructive" className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider">
               <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="bg-[#171b1d] border-border rounded-none">
-            <AlertDialogHeader>
+          <AlertDialogContent className="max-w-md bg-[#171b1d] border-border rounded-none max-h-[90dvh] flex flex-col p-4 sm:p-6 overflow-hidden">
+            <AlertDialogHeader className="shrink-0 text-left">
               <AlertDialogTitle className="font-mono font-medium tracking-tight text-xl text-foreground">Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed">
+              <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed mt-2">
                 This action cannot be undone. This will permanently delete the opportunity "{opp.title}" and its history.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <div className="my-6">
+            <div className="my-6 shrink-0">
               <label className="text-[10px] uppercase tracking-widest font-medium mb-3 block text-primary">Type DELETE to confirm:</label>
               <input
                 type="text"
@@ -302,11 +302,11 @@ export default function DetailOpportunityPage() {
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
               />
             </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-none font-mono text-xs uppercase tracking-wider border-border">Cancel</AlertDialogCancel>
+            <AlertDialogFooter className="shrink-0 mt-auto flex-col sm:flex-row gap-2 sm:gap-0">
+              <AlertDialogCancel className="rounded-none font-mono text-xs uppercase tracking-wider border-border h-11 sm:h-10 mt-0 w-full sm:w-auto">Cancel</AlertDialogCancel>
               <Button
                 variant="destructive"
-                className="rounded-none font-mono text-xs uppercase tracking-wider"
+                className="rounded-none font-mono text-xs uppercase tracking-wider h-11 sm:h-10 w-full sm:w-auto"
                 disabled={deleteConfirmText !== "DELETE" || del.isPending}
                 onClick={handleDelete}
               >
@@ -320,13 +320,13 @@ export default function DetailOpportunityPage() {
   );
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono">
-        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center">
+    <div className="space-y-6 sm:space-y-8 pb-20">
+      <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono break-all">
+        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center shrink-0">
           <ChevronLeft className="w-3 h-3 mr-1" /> Opportunities
         </Link>
-        <span>/</span>
-        <span>{opp.slug}</span>
+        <span className="shrink-0">/</span>
+        <span className="truncate">{opp.slug}</span>
       </div>
 
       <PageHeader
@@ -339,34 +339,34 @@ export default function DetailOpportunityPage() {
         action={<ActionButtons />}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         
         {/* Left Col: Public Preview Style */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           <div className="border border-[#2a2f31] overflow-hidden">
-            <div className="bg-[#101315] px-5 py-3 border-b border-[#2a2f31] flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.15em] text-[#85898a]">
-              <div className="flex items-center gap-2"><Eye className="w-3.5 h-3.5 text-primary" /> Public Layout Preview</div>
-              {opp.status === "published" && <a href={`/larkin2-opportunities/roles/${opp.slug}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><ExternalLink className="w-3 h-3" /> Live URL</a>}
+            <div className="bg-[#101315] px-4 sm:px-5 py-3 border-b border-[#2a2f31] flex flex-col sm:flex-row sm:items-center justify-between text-[10px] font-mono uppercase tracking-[0.15em] text-[#85898a] gap-3">
+              <div className="flex items-center gap-2"><Eye className="w-3.5 h-3.5 text-primary shrink-0" /> Public Layout Preview</div>
+              {opp.status === "published" && <a href={`/larkin2-opportunities/roles/${opp.slug}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors shrink-0"><ExternalLink className="w-3 h-3" /> Live URL</a>}
             </div>
-            <div className="p-8 md:p-12 bg-[#171b1d] text-[#f4f1ed]">
+            <div className="p-6 sm:p-8 md:p-12 bg-[#171b1d] text-[#f4f1ed]">
               <div className="mb-5">
                 <span className="text-primary text-[11px] uppercase tracking-[0.18em]">{opp.publicationLabel} / {opp.department}</span>
               </div>
-              <div className="flex flex-wrap gap-2 mb-8">
+              <div className="flex flex-wrap gap-2 mb-6 sm:mb-8">
                 {opp.deadlineExtended && <span className="bg-primary text-[#080a0c] px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full">Deadline extended</span>}
                 {opp.urgent && <span className="bg-primary text-[#080a0c] px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full">Urgent</span>}
                 {opp.featured && <span className="border border-primary text-primary px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full">Featured</span>}
               </div>
-              <h1 className="font-mono text-4xl md:text-5xl lg:text-6xl mb-8 tracking-tight font-medium leading-[1.05]">{opp.title}</h1>
-              <p className="text-[#c6c6c0] text-lg leading-relaxed max-w-2xl mb-14">{opp.summary}</p>
+              <h1 className="font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 sm:mb-8 tracking-tight font-medium leading-[1.05] break-words">{opp.title}</h1>
+              <p className="text-[#c6c6c0] text-base sm:text-lg leading-relaxed max-w-2xl mb-10 sm:mb-14 break-words">{opp.summary}</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
                 <div className="md:col-span-1 order-2 md:order-1">
-                  <div className={`p-6 border ${opp.status === 'published' ? 'border-primary/30 bg-primary/5' : 'border-white/10 bg-[#101315]'}`}>
+                  <div className={`p-5 sm:p-6 border ${opp.status === 'published' ? 'border-primary/30 bg-primary/5' : 'border-white/10 bg-[#101315]'}`}>
                     <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-primary mb-4">
                       {opp.status === 'published' ? "Applications open" : "Applications unavailable"}
                     </div>
-                    <h3 className="text-lg font-medium mb-5 leading-snug">
+                    <h3 className="text-base sm:text-lg font-medium mb-4 sm:mb-5 leading-snug">
                       {opp.status === 'published' ? "This role is accepting applications." : `This role is ${opp.status.toLowerCase()}.`}
                     </h3>
                     <div className="text-sm text-[#85898a] space-y-2">
@@ -376,39 +376,39 @@ export default function DetailOpportunityPage() {
                   </div>
                 </div>
                 
-                <div className="md:col-span-2 order-1 md:order-2 space-y-12">
+                <div className="md:col-span-2 order-1 md:order-2 space-y-10 sm:space-y-12">
                   {responsibilities.length > 0 && (
                     <section>
-                      <h2 className="font-mono text-xl font-medium mb-5 border-b border-[#2a2f31] pb-3 text-foreground">About the role</h2>
+                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground">About the role</h2>
                       <ul className="list-disc pl-5 space-y-3 text-[#c6c6c0] text-[15px] marker:text-primary">
-                        {responsibilities.map(r => <li key={r.id} className="pl-1 leading-relaxed">{r.content}</li>)}
+                        {responsibilities.map(r => <li key={r.id} className="pl-1 leading-relaxed break-words">{r.content}</li>)}
                       </ul>
                     </section>
                   )}
                   {essentials.length > 0 && (
                     <section>
-                      <h2 className="font-mono text-xl font-medium mb-5 border-b border-[#2a2f31] pb-3 text-foreground">Essential experience</h2>
+                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground">Essential experience</h2>
                       <ul className="list-disc pl-5 space-y-3 text-[#c6c6c0] text-[15px] marker:text-primary">
-                        {essentials.map(e => <li key={e.id} className="pl-1 leading-relaxed">{e.content}</li>)}
+                        {essentials.map(e => <li key={e.id} className="pl-1 leading-relaxed break-words">{e.content}</li>)}
                       </ul>
                     </section>
                   )}
                   {desired.length > 0 && (
                     <section>
-                      <h2 className="font-mono text-xl font-medium mb-5 border-b border-[#2a2f31] pb-3 text-foreground">Desired experience</h2>
+                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground">Desired experience</h2>
                       <ul className="list-disc pl-5 space-y-3 text-[#c6c6c0] text-[15px] marker:text-primary">
-                        {desired.map(d => <li key={d.id} className="pl-1 leading-relaxed">{d.content}</li>)}
+                        {desired.map(d => <li key={d.id} className="pl-1 leading-relaxed break-words">{d.content}</li>)}
                       </ul>
                     </section>
                   )}
                   {sortedDetails.length > 0 && (
                     <section>
-                      <h2 className="font-mono text-xl font-medium mb-6 border-b border-[#2a2f31] pb-3 text-foreground">Role details</h2>
+                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-5 sm:mb-6 border-b border-[#2a2f31] pb-3 text-foreground">Role details</h2>
                       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
                         {sortedDetails.map((detail, idx) => (
                           <div key={idx}>
                             <dt className="text-[11px] font-mono uppercase tracking-widest text-[#85898a] mb-2">{detail.label}</dt>
-                            <dd className="text-[#f4f1ed] text-[15px]">{detail.value}</dd>
+                            <dd className="text-[#f4f1ed] text-[15px] break-words">{detail.value}</dd>
                           </div>
                         ))}
                       </dl>
@@ -421,12 +421,12 @@ export default function DetailOpportunityPage() {
         </div>
 
         {/* Right Col: Metadata & Audit */}
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           <Card className="bg-[#171b1d] border border-[#2a2f31] rounded-none shadow-none">
-            <CardHeader className="pb-4 pt-6 px-6 border-b border-[#2a2f31]">
+            <CardHeader className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31]">
               <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium">Metadata</CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <dl className="space-y-5 text-sm">
                 <div>
                   <dt className="text-[10px] font-mono uppercase tracking-[0.1em] text-[#85898a] mb-1.5 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-primary" /> Created</dt>
@@ -461,11 +461,11 @@ export default function DetailOpportunityPage() {
           </Card>
 
           <Card className="bg-[#171b1d] border border-[#2a2f31] rounded-none shadow-none">
-            <CardHeader className="pb-4 pt-6 px-6 border-b border-[#2a2f31]">
+            <CardHeader className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31]">
               <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium">Audit History</CardTitle>
               <CardDescription className="text-xs">Recent lifecycle changes</CardDescription>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="relative border-l border-[#2a2f31] ml-2 pl-5 space-y-6">
                 {!auditEvents?.length ? (
                   <p className="text-[11px] font-mono uppercase tracking-wider text-[#85898a]">No events recorded.</p>
@@ -474,7 +474,7 @@ export default function DetailOpportunityPage() {
                     <div key={event.id} className="relative">
                       <div className="absolute -left-[25px] top-1 w-2 h-2 rounded-full bg-primary ring-4 ring-[#171b1d]" />
                       <p className="text-sm font-medium text-foreground capitalize">{event.action.replace(/_/g, " ")}</p>
-                      <p className="text-xs text-[#85898a] mt-1">{event.actorName}</p>
+                      <p className="text-xs text-[#85898a] mt-1 break-words">{event.actorName}</p>
                       <p className="text-[10px] font-mono uppercase tracking-wider text-[#85898a] mt-1.5 flex items-center gap-1.5">
                         <Clock className="w-3 h-3" /> {format(new Date(event.createdAt), "MMM d, h:mm a")}
                       </p>
