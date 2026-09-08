@@ -40,7 +40,7 @@ function PortalAccessGate({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
+      <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 text-foreground">
         <Larkin2Wordmark className="mb-6 opacity-50" />
         <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground animate-pulse">
           Verifying portal access...
@@ -51,8 +51,8 @@ function PortalAccessGate({ children }: { children: ReactNode }) {
 
   if (!session) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 text-foreground">
-        <div className="w-full max-w-md border border-border bg-[#171b1d] p-8 md:p-12 text-center">
+      <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 text-foreground">
+        <div className="w-full max-w-md border border-border bg-[#171b1d] p-6 sm:p-8 md:p-12 text-center break-words">
           <Larkin2Wordmark className="mb-8" />
           <h1 className="font-mono text-2xl font-medium tracking-tight mb-4">
             {status === 403 ? "Access Awaiting Approval" : "Verification Failed"}
@@ -95,7 +95,7 @@ function PermissionGate({
 
   if (!session?.permissions.includes(permission)) {
     return (
-      <div className="border border-border bg-[#171b1d] p-8 md:p-12 text-center max-w-2xl mx-auto my-12">
+      <div className="border border-border bg-[#171b1d] p-6 sm:p-8 md:p-12 text-center max-w-2xl mx-4 md:mx-auto my-12 break-words">
         <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-6" />
         <h1 className="font-mono text-2xl font-medium tracking-tight mb-4">Restricted Area</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">

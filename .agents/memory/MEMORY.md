@@ -1,1 +1,2 @@
 - [Avoid decorative top bars](visual-motifs.md) — Larkin2 panels should not use thick top-edge accent bars; rely on spacing, type, tone, and subtle borders.
+- [Portal responsive contract](portal-responsive-contract.md) — Treat tablet and compact desktop as first-class layouts; reserve full sidebar and dense tables for wide screens.

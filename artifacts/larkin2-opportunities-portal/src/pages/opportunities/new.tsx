@@ -28,13 +28,13 @@ export default function NewOpportunityPage() {
   };
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono">
-        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center">
-          <ChevronLeft className="w-3 h-3 mr-1" /> Opportunities
+    <div className="space-y-8 pb-20 min-w-0">
+      <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono min-w-0">
+        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center shrink-0">
+          <ChevronLeft className="w-3 h-3 mr-1 shrink-0" /> Opportunities
         </Link>
-        <span>/</span>
-        <span>New</span>
+        <span className="shrink-0">/</span>
+        <span className="shrink-0">New</span>
       </div>
 
       <PageHeader
