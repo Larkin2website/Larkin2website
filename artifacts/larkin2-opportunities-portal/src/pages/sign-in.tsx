@@ -1,6 +1,7 @@
 import { SignIn } from "@clerk/react";
 import { clerkBasePath } from "@/lib/clerk";
 import { Larkin2Wordmark } from "@/components/brand";
+import productionImage from "@/assets/sign-in-production.webp";
 
 const paperAppearance = {
   theme: "simple" as const,
@@ -61,26 +62,37 @@ export default function SignInPage() {
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")`
       }} />
 
-      <div className="flex-1 lg:flex-none lg:w-[45%] flex flex-col justify-between p-8 sm:p-12 lg:p-16 xl:p-24 border-b lg:border-b-0 lg:border-r border-[#c7c2bc]/50 relative z-10 shrink-0 lg:overflow-y-auto lg:h-full">
-        <div className="animate-in slide-in-from-left-4 fade-in duration-700">
-          <Larkin2Wordmark className="text-[#1d2020]" dotClassName="bg-[#f4773f]" />
+      <div className="flex-1 lg:flex-none lg:w-[45%] flex flex-col justify-between p-8 sm:p-12 lg:p-16 xl:p-24 border-b lg:border-b-0 lg:border-r border-black/20 relative z-10 shrink-0 overflow-hidden lg:overflow-y-auto lg:h-full min-h-[540px]">
+        <img
+          src={productionImage}
+          alt="A production operator working at a live video control desk"
+          className="absolute inset-0 h-full w-full object-cover object-[45%_center] sm:object-[48%_center]"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div className="absolute inset-0 bg-[#080a0c]/55" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080a0c]/55 via-[#080a0c]/15 to-[#080a0c]/80" />
+
+        <div className="relative z-10 animate-in slide-in-from-left-4 fade-in duration-700">
+          <Larkin2Wordmark className="text-[#f4f1ed]" dotClassName="bg-[#f4773f]" />
           <div className="mt-5 flex items-center gap-4">
             <div className="h-[1px] w-8 bg-[#f4773f]" />
-            <p className="text-[#625d58] font-mono text-[10.5px] uppercase tracking-[0.2em] font-medium">Internal Operations</p>
+            <p className="text-[#f4f1ed]/75 font-mono text-[10.5px] uppercase tracking-[0.2em] font-medium">Internal Operations</p>
           </div>
         </div>
 
-        <div className="mt-16 mb-12 lg:my-auto max-w-xl animate-in slide-in-from-left-4 fade-in duration-700 delay-150">
-          <h1 className="font-mono text-4xl sm:text-5xl lg:text-6xl xl:text-7xl tracking-tighter leading-[1.05] text-[#1d2020] mb-8 font-medium">
+        <div className="relative z-10 mt-16 mb-12 lg:my-auto max-w-xl animate-in slide-in-from-left-4 fade-in duration-700 delay-150">
+          <h1 className="font-mono text-4xl sm:text-5xl lg:text-6xl xl:text-7xl tracking-tighter leading-[1.05] text-[#f4f1ed] mb-8 font-medium">
             Publish with<br />
             <span className="text-[#f4773f] tracking-tight">assurance.</span>
           </h1>
-          <p className="text-[#625d58] text-base sm:text-lg lg:text-xl leading-[1.6] max-w-md font-sans">
+          <p className="text-[#f4f1ed]/80 text-base sm:text-lg lg:text-xl leading-[1.6] max-w-md font-sans">
             The central cockpit for managing public job roles, curating opportunities, and guiding candidates through the Larkin2 ecosystem.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[#625d58] font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300">
+        <div className="relative z-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-[#f4f1ed]/65 font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300">
           <span>© {new Date().getFullYear()} Larkin2</span>
           <span>Authorized Personnel Only</span>
         </div>
