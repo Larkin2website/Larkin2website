@@ -75,12 +75,12 @@ export function PortalLayout({ children }: PortalLayoutProps) {
             href={item.href}
             aria-label={collapsed ? item.label : undefined}
             data-testid={`link-sidebar-${item.label.toLowerCase()}`}
-            className={`group flex items-center min-h-11 text-sm transition-all border-l-2 ${
-              collapsed ? "justify-center px-2" : "justify-between px-4"
+            className={`group flex items-center min-h-11 text-sm transition-all border rounded-full ${
+              collapsed ? "justify-center px-2 mx-2" : "justify-between px-4 mx-3"
             } ${
               isActive 
-                ? "border-primary bg-primary/5 text-foreground font-medium"
-                : "border-transparent text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                ? "border-primary/50 bg-primary/10 text-foreground font-medium"
+                : "border-border/60 text-muted-foreground hover:bg-accent/70 hover:text-foreground hover:border-border"
             }`}
           >
               <div className={`flex items-center min-w-0 ${collapsed ? "justify-center" : "gap-3"}`}>
@@ -102,10 +102,10 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   );
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-background text-foreground selection:bg-primary/30 selection:text-primary">
+    <div className="flex h-[100dvh] gap-3 overflow-hidden bg-background p-0 xl:p-3 text-foreground selection:bg-primary/30 selection:text-primary">
       {/* Desktop Sidebar */}
-      <aside className={`hidden h-full min-h-0 xl:flex flex-col border-r border-border bg-[#080a0c] shrink-0 transition-[width] duration-300 ease-out ${sidebarCollapsed ? "w-20" : "w-64"}`}>
-        <div className={`h-20 flex items-center border-b border-border/50 shrink-0 min-w-0 ${sidebarCollapsed ? "justify-center px-3" : "justify-between gap-3 px-6"}`}>
+      <aside className={`hidden h-full min-h-0 xl:flex flex-col overflow-hidden rounded-[28px] border border-border bg-[#080a0c] shrink-0 transition-[width] duration-300 ease-out ${sidebarCollapsed ? "w-20" : "w-64"}`}>
+        <div className={`h-20 flex items-center shrink-0 min-w-0 ${sidebarCollapsed ? "justify-center px-3" : "justify-between gap-3 px-6"}`}>
           {!sidebarCollapsed && (
             <Link href="/dashboard" className="flex items-center gap-2 min-w-0" data-testid="link-sidebar-brand">
               <Larkin2Wordmark className="shrink-0" />
@@ -132,16 +132,16 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </Tooltip>
         </div>
         
-        <nav className="flex-1 min-h-0 py-6 space-y-1 overflow-y-auto min-w-0">
+        <nav className="flex-1 min-h-0 py-3 space-y-2 overflow-y-auto min-w-0">
           <NavLinks collapsed={sidebarCollapsed} />
         </nav>
         
-        <div className={`${sidebarCollapsed ? "p-3" : "p-4"} border-t border-border/50 bg-card/30 shrink-0 min-w-0`}>
+        <div className={`${sidebarCollapsed ? "m-2 p-2" : "m-3 p-2"} rounded-[20px] border border-border/60 bg-card/30 shrink-0 min-w-0`}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className={`w-full h-auto hover:bg-accent/50 min-w-0 ${sidebarCollapsed ? "justify-center p-2" : "justify-start gap-3 px-4 py-6"}`}
+                className={`w-full h-auto rounded-[14px] hover:bg-accent/70 min-w-0 ${sidebarCollapsed ? "justify-center p-2" : "justify-start gap-3 px-3 py-4"}`}
                 aria-label={sidebarCollapsed ? "Open account menu" : undefined}
                 data-testid="button-account-menu"
               >
@@ -170,9 +170,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="h-full min-h-0 flex-1 flex flex-col min-w-0 bg-background relative z-10">
+      <main className="h-full min-h-0 flex-1 flex flex-col min-w-0 overflow-hidden bg-background relative z-10 xl:rounded-[28px] xl:border xl:border-border">
         {/* Mobile Header */}
-        <header className="xl:hidden h-16 shrink-0 border-b border-border bg-[#080a0c] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 min-w-0">
+        <header className="xl:hidden h-16 shrink-0 border-b border-border bg-[#080a0c] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 min-w-0 rounded-b-[22px]">
           <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
             <Larkin2Wordmark className="shrink-0" />
           </Link>

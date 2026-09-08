@@ -19,11 +19,11 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-8 animate-pulse">
-        <PageHeader title="Dashboard" subtitle="Overview of your publishing operations" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+      <div className="space-y-5 sm:space-y-6 animate-pulse">
+        <PageHeader title="Dashboard" subtitle="Overview of your publishing operations" className="rounded-[28px] border border-border bg-card p-5 sm:p-7" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 rounded-[28px]">
           {[1, 2, 3, 4].map(i => (
-            <Card key={i} className="bg-[#171b1d] border-[#2a2f31]">
+            <Card key={i} className="bg-[#171b1d] border-[#2a2f31] rounded-[22px]">
               <CardHeader className="h-24" />
             </Card>
           ))}
@@ -48,10 +48,11 @@ export default function DashboardPage() {
   const { counts, recentOpportunities, recentActivity } = dashboard;
 
   return (
-    <div className="space-y-12 min-w-0">
+    <div className="space-y-5 sm:space-y-6 min-w-0">
       <PageHeader
         title="Dashboard"
         subtitle="Overview of your publishing operations"
+        className="rounded-[28px] border border-border bg-card p-5 sm:p-7 mb-0"
         action={
           <Link href="/opportunities/new" className="w-full lg:w-auto block">
             <Button className="w-full rounded-full font-mono text-xs uppercase tracking-wider h-11 px-6">
@@ -61,7 +62,7 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 min-w-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 min-w-0">
         <StatCard 
           title="Published Roles" 
           value={counts.published} 
@@ -85,8 +86,8 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 xl:gap-10 min-w-0">
-        <div className="xl:col-span-2 space-y-6 min-w-0">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 min-w-0">
+        <div className="xl:col-span-2 space-y-5 min-w-0 rounded-[28px] border border-border bg-card p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between border-b border-border pb-4 gap-4">
             <h2 className="font-mono text-xl font-medium tracking-tight break-words">Recent Opportunities</h2>
             <Link href="/opportunities">
@@ -98,13 +99,13 @@ export default function DashboardPage() {
           
           <div className="grid gap-4 min-w-0">
             {recentOpportunities.length === 0 ? (
-              <div className="p-12 text-center bg-[#171b1d] border border-dashed border-[#2a2f31]">
+              <div className="p-12 text-center bg-[#171b1d] border border-dashed border-[#2a2f31] rounded-[20px]">
                 <p className="text-muted-foreground text-sm">No opportunities created yet.</p>
               </div>
             ) : (
               recentOpportunities.map((opp) => (
                 <Link key={opp.id} href={`/opportunities/${opp.id}`} className="block min-w-0">
-                  <div className="group bg-[#171b1d] border border-[#2a2f31] hover:border-primary/50 transition-colors flex flex-col lg:flex-row cursor-pointer min-w-0">
+                  <div className="group bg-[#171b1d] border border-[#2a2f31] hover:border-primary/50 transition-colors flex flex-col lg:flex-row cursor-pointer min-w-0 overflow-hidden rounded-[20px]">
                     <div className="flex-1 p-5 sm:p-6 min-w-0">
                       <div className="flex flex-wrap items-center gap-3 mb-3">
                         <StatusBadge status={opp.status} />
@@ -130,10 +131,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="space-y-6 min-w-0">
+        <div className="space-y-5 min-w-0 rounded-[28px] border border-border bg-card p-5 sm:p-6">
           <h2 className="font-mono text-xl font-medium tracking-tight border-b border-border pb-4 break-words">Activity Log</h2>
           
-          <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0">
+          <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0 overflow-hidden rounded-[20px]">
             <div className="divide-y divide-[#2a2f31]">
               {recentActivity.length === 0 ? (
                 <div className="p-8 text-center text-sm text-muted-foreground break-words">
@@ -167,7 +168,7 @@ export default function DashboardPage() {
 
 function StatCard({ title, value, description, icon: Icon }: { title: string, value: number, description?: string, icon: any }) {
   return (
-    <Card className="bg-[#171b1d] border border-[#2a2f31] rounded-none shadow-none min-w-0 flex flex-col h-full">
+    <Card className="bg-[#171b1d] border border-[#2a2f31] rounded-[22px] shadow-none min-w-0 flex flex-col h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-6 px-6 space-y-0 shrink-0 min-w-0">
         <CardTitle className="text-[11px] font-medium text-[#85898a] uppercase tracking-[0.15em] truncate pr-2">
           {title}
