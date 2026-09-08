@@ -55,12 +55,7 @@ export default function LandingPage() {
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 py-12 shrink-0 min-w-0">
         <div className="w-full max-w-4xl space-y-12 min-w-0">
-          <div className="space-y-6 animate-in slide-in-from-bottom-8 fade-in duration-1000 fill-mode-both ease-[cubic-bezier(0.23,1,0.32,1)]">
-            <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-primary flex items-center justify-center gap-3">
-              <span className="w-8 h-[1px] bg-primary shrink-0"></span>
-              <span className="break-words">Internal Tooling</span>
-              <span className="w-8 h-[1px] bg-primary shrink-0"></span>
-            </div>
+          <div className="animate-in slide-in-from-bottom-8 fade-in duration-1000 fill-mode-both ease-[cubic-bezier(0.23,1,0.32,1)]">
             <h1 className="font-mono text-4xl sm:text-5xl md:text-7xl lg:text-[90px] xl:text-[110px] leading-[1.05] md:leading-[0.9] tracking-tight text-foreground font-medium break-words">
               Opportunities<br />Portal
             </h1>

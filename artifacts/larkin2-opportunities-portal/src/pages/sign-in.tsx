@@ -76,10 +76,6 @@ export default function SignInPage() {
 
         <div className="relative z-10 animate-in slide-in-from-left-4 fade-in duration-700">
           <Larkin2Wordmark className="text-[#f4f1ed]" dotClassName="bg-[#f4773f]" />
-          <div className="mt-5 flex items-center gap-4">
-            <div className="h-[1px] w-8 bg-[#f4773f]" />
-            <p className="text-[#f4f1ed]/75 font-mono text-[10.5px] uppercase tracking-[0.2em] font-medium">Internal Operations</p>
-          </div>
         </div>
 
         <div className="relative z-10 mt-16 mb-12 lg:my-auto max-w-xl animate-in slide-in-from-left-4 fade-in duration-700 delay-150">
