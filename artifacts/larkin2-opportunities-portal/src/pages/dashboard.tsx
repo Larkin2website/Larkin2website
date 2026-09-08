@@ -55,7 +55,7 @@ export default function DashboardPage() {
         className="rounded-[28px] border border-border bg-card p-5 sm:p-7 mb-0"
         action={
           <Link href="/opportunities/new" className="w-full lg:w-auto block">
-            <Button className="w-full rounded-full font-mono text-xs uppercase tracking-wider h-11 px-6">
+            <Button className="w-full rounded-full border-0 font-mono text-xs uppercase tracking-wider h-11 px-6">
               Create Opportunity
             </Button>
           </Link>
