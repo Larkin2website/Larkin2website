@@ -1136,6 +1136,57 @@
   margin: 0 auto;
   text-align: center;
 }
+.roles-classic-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 12px;
+  width: min(100%, 1020px);
+  margin: 28px auto 0;
+}
+.roles-filter-field { min-width: 0; }
+.roles-filter-field label {
+  display: block;
+  margin: 0 0 8px 3px;
+  color: #55261c;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.roles-filter-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 42px 0 16px;
+  border: 1px solid rgba(85,38,28,.3);
+  border-radius: 0;
+  background-color: rgba(255,255,255,.42);
+  background-image: linear-gradient(45deg, transparent 50%, #55261c 50%), linear-gradient(135deg, #55261c 50%, transparent 50%);
+  background-position: calc(100% - 18px) 20px, calc(100% - 13px) 20px;
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 5px 5px;
+  color: var(--paper-ink);
+  font: inherit;
+  font-size: 14px;
+  appearance: none;
+}
+.roles-filter-field select:focus { border-color: #55261c; outline: 1px solid #55261c; outline-offset: 0; }
+.roles-filter-reset, .roles-empty-reset {
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid #55261c;
+  border-radius: 0;
+  background: transparent;
+  color: #55261c;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.roles-filter-reset:hover:not(:disabled), .roles-empty-reset:hover { background: #55261c; color: var(--paper); }
+.roles-filter-reset:disabled { border-color: rgba(29,32,32,.18); color: rgba(29,32,32,.36); cursor: default; }
+.roles-empty-reset { margin-top: 22px; }
 .roles-chat-prompt {
   display: flex;
   flex-direction: column;
@@ -2043,6 +2094,12 @@
   .roles-page .roles-chat-hint {
     margin-top: 8px;
   }
+  .roles-classic-filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .roles-filter-reset { width: 100%; }
   .larkin2-top {
     grid-template-columns: 1fr auto;
     padding: 20px 18px;

@@ -16,6 +16,9 @@ export function RolesPage() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get("q") ?? "");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("");
+  const [roleTypeFilter, setRoleTypeFilter] = useState("");
   const {
     data: publicOpportunities = [],
     isLoading: rolesLoading,
@@ -31,6 +34,12 @@ export function RolesPage() {
     () => publicOpportunities.map(publicOpportunityToRole),
     [publicOpportunities],
   );
+  const filterOptions = useMemo(() => ({
+    statuses: [...new Set(roles.map(role => role.status))].sort(),
+    departments: [...new Set(roles.map(role => role.department))].sort(),
+    roleTypes: [...new Set(roles.map(role => role.roleType))].sort(),
+  }), [roles]);
+  const hasActiveFilters = Boolean(search.trim() || statusFilter || departmentFilter || roleTypeFilter);
 
   useEffect(() => {
     document.title = "Roles | Larkin2 Opportunities";
@@ -60,13 +69,21 @@ export function RolesPage() {
 
   const filteredRoles = useMemo(() => {
     const terms = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    if (terms.length === 0) return roles;
-
     return roles.filter(r => {
       const searchableRole = [r.title, r.department, r.roleType, r.status].join(" ").toLowerCase();
-      return terms.every(term => searchableRole.includes(term));
+      return terms.every(term => searchableRole.includes(term))
+        && (!statusFilter || r.status === statusFilter)
+        && (!departmentFilter || r.department === departmentFilter)
+        && (!roleTypeFilter || r.roleType === roleTypeFilter);
     });
-  }, [roles, search]);
+  }, [roles, search, statusFilter, departmentFilter, roleTypeFilter]);
+
+  const clearAllFilters = () => {
+    setSearch("");
+    setStatusFilter("");
+    setDepartmentFilter("");
+    setRoleTypeFilter("");
+  };
 
   return (
     <div className="larkin2-page roles-page" id="top">
@@ -99,10 +116,42 @@ export function RolesPage() {
             inputTestId="input-roles-search"
             clearTestId="button-clear-roles-search"
           />
+          <div className="roles-classic-filters" aria-label="Filter roles">
+            <div className="roles-filter-field">
+              <label htmlFor="filter-status">Status</label>
+              <select id="filter-status" value={statusFilter} onChange={event => setStatusFilter(event.target.value)} data-testid="select-role-status">
+                <option value="">All statuses</option>
+                {filterOptions.statuses.map(status => <option key={status} value={status}>{status}</option>)}
+              </select>
+            </div>
+            <div className="roles-filter-field">
+              <label htmlFor="filter-department">Department</label>
+              <select id="filter-department" value={departmentFilter} onChange={event => setDepartmentFilter(event.target.value)} data-testid="select-role-department">
+                <option value="">All departments</option>
+                {filterOptions.departments.map(department => <option key={department} value={department}>{department}</option>)}
+              </select>
+            </div>
+            <div className="roles-filter-field">
+              <label htmlFor="filter-role-type">Role type</label>
+              <select id="filter-role-type" value={roleTypeFilter} onChange={event => setRoleTypeFilter(event.target.value)} data-testid="select-role-type">
+                <option value="">All role types</option>
+                {filterOptions.roleTypes.map(roleType => <option key={roleType} value={roleType}>{roleType}</option>)}
+              </select>
+            </div>
+            <button
+              type="button"
+              className="roles-filter-reset"
+              onClick={clearAllFilters}
+              disabled={!hasActiveFilters}
+              data-testid="button-clear-role-filters"
+            >
+              Clear all
+            </button>
+          </div>
         </section>
 
         <section className="roles-list larkin2-section">
-          <div className="roles-count" data-testid="text-roles-count">
+          <div className="roles-count" aria-live="polite" data-testid="text-roles-count">
             {filteredRoles.length} {filteredRoles.length === 1 ? "Result" : "Results"}
           </div>
 
@@ -118,8 +167,9 @@ export function RolesPage() {
             </div>
           ) : filteredRoles.length === 0 ? (
             <div className="roles-empty" data-testid="container-roles-empty">
-              <h3 className="roles-empty-title">No roles match that search</h3>
-              <p>Try a different title, department, role type or status.</p>
+              <h3 className="roles-empty-title">No roles match those filters</h3>
+              <p>Try broadening your keyword search or clearing one of the selected filters.</p>
+              {hasActiveFilters && <button type="button" className="roles-empty-reset" onClick={clearAllFilters}>Clear all filters</button>}
             </div>
           ) : (
             <div className="roles-grid">
