@@ -15,6 +15,7 @@ export type Role = {
   details: Array<{ label: string; value: string }>;
   applicationDeadline: string;
   responseDate?: string;
+  applicationUrl?: string | null;
 };
 
 const commonEligibility = "Applicants must be aged 18 or over, have the right to work in the UK, and be able to provide evidence of that right if selected.";

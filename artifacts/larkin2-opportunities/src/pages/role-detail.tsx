@@ -1,12 +1,29 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  getGetPublicOpportunityQueryKey,
+  useGetPublicOpportunity,
+} from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
 import { MobileMenu, SiteFooter, SiteHeader, MaskedLink } from "../components/layout";
 import { RoleSearchComposer } from "../components/role-search-composer";
-import { ROLES_BY_ID } from "../data/roles";
+import { publicOpportunityToRole } from "../data/role-api";
 import NotFound from "./not-found";
 
 export function RoleDetailPage({ id }: { id: string }) {
-  const role = ROLES_BY_ID[id];
+  const {
+    data: publicOpportunity,
+    isLoading: roleLoading,
+    isError: roleFailed,
+  } = useGetPublicOpportunity(id, {
+    query: {
+      queryKey: getGetPublicOpportunityQueryKey(id),
+      retry: 1,
+      staleTime: 60_000,
+    },
+  });
+  const role = publicOpportunity
+    ? publicOpportunityToRole(publicOpportunity)
+    : undefined;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -40,7 +57,21 @@ export function RoleDetailPage({ id }: { id: string }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [menuOpen]);
 
-  if (!role) return <NotFound />;
+  if (roleLoading) {
+    return (
+      <div className="larkin2-page roles-detail-page">
+        <main id="content">
+          <section className="roles-detail-hero larkin2-section" role="status">
+            <div className="larkin2-eyebrow">Larkin2 opportunities</div>
+            <h1 className="roles-detail-title">Loading role</h1>
+            <p className="roles-detail-summary">Fetching the latest details.</p>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  if (roleFailed || !role) return <NotFound />;
 
   const acceptingApplications = role.status === "Open";
 
@@ -86,7 +117,19 @@ export function RoleDetailPage({ id }: { id: string }) {
               <h2>{acceptingApplications ? "This role is accepting applications." : `This role is ${role.status.toLowerCase()}.`}</h2>
               <p>{role.applicationDeadline}</p>
               {role.responseDate && <p>{role.responseDate}</p>}
-              <MaskedLink href="/#signup" className="roles-detail-alert-link" testId="link-role-alerts">Sign up for alerts</MaskedLink>
+              {acceptingApplications && role.applicationUrl ? (
+                <MaskedLink
+                  href={role.applicationUrl}
+                  className="roles-detail-alert-link"
+                  testId="link-role-apply"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Apply for this role
+                </MaskedLink>
+              ) : (
+                <MaskedLink href="/#signup" className="roles-detail-alert-link" testId="link-role-alerts">Sign up for alerts</MaskedLink>
+              )}
             </div>
           </aside>
 

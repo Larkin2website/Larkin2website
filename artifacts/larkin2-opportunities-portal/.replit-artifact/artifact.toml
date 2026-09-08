@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/larkin2-opportunities-portal/"
+title = "Larkin2 Opportunities Portal"
+description = "An authenticated internal management portal for Larkin2 staff to create, review, publish, close, fill, and archive the opportunities shown on the public Roles pages."
+version = "1.0.0"
+id = "artifacts/larkin2-opportunities-portal"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/larkin2-opportunities-portal/" ]
+localPort = 19946
+
+[services.development]
+run = "pnpm --filter @workspace/larkin2-opportunities-portal run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/larkin2-opportunities-portal", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/larkin2-opportunities-portal/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19946"
+BASE_PATH = "/larkin2-opportunities-portal/"

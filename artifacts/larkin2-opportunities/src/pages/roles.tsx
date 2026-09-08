@@ -1,7 +1,11 @@
 import { useEffect, useState, useRef, useMemo } from "react";
+import {
+  getListPublicOpportunitiesQueryKey,
+  useListPublicOpportunities,
+} from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { RoleSearchComposer } from "../components/role-search-composer";
-import { ROLES } from "../data/roles";
+import { publicOpportunityToRole } from "../data/role-api";
 
 export function RolesPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,6 +16,21 @@ export function RolesPage() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get("q") ?? "");
+  const {
+    data: publicOpportunities = [],
+    isLoading: rolesLoading,
+    isError: rolesFailed,
+  } = useListPublicOpportunities(undefined, {
+    query: {
+      queryKey: getListPublicOpportunitiesQueryKey(),
+      staleTime: 60_000,
+      retry: 2,
+    },
+  });
+  const roles = useMemo(
+    () => publicOpportunities.map(publicOpportunityToRole),
+    [publicOpportunities],
+  );
 
   useEffect(() => {
     document.title = "Roles | Larkin2 Opportunities";
@@ -41,13 +60,13 @@ export function RolesPage() {
 
   const filteredRoles = useMemo(() => {
     const terms = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    if (terms.length === 0) return ROLES;
+    if (terms.length === 0) return roles;
 
-    return ROLES.filter(r => {
+    return roles.filter(r => {
       const searchableRole = [r.title, r.department, r.roleType, r.status].join(" ").toLowerCase();
       return terms.every(term => searchableRole.includes(term));
     });
-  }, [search]);
+  }, [roles, search]);
 
   return (
     <div className="larkin2-page roles-page" id="top">
@@ -87,7 +106,17 @@ export function RolesPage() {
             {filteredRoles.length} {filteredRoles.length === 1 ? "Result" : "Results"}
           </div>
 
-          {filteredRoles.length === 0 ? (
+          {rolesLoading ? (
+            <div className="roles-empty" role="status" aria-live="polite">
+              <h3 className="roles-empty-title">Loading roles</h3>
+              <p>Fetching the latest Larkin2 opportunities.</p>
+            </div>
+          ) : rolesFailed ? (
+            <div className="roles-empty" role="alert">
+              <h3 className="roles-empty-title">Roles are temporarily unavailable</h3>
+              <p>Please refresh the page or try again shortly.</p>
+            </div>
+          ) : filteredRoles.length === 0 ? (
             <div className="roles-empty" data-testid="container-roles-empty">
               <h3 className="roles-empty-title">No roles match that search</h3>
               <p>Try a different title, department, role type or status.</p>
