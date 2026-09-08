@@ -52,7 +52,7 @@ export default function DashboardPage() {
       <PageHeader
         title="Dashboard"
         subtitle="Overview of your publishing operations"
-        className="sticky top-4 sm:top-6 xl:top-10 z-20 rounded-[28px] border border-border bg-card p-5 sm:p-7 mb-0"
+        className="sticky top-0 z-20 rounded-[28px] border border-border bg-card p-5 sm:p-7 mb-0"
         action={
           <Link href="/opportunities/new" className="w-full lg:w-auto block">
             <Button className="w-full rounded-full border-0 font-mono text-xs uppercase tracking-wider h-11 px-6">
