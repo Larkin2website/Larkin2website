@@ -9,7 +9,7 @@ import {
   getListPortalOpportunitiesQueryKey,
   getGetPortalDashboardQueryKey,
   getListOpportunityAuditEventsQueryKey,
-  OpportunityStatus
+  OpportunityStatus,
 } from "@workspace/api-client-react";
 import { useParams, Link, useLocation } from "wouter";
 import { format } from "date-fns";
@@ -19,7 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/brand";
 import { 
-  ChevronLeft, Edit, ExternalLink, Calendar, Clock, Loader2, PlayCircle, Eye, RefreshCw, Trash2, ShieldAlert
+  ChevronLeft, Edit, ExternalLink, Calendar, Clock, Loader2, PlayCircle, Eye, RefreshCw, Trash2, ShieldAlert, SlidersHorizontal
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -33,6 +33,52 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+const publishedStatusOptions: {
+  status: Exclude<OpportunityStatus, "published">;
+  label: string;
+  description: string;
+  publicEffect: string;
+  remainsPublic: boolean;
+}[] = [
+  {
+    status: "draft",
+    label: "Move to Draft",
+    description: "Return the role to editing before publishing it again.",
+    publicEffect: "Removed from the public site immediately",
+    remainsPublic: false,
+  },
+  {
+    status: "closed",
+    label: "Close Applications",
+    description: "Keep the role available as a record, but stop accepting applications.",
+    publicEffect: "Remains public with a Closed status",
+    remainsPublic: true,
+  },
+  {
+    status: "filled",
+    label: "Mark as Filled",
+    description: "Show that recruitment has completed and the position has been filled.",
+    publicEffect: "Remains public with a Filled status",
+    remainsPublic: true,
+  },
+  {
+    status: "archived",
+    label: "Archive Role",
+    description: "Remove the role from public listings and keep it in the portal archive.",
+    publicEffect: "Removed from the public site immediately",
+    remainsPublic: false,
+  },
+];
+
+function getErrorMessage(error: unknown): string {
+  if (typeof error === "object" && error !== null && "error" in error) {
+    const message = (error as { error?: unknown }).error;
+    if (typeof message === "string" && message) return message;
+  }
+  if (error instanceof Error && error.message) return error.message;
+  return "The role status could not be changed. Refresh the page and try again.";
+}
 
 export default function DetailOpportunityPage() {
   const params = useParams();
@@ -54,6 +100,8 @@ export default function DetailOpportunityPage() {
   const del = useDeletePortalOpportunity();
 
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<Exclude<OpportunityStatus, "published">>("closed");
   const canWrite = session?.permissions.includes("opportunities:write") ?? false;
   const canPublish = session?.permissions.includes("opportunities:publish") ?? false;
   const canDelete = session?.permissions.includes("opportunities:delete") ?? false;
@@ -75,16 +123,19 @@ export default function DetailOpportunityPage() {
 
   const handleTransition = async (newStatus: OpportunityStatus) => {
     try {
-      await transition.mutateAsync({ id, data: { status: newStatus } });
+      const updatedOpportunity = await transition.mutateAsync({ id, data: { status: newStatus } });
 
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: getGetPortalOpportunityQueryKey(id) });
-      queryClient.invalidateQueries({ queryKey: getListPortalOpportunitiesQueryKey() });
-      queryClient.invalidateQueries({ queryKey: getGetPortalDashboardQueryKey() });
+      queryClient.setQueryData(getGetPortalOpportunityQueryKey(id), updatedOpportunity);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: getListPortalOpportunitiesQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetPortalDashboardQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getListOpportunityAuditEventsQueryKey(id) }),
+      ]);
 
       toast({ title: `Moved to ${newStatus}` });
-    } catch (e: any) {
-      toast({ title: "Action failed", description: e.error, variant: "destructive" });
+      setStatusDialogOpen(false);
+    } catch (error: unknown) {
+      toast({ title: "Status change failed", description: getErrorMessage(error), variant: "destructive" });
     }
   };
 
@@ -123,13 +174,87 @@ export default function DetailOpportunityPage() {
       )}
 
       {canPublish && opp.status === "published" && (
-        <>
-          <Button variant="outline" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider border-border" onClick={() => handleTransition("draft")}>Unpublish</Button>
-          <Button variant="outline" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider border-border" onClick={() => handleTransition("closed")}>Close Apps</Button>
-          <Button onClick={() => handleTransition("filled")} className="bg-[#e9e5df] text-[#1d2020] hover:bg-white rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider font-bold">
-            Mark Filled
-          </Button>
-        </>
+        <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider">
+              <SlidersHorizontal className="w-3.5 h-3.5 mr-2" /> Change Status
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="max-w-xl bg-[#171b1d] border-border rounded-none">
+            <AlertDialogHeader>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-primary font-mono">Published role</p>
+              <AlertDialogTitle className="font-mono font-medium tracking-tight text-2xl text-foreground">
+                Change the status of “{opp.title}”
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed">
+                Choose how this live role should appear. The change takes effect on the public opportunities site immediately.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <div className="my-2 grid gap-2" role="radiogroup" aria-label="New role status">
+              {publishedStatusOptions.map((option) => {
+                const selected = selectedStatus === option.status;
+                return (
+                  <button
+                    key={option.status}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    className={`w-full border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#171b1d] ${
+                      selected
+                        ? "border-primary bg-primary/5"
+                        : "border-[#2a2f31] bg-[#101315] hover:border-[#85898a]"
+                    }`}
+                    onClick={() => setSelectedStatus(option.status)}
+                  >
+                    <span className="flex items-start gap-3">
+                      <span
+                        aria-hidden="true"
+                        className={`mt-1 h-3 w-3 shrink-0 rounded-full border ${
+                          selected ? "border-primary bg-primary shadow-[inset_0_0_0_3px_#171b1d]" : "border-[#85898a]"
+                        }`}
+                      />
+                      <span className="min-w-0">
+                        <span className="block font-mono text-sm font-medium text-foreground">{option.label}</span>
+                        <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">{option.description}</span>
+                        <span className={`mt-2 block text-[10px] font-mono uppercase tracking-[0.12em] ${
+                          option.remainsPublic ? "text-[#c6c6c0]" : "text-primary"
+                        }`}>
+                          {option.publicEffect}
+                        </span>
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                className="rounded-none font-mono text-xs uppercase tracking-wider border-border"
+                disabled={transition.isPending}
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="rounded-none bg-primary text-[#080a0c] font-mono text-xs font-bold uppercase tracking-wider hover:bg-[#ff8d57]"
+                disabled={transition.isPending}
+                onClick={(event) => {
+                  event.preventDefault();
+                  void handleTransition(selectedStatus);
+                }}
+              >
+                {transition.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> Updating
+                  </>
+                ) : (
+                  "Confirm Status Change"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
 
       {canPublish && opp.status === "closed" && (
@@ -141,7 +266,7 @@ export default function DetailOpportunityPage() {
         </>
       )}
 
-      {canPublish && opp.status !== "archived" && (
+      {canPublish && opp.status !== "archived" && opp.status !== "published" && (
         <Button variant="ghost" className="rounded-full h-10 px-5 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground" onClick={() => handleTransition("archived")}>
           Archive
         </Button>
