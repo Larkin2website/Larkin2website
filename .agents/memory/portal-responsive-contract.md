@@ -7,4 +7,4 @@ The Opportunities Portal must treat tablet and compact-desktop widths as deliber
 
 **Why:** A phone-focused responsive pass still left 768–1180px screens cramped because the full sidebar, dense tables, and multi-column layouts activated before the remaining content width could support them.
 
-**How to apply:** When adding or changing portal pages, verify phone, tablet portrait, tablet landscape, compact laptop, and wide desktop separately. Reserve the full sidebar and dense management tables for genuinely wide screens, and delay multi-column dashboard/detail layouts until their content remains legible.
+**How to apply:** When adding or changing portal pages, verify phone, tablet portrait, tablet landscape, compact laptop, and wide desktop separately. Reserve the full sidebar and dense management tables for genuinely wide screens, keep the wide sidebar pinned while the main pane scrolls, and delay multi-column dashboard/detail layouts until their content remains legible.

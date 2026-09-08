@@ -69,9 +69,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   );
 
   return (
-    <div className="flex min-h-[100dvh] bg-background text-foreground selection:bg-primary/30 selection:text-primary">
+    <div className="flex h-[100dvh] overflow-hidden bg-background text-foreground selection:bg-primary/30 selection:text-primary">
       {/* Desktop Sidebar */}
-      <aside className="hidden xl:flex w-64 flex-col border-r border-border bg-[#080a0c] shrink-0">
+      <aside className="hidden h-full min-h-0 xl:flex w-64 flex-col border-r border-border bg-[#080a0c] shrink-0">
         <div className="h-20 flex items-center px-8 border-b border-border/50 shrink-0 min-w-0">
           <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
             <Larkin2Wordmark className="shrink-0" />
@@ -79,7 +79,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </Link>
         </div>
         
-        <nav className="flex-1 py-6 space-y-1 overflow-y-auto min-w-0">
+        <nav className="flex-1 min-h-0 py-6 space-y-1 overflow-y-auto min-w-0">
           <NavLinks />
         </nav>
         
@@ -112,7 +112,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-background relative z-10">
+      <main className="h-full min-h-0 flex-1 flex flex-col min-w-0 bg-background relative z-10">
         {/* Mobile Header */}
         <header className="xl:hidden h-16 shrink-0 border-b border-border bg-[#080a0c] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 min-w-0">
           <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
@@ -153,7 +153,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </Sheet>
         </header>
         
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <div className="max-w-[1400px] mx-auto w-full p-4 sm:p-6 lg:p-8 xl:p-10 min-w-0">
             {children}
           </div>
