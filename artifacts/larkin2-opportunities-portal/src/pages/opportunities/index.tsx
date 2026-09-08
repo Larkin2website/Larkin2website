@@ -1,11 +1,22 @@
 import { useState } from "react";
-import { useGetPortalSession, useListPortalOpportunities, getListPortalOpportunitiesQueryKey, OpportunityStatus } from "@workspace/api-client-react";
+import {
+  useGetPortalSession,
+  useListPortalOpportunities,
+  useTransitionPortalOpportunity,
+  getListPortalOpportunitiesQueryKey,
+  getGetPortalOpportunityQueryKey,
+  getGetPortalDashboardQueryKey,
+  getListOpportunityAuditEventsQueryKey,
+  OpportunityStatus,
+} from "@workspace/api-client-react";
 import { Link } from "wouter";
 import { format } from "date-fns";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/pages/dashboard";
 import { PageHeader } from "@/components/brand";
+import { useToast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -19,17 +30,85 @@ import {
   ChevronLeft, 
   ChevronRight,
   Filter,
-  ArrowRight
+  ArrowRight,
+  Loader2,
+  MoreHorizontal,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+type StatusAction = {
+  status: OpportunityStatus;
+  label: string;
+  publicEffect: string;
+};
+
+const statusActions: Record<OpportunityStatus, StatusAction[]> = {
+  draft: [
+    { status: "published", label: "Publish", publicEffect: "Appears publicly and begins accepting applications immediately." },
+    { status: "archived", label: "Archive", publicEffect: "Stays hidden from the public site and moves to the portal archive." },
+  ],
+  published: [
+    { status: "draft", label: "Move to Draft", publicEffect: "Removed from the public site immediately." },
+    { status: "closed", label: "Close Applications", publicEffect: "Remains public with a Closed status and stops accepting applications." },
+    { status: "filled", label: "Mark as Filled", publicEffect: "Remains public with a Filled status and stops accepting applications." },
+    { status: "archived", label: "Archive", publicEffect: "Removed from the public site immediately and moved to the portal archive." },
+  ],
+  closed: [
+    { status: "published", label: "Re-open", publicEffect: "Remains public and begins accepting applications again immediately." },
+    { status: "filled", label: "Mark as Filled", publicEffect: "Remains public with a Filled status." },
+    { status: "archived", label: "Archive", publicEffect: "Removed from the public site immediately and moved to the portal archive." },
+  ],
+  filled: [
+    { status: "archived", label: "Archive", publicEffect: "Removed from the public site immediately and moved to the portal archive." },
+  ],
+  archived: [
+    { status: "draft", label: "Restore to Draft", publicEffect: "Returns to editing but stays hidden from the public site." },
+  ],
+};
+
+function getErrorMessage(error: unknown): string {
+  if (typeof error === "object" && error !== null && "error" in error) {
+    const message = (error as { error?: unknown }).error;
+    if (typeof message === "string" && message) return message;
+  }
+  if (error instanceof Error && error.message) return error.message;
+  return "The role status could not be changed. Refresh the page and try again.";
+}
 
 export default function OpportunitiesPage() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const { data: session } = useGetPortalSession();
   const canWrite = session?.permissions.includes("opportunities:write") ?? false;
+  const canPublish = session?.permissions.includes("opportunities:publish") ?? false;
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<OpportunityStatus | "all">("all");
   const [sortField, setSortField] = useState<"updatedAt" | "title" | "deadline">("updatedAt");
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+  const [pendingStatusChange, setPendingStatusChange] = useState<{
+    id: string;
+    title: string;
+    action: StatusAction;
+  } | null>(null);
+  const transition = useTransitionPortalOpportunity();
 
   const params = {
     page,
@@ -49,6 +128,25 @@ export default function OpportunitiesPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
+  };
+
+  const handleTransition = async () => {
+    if (!pendingStatusChange) return;
+
+    const { id, action } = pendingStatusChange;
+    try {
+      const updatedOpportunity = await transition.mutateAsync({ id, data: { status: action.status } });
+      queryClient.setQueryData(getGetPortalOpportunityQueryKey(id), updatedOpportunity);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: getListPortalOpportunitiesQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetPortalDashboardQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getListOpportunityAuditEventsQueryKey(id) }),
+      ]);
+      toast({ title: `Moved to ${action.status}` });
+      setPendingStatusChange(null);
+    } catch (error: unknown) {
+      toast({ title: "Status change failed", description: getErrorMessage(error), variant: "destructive" });
+    }
   };
 
   return (
@@ -169,11 +267,44 @@ export default function OpportunitiesPage() {
                       )}
                     </td>
                     <td className="px-6 py-5 text-right">
-                       <Link href={`/opportunities/${opp.id}`}>
+                      <div className="flex items-center justify-end gap-1">
+                      {canPublish && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-[#85898a] hover:bg-[#202527] hover:text-primary"
+                              aria-label={`Change status for ${opp.title}`}
+                              data-testid={`button-status-menu-${opp.id}`}
+                            >
+                              <MoreHorizontal className="h-5 w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56 rounded-none border-[#2a2f31] bg-[#171b1d]">
+                            <DropdownMenuLabel className="font-mono text-[10px] font-normal uppercase tracking-wider text-[#85898a]">
+                              Change status
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator className="bg-[#2a2f31]" />
+                            {statusActions[opp.status].map((action) => (
+                              <DropdownMenuItem
+                                key={action.status}
+                                className="rounded-none font-mono text-xs uppercase tracking-wider focus:bg-primary/10 focus:text-primary"
+                                onSelect={() => setPendingStatusChange({ id: opp.id, title: opp.title, action })}
+                                data-testid={`button-status-${action.status}-${opp.id}`}
+                              >
+                                {action.label}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                      <Link href={`/opportunities/${opp.id}`} data-testid={`link-opportunity-${opp.id}`}>
                         <Button variant="ghost" size="icon" className="text-[#85898a] group-hover:text-primary transition-colors hover:bg-transparent">
                           <ArrowRight className="w-5 h-5" />
                         </Button>
                       </Link>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -210,6 +341,55 @@ export default function OpportunitiesPage() {
           </div>
         )}
       </div>
+
+      <AlertDialog
+        open={pendingStatusChange !== null}
+        onOpenChange={(open) => {
+          if (!open && !transition.isPending) setPendingStatusChange(null);
+        }}
+      >
+        <AlertDialogContent className="max-w-lg rounded-none border-[#2a2f31] bg-[#171b1d]">
+          <AlertDialogHeader>
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">Status change</p>
+            <AlertDialogTitle className="font-mono text-2xl font-medium tracking-tight">
+              {pendingStatusChange?.action.label} “{pendingStatusChange?.title}”?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="block">This lifecycle change takes effect immediately.</span>
+              <span className="block border border-[#2a2f31] bg-[#101315] p-4 text-foreground">
+                <span className="mb-1 block font-mono text-[10px] uppercase tracking-wider text-[#85898a]">Public impact</span>
+                {pendingStatusChange?.action.publicEffect}
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className="rounded-none border-border font-mono text-xs uppercase tracking-wider"
+              disabled={transition.isPending}
+              data-testid="button-cancel-status-change"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-none bg-primary font-mono text-xs font-bold uppercase tracking-wider text-[#080a0c] hover:bg-[#ff8d57]"
+              disabled={transition.isPending}
+              onClick={(event) => {
+                event.preventDefault();
+                void handleTransition();
+              }}
+              data-testid="button-confirm-status-change"
+            >
+              {transition.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> Updating
+                </>
+              ) : (
+                "Confirm Status Change"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
