@@ -130,6 +130,90 @@
   }
 }
 
+/* The management workspace shares the public site's warm paper treatment while
+   the navigation shell keeps its existing dark operational chrome. */
+.portal-workspace,
+.portal-paper-surface {
+  --background: 37 18% 89%; /* #e9e5df */
+  --foreground: 180 5% 12%; /* #1d2020 */
+  --card: 36 21% 94%; /* #f4f1ed */
+  --card-foreground: 180 5% 12%;
+  --card-border: 24 8% 72%;
+  --popover: 36 21% 94%;
+  --popover-foreground: 180 5% 12%;
+  --popover-border: 24 8% 72%;
+  --secondary: 35 12% 84%;
+  --secondary-foreground: 180 5% 12%;
+  --muted: 34 13% 85%;
+  --muted-foreground: 20 8% 38%;
+  --accent: 34 15% 82%;
+  --accent-foreground: 180 5% 12%;
+  --border: 24 8% 72%;
+  --input: 24 8% 68%;
+  background: #e9e5df;
+  color: #1d2020;
+  font-family: 'DM Sans', ui-sans-serif, sans-serif;
+}
+
+.portal-workspace :is(h1, h2, h3, h4, h5, h6),
+.portal-workspace .font-mono,
+.portal-paper-surface :is(h1, h2, h3, h4, h5, h6),
+.portal-paper-surface .font-mono {
+  font-family: 'Space Grotesk', ui-sans-serif, sans-serif;
+}
+
+.portal-paper-surface {
+  background-color: #f4f1ed;
+  border-color: rgba(29, 32, 32, .2);
+  color: #1d2020;
+}
+
+.portal-dark-surface {
+  --background: 204 13% 7%;
+  --foreground: 36 22% 94%;
+  --card: 200 11% 10%;
+  --card-foreground: 36 22% 94%;
+  --popover: 200 11% 10%;
+  --popover-foreground: 36 22% 94%;
+  --muted: 200 11% 10%;
+  --muted-foreground: 192 2% 53%;
+  --accent: 180 5% 12%;
+  --accent-foreground: 36 22% 94%;
+  --border: 200 8% 18%;
+  background-color: #171b1d;
+  border-color: #2a2f31;
+  color: #f4f1ed;
+}
+
+/* Older portal screens used literal dark palette utilities. Normalize those
+   surfaces inside the paper workspace while leaving dark navigation untouched. */
+:is(.portal-workspace, .portal-paper-surface) [class~="bg-[#171b1d]"] {
+  background-color: #f4f1ed;
+}
+:is(.portal-workspace, .portal-paper-surface) [class~="bg-[#101315]"] {
+  background-color: #ded9d1;
+}
+:is(.portal-workspace, .portal-paper-surface) [class~="border-[#2a2f31]"] {
+  border-color: rgba(29, 32, 32, .2);
+}
+:is(.portal-workspace, .portal-paper-surface) [class~="divide-[#2a2f31]"] > :not(:last-child) {
+  border-color: rgba(29, 32, 32, .2);
+}
+:is(.portal-workspace, .portal-paper-surface) [class~="text-[#f4f1ed]"],
+:is(.portal-workspace, .portal-paper-surface) [class~="text-[#e9e5df]"],
+:is(.portal-workspace, .portal-paper-surface) [class~="text-white"] {
+  color: #1d2020;
+}
+:is(.portal-workspace, .portal-paper-surface) [class~="text-[#c6c6c0]"] {
+  color: #4e504e;
+}
+:is(.portal-workspace, .portal-paper-surface) [class~="text-[#85898a]"] {
+  color: #625d58;
+}
+:is(.portal-workspace, .portal-paper-surface) [class~="hover:bg-[#101315]"]:hover {
+  background-color: #ded9d1;
+}
+
 ::selection {
   background: hsl(var(--primary) / 0.3);
   color: hsl(var(--primary));

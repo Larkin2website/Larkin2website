@@ -186,7 +186,7 @@ function StatCard({ title, value, description, icon: Icon }: { title: string, va
 
 export function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    draft: "bg-[#2a2f31] text-[#f4f1ed] border-transparent",
+    draft: "bg-[#1d2020] text-card border-transparent",
     published: "bg-primary text-[#080a0c] border-transparent font-bold",
     closed: "bg-transparent text-[#85898a] border-[#85898a]",
     filled: "bg-[#e9e5df] text-[#1d2020] border-transparent font-bold",

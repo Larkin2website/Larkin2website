@@ -154,7 +154,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                 </div>}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60 bg-[#171b1d] border-border rounded-none shadow-2xl">
+            <DropdownMenuContent align="end" className="portal-dark-surface w-60 bg-[#171b1d] border-border rounded-none shadow-2xl">
               <DropdownMenuLabel className="font-mono font-medium text-xs uppercase tracking-wider text-muted-foreground">Account</DropdownMenuLabel>
               <DropdownMenuItem disabled className="text-xs break-all">
                 {user?.emailAddresses[0]?.emailAddress}
@@ -211,7 +211,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </Sheet>
         </header>
         
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+        <div className="portal-workspace flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <div className="max-w-[1400px] mx-auto w-full p-4 sm:p-6 lg:p-8 xl:p-10 min-w-0">
             {children}
           </div>
