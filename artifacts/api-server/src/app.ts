@@ -6,11 +6,13 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware, getClerkProxyHost } from "./middlewares/clerkProxyMiddleware";
 import { validatePortalDemoMode } from "./lib/portal-demo";
+import { customDomainRedirect } from "./middlewares/custom-domain-redirect";
 
 validatePortalDemoMode();
 
 const app: Express = express();
 
+app.use(customDomainRedirect);
 app.use(
   pinoHttp({
     logger,
