@@ -39,6 +39,7 @@ import type {
   OpportunityOptions,
   OpportunityPage,
   OpportunityTransition,
+  PortalAccessGrantInput,
   PortalDashboard,
   PortalMember,
   PortalMemberUpdate,
@@ -388,6 +389,219 @@ export function useGetPortalSession<TData = Awaited<ReturnType<typeof getPortalS
 
 
 
+
+export const getCreatePortalDemoSessionUrl = () => {
+
+
+
+
+  return `/api/portal/demo-session`
+}
+
+/**
+ * @summary Start a browser-scoped demo portal session
+ */
+export const createPortalDemoSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getCreatePortalDemoSessionUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCreatePortalDemoSessionMutationOptions = <TError = ErrorType<NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,void, TContext> => {
+
+const mutationKey = ['createPortalDemoSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPortalDemoSession>>, void> = () => {
+
+
+          return  createPortalDemoSession(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePortalDemoSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createPortalDemoSession>>>
+
+    export type CreatePortalDemoSessionMutationError = ErrorType<NotFoundResponse>
+
+    /**
+ * @summary Start a browser-scoped demo portal session
+ */
+export const useCreatePortalDemoSession = <TError = ErrorType<NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPortalDemoSession>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getCreatePortalDemoSessionMutationOptions(options));
+    }
+
+export const getDeletePortalDemoSessionUrl = () => {
+
+
+
+
+  return `/api/portal/demo-session`
+}
+
+/**
+ * @summary End the browser-scoped demo portal session
+ */
+export const deletePortalDemoSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeletePortalDemoSessionUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeletePortalDemoSessionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePortalDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePortalDemoSession>>, TError,void, TContext> => {
+
+const mutationKey = ['deletePortalDemoSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePortalDemoSession>>, void> = () => {
+
+
+          return  deletePortalDemoSession(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePortalDemoSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deletePortalDemoSession>>>
+
+    export type DeletePortalDemoSessionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary End the browser-scoped demo portal session
+ */
+export const useDeletePortalDemoSession = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePortalDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deletePortalDemoSession>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getDeletePortalDemoSessionMutationOptions(options));
+    }
+
+export const getCreatePortalAccessGrantUrl = () => {
+
+
+
+
+  return `/api/portal/access-grants`
+}
+
+/**
+ * @summary Pre-grant portal access by name, email, and role
+ */
+export const createPortalAccessGrant = async (portalAccessGrantInput: PortalAccessGrantInput, options?: Parameters<typeof customFetch>[1]): Promise<PortalMember> => {
+
+  return customFetch<PortalMember>(getCreatePortalAccessGrantUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(portalAccessGrantInput)
+  }
+);}
+
+
+
+
+
+export const getCreatePortalAccessGrantMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalAccessGrant>>, TError,{data: BodyType<PortalAccessGrantInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPortalAccessGrant>>, TError,{data: BodyType<PortalAccessGrantInput>}, TContext> => {
+
+const mutationKey = ['createPortalAccessGrant'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPortalAccessGrant>>, {data: BodyType<PortalAccessGrantInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPortalAccessGrant(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePortalAccessGrantMutationResult = NonNullable<Awaited<ReturnType<typeof createPortalAccessGrant>>>
+    export type CreatePortalAccessGrantMutationBody = BodyType<PortalAccessGrantInput>
+    export type CreatePortalAccessGrantMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | ConflictResponse>
+
+    /**
+ * @summary Pre-grant portal access by name, email, and role
+ */
+export const useCreatePortalAccessGrant = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalAccessGrant>>, TError,{data: BodyType<PortalAccessGrantInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPortalAccessGrant>>,
+        TError,
+        {data: BodyType<PortalAccessGrantInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePortalAccessGrantMutationOptions(options));
+    }
 
 export const getGetPortalDashboardUrl = () => {
 
@@ -1510,21 +1724,21 @@ export function useListPortalMembers<TData = Awaited<ReturnType<typeof listPorta
 
 
 
-export const getUpdatePortalMemberUrl = (userId: string,) => {
+export const getUpdatePortalMemberUrl = (memberId: string,) => {
 
 
 
 
-  return `/api/portal/members/${userId}`
+  return `/api/portal/members/${memberId}`
 }
 
 /**
  * @summary Approve, suspend, or change a portal member role
  */
-export const updatePortalMember = async (userId: string,
+export const updatePortalMember = async (memberId: string,
     portalMemberUpdate: PortalMemberUpdate, options?: Parameters<typeof customFetch>[1]): Promise<PortalMember> => {
 
-  return customFetch<PortalMember>(getUpdatePortalMemberUrl(userId),
+  return customFetch<PortalMember>(getUpdatePortalMemberUrl(memberId),
   {
     ...options,
     method: 'PATCH',
@@ -1538,8 +1752,8 @@ export const updatePortalMember = async (userId: string,
 
 
 export const getUpdatePortalMemberMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalMember>>, TError,{userId: string;data: BodyType<PortalMemberUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updatePortalMember>>, TError,{userId: string;data: BodyType<PortalMemberUpdate>}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalMember>>, TError,{memberId: string;data: BodyType<PortalMemberUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePortalMember>>, TError,{memberId: string;data: BodyType<PortalMemberUpdate>}, TContext> => {
 
 const mutationKey = ['updatePortalMember'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1551,10 +1765,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePortalMember>>, {userId: string;data: BodyType<PortalMemberUpdate>}> = (props) => {
-          const {userId,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePortalMember>>, {memberId: string;data: BodyType<PortalMemberUpdate>}> = (props) => {
+          const {memberId,data} = props ?? {};
 
-          return  updatePortalMember(userId,data,requestOptions)
+          return  updatePortalMember(memberId,data,requestOptions)
         }
 
 
@@ -1572,11 +1786,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Approve, suspend, or change a portal member role
  */
 export const useUpdatePortalMember = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalMember>>, TError,{userId: string;data: BodyType<PortalMemberUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalMember>>, TError,{memberId: string;data: BodyType<PortalMemberUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof updatePortalMember>>,
         TError,
-        {userId: string;data: BodyType<PortalMemberUpdate>},
+        {memberId: string;data: BodyType<PortalMemberUpdate>},
         TContext
       > => {
       return useMutation(getUpdatePortalMemberMutationOptions(options));

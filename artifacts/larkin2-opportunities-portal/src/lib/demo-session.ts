@@ -1,0 +1,1 @@
+export const DEMO_PORTAL_EMAIL = "demo@larkin2.invalid";

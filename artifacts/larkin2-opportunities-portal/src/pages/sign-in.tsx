@@ -2,6 +2,13 @@ import { SignIn } from "@clerk/react";
 import { clerkBasePath } from "@/lib/clerk";
 import { Larkin2Wordmark } from "@/components/brand";
 import productionImage from "@/assets/sign-in-production.webp";
+import { portalDemoMode } from "@/lib/demo-mode";
+import { useCreatePortalDemoSession, getGetPortalSessionQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DEMO_PORTAL_EMAIL } from "@/lib/demo-session";
 
 const paperAppearance = {
   theme: "simple" as const,
@@ -56,6 +63,16 @@ const paperAppearance = {
 };
 
 export default function SignInPage() {
+  const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
+  const startDemoSession = useCreatePortalDemoSession();
+
+  const handleDemoSignIn = async () => {
+    await startDemoSession.mutateAsync();
+    await queryClient.invalidateQueries({ queryKey: getGetPortalSessionQueryKey() });
+    navigate("/dashboard", { replace: true });
+  };
+
   return (
     <div className="min-h-[100dvh] lg:h-[100dvh] flex flex-col lg:flex-row bg-[#e9e5df] relative font-sans lg:overflow-hidden">
       <div className="pointer-events-none fixed inset-0 z-40 opacity-[0.04]" style={{
@@ -96,13 +113,47 @@ export default function SignInPage() {
 
       <div className="flex-1 lg:flex-none lg:w-[55%] flex flex-col items-center justify-center p-8 sm:p-12 lg:p-16 xl:p-24 relative bg-[#f4f1ed] z-10 min-h-0 lg:overflow-y-auto lg:h-full">
         <div className="w-full max-w-[420px] animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-200 py-12 lg:py-24 my-auto">
-          <SignIn
-            path={`${clerkBasePath}/sign-in`}
-            routing="path"
-            signUpUrl={`${clerkBasePath}/sign-up`}
-            fallbackRedirectUrl={`${clerkBasePath}/dashboard`}
-            appearance={paperAppearance}
-          />
+          {portalDemoMode ? (
+            <div className="space-y-8">
+              <div>
+                <h2 className="font-mono text-3xl tracking-tight text-[#1d2020]">Sign in to Larkin2</h2>
+                <p className="mt-3 text-base text-[#625d58]">Enter the demonstration portal without real credentials.</p>
+              </div>
+              <div className="space-y-3">
+                <label htmlFor="demo-email" className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#625d58]">
+                  Email address
+                </label>
+                <Input
+                  id="demo-email"
+                  type="email"
+                  value={DEMO_PORTAL_EMAIL}
+                  readOnly
+                  className="h-14 rounded-none border-[#c7c2bc] bg-[#e9e5df] px-4 font-mono text-sm text-[#1d2020]"
+                />
+              </div>
+              <Button
+                type="button"
+                disabled={startDemoSession.isPending}
+                onClick={handleDemoSignIn}
+                className="h-14 w-full rounded-none bg-[#f4773f] font-mono text-xs font-bold uppercase tracking-wider text-[#080a0c] hover:bg-[#ff8d57]"
+              >
+                {startDemoSession.isPending ? "Entering portal..." : "Enter Demo Portal"}
+              </Button>
+              {startDemoSession.isError && (
+                <p role="alert" className="border border-[#ef625f] bg-[#ef625f]/10 p-3 text-sm text-[#9f2d2a]">
+                  The demo session could not be started. Please try again.
+                </p>
+              )}
+            </div>
+          ) : (
+            <SignIn
+              path={`${clerkBasePath}/sign-in`}
+              routing="path"
+              signUpUrl={`${clerkBasePath}/sign-up`}
+              fallbackRedirectUrl={`${clerkBasePath}/dashboard`}
+              appearance={paperAppearance}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -347,12 +347,24 @@ export interface PortalDashboard {
   recentActivity: AuditEvent[];
 }
 
+export type PortalMemberStatus = typeof PortalMemberStatus[keyof typeof PortalMemberStatus];
+
+
+export const PortalMemberStatus = {
+  pending: 'pending',
+  active: 'active',
+  suspended: 'suspended',
+} as const;
+
 export interface PortalMember {
-  userId: string;
+  id: string;
+  /** @nullable */
+  userId: string | null;
   displayName: string;
   email: string;
   role: PortalRole;
   active: boolean;
+  status: PortalMemberStatus;
   createdAt: string;
   updatedAt: string;
 }
@@ -360,6 +372,17 @@ export interface PortalMember {
 export interface PortalMemberUpdate {
   role: PortalRole;
   active: boolean;
+}
+
+export interface PortalAccessGrantInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  displayName: string;
+  /** @maxLength 320 */
+  email: string;
+  role: PortalRole;
 }
 
 export type PortalSessionPermissionsItem = typeof PortalSessionPermissionsItem[keyof typeof PortalSessionPermissionsItem];

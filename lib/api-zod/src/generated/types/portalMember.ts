@@ -5,14 +5,18 @@
  * Shared contract for Larkin2 public opportunities and the internal management portal.
  * OpenAPI spec version: 1.0.0
  */
+import type { PortalMemberStatus } from './portalMemberStatus';
 import type { PortalRole } from './portalRole';
 
 export interface PortalMember {
-  userId: string;
+  id: string;
+  /** @nullable */
+  userId: string | null;
   displayName: string;
   email: string;
   role: PortalRole;
   active: boolean;
+  status: PortalMemberStatus;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -119,15 +119,58 @@ export const GetPublicOpportunityResponse = zod.object({
  */
 export const GetPortalSessionResponse = zod.object({
   "member": zod.object({
-  "userId": zod.string(),
+  "id": zod.string(),
+  "userId": zod.string().nullable(),
   "displayName": zod.string(),
   "email": zod.string().email(),
   "role": zod.enum(['super_admin', 'opportunity_manager', 'viewer']),
   "active": zod.boolean(),
+  "status": zod.enum(['pending', 'active', 'suspended']),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
   "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'opportunity-options:manage', 'opportunity-options:lifecycle', 'members:manage']))
+})
+
+
+/**
+ * @summary Start a browser-scoped demo portal session
+ */
+export const CreatePortalDemoSessionResponse = zod.void()
+
+
+/**
+ * @summary End the browser-scoped demo portal session
+ */
+export const DeletePortalDemoSessionResponse = zod.void()
+
+
+/**
+ * @summary Pre-grant portal access by name, email, and role
+ */
+export const createPortalAccessGrantBodyDisplayNameMin = 2;
+export const createPortalAccessGrantBodyDisplayNameMax = 120;
+
+export const createPortalAccessGrantBodyEmailMax = 320;
+
+
+
+export const CreatePortalAccessGrantBody = zod.object({
+  "displayName": zod.string().min(createPortalAccessGrantBodyDisplayNameMin).max(createPortalAccessGrantBodyDisplayNameMax),
+  "email": zod.string().email().max(createPortalAccessGrantBodyEmailMax),
+  "role": zod.enum(['super_admin', 'opportunity_manager', 'viewer'])
+})
+
+export const CreatePortalAccessGrantResponse = zod.object({
+  "id": zod.string(),
+  "userId": zod.string().nullable(),
+  "displayName": zod.string(),
+  "email": zod.string().email(),
+  "role": zod.enum(['super_admin', 'opportunity_manager', 'viewer']),
+  "active": zod.boolean(),
+  "status": zod.enum(['pending', 'active', 'suspended']),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
 })
 
 
@@ -173,7 +216,7 @@ export const GetPortalDashboardResponse = zod.object({
   "featured": zod.boolean(),
   "urgent": zod.boolean(),
   "contentItems": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(getPortalDashboardResponseRecentOpportunitiesItemContentItemsItemPositionMin),
   "content": zod.string().min(1).max(getPortalDashboardResponseRecentOpportunitiesItemContentItemsItemContentMax)
@@ -215,7 +258,7 @@ export const ListPortalOpportunityOptionsQueryParams = zod.object({
 
 export const ListPortalOpportunityOptionsResponse = zod.object({
   "departments": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
   "active": zod.boolean(),
@@ -223,7 +266,7 @@ export const ListPortalOpportunityOptionsResponse = zod.object({
   "createdAt": zod.coerce.date()
 })),
   "roleTypes": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
   "active": zod.boolean(),
@@ -247,7 +290,7 @@ export const CreatePortalOpportunityOptionBody = zod.object({
 })
 
 export const CreatePortalOpportunityOptionResponse = zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
   "active": zod.boolean(),
@@ -273,7 +316,7 @@ export const RenamePortalOpportunityOptionBody = zod.object({
 })
 
 export const RenamePortalOpportunityOptionResponse = zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
   "active": zod.boolean(),
@@ -290,7 +333,7 @@ export const RetirePortalOpportunityOptionParams = zod.object({
 })
 
 export const RetirePortalOpportunityOptionResponse = zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
   "active": zod.boolean(),
@@ -307,7 +350,7 @@ export const RestorePortalOpportunityOptionParams = zod.object({
 })
 
 export const RestorePortalOpportunityOptionResponse = zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
   "active": zod.boolean(),
@@ -328,7 +371,7 @@ export const MergePortalOpportunityOptionBody = zod.object({
 })
 
 export const MergePortalOpportunityOptionResponse = zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
   "active": zod.boolean(),
@@ -395,7 +438,7 @@ export const ListPortalOpportunitiesResponse = zod.object({
   "featured": zod.boolean(),
   "urgent": zod.boolean(),
   "contentItems": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(listPortalOpportunitiesResponseItemsItemContentItemsItemPositionMin),
   "content": zod.string().min(1).max(listPortalOpportunitiesResponseItemsItemContentItemsItemContentMax)
@@ -521,7 +564,7 @@ export const CreatePortalOpportunityResponse = zod.object({
   "featured": zod.boolean(),
   "urgent": zod.boolean(),
   "contentItems": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(createPortalOpportunityResponseContentItemsItemPositionMin),
   "content": zod.string().min(1).max(createPortalOpportunityResponseContentItemsItemContentMax)
@@ -577,7 +620,7 @@ export const GetPortalOpportunityResponse = zod.object({
   "featured": zod.boolean(),
   "urgent": zod.boolean(),
   "contentItems": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(getPortalOpportunityResponseContentItemsItemPositionMin),
   "content": zod.string().min(1).max(getPortalOpportunityResponseContentItemsItemContentMax)
@@ -702,7 +745,7 @@ export const UpdatePortalOpportunityResponse = zod.object({
   "featured": zod.boolean(),
   "urgent": zod.boolean(),
   "contentItems": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(updatePortalOpportunityResponseContentItemsItemPositionMin),
   "content": zod.string().min(1).max(updatePortalOpportunityResponseContentItemsItemContentMax)
@@ -777,7 +820,7 @@ export const TransitionPortalOpportunityResponse = zod.object({
   "featured": zod.boolean(),
   "urgent": zod.boolean(),
   "contentItems": zod.array(zod.object({
-  "id": zod.string().uuid(),
+  "id": zod.string(),
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(transitionPortalOpportunityResponseContentItemsItemPositionMin),
   "content": zod.string().min(1).max(transitionPortalOpportunityResponseContentItemsItemContentMax)
@@ -821,11 +864,13 @@ export const ListOpportunityAuditEventsResponse = zod.array(ListOpportunityAudit
  * @summary List portal memberships
  */
 export const ListPortalMembersResponseItem = zod.object({
-  "userId": zod.string(),
+  "id": zod.string(),
+  "userId": zod.string().nullable(),
   "displayName": zod.string(),
   "email": zod.string().email(),
   "role": zod.enum(['super_admin', 'opportunity_manager', 'viewer']),
   "active": zod.boolean(),
+  "status": zod.enum(['pending', 'active', 'suspended']),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 })
@@ -835,12 +880,12 @@ export const ListPortalMembersResponse = zod.array(ListPortalMembersResponseItem
 /**
  * @summary Approve, suspend, or change a portal member role
  */
-export const updatePortalMemberPathUserIdMax = 255;
+export const updatePortalMemberPathMemberIdMax = 255;
 
 
 
 export const UpdatePortalMemberParams = zod.object({
-  "userId": zod.coerce.string().min(1).max(updatePortalMemberPathUserIdMax)
+  "memberId": zod.coerce.string().min(1).max(updatePortalMemberPathMemberIdMax)
 })
 
 export const UpdatePortalMemberBody = zod.object({
@@ -849,11 +894,13 @@ export const UpdatePortalMemberBody = zod.object({
 })
 
 export const UpdatePortalMemberResponse = zod.object({
-  "userId": zod.string(),
+  "id": zod.string(),
+  "userId": zod.string().nullable(),
   "displayName": zod.string(),
   "email": zod.string().email(),
   "role": zod.enum(['super_admin', 'opportunity_manager', 'viewer']),
   "active": zod.boolean(),
+  "status": zod.enum(['pending', 'active', 'suspended']),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 })

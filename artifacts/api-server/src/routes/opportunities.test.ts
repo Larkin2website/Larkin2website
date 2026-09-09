@@ -220,3 +220,89 @@ test("unknown selector values return a clear opportunity error", async () => {
     } as any,
   });
 });
+
+test("super admins can create a named pending access grant and duplicate email is clear", async () => {
+  const member = {
+    id: "22222222-2222-4222-8222-222222222222",
+    userId: null,
+    displayName: "Alex Morgan",
+    email: "alex@example.com",
+    normalizedEmail: "alex@example.com",
+    role: "viewer" as const,
+    active: true,
+    status: "pending" as const,
+    createdAt,
+    updatedAt: createdAt,
+  };
+  let duplicate = false;
+  await withServer(async () => {
+    throw new Error("should not be called");
+  }, async (baseUrl) => {
+    const created = await fetch(`${baseUrl}/portal/access-grants`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-test-role": "super_admin" },
+      body: JSON.stringify({ displayName: "Alex Morgan", email: "Alex@Example.com", role: "viewer" }),
+    });
+    assert.equal(created.status, 201);
+    const { normalizedEmail: _normalizedEmail, ...publicMember } = member;
+    assert.deepEqual(await created.json(), {
+      ...publicMember,
+      createdAt: createdAt.toISOString(),
+      updatedAt: createdAt.toISOString(),
+    });
+
+    duplicate = true;
+    const conflict = await fetch(`${baseUrl}/portal/access-grants`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-test-role": "super_admin" },
+      body: JSON.stringify({ displayName: "Another Alex", email: "alex@example.com", role: "viewer" }),
+    });
+    assert.equal(conflict.status, 409);
+    assert.deepEqual(await conflict.json(), { error: "Access has already been granted to this email address" });
+  }, {
+    grantPortalAccess: async () => {
+      if (duplicate) throw new Error("DUPLICATE_EMAIL");
+      return member;
+    },
+  });
+});
+
+test("non-admins cannot create access grants", async () => {
+  let called = false;
+  await withServer(async () => {
+    throw new Error("should not be called");
+  }, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/portal/access-grants`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-test-role": "opportunity_manager" },
+      body: JSON.stringify({ displayName: "Alex Morgan", email: "alex@example.com", role: "viewer" }),
+    });
+    assert.equal(response.status, 403);
+    assert.equal(called, false);
+  }, {
+    grantPortalAccess: async () => {
+      called = true;
+      throw new Error("should not be called");
+    },
+  });
+});
+
+test("an access grant claimed during an admin update returns a refresh conflict", async () => {
+  await withServer(async () => {
+    throw new Error("should not be called");
+  }, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/portal/members/11111111-1111-4111-8111-111111111111`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json", "x-test-role": "super_admin" },
+      body: JSON.stringify({ role: "viewer", active: false }),
+    });
+    assert.equal(response.status, 409);
+    assert.deepEqual(await response.json(), {
+      error: "This access grant was already claimed; refresh the member list",
+    });
+  }, {
+    updatePortalPerson: async () => {
+      throw new Error("GRANT_ALREADY_CLAIMED");
+    },
+  });
+});

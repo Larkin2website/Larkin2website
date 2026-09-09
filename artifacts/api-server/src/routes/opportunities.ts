@@ -10,16 +10,18 @@ import {
   RenamePortalOpportunityOptionResponse, RestorePortalOpportunityOptionParams, RestorePortalOpportunityOptionResponse,
   RetirePortalOpportunityOptionParams, RetirePortalOpportunityOptionResponse, TransitionPortalOpportunityBody,
   TransitionPortalOpportunityParams, TransitionPortalOpportunityResponse, UpdatePortalMemberBody, UpdatePortalMemberParams,
+  CreatePortalAccessGrantBody, CreatePortalAccessGrantResponse,
   UpdatePortalMemberResponse, UpdatePortalOpportunityBody, UpdatePortalOpportunityParams, UpdatePortalOpportunityResponse,
 } from "@workspace/api-zod";
-import { auditEventsTable, db, portalMembershipsTable } from "@workspace/db";
-import { desc, eq } from "drizzle-orm";
+import { db, portalAccessGrantsTable, portalMembershipsTable } from "@workspace/db";
+import { desc, eq, isNull } from "drizzle-orm";
 import { requirePortal } from "../lib/portal-auth";
-import { demoPortalMember } from "../lib/portal-demo";
+import { clearDemoPortalSession, demoPortalMember, isPortalDemoMode, startDemoPortalSession } from "../lib/portal-demo";
 import { canTransition } from "../lib/permissions";
 import { toPublicStatus } from "../lib/opportunity-domain";
 import * as opportunities from "../lib/opportunity-service";
 import * as opportunityOptions from "../lib/opportunity-option-service";
+import { grantPortalAccess, portalGrantResponse, portalMemberResponse, updatePortalPerson } from "../lib/portal-members";
 
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const publicMap = (row: any) => ({
@@ -38,6 +40,8 @@ type OpportunityRouteDependencies = {
   requirePortal: typeof requirePortal;
   opportunities: typeof opportunities;
   opportunityOptions: typeof opportunityOptions;
+  grantPortalAccess: typeof grantPortalAccess;
+  updatePortalPerson: typeof updatePortalPerson;
 };
 
 export function createOpportunitiesRouter(overrides: Partial<OpportunityRouteDependencies> = {}): IRouter {
@@ -45,9 +49,20 @@ const dependencies: OpportunityRouteDependencies = {
   requirePortal,
   opportunities,
   opportunityOptions,
+  grantPortalAccess,
+  updatePortalPerson,
   ...overrides,
 };
 const router: IRouter = Router();
+router.post("/portal/demo-session", (_req, res): void => {
+  if (!isPortalDemoMode()) { res.status(404).json({ error: "Not found" }); return; }
+  startDemoPortalSession(res);
+  res.status(204).send();
+});
+router.delete("/portal/demo-session", (_req, res): void => {
+  clearDemoPortalSession(res);
+  res.status(204).send();
+});
 
 router.get("/public/opportunities", async (req, res): Promise<void> => {
   const parsed = ListPublicOpportunitiesQueryParams.safeParse(req.query);
@@ -72,7 +87,7 @@ router.get("/portal/session", dependencies.requirePortal(), async (req, res): Pr
     return;
   }
   const [member] = await db.select().from(portalMembershipsTable).where(eq(portalMembershipsTable.userId, actor.userId));
-  res.json(GetPortalSessionResponse.parse({ member, permissions: actor.permissions }));
+  res.json(GetPortalSessionResponse.parse({ member: portalMemberResponse(member), permissions: actor.permissions }));
 });
 router.get("/portal/dashboard", dependencies.requirePortal("opportunities:read"), async (_req, res): Promise<void> => {
   res.json(GetPortalDashboardResponse.parse(await dependencies.opportunities.dashboard()));
@@ -217,29 +232,50 @@ router.get("/portal/opportunities/:id/audit", dependencies.requirePortal("opport
   if (!await opportunities.getOpportunity(parsed.data.id)) { res.status(404).json({ error: "Opportunity not found" }); return; }
   res.json(ListOpportunityAuditEventsResponse.parse(await opportunities.auditList(parsed.data.id)));
 });
-router.get("/portal/members", dependencies.requirePortal("members:manage"), async (_req, res): Promise<void> => {
-  res.json(ListPortalMembersResponse.parse(await db.select().from(portalMembershipsTable).orderBy(desc(portalMembershipsTable.createdAt))));
+router.get("/portal/members", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
+  const [members, grants] = await Promise.all([
+    db.select().from(portalMembershipsTable).orderBy(desc(portalMembershipsTable.createdAt)),
+    db.select().from(portalAccessGrantsTable)
+      .where(isNull(portalAccessGrantsTable.claimedUserId))
+      .orderBy(desc(portalAccessGrantsTable.createdAt)),
+  ]);
+  const people = [
+    ...members.map(portalMemberResponse),
+    ...grants.map(portalGrantResponse),
+  ].sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime());
+  res.json(ListPortalMembersResponse.parse(req.portalActor?.demo ? [demoPortalMember(), ...people] : people));
 });
-router.patch("/portal/members/:userId", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
+router.post("/portal/access-grants", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
+  const body = CreatePortalAccessGrantBody.safeParse(req.body);
+  if (!body.success) { invalid(res, body.error); return; }
+  try {
+    const member = await dependencies.grantPortalAccess(body.data, req.portalActor!);
+    res.status(201).json(CreatePortalAccessGrantResponse.parse(member));
+  } catch (error) {
+    if ((error as Error).message === "INVALID_NAME") { res.status(400).json({ error: "Enter the person's name" }); return; }
+    if ((error as Error).message === "DUPLICATE_EMAIL") { res.status(409).json({ error: "Access has already been granted to this email address" }); return; }
+    throw error;
+  }
+});
+router.patch("/portal/members/:memberId", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
   const params = UpdatePortalMemberParams.safeParse(req.params), body = UpdatePortalMemberBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
-  const [before] = await db.select().from(portalMembershipsTable).where(eq(portalMembershipsTable.userId, params.data.userId));
-  if (!before) { res.status(404).json({ error: "Portal member not found" }); return; }
-  if (
-    before.role === "super_admin" &&
-    before.active &&
-    (body.data.role !== "super_admin" || !body.data.active)
-  ) {
-    const activeAdmins = await db.select().from(portalMembershipsTable)
-      .where(eq(portalMembershipsTable.role, "super_admin"));
-    if (activeAdmins.filter((member) => member.active).length <= 1) {
+  try {
+    res.json(UpdatePortalMemberResponse.parse(
+      await dependencies.updatePortalPerson(params.data.memberId, body.data, req.portalActor!),
+    ));
+  } catch (error) {
+    if ((error as Error).message === "MEMBER_NOT_FOUND") { res.status(404).json({ error: "Portal member not found" }); return; }
+    if ((error as Error).message === "GRANT_ALREADY_CLAIMED") {
+      res.status(409).json({ error: "This access grant was already claimed; refresh the member list" });
+      return;
+    }
+    if ((error as Error).message === "LAST_ACTIVE_ADMIN") {
       res.status(400).json({ error: "The last active Super Admin cannot be suspended or demoted" });
       return;
     }
+    throw error;
   }
-  const [member] = await db.update(portalMembershipsTable).set(body.data).where(eq(portalMembershipsTable.userId, params.data.userId)).returning();
-  await db.insert(auditEventsTable).values({ action: "member.updated", actorUserId: req.portalActor!.userId, actorName: req.portalActor!.displayName, beforeState: before, afterState: member });
-  res.json(UpdatePortalMemberResponse.parse(member));
 });
 return router;
 }

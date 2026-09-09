@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useListPortalMembers, useUpdatePortalMember, useGetPortalSession, PortalRole, PortalMember, getListPortalMembersQueryKey, useListPortalOpportunityOptions, useRenamePortalOpportunityOption, useRetirePortalOpportunityOption, useRestorePortalOpportunityOption, useMergePortalOpportunityOption, getListPortalOpportunityOptionsQueryKey } from "@workspace/api-client-react";
+import { useListPortalMembers, useUpdatePortalMember, useCreatePortalAccessGrant, useGetPortalSession, PortalRole, PortalMember, getListPortalMembersQueryKey, useListPortalOpportunityOptions, useRenamePortalOpportunityOption, useRetirePortalOpportunityOption, useRestorePortalOpportunityOption, useMergePortalOpportunityOption, getListPortalOpportunityOptionsQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
@@ -25,6 +25,7 @@ export default function SettingsPage() {
   });
   
   const updateMember = useUpdatePortalMember();
+  const createAccessGrant = useCreatePortalAccessGrant();
   const { data: managedOptions, isLoading: optionsLoading } = useListPortalOpportunityOptions(
     { includeRetired: true },
     {
@@ -42,6 +43,9 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [renameLabels, setRenameLabels] = useState<Record<string, string>>({});
   const [mergeTargets, setMergeTargets] = useState<Record<string, string>>({});
+  const [grantName, setGrantName] = useState("");
+  const [grantEmail, setGrantEmail] = useState("");
+  const [grantRole, setGrantRole] = useState<PortalRole>("viewer");
   
   if (sessionLoading || membersLoading || optionsLoading) {
     return <div className="p-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider animate-pulse break-words">Loading settings...</div>;
@@ -59,10 +63,10 @@ export default function SettingsPage() {
     );
   }
 
-  const handleUpdateRole = async (userId: string, newRole: PortalRole, currentActive: boolean) => {
+  const handleUpdateRole = async (memberId: string, newRole: PortalRole, currentActive: boolean) => {
     try {
       await updateMember.mutateAsync({
-        userId: userId,
+        memberId,
         data: { role: newRole, active: currentActive }
       });
       toast({ title: "Role updated", description: "The member's role has been saved." });
@@ -75,7 +79,7 @@ export default function SettingsPage() {
   const handleToggleActive = async (member: PortalMember) => {
     try {
       await updateMember.mutateAsync({
-        userId: member.userId,
+        memberId: member.id,
         data: { role: member.role, active: !member.active }
       });
       toast({ 
@@ -90,11 +94,11 @@ export default function SettingsPage() {
 
   const renderRoleSelect = (member: PortalMember) => (
     <Select
-      disabled={member.userId === session.member.userId}
+      disabled={member.id === session.member.id}
       value={member.role}
-      onValueChange={(val) => handleUpdateRole(member.userId, val as PortalRole, member.active)}
+      onValueChange={(val) => handleUpdateRole(member.id, val as PortalRole, member.active)}
     >
-      <SelectTrigger className="w-full xl:w-[180px] h-11 xl:h-9 rounded-none bg-[#101315] border-[#2a2f31] font-mono text-[10px] uppercase tracking-wider min-w-0">
+      <SelectTrigger className="w-full 2xl:w-[180px] h-11 2xl:h-9 rounded-none bg-[#101315] border-[#2a2f31] font-mono text-[10px] uppercase tracking-wider min-w-0">
         <SelectValue />
       </SelectTrigger>
       <SelectContent className="bg-[#171b1d] border-[#2a2f31] rounded-none">
@@ -108,9 +112,9 @@ export default function SettingsPage() {
   const renderAction = (member: PortalMember) => (
     <Button
       variant="ghost"
-      disabled={member.userId === session.member.userId}
+      disabled={member.id === session.member.id}
       onClick={() => handleToggleActive(member)}
-      className={`w-full xl:w-auto h-11 xl:h-9 px-4 justify-center xl:justify-start rounded-none font-mono text-[10px] uppercase tracking-widest shrink-0 ${
+      className={`w-full 2xl:w-auto h-11 2xl:h-9 px-4 justify-center 2xl:justify-start rounded-none font-mono text-[10px] uppercase tracking-widest shrink-0 ${
         member.active
           ? "text-destructive hover:text-destructive hover:bg-destructive/10 border border-destructive/20 xl:border-transparent"
           : "text-emerald-500 hover:text-emerald-500 hover:bg-emerald-500/10 border border-emerald-500/20 xl:border-transparent"
@@ -176,6 +180,26 @@ export default function SettingsPage() {
     ...(managedOptions?.roleTypes ?? []),
   ];
 
+  const handleGrantAccess = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await createAccessGrant.mutateAsync({
+        data: { displayName: grantName, email: grantEmail, role: grantRole },
+      });
+      setGrantName("");
+      setGrantEmail("");
+      setGrantRole("viewer");
+      await queryClient.invalidateQueries({ queryKey: getListPortalMembersQueryKey() });
+      toast({ title: "Access granted", description: `${grantName.trim()} can sign in with ${grantEmail.trim()}.` });
+    } catch (error: any) {
+      toast({
+        title: "Could not grant access",
+        description: error?.data?.error || "Check the name and email, then try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6 sm:space-y-10 min-w-0">
       <PageHeader
@@ -189,6 +213,37 @@ export default function SettingsPage() {
           <p className="text-xs text-[#85898a] mt-2 break-words">Approve access requests and manage permissions for production staff.</p>
         </div>
 
+        <form onSubmit={handleGrantAccess} className="grid gap-4 border-b border-[#2a2f31] p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_minmax(180px,.75fr)_auto] lg:items-end">
+          <div className="space-y-2 min-w-0">
+            <label htmlFor="grant-name" className="font-mono text-[10px] uppercase tracking-widest text-[#85898a]">Name</label>
+            <Input id="grant-name" value={grantName} required minLength={2} maxLength={120}
+              onChange={(event) => setGrantName(event.target.value)} placeholder="Alex Morgan"
+              className="h-11 rounded-none border-[#2a2f31] bg-[#101315]" />
+          </div>
+          <div className="space-y-2 min-w-0">
+            <label htmlFor="grant-email" className="font-mono text-[10px] uppercase tracking-widest text-[#85898a]">Email</label>
+            <Input id="grant-email" type="email" value={grantEmail} required maxLength={320}
+              onChange={(event) => setGrantEmail(event.target.value)} placeholder="alex@example.com"
+              className="h-11 rounded-none border-[#2a2f31] bg-[#101315]" />
+          </div>
+          <div className="space-y-2 min-w-0">
+            <label className="font-mono text-[10px] uppercase tracking-widest text-[#85898a]">Initial role</label>
+            <Select value={grantRole} onValueChange={(value) => setGrantRole(value as PortalRole)}>
+              <SelectTrigger className="h-11 rounded-none bg-[#101315] border-[#2a2f31] font-mono text-[10px] uppercase tracking-wider">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[#171b1d] border-[#2a2f31] rounded-none">
+                <SelectItem value="viewer">Viewer</SelectItem>
+                <SelectItem value="opportunity_manager">Opportunity Manager</SelectItem>
+                <SelectItem value="super_admin">Super Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button type="submit" disabled={createAccessGrant.isPending} className="h-11 rounded-none font-mono text-xs uppercase tracking-wider">
+            {createAccessGrant.isPending ? "Granting..." : "Grant access"}
+          </Button>
+        </form>
+
         <div className="min-w-0">
           {!members?.length ? (
             <div className="p-12 text-center text-[#85898a] break-words">
@@ -196,14 +251,14 @@ export default function SettingsPage() {
             </div>
           ) : (
             <>
-              {/* Mobile Card List (Hidden on xl) */}
-              <div className="xl:hidden divide-y divide-[#2a2f31]">
+              {/* Responsive card list (dense table is reserved for very wide screens) */}
+              <div className="2xl:hidden divide-y divide-[#2a2f31]">
                 {members.map((member) => (
-                  <div key={member.userId} className={`${member.active ? "bg-[#171b1d]" : "bg-[#101315]"} p-4 sm:p-5 flex flex-col gap-4 min-w-0`}>
+                  <div key={member.id} className={`${member.active ? "bg-[#171b1d]" : "bg-[#101315]"} p-4 sm:p-5 flex flex-col gap-4 min-w-0`}>
                     <div className="min-w-0">
                       <div className="flex items-center gap-3 font-medium text-foreground">
                         <span className="truncate break-all">{member.displayName}</span>
-                        {member.userId === session.member.userId && (
+                        {member.id === session.member.id && (
                           <span className="text-[9px] uppercase tracking-widest bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded-full font-bold shrink-0">You</span>
                         )}
                       </div>
@@ -213,7 +268,11 @@ export default function SettingsPage() {
                     <div className="border-t border-[#2a2f31]/50 pt-4 flex flex-col gap-3">
                       <div className="flex items-center justify-between min-w-0">
                         <span className="text-[10px] uppercase tracking-wider text-[#85898a] font-mono">Role & Status</span>
-                        {member.active ? (
+                        {member.status === "pending" ? (
+                          <span className="inline-flex items-center gap-1.5 text-amber-500 text-[10px] uppercase tracking-widest font-bold">
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pending sign-in
+                          </span>
+                        ) : member.active ? (
                           <span className="inline-flex items-center gap-1.5 text-emerald-500 text-[10px] uppercase tracking-widest font-bold">
                             <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Active
                           </span>
@@ -232,8 +291,8 @@ export default function SettingsPage() {
                 ))}
               </div>
 
-              {/* Desktop Table (Visible on xl and above) */}
-              <div className="hidden xl:block overflow-x-auto">
+              {/* Desktop Table (Visible only when every column has room) */}
+              <div className="hidden 2xl:block overflow-x-auto">
                 <table className="w-full text-sm text-left min-w-0">
                   <thead className="bg-[#101315] border-b border-[#2a2f31] text-[#85898a] uppercase tracking-[0.15em] text-[10px] font-mono">
                     <tr>
@@ -247,11 +306,11 @@ export default function SettingsPage() {
                   </thead>
                   <tbody className="divide-y divide-[#2a2f31]">
                     {members.map((member) => (
-                      <tr key={member.userId} className={`${member.active ? "bg-[#171b1d]" : "bg-[#101315]"} hover:bg-[#101315] transition-colors`}>
+                      <tr key={member.id} className={`${member.active ? "bg-[#171b1d]" : "bg-[#101315]"} hover:bg-[#101315] transition-colors`}>
                         <td className="px-6 py-5 font-medium text-foreground min-w-0 max-w-xs">
                           <div className="flex items-center gap-3">
                             <span className="truncate break-all">{member.displayName}</span>
-                            {member.userId === session.member.userId && (
+                            {member.id === session.member.id && (
                               <span className="text-[9px] uppercase tracking-widest bg-primary/10 border border-primary/20 text-primary px-2 py-0.5 rounded-full font-bold shrink-0">You</span>
                             )}
                           </div>
@@ -261,7 +320,11 @@ export default function SettingsPage() {
                           {renderRoleSelect(member)}
                         </td>
                         <td className="px-6 py-5">
-                          {member.active ? (
+                          {member.status === "pending" ? (
+                            <span className="inline-flex items-center gap-2 text-amber-500 text-[10px] uppercase tracking-widest font-bold">
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pending sign-in
+                            </span>
+                          ) : member.active ? (
                             <span className="inline-flex items-center gap-2 text-emerald-500 text-[10px] uppercase tracking-widest font-bold">
                               <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Active
                             </span>

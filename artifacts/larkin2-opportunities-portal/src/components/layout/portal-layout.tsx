@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useClerk } from "@clerk/react";
-import { useGetPortalSession } from "@workspace/api-client-react";
+import { getGetPortalSessionQueryKey, useDeletePortalDemoSession, useGetPortalSession } from "@workspace/api-client-react";
 import { 
   LayoutDashboard, 
   Briefcase, 
@@ -24,9 +24,11 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { clerkBasePath } from "@/lib/clerk";
 import { Larkin2Wordmark } from "@/components/brand";
 import { portalDemoMode } from "@/lib/demo-mode";
+import { clearDemoSessionCache } from "@/lib/demo-session-cache";
 
 interface PortalLayoutProps {
   children: React.ReactNode;
@@ -62,11 +64,19 @@ function ClerkSignOutAction({ mobile = false }: { mobile?: boolean }) {
 }
 
 export function PortalLayout({ children }: PortalLayoutProps) {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { data: session } = useGetPortalSession();
   const displayName = session?.member?.displayName ?? "Larkin2 Demo";
   const email = session?.member?.email ?? "demo@larkin2.invalid";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const endDemoSession = useDeletePortalDemoSession();
+  const signOutDemo = async () => {
+    await endDemoSession.mutateAsync();
+    await clearDemoSessionCache(queryClient, getGetPortalSessionQueryKey());
+    setMobileMenuOpen(false);
+    navigate("/", { replace: true });
+  };
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
       return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true";
@@ -188,9 +198,19 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                 {email}
               </DropdownMenuItem>
               {portalDemoMode ? (
-                <DropdownMenuItem disabled className="text-primary text-[10px] uppercase tracking-wider">
-                  Demo mode
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem disabled className="text-primary text-[10px] uppercase tracking-wider">
+                    Demo mode
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-border" />
+                  <DropdownMenuItem
+                    onClick={signOutDemo}
+                    className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium"
+                  >
+                    <LogOut className="mr-2 h-3.5 w-3.5 shrink-0" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </>
               ) : (
                 <>
                   <DropdownMenuSeparator className="bg-border" />
@@ -236,9 +256,15 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                   </div>
                 </div>
                 {portalDemoMode ? (
-                  <div className="border border-primary/30 bg-primary/10 px-4 py-3 text-primary text-[10px] uppercase tracking-widest">
-                    Demo mode · Full access
-                  </div>
+                  <Button
+                    variant="outline"
+                    disabled={endDemoSession.isPending}
+                    className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-border rounded-none h-11 text-xs uppercase tracking-wider font-medium"
+                    onClick={signOutDemo}
+                  >
+                    <LogOut className="mr-2 h-4 w-4 shrink-0" />
+                    <span>Sign Out</span>
+                  </Button>
                 ) : (
                   <ClerkSignOutAction mobile />
                 )}

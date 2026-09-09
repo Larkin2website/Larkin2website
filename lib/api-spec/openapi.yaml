@@ -82,6 +82,51 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /portal/demo-session:
+    post:
+      operationId: createPortalDemoSession
+      tags: [portal-session]
+      summary: Start a browser-scoped demo portal session
+      responses:
+        "204":
+          description: Demo session started
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deletePortalDemoSession
+      tags: [portal-session]
+      summary: End the browser-scoped demo portal session
+      responses:
+        "204":
+          description: Demo session ended
+  /portal/access-grants:
+    post:
+      operationId: createPortalAccessGrant
+      tags: [portal-members]
+      summary: Pre-grant portal access by name, email, and role
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortalAccessGrantInput"
+      responses:
+        "201":
+          description: Access grant created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortalMember"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
   /portal/dashboard:
     get:
       operationId: getPortalDashboard
@@ -498,7 +543,7 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
-  /portal/members/{userId}:
+  /portal/members/{memberId}:
     patch:
       operationId: updatePortalMember
       tags: [portal-members]
@@ -507,7 +552,7 @@ paths:
         - cookieAuth: []
       parameters:
         - in: path
-          name: userId
+          name: memberId
           required: true
           schema:
             type: string
@@ -628,7 +673,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         kind:
           $ref: "#/components/schemas/OpportunityOptionKind"
         label:
@@ -687,7 +731,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         section:
           type: string
           enum: [responsibility, essential, desired]
@@ -1059,10 +1102,12 @@ components:
             $ref: "#/components/schemas/AuditEvent"
     PortalMember:
       type: object
-      required: [userId, displayName, email, role, active, createdAt, updatedAt]
+      required: [id, userId, displayName, email, role, active, status, createdAt, updatedAt]
       properties:
-        userId:
+        id:
           type: string
+        userId:
+          type: ["string", "null"]
         displayName:
           type: string
         email:
@@ -1072,6 +1117,9 @@ components:
           $ref: "#/components/schemas/PortalRole"
         active:
           type: boolean
+        status:
+          type: string
+          enum: [pending, active, suspended]
         createdAt:
           type: string
           format: date-time
@@ -1087,6 +1135,21 @@ components:
           $ref: "#/components/schemas/PortalRole"
         active:
           type: boolean
+    PortalAccessGrantInput:
+      type: object
+      additionalProperties: false
+      required: [displayName, email, role]
+      properties:
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 320
+        role:
+          $ref: "#/components/schemas/PortalRole"
     PortalSession:
       type: object
       required: [member, permissions]

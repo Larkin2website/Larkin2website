@@ -7,7 +7,7 @@ import NotFound from '@/pages/not-found';
 import { Redirect, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import { AppClerkProvider, clerkBasePath } from '@/lib/clerk';
 import { useAuth, useClerk } from '@clerk/react';
-import { useGetPortalSession } from '@workspace/api-client-react';
+import { getGetPortalSessionQueryKey, useGetPortalSession } from '@workspace/api-client-react';
 import { PortalLayout } from '@/components/layout/portal-layout';
 import { Larkin2Wordmark } from '@/components/brand';
 import { Loader2, ShieldAlert } from 'lucide-react';
@@ -183,20 +183,33 @@ function ClerkRouter() {
 }
 
 function DemoRouter() {
+  const { data, isError, isLoading } = useGetPortalSession({
+    query: { queryKey: getGetPortalSessionQueryKey(), retry: false },
+  });
+  const session = isError ? undefined : data;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center bg-background text-muted-foreground">
+        <Loader2 className="h-5 w-5 animate-spin" aria-label="Checking demo session" />
+      </div>
+    );
+  }
+
   return (
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/">
-          <Redirect to="/dashboard" />
+          {session ? <Redirect to="/dashboard" /> : <LandingPage />}
         </Route>
         <Route path="/sign-in/*?">
-          <Redirect to="/dashboard" />
+          {session ? <Redirect to="/dashboard" /> : <SignInPage />}
         </Route>
         <Route path="/sign-up/*?">
-          <Redirect to="/dashboard" />
+          {session ? <Redirect to="/dashboard" /> : <LandingPage />}
         </Route>
         <Route path="/*">
-          <AuthenticatedRoutes />
+          {session ? <AuthenticatedRoutes /> : <Redirect to="/" />}
         </Route>
       </Switch>
     </RoutedErrorBoundary>
