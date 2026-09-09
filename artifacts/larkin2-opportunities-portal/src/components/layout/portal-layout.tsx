@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { useUser, useClerk } from "@clerk/react";
+import { useClerk } from "@clerk/react";
 import { useGetPortalSession } from "@workspace/api-client-react";
 import { 
   LayoutDashboard, 
@@ -26,6 +26,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useEffect, useState } from "react";
 import { clerkBasePath } from "@/lib/clerk";
 import { Larkin2Wordmark } from "@/components/brand";
+import { portalDemoMode } from "@/lib/demo-mode";
 
 interface PortalLayoutProps {
   children: React.ReactNode;
@@ -33,11 +34,38 @@ interface PortalLayoutProps {
 
 const SIDEBAR_COLLAPSED_KEY = "larkin2-portal-sidebar-collapsed";
 
+function ClerkSignOutAction({ mobile = false }: { mobile?: boolean }) {
+  const { signOut } = useClerk();
+  if (mobile) {
+    return (
+      <Button
+        variant="outline"
+        className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-border rounded-none h-11 text-xs uppercase tracking-wider font-medium"
+        onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
+      >
+        <LogOut className="mr-2 h-4 w-4 shrink-0" />
+        <span>Sign Out</span>
+      </Button>
+    );
+  }
+  return (
+    <DropdownMenuItem
+      onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
+      className={mobile
+        ? "text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium"
+        : "text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium"}
+    >
+      <LogOut className="mr-2 h-3.5 w-3.5 shrink-0" />
+      <span>Sign Out</span>
+    </DropdownMenuItem>
+  );
+}
+
 export function PortalLayout({ children }: PortalLayoutProps) {
   const [location] = useLocation();
-  const { user } = useUser();
-  const { signOut } = useClerk();
   const { data: session } = useGetPortalSession();
+  const displayName = session?.member?.displayName ?? "Larkin2 Demo";
+  const email = session?.member?.email ?? "demo@larkin2.invalid";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
@@ -149,7 +177,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                   <UserIcon size={14} className="text-muted-foreground" />
                 </div>
                 {!sidebarCollapsed && <div className="flex flex-col items-start text-left flex-1 min-w-0">
-                  <span className="text-sm font-medium truncate w-full">{user?.firstName || user?.emailAddresses[0]?.emailAddress}</span>
+                  <span className="text-sm font-medium truncate w-full">{displayName}</span>
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground truncate w-full mt-0.5">{session?.member?.role?.replace("_", " ")}</span>
                 </div>}
               </Button>
@@ -157,13 +185,18 @@ export function PortalLayout({ children }: PortalLayoutProps) {
             <DropdownMenuContent align="end" className="portal-dark-surface w-60 bg-[#171b1d] border-border rounded-none shadow-2xl">
               <DropdownMenuLabel className="font-mono font-medium text-xs uppercase tracking-wider text-muted-foreground">Account</DropdownMenuLabel>
               <DropdownMenuItem disabled className="text-xs break-all">
-                {user?.emailAddresses[0]?.emailAddress}
+                {email}
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-border" />
-              <DropdownMenuItem onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium">
-                <LogOut className="mr-2 h-3.5 w-3.5 shrink-0" />
-                <span>Sign Out</span>
-              </DropdownMenuItem>
+              {portalDemoMode ? (
+                <DropdownMenuItem disabled className="text-primary text-[10px] uppercase tracking-wider">
+                  Demo mode
+                </DropdownMenuItem>
+              ) : (
+                <>
+                  <DropdownMenuSeparator className="bg-border" />
+                  <ClerkSignOutAction />
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -198,14 +231,17 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                     <UserIcon size={16} className="text-muted-foreground" />
                   </div>
                   <div className="flex flex-col items-start text-left flex-1 min-w-0">
-                    <span className="text-sm font-medium truncate w-full">{user?.firstName || user?.emailAddresses[0]?.emailAddress}</span>
+                    <span className="text-sm font-medium truncate w-full">{displayName}</span>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground truncate w-full mt-0.5">{session?.member?.role?.replace("_", " ")}</span>
                   </div>
                 </div>
-                <Button variant="outline" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-border rounded-none h-11 text-xs uppercase tracking-wider font-medium" onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}>
-                  <LogOut className="mr-2 h-4 w-4 shrink-0" />
-                  <span>Sign Out</span>
-                </Button>
+                {portalDemoMode ? (
+                  <div className="border border-primary/30 bg-primary/10 px-4 py-3 text-primary text-[10px] uppercase tracking-widest">
+                    Demo mode · Full access
+                  </div>
+                ) : (
+                  <ClerkSignOutAction mobile />
+                )}
               </div>
             </SheetContent>
           </Sheet>

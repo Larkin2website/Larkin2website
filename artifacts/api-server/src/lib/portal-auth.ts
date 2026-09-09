@@ -1,12 +1,14 @@
-import type { RequestHandler } from "express";
+import type { Request, RequestHandler } from "express";
 import { clerkClient, getAuth } from "@clerk/express";
 import { count, eq, sql } from "drizzle-orm";
 import { db, portalMembershipsTable } from "@workspace/db";
 import { can, permissionsForRole, type Permission, type PortalRole } from "./permissions";
+import { demoPortalActor, isPortalDemoMode } from "./portal-demo";
 
 export type PortalActor = {
   userId: string; displayName: string; email: string; role: PortalRole;
   permissions: Permission[];
+  demo?: boolean;
 };
 
 declare global {
@@ -21,25 +23,47 @@ async function profileFor(userId: string) {
   return { displayName, email };
 }
 
-export const requirePortal = (permission?: Permission): RequestHandler => async (req, res, next) => {
-  const auth = getAuth(req);
-  if (!auth.userId) {
+type PortalAuthDependencies = {
+  demoMode?: () => boolean;
+  userIdForRequest?: (req: Request) => string | undefined;
+};
+
+export function createRequirePortal(
+  dependencies: PortalAuthDependencies = {},
+): (permission?: Permission) => RequestHandler {
+  const demoMode = dependencies.demoMode ?? isPortalDemoMode;
+  const userIdForRequest = dependencies.userIdForRequest ?? ((req) => getAuth(req).userId);
+
+  return (permission?: Permission): RequestHandler => async (req, res, next) => {
+  if (demoMode()) {
+    const actor = demoPortalActor();
+    if (permission && !can(actor.role, permission)) {
+      res.status(403).json({ error: "Insufficient permission" });
+      return;
+    }
+    req.portalActor = actor;
+    next();
+    return;
+  }
+
+  const userId = userIdForRequest(req);
+  if (!userId) {
     res.status(401).json({ error: "Authentication required" });
     return;
   }
   let [member] = await db.select().from(portalMembershipsTable)
-    .where(eq(portalMembershipsTable.userId, auth.userId));
+    .where(eq(portalMembershipsTable.userId, userId));
   if (!member) {
-    const profile = await profileFor(auth.userId);
+    const profile = await profileFor(userId);
     member = await db.transaction(async (tx) => {
       await tx.execute(sql`select pg_advisory_xact_lock(hashtext('larkin2:portal-bootstrap'))`);
       const [existing] = await tx.select().from(portalMembershipsTable)
-        .where(eq(portalMembershipsTable.userId, auth.userId));
+        .where(eq(portalMembershipsTable.userId, userId));
       if (existing) return existing;
       const [{ total }] = await tx.select({ total: count() }).from(portalMembershipsTable);
       const bootstrap = Number(total) === 0;
       const [created] = await tx.insert(portalMembershipsTable).values({
-        userId: auth.userId,
+        userId,
         ...profile,
         role: bootstrap ? "super_admin" : "viewer",
         active: bootstrap,
@@ -61,4 +85,7 @@ export const requirePortal = (permission?: Permission): RequestHandler => async 
   }
   req.portalActor = actor;
   next();
+  };
 };
+
+export const requirePortal = createRequirePortal();

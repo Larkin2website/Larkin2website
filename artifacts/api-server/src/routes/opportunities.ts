@@ -14,6 +14,7 @@ import {
 import { auditEventsTable, db, portalMembershipsTable } from "@workspace/db";
 import { desc, eq } from "drizzle-orm";
 import { requirePortal } from "../lib/portal-auth";
+import { demoPortalMember } from "../lib/portal-demo";
 import { canTransition } from "../lib/permissions";
 import { toPublicStatus } from "../lib/opportunity-domain";
 import * as opportunities from "../lib/opportunity-service";
@@ -62,6 +63,13 @@ router.get("/public/opportunities/:slug", async (req, res): Promise<void> => {
 
 router.get("/portal/session", dependencies.requirePortal(), async (req, res): Promise<void> => {
   const actor = req.portalActor!;
+  if (actor.demo) {
+    res.json(GetPortalSessionResponse.parse({
+      member: demoPortalMember(),
+      permissions: actor.permissions,
+    }));
+    return;
+  }
   const [member] = await db.select().from(portalMembershipsTable).where(eq(portalMembershipsTable.userId, actor.userId));
   res.json(GetPortalSessionResponse.parse({ member, permissions: actor.permissions }));
 });

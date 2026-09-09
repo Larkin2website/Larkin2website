@@ -5,6 +5,9 @@ import { publishableKeyFromHost } from "@clerk/shared/keys";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware, getClerkProxyHost } from "./middlewares/clerkProxyMiddleware";
+import { validatePortalDemoMode } from "./lib/portal-demo";
+
+validatePortalDemoMode();
 
 const app: Express = express();
 

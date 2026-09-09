@@ -12,6 +12,7 @@ import { PortalLayout } from '@/components/layout/portal-layout';
 import { Larkin2Wordmark } from '@/components/brand';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { portalDemoMode } from '@/lib/demo-mode';
 
 // Pages
 import LandingPage from '@/pages/index';
@@ -35,7 +36,6 @@ const queryClient = new QueryClient({
 
 function PortalAccessGate({ children }: { children: ReactNode }) {
   const { data: session, isLoading, error } = useGetPortalSession();
-  const { signOut } = useClerk();
   const status = (error as { status?: number } | null)?.status;
 
   if (isLoading) {
@@ -62,19 +62,36 @@ function PortalAccessGate({ children }: { children: ReactNode }) {
               ? "A portal administrator must approve your account before you can view opportunity data."
               : "Please try signing in again. If the problem continues, contact a portal administrator."}
           </p>
-          <Button
-            variant="outline"
-            className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider"
-            onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
-          >
-            Sign out
-          </Button>
+          {portalDemoMode ? (
+            <Button
+              variant="outline"
+              className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider"
+              onClick={() => window.location.reload()}
+            >
+              Retry demo
+            </Button>
+          ) : (
+            <ClerkAccessFailureAction />
+          )}
         </div>
       </div>
     );
   }
 
   return children;
+}
+
+function ClerkAccessFailureAction() {
+  const { signOut } = useClerk();
+  return (
+    <Button
+      variant="outline"
+      className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider"
+      onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
+    >
+      Sign out
+    </Button>
+  );
 }
 
 type PortalPermission =
@@ -139,7 +156,7 @@ function AuthenticatedRoutes() {
   );
 }
 
-function Router() {
+function ClerkRouter() {
   const { isLoaded, isSignedIn } = useAuth();
   
   if (!isLoaded) return null;
@@ -165,6 +182,27 @@ function Router() {
   );
 }
 
+function DemoRouter() {
+  return (
+    <RoutedErrorBoundary>
+      <Switch>
+        <Route path="/">
+          <Redirect to="/dashboard" />
+        </Route>
+        <Route path="/sign-in/*?">
+          <Redirect to="/dashboard" />
+        </Route>
+        <Route path="/sign-up/*?">
+          <Redirect to="/dashboard" />
+        </Route>
+        <Route path="/*">
+          <AuthenticatedRoutes />
+        </Route>
+      </Switch>
+    </RoutedErrorBoundary>
+  );
+}
+
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
@@ -174,12 +212,19 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-        <AppClerkProvider>
+        {portalDemoMode ? (
           <TooltipProvider>
-            <Router />
+            <DemoRouter />
             <Toaster />
           </TooltipProvider>
-        </AppClerkProvider>
+        ) : (
+          <AppClerkProvider>
+            <TooltipProvider>
+              <ClerkRouter />
+              <Toaster />
+            </TooltipProvider>
+          </AppClerkProvider>
+        )}
       </WouterRouter>
     </QueryClientProvider>
   );
