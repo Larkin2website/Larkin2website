@@ -27,3 +27,8 @@ channel = "stable-25_05"
 [userenv.development]
 PORTAL_DEMO_MODE = "true"
 VITE_PORTAL_DEMO_MODE = "true"
+
+[userenv.production]
+ALLOW_INSECURE_DEMO_DEPLOYMENT = "true"
+PORTAL_DEMO_MODE = "true"
+VITE_PORTAL_DEMO_MODE = "true"
