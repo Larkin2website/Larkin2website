@@ -19,7 +19,6 @@ import { toPublicStatus } from "../lib/opportunity-domain";
 import * as opportunities from "../lib/opportunity-service";
 import * as opportunityOptions from "../lib/opportunity-option-service";
 
-const router: IRouter = Router();
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const publicMap = (row: any) => ({
   id: row.id, slug: row.slug, title: row.title,
@@ -32,6 +31,21 @@ const publicMap = (row: any) => ({
   applicationUrl: row.applicationUrl, deadline: row.deadline, deadlineExtended: row.deadlineExtended,
   featured: row.featured, urgent: row.urgent,
 });
+
+type OpportunityRouteDependencies = {
+  requirePortal: typeof requirePortal;
+  opportunities: typeof opportunities;
+  opportunityOptions: typeof opportunityOptions;
+};
+
+export function createOpportunitiesRouter(overrides: Partial<OpportunityRouteDependencies> = {}): IRouter {
+const dependencies: OpportunityRouteDependencies = {
+  requirePortal,
+  opportunities,
+  opportunityOptions,
+  ...overrides,
+};
+const router: IRouter = Router();
 
 router.get("/public/opportunities", async (req, res): Promise<void> => {
   const parsed = ListPublicOpportunitiesQueryParams.safeParse(req.query);
@@ -46,23 +60,23 @@ router.get("/public/opportunities/:slug", async (req, res): Promise<void> => {
   res.json(GetPublicOpportunityResponse.parse(publicMap(row)));
 });
 
-router.get("/portal/session", requirePortal(), async (req, res): Promise<void> => {
+router.get("/portal/session", dependencies.requirePortal(), async (req, res): Promise<void> => {
   const actor = req.portalActor!;
   const [member] = await db.select().from(portalMembershipsTable).where(eq(portalMembershipsTable.userId, actor.userId));
   res.json(GetPortalSessionResponse.parse({ member, permissions: actor.permissions }));
 });
-router.get("/portal/dashboard", requirePortal("opportunities:read"), async (_req, res): Promise<void> => {
-  res.json(GetPortalDashboardResponse.parse(await opportunities.dashboard()));
+router.get("/portal/dashboard", dependencies.requirePortal("opportunities:read"), async (_req, res): Promise<void> => {
+  res.json(GetPortalDashboardResponse.parse(await dependencies.opportunities.dashboard()));
 });
-router.get("/portal/opportunity-options", requirePortal("opportunities:read"), async (req, res): Promise<void> => {
+router.get("/portal/opportunity-options", dependencies.requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const includeRetired = req.query.includeRetired === "true" && req.portalActor!.role === "super_admin";
-  res.json(ListPortalOpportunityOptionsResponse.parse(await opportunityOptions.listOpportunityOptions(includeRetired)));
+  res.json(ListPortalOpportunityOptionsResponse.parse(await dependencies.opportunityOptions.listOpportunityOptions(includeRetired)));
 });
-router.post("/portal/opportunity-options", requirePortal("opportunity-options:manage"), async (req, res): Promise<void> => {
+router.post("/portal/opportunity-options", dependencies.requirePortal("opportunity-options:manage"), async (req, res): Promise<void> => {
   const parsed = CreatePortalOpportunityOptionBody.safeParse(req.body);
   if (!parsed.success) { invalid(res, parsed.error); return; }
   try {
-    const created = await opportunityOptions.createOpportunityOption(parsed.data.kind, parsed.data.label, req.portalActor!);
+    const created = await dependencies.opportunityOptions.createOpportunityOption(parsed.data.kind, parsed.data.label, req.portalActor!);
     res.status(201).json(CreatePortalOpportunityOptionResponse.parse(created));
   } catch (error) {
     if ((error as Error).message === "INVALID_OPTION") {
@@ -76,7 +90,7 @@ router.post("/portal/opportunity-options", requirePortal("opportunity-options:ma
     throw error;
   }
 });
-router.patch("/portal/opportunity-options/:id", requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
+router.patch("/portal/opportunity-options/:id", dependencies.requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
   const params = RenamePortalOpportunityOptionParams.safeParse(req.params);
   const body = RenamePortalOpportunityOptionBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; }
@@ -93,7 +107,7 @@ router.patch("/portal/opportunity-options/:id", requirePortal("opportunity-optio
     throw error;
   }
 });
-router.post("/portal/opportunity-options/:id/retire", requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
+router.post("/portal/opportunity-options/:id/retire", dependencies.requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
   const params = RetirePortalOpportunityOptionParams.safeParse(req.params);
   if (!params.success) { invalid(res, params.error); return; }
   try {
@@ -106,7 +120,7 @@ router.post("/portal/opportunity-options/:id/retire", requirePortal("opportunity
     throw error;
   }
 });
-router.post("/portal/opportunity-options/:id/merge", requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
+router.post("/portal/opportunity-options/:id/merge", dependencies.requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
   const params = MergePortalOpportunityOptionParams.safeParse(req.params);
   const body = MergePortalOpportunityOptionBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; }
@@ -121,29 +135,29 @@ router.post("/portal/opportunity-options/:id/merge", requirePortal("opportunity-
     throw error;
   }
 });
-router.get("/portal/opportunities", requirePortal("opportunities:read"), async (req, res): Promise<void> => {
+router.get("/portal/opportunities", dependencies.requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = ListPortalOpportunitiesQueryParams.safeParse(req.query);
   if (!parsed.success) { invalid(res, parsed.error); return; }
   res.json(ListPortalOpportunitiesResponse.parse(await opportunities.listOpportunities(parsed.data)));
 });
-router.post("/portal/opportunities", requirePortal("opportunities:write"), async (req, res): Promise<void> => {
+router.post("/portal/opportunities", dependencies.requirePortal("opportunities:write"), async (req, res): Promise<void> => {
   const parsed = CreatePortalOpportunityBody.safeParse(req.body);
   if (!parsed.success) { invalid(res, parsed.error); return; }
-  try { res.status(201).json(CreatePortalOpportunityResponse.parse(await opportunities.createOpportunity(parsed.data, req.portalActor!))); }
+  try { res.status(201).json(CreatePortalOpportunityResponse.parse(await dependencies.opportunities.createOpportunity(parsed.data, req.portalActor!))); }
   catch (error) {
     if ((error as Error).message === "DUPLICATE") { res.status(409).json({ error: "Slug already exists" }); return; }
     if ((error as Error).message === "UNKNOWN_OPTION") { res.status(400).json({ error: "Choose a valid department and role type" }); return; }
     throw error;
   }
 });
-router.get("/portal/opportunities/:id", requirePortal("opportunities:read"), async (req, res): Promise<void> => {
+router.get("/portal/opportunities/:id", dependencies.requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = GetPortalOpportunityParams.safeParse(req.params);
   if (!parsed.success) { invalid(res, parsed.error); return; }
   const row = await opportunities.getOpportunity(parsed.data.id);
   if (!row) { res.status(404).json({ error: "Opportunity not found" }); return; }
   res.json(GetPortalOpportunityResponse.parse(row));
 });
-router.patch("/portal/opportunities/:id", requirePortal("opportunities:write"), async (req, res): Promise<void> => {
+router.patch("/portal/opportunities/:id", dependencies.requirePortal("opportunities:write"), async (req, res): Promise<void> => {
   const params = UpdatePortalOpportunityParams.safeParse(req.params), body = UpdatePortalOpportunityBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
   try {
@@ -156,7 +170,7 @@ router.patch("/portal/opportunities/:id", requirePortal("opportunities:write"), 
     throw error;
   }
 });
-router.post("/portal/opportunities/:id/transition", requirePortal("opportunities:write"), async (req, res): Promise<void> => {
+router.post("/portal/opportunities/:id/transition", dependencies.requirePortal("opportunities:write"), async (req, res): Promise<void> => {
   const params = TransitionPortalOpportunityParams.safeParse(req.params), body = TransitionPortalOpportunityBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
   if (!canTransition(req.portalActor!.role, body.data.status)) { res.status(403).json({ error: "Insufficient permission" }); return; }
@@ -166,7 +180,7 @@ router.post("/portal/opportunities/:id/transition", requirePortal("opportunities
     res.json(TransitionPortalOpportunityResponse.parse(row));
   } catch (error) { if ((error as Error).message === "INVALID_TRANSITION") { res.status(409).json({ error: "Invalid lifecycle transition" }); return; } throw error; }
 });
-router.delete("/portal/opportunities/:id", requirePortal("opportunities:delete"), async (req, res): Promise<void> => {
+router.delete("/portal/opportunities/:id", dependencies.requirePortal("opportunities:delete"), async (req, res): Promise<void> => {
   const params = DeletePortalOpportunityParams.safeParse(req.params), body = DeletePortalOpportunityBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
   const outcome = await opportunities.deleteOpportunity(params.data.id, req.portalActor!);
@@ -174,16 +188,16 @@ router.delete("/portal/opportunities/:id", requirePortal("opportunities:delete")
   if (outcome === "NOT_ARCHIVED") { res.status(400).json({ error: "Only archived opportunities can be deleted" }); return; }
   res.status(204).send();
 });
-router.get("/portal/opportunities/:id/audit", requirePortal("opportunities:read"), async (req, res): Promise<void> => {
+router.get("/portal/opportunities/:id/audit", dependencies.requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = ListOpportunityAuditEventsParams.safeParse(req.params);
   if (!parsed.success) { invalid(res, parsed.error); return; }
   if (!await opportunities.getOpportunity(parsed.data.id)) { res.status(404).json({ error: "Opportunity not found" }); return; }
   res.json(ListOpportunityAuditEventsResponse.parse(await opportunities.auditList(parsed.data.id)));
 });
-router.get("/portal/members", requirePortal("members:manage"), async (_req, res): Promise<void> => {
+router.get("/portal/members", dependencies.requirePortal("members:manage"), async (_req, res): Promise<void> => {
   res.json(ListPortalMembersResponse.parse(await db.select().from(portalMembershipsTable).orderBy(desc(portalMembershipsTable.createdAt))));
 });
-router.patch("/portal/members/:userId", requirePortal("members:manage"), async (req, res): Promise<void> => {
+router.patch("/portal/members/:userId", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
   const params = UpdatePortalMemberParams.safeParse(req.params), body = UpdatePortalMemberBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
   const [before] = await db.select().from(portalMembershipsTable).where(eq(portalMembershipsTable.userId, params.data.userId));
@@ -204,4 +218,7 @@ router.patch("/portal/members/:userId", requirePortal("members:manage"), async (
   await db.insert(auditEventsTable).values({ action: "member.updated", actorUserId: req.portalActor!.userId, actorName: req.portalActor!.displayName, beforeState: before, afterState: member });
   res.json(UpdatePortalMemberResponse.parse(member));
 });
-export default router;
+return router;
+}
+
+export default createOpportunitiesRouter();

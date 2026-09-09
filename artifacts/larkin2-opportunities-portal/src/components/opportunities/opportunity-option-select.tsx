@@ -69,11 +69,11 @@ export function OpportunityOptionSelect({
 
     try {
       const created = await createOption.mutateAsync({ data: { kind, label } });
-      await queryClient.invalidateQueries({ queryKey: getListPortalOpportunityOptionsQueryKey() });
       onChange(created.label);
       setNewLabel("");
       setDialogOpen(false);
       toast({ title: `${kind === "department" ? "Department" : "Role type"} added` });
+      void queryClient.invalidateQueries({ queryKey: getListPortalOpportunityOptionsQueryKey() });
     } catch (error: any) {
       toast({
         title: `Could not add ${noun}`,

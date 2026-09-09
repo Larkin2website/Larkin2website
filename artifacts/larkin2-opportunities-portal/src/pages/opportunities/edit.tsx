@@ -36,7 +36,7 @@ export default function EditOpportunityPage() {
     } catch (error: any) {
       toast({
         title: "Failed to save",
-        description: error.error || "An unexpected error occurred",
+        description: error?.data?.error || error?.message || "An unexpected error occurred",
         variant: "destructive"
       });
     }
