@@ -127,7 +127,7 @@ export const GetPortalSessionResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'members:manage']))
+  "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'opportunity-options:manage', 'members:manage']))
 })
 
 
@@ -201,6 +201,46 @@ export const GetPortalDashboardResponse = zod.object({
   "afterState": zod.record(zod.string(), zod.unknown()).nullish(),
   "createdAt": zod.coerce.date()
 }))
+})
+
+
+/**
+ * @summary List selectable departments and role types
+ */
+export const ListPortalOpportunityOptionsResponse = zod.object({
+  "departments": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string(),
+  "createdAt": zod.coerce.date()
+})),
+  "roleTypes": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Add a selectable department or role type
+ */
+export const createPortalOpportunityOptionBodyLabelMin = 2;
+export const createPortalOpportunityOptionBodyLabelMax = 100;
+
+
+
+export const CreatePortalOpportunityOptionBody = zod.object({
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string().min(createPortalOpportunityOptionBodyLabelMin).max(createPortalOpportunityOptionBodyLabelMax)
+})
+
+export const CreatePortalOpportunityOptionResponse = zod.object({
+  "id": zod.string().uuid(),
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string(),
+  "createdAt": zod.coerce.date()
 })
 
 

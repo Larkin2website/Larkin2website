@@ -44,6 +44,35 @@ export const PortalRole = {
   viewer: 'viewer',
 } as const;
 
+export type OpportunityOptionKind = typeof OpportunityOptionKind[keyof typeof OpportunityOptionKind];
+
+
+export const OpportunityOptionKind = {
+  department: 'department',
+  role_type: 'role_type',
+} as const;
+
+export interface OpportunityOption {
+  id: string;
+  kind: OpportunityOptionKind;
+  label: string;
+  createdAt: string;
+}
+
+export interface OpportunityOptions {
+  departments: OpportunityOption[];
+  roleTypes: OpportunityOption[];
+}
+
+export interface OpportunityOptionInput {
+  kind: OpportunityOptionKind;
+  /**
+     * @minLength 2
+     * @maxLength 100
+     */
+  label: string;
+}
+
 export type OpportunityContentItemSection = typeof OpportunityContentItemSection[keyof typeof OpportunityContentItemSection];
 
 
@@ -326,6 +355,7 @@ export const PortalSessionPermissionsItem = {
   'opportunities:write': 'opportunities:write',
   'opportunities:publish': 'opportunities:publish',
   'opportunities:delete': 'opportunities:delete',
+  'opportunity-options:manage': 'opportunity-options:manage',
   'members:manage': 'members:manage',
 } as const;
 

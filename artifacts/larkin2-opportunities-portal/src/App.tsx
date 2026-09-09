@@ -82,6 +82,7 @@ type PortalPermission =
   | "opportunities:write"
   | "opportunities:publish"
   | "opportunities:delete"
+  | "opportunity-options:manage"
   | "members:manage";
 
 function PermissionGate({

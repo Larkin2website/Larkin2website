@@ -31,6 +31,9 @@ import type {
   Opportunity,
   OpportunityDeleteConfirmation,
   OpportunityInput,
+  OpportunityOption,
+  OpportunityOptionInput,
+  OpportunityOptions,
   OpportunityPage,
   OpportunityTransition,
   PortalDashboard,
@@ -459,6 +462,154 @@ export function useGetPortalDashboard<TData = Awaited<ReturnType<typeof getPorta
 
 
 
+
+export const getListPortalOpportunityOptionsUrl = () => {
+
+
+
+
+  return `/api/portal/opportunity-options`
+}
+
+/**
+ * @summary List selectable departments and role types
+ */
+export const listPortalOpportunityOptions = async ( options?: Parameters<typeof customFetch>[1]): Promise<OpportunityOptions> => {
+
+  return customFetch<OpportunityOptions>(getListPortalOpportunityOptionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPortalOpportunityOptionsQueryKey = () => {
+    return [
+    `/api/portal/opportunity-options`
+    ] as const;
+    }
+
+
+export const getListPortalOpportunityOptionsQueryOptions = <TData = Awaited<ReturnType<typeof listPortalOpportunityOptions>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPortalOpportunityOptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPortalOpportunityOptionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPortalOpportunityOptions>>> = ({ signal }) => listPortalOpportunityOptions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPortalOpportunityOptions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPortalOpportunityOptionsQueryResult = NonNullable<Awaited<ReturnType<typeof listPortalOpportunityOptions>>>
+export type ListPortalOpportunityOptionsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary List selectable departments and role types
+ */
+
+export function useListPortalOpportunityOptions<TData = Awaited<ReturnType<typeof listPortalOpportunityOptions>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPortalOpportunityOptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPortalOpportunityOptionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreatePortalOpportunityOptionUrl = () => {
+
+
+
+
+  return `/api/portal/opportunity-options`
+}
+
+/**
+ * @summary Add a selectable department or role type
+ */
+export const createPortalOpportunityOption = async (opportunityOptionInput: OpportunityOptionInput, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityOption> => {
+
+  return customFetch<OpportunityOption>(getCreatePortalOpportunityOptionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(opportunityOptionInput)
+  }
+);}
+
+
+
+
+
+export const getCreatePortalOpportunityOptionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalOpportunityOption>>, TError,{data: BodyType<OpportunityOptionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPortalOpportunityOption>>, TError,{data: BodyType<OpportunityOptionInput>}, TContext> => {
+
+const mutationKey = ['createPortalOpportunityOption'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPortalOpportunityOption>>, {data: BodyType<OpportunityOptionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPortalOpportunityOption(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePortalOpportunityOptionMutationResult = NonNullable<Awaited<ReturnType<typeof createPortalOpportunityOption>>>
+    export type CreatePortalOpportunityOptionMutationBody = BodyType<OpportunityOptionInput>
+    export type CreatePortalOpportunityOptionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | ConflictResponse>
+
+    /**
+ * @summary Add a selectable department or role type
+ */
+export const useCreatePortalOpportunityOption = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalOpportunityOption>>, TError,{data: BodyType<OpportunityOptionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPortalOpportunityOption>>,
+        TError,
+        {data: BodyType<OpportunityOptionInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePortalOpportunityOptionMutationOptions(options));
+    }
 
 export const getListPortalOpportunitiesUrl = (params?: ListPortalOpportunitiesParams,) => {
   const normalizedParams = new URLSearchParams();

@@ -1,9 +1,10 @@
 import { Router, type IRouter } from "express";
 import {
-  CreatePortalOpportunityBody, CreatePortalOpportunityResponse, DeletePortalOpportunityBody, DeletePortalOpportunityParams,
+  CreatePortalOpportunityBody, CreatePortalOpportunityResponse, CreatePortalOpportunityOptionBody, CreatePortalOpportunityOptionResponse,
+  DeletePortalOpportunityBody, DeletePortalOpportunityParams,
   GetPortalDashboardResponse, GetPortalOpportunityParams, GetPortalOpportunityResponse, GetPortalSessionResponse,
   GetPublicOpportunityParams, GetPublicOpportunityResponse, ListOpportunityAuditEventsParams, ListOpportunityAuditEventsResponse,
-  ListPortalMembersResponse, ListPortalOpportunitiesQueryParams, ListPortalOpportunitiesResponse,
+  ListPortalMembersResponse, ListPortalOpportunitiesQueryParams, ListPortalOpportunitiesResponse, ListPortalOpportunityOptionsResponse,
   ListPublicOpportunitiesQueryParams, ListPublicOpportunitiesResponse, TransitionPortalOpportunityBody,
   TransitionPortalOpportunityParams, TransitionPortalOpportunityResponse, UpdatePortalMemberBody, UpdatePortalMemberParams,
   UpdatePortalMemberResponse, UpdatePortalOpportunityBody, UpdatePortalOpportunityParams, UpdatePortalOpportunityResponse,
@@ -14,6 +15,7 @@ import { requirePortal } from "../lib/portal-auth";
 import { canTransition } from "../lib/permissions";
 import { toPublicStatus } from "../lib/opportunity-domain";
 import * as opportunities from "../lib/opportunity-service";
+import * as opportunityOptions from "../lib/opportunity-option-service";
 
 const router: IRouter = Router();
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
@@ -50,6 +52,27 @@ router.get("/portal/session", requirePortal(), async (req, res): Promise<void> =
 router.get("/portal/dashboard", requirePortal("opportunities:read"), async (_req, res): Promise<void> => {
   res.json(GetPortalDashboardResponse.parse(await opportunities.dashboard()));
 });
+router.get("/portal/opportunity-options", requirePortal("opportunities:read"), async (_req, res): Promise<void> => {
+  res.json(ListPortalOpportunityOptionsResponse.parse(await opportunityOptions.listOpportunityOptions()));
+});
+router.post("/portal/opportunity-options", requirePortal("opportunity-options:manage"), async (req, res): Promise<void> => {
+  const parsed = CreatePortalOpportunityOptionBody.safeParse(req.body);
+  if (!parsed.success) { invalid(res, parsed.error); return; }
+  try {
+    const created = await opportunityOptions.createOpportunityOption(parsed.data.kind, parsed.data.label, req.portalActor!);
+    res.status(201).json(CreatePortalOpportunityOptionResponse.parse(created));
+  } catch (error) {
+    if ((error as Error).message === "INVALID_OPTION") {
+      res.status(400).json({ error: "Option names must be between 2 and 100 characters" });
+      return;
+    }
+    if ((error as Error).message === "DUPLICATE_OPTION") {
+      res.status(409).json({ error: "This option already exists" });
+      return;
+    }
+    throw error;
+  }
+});
 router.get("/portal/opportunities", requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = ListPortalOpportunitiesQueryParams.safeParse(req.query);
   if (!parsed.success) { invalid(res, parsed.error); return; }
@@ -59,7 +82,11 @@ router.post("/portal/opportunities", requirePortal("opportunities:write"), async
   const parsed = CreatePortalOpportunityBody.safeParse(req.body);
   if (!parsed.success) { invalid(res, parsed.error); return; }
   try { res.status(201).json(CreatePortalOpportunityResponse.parse(await opportunities.createOpportunity(parsed.data, req.portalActor!))); }
-  catch (error) { if ((error as Error).message === "DUPLICATE") { res.status(409).json({ error: "Slug already exists" }); return; } throw error; }
+  catch (error) {
+    if ((error as Error).message === "DUPLICATE") { res.status(409).json({ error: "Slug already exists" }); return; }
+    if ((error as Error).message === "UNKNOWN_OPTION") { res.status(400).json({ error: "Choose a valid department and role type" }); return; }
+    throw error;
+  }
 });
 router.get("/portal/opportunities/:id", requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = GetPortalOpportunityParams.safeParse(req.params);
@@ -75,7 +102,11 @@ router.patch("/portal/opportunities/:id", requirePortal("opportunities:write"), 
     const row = await opportunities.updateOpportunity(params.data.id, body.data, req.portalActor!);
     if (!row) { res.status(404).json({ error: "Opportunity not found" }); return; }
     res.json(UpdatePortalOpportunityResponse.parse(row));
-  } catch (error) { if ((error as Error).message === "DUPLICATE") { res.status(409).json({ error: "Slug already exists" }); return; } throw error; }
+  } catch (error) {
+    if ((error as Error).message === "DUPLICATE") { res.status(409).json({ error: "Slug already exists" }); return; }
+    if ((error as Error).message === "UNKNOWN_OPTION") { res.status(400).json({ error: "Choose a valid department and role type" }); return; }
+    throw error;
+  }
 });
 router.post("/portal/opportunities/:id/transition", requirePortal("opportunities:write"), async (req, res): Promise<void> => {
   const params = TransitionPortalOpportunityParams.safeParse(req.params), body = TransitionPortalOpportunityBody.safeParse(req.body);

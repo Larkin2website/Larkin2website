@@ -24,6 +24,29 @@ export const opportunityContentSectionEnum = pgEnum("opportunity_content_section
   "essential",
   "desired",
 ]);
+export const opportunityOptionKindEnum = pgEnum("opportunity_option_kind", [
+  "department",
+  "role_type",
+]);
+
+export const opportunityOptionsTable = pgTable(
+  "opportunity_options",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    kind: opportunityOptionKindEnum("kind").notNull(),
+    label: text("label").notNull(),
+    normalizedLabel: text("normalized_label").notNull(),
+    createdBy: text("created_by").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("opportunity_options_kind_normalized_unique").on(
+      table.kind,
+      table.normalizedLabel,
+    ),
+    index("opportunity_options_kind_label_idx").on(table.kind, table.label),
+  ],
+);
 
 export const opportunitiesTable = pgTable(
   "opportunities",
@@ -104,3 +127,4 @@ export const insertOpportunitySchema = createInsertSchema(opportunitiesTable).om
 });
 export type InsertOpportunity = z.infer<typeof insertOpportunitySchema>;
 export type Opportunity = typeof opportunitiesTable.$inferSelect;
+export type OpportunityOption = typeof opportunityOptionsTable.$inferSelect;

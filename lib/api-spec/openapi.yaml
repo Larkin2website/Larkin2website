@@ -13,6 +13,7 @@ tags:
   - name: portal-session
   - name: portal-dashboard
   - name: portal-opportunities
+  - name: portal-opportunity-options
   - name: portal-members
 paths:
   /healthz:
@@ -99,6 +100,51 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /portal/opportunity-options:
+    get:
+      operationId: listPortalOpportunityOptions
+      tags: [portal-opportunity-options]
+      summary: List selectable departments and role types
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Managed opportunity options
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpportunityOptions"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: createPortalOpportunityOption
+      tags: [portal-opportunity-options]
+      summary: Add a selectable department or role type
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpportunityOptionInput"
+      responses:
+        "201":
+          description: Created opportunity option
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpportunityOption"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
   /portal/opportunities:
     get:
       operationId: listPortalOpportunities
@@ -448,6 +494,46 @@ components:
     PortalRole:
       type: string
       enum: [super_admin, opportunity_manager, viewer]
+    OpportunityOptionKind:
+      type: string
+      enum: [department, role_type]
+    OpportunityOption:
+      type: object
+      required: [id, kind, label, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: "#/components/schemas/OpportunityOptionKind"
+        label:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    OpportunityOptions:
+      type: object
+      required: [departments, roleTypes]
+      properties:
+        departments:
+          type: array
+          items:
+            $ref: "#/components/schemas/OpportunityOption"
+        roleTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/OpportunityOption"
+    OpportunityOptionInput:
+      type: object
+      additionalProperties: false
+      required: [kind, label]
+      properties:
+        kind:
+          $ref: "#/components/schemas/OpportunityOptionKind"
+        label:
+          type: string
+          minLength: 2
+          maxLength: 100
     OpportunityContentItem:
       type: object
       required: [id, section, position, content]
@@ -869,4 +955,5 @@ components:
               - opportunities:write
               - opportunities:publish
               - opportunities:delete
+              - opportunity-options:manage
               - members:manage

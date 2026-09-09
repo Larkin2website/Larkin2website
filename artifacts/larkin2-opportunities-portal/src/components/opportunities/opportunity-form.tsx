@@ -20,6 +20,7 @@ import {
   FormMessage 
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OpportunityOptionSelect } from "@/components/opportunities/opportunity-option-select";
 
 const opportunitySchema = z.object({
   slug: z.string().min(2).max(100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Lowercase alphanumeric and hyphens only"),
@@ -63,7 +64,7 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
       title: "",
       publicationLabel: "Opportunities",
       department: "",
-      roleType: "Full Time",
+      roleType: "full time",
       summary: "",
       applicationDeadline: "",
       responseDate: "",
@@ -174,9 +175,11 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     render={({ field }) => (
                       <FormItem className="min-w-0">
                         <FormLabel className={sharedLabelClasses}>Department</FormLabel>
-                        <FormControl>
-                          <Input className={sharedInputClasses} placeholder="e.g. Camera" {...field} />
-                        </FormControl>
+                        <OpportunityOptionSelect
+                          kind="department"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
                         <FormMessage className="break-words" />
                       </FormItem>
                     )}
@@ -188,9 +191,11 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                     render={({ field }) => (
                       <FormItem className="min-w-0">
                         <FormLabel className={sharedLabelClasses}>Role Type</FormLabel>
-                        <FormControl>
-                          <Input className={sharedInputClasses} placeholder="e.g. Full Time, Contract" {...field} />
-                        </FormControl>
+                        <OpportunityOptionSelect
+                          kind="role_type"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
                         <FormMessage className="break-words" />
                       </FormItem>
                     )}

@@ -1,11 +1,11 @@
 export type PortalRole = "super_admin" | "opportunity_manager" | "viewer";
 export type Permission =
   | "opportunities:read" | "opportunities:write" | "opportunities:publish"
-  | "opportunities:delete" | "members:manage";
+  | "opportunities:delete" | "opportunity-options:manage" | "members:manage";
 
 const rolePermissions: Record<PortalRole, Permission[]> = {
-  super_admin: ["opportunities:read", "opportunities:write", "opportunities:publish", "opportunities:delete", "members:manage"],
-  opportunity_manager: ["opportunities:read", "opportunities:write", "opportunities:publish"],
+  super_admin: ["opportunities:read", "opportunities:write", "opportunities:publish", "opportunities:delete", "opportunity-options:manage", "members:manage"],
+  opportunity_manager: ["opportunities:read", "opportunities:write", "opportunities:publish", "opportunity-options:manage"],
   viewer: ["opportunities:read"],
 };
 
