@@ -13,6 +13,7 @@ Public Larkin2 role listings backed by PostgreSQL, plus a separate authenticated
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - `pnpm --filter @workspace/scripts run seed:opportunities` — idempotently import the six original public role records
+- `pnpm --filter @workspace/scripts run seed:opportunity-options` — idempotently provision default categories and backfill categories from historical opportunities
 - Required environment names: `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`
 - Production injects `VITE_CLERK_PROXY_URL`; leave it empty in development so Clerk uses its development frontend API directly.
 
@@ -37,6 +38,7 @@ Public Larkin2 role listings backed by PostgreSQL, plus a separate authenticated
 - `lib/api-zod/src/generated/` — generated server validators; never edit by hand
 - `lib/db/src/schema/` — relational opportunity, membership, and audit schema
 - `scripts/src/seed-opportunities.ts` — idempotent migration of the original six hard-coded roles
+- `scripts/src/seed-opportunity-options.ts` — deployment startup seed for default and legacy opportunity categories
 - The public visual system is rooted in `artifacts/larkin2-opportunities/src/index.css`; the portal theme is in its own `src/index.css`.
 
 ## Architecture decisions
@@ -67,6 +69,7 @@ Public Larkin2 role listings backed by PostgreSQL, plus a separate authenticated
 - Do not hand-edit generated API client or generated Zod files.
 - Replit Clerk must keep `publishableKeyFromHost`, unconditional `VITE_CLERK_PROXY_URL`, full base-path auth routes, and the canonical `/api/__clerk` server proxy.
 - Development schema pushes do not migrate production. Apply schema changes through the Replit publish flow before expecting them in production.
+- Production starts by running the idempotent opportunity-option seed before accepting API traffic; normal API requests never backfill from opportunity history.
 - The original hard-coded role array remains only as seed input; the public site must not import it at runtime.
 - The current six imported records intentionally have null application URLs because no real Airtable links were provided.
 

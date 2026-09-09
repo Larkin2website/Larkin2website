@@ -29,6 +29,50 @@ export const opportunityOptionKindEnum = pgEnum("opportunity_option_kind", [
   "role_type",
 ]);
 
+export const DEFAULT_OPPORTUNITY_DEPARTMENTS = [
+  "ACCESSIBILITY",
+  "ACCOUNTS",
+  "ART DEPARTMENT",
+  "ASSISTANT DIRECTORS",
+  "CAMERA",
+  "CAST SUPPORT",
+  "CATERING",
+  "CLEARANCES",
+  "CONTINUITY",
+  "CONSTRUCTION",
+  "COSTUME",
+  "CRAFT",
+  "DIT / VIDEO",
+  "ELECTRICAL",
+  "FACILITIES",
+  "GRIP",
+  "HAIR & MAKEUP",
+  "HEALTH & SAFETY",
+  "LOCATIONS",
+  "POST PRODUCTION",
+  "PROPS",
+  "PUBLICITY",
+  "PRODUCTION",
+  "SET DECORATION",
+  "SFX",
+  "SOUND",
+  "STANDBYS",
+  "STUDIO UNIT",
+  "STUNT",
+  "SUSTAINABILITY",
+  "TRANSPORT",
+  "TRAINING & DEVELOPMENT",
+  "VFX",
+] as const;
+
+export const DEFAULT_OPPORTUNITY_ROLE_TYPES = [
+  "freelance",
+  "full time",
+  "internship",
+  "part time",
+  "temporary",
+] as const;
+
 export const opportunityOptionsTable = pgTable(
   "opportunity_options",
   {

@@ -2,56 +2,11 @@ import { asc, inArray, sql } from "drizzle-orm";
 import {
   auditEventsTable,
   db,
-  opportunitiesTable,
   opportunityOptionsTable,
 } from "@workspace/db";
 import type { PortalActor } from "./portal-auth";
 
 export type OpportunityOptionKind = "department" | "role_type";
-
-const DEFAULT_DEPARTMENTS = [
-  "ACCESSIBILITY",
-  "ACCOUNTS",
-  "ART DEPARTMENT",
-  "ASSISTANT DIRECTORS",
-  "CAMERA",
-  "CAST SUPPORT",
-  "CATERING",
-  "CLEARANCES",
-  "CONTINUITY",
-  "CONSTRUCTION",
-  "COSTUME",
-  "CRAFT",
-  "DIT / VIDEO",
-  "ELECTRICAL",
-  "FACILITIES",
-  "GRIP",
-  "HAIR & MAKEUP",
-  "HEALTH & SAFETY",
-  "LOCATIONS",
-  "POST PRODUCTION",
-  "PROPS",
-  "PUBLICITY",
-  "PRODUCTION",
-  "SET DECORATION",
-  "SFX",
-  "SOUND",
-  "STANDBYS",
-  "STUDIO UNIT",
-  "STUNT",
-  "SUSTAINABILITY",
-  "TRANSPORT",
-  "TRAINING & DEVELOPMENT",
-  "VFX",
-] as const;
-
-const DEFAULT_ROLE_TYPES = [
-  "freelance",
-  "full time",
-  "internship",
-  "part time",
-  "temporary",
-] as const;
 
 export function normalizeOptionLabel(value: string) {
   return value.trim().replace(/\s+/g, " ").toLocaleLowerCase("en-GB");
@@ -63,34 +18,7 @@ export function cleanOptionLabel(value: string) {
   return cleaned;
 }
 
-async function ensureOptions() {
-  const existingValues = await db
-    .select({
-      department: opportunitiesTable.department,
-      roleType: opportunitiesTable.roleType,
-    })
-    .from(opportunitiesTable);
-
-  const values = [
-    ...DEFAULT_DEPARTMENTS.map((label) => ({ kind: "department" as const, label })),
-    ...DEFAULT_ROLE_TYPES.map((label) => ({ kind: "role_type" as const, label })),
-    ...existingValues.flatMap(({ department, roleType }) => [
-      { kind: "department" as const, label: department },
-      { kind: "role_type" as const, label: roleType },
-    ]),
-  ].map((option) => ({
-    ...option,
-    normalizedLabel: normalizeOptionLabel(option.label),
-    createdBy: "system",
-  }));
-
-  if (values.length) {
-    await db.insert(opportunityOptionsTable).values(values).onConflictDoNothing();
-  }
-}
-
 export async function listOpportunityOptions() {
-  await ensureOptions();
   const rows = await db
     .select()
     .from(opportunityOptionsTable)
@@ -104,7 +32,6 @@ export async function listOpportunityOptions() {
 }
 
 export async function findOpportunityOption(kind: OpportunityOptionKind, label: string) {
-  await ensureOptions();
   const normalizedLabel = normalizeOptionLabel(label);
   const [row] = await db
     .select()
@@ -130,7 +57,6 @@ export async function createOpportunityOption(
   label: string,
   actor: PortalActor,
 ) {
-  await ensureOptions();
   const cleanedLabel = cleanOptionLabel(label);
   const normalizedLabel = normalizeOptionLabel(cleanedLabel);
   const existing = await findOpportunityOption(kind, cleanedLabel);

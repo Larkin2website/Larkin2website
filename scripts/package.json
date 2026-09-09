@@ -6,6 +6,7 @@
   "scripts": {
     "hello": "tsx ./src/hello.ts",
     "seed:opportunities": "tsx ./src/seed-opportunities.ts",
+    "seed:opportunity-options": "tsx ./src/seed-opportunity-options.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

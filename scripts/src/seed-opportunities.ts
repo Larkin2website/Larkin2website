@@ -1,6 +1,13 @@
-import { db, opportunityContentItemsTable, opportunityDetailsTable, opportunitiesTable } from "@workspace/db";
+import {
+  db,
+  opportunityContentItemsTable,
+  opportunityDetailsTable,
+  opportunitiesTable,
+  pool,
+} from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { ROLES } from "../../artifacts/larkin2-opportunities/src/data/roles";
+import { seedOpportunityOptions } from "./seed-opportunity-options";
 
 const statusFor = (status: "Open" | "Closed" | "Filled") =>
   status === "Closed" ? "closed" as const : status === "Filled" ? "filled" as const : "published" as const;
@@ -41,4 +48,5 @@ async function seed(): Promise<void> {
   }
 }
 await seed();
-await db.$client.end();
+await seedOpportunityOptions();
+await pool.end();
