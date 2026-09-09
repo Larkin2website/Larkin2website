@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useListPortalMembers, useUpdatePortalMember, useGetPortalSession, PortalRole, PortalMember, getListPortalMembersQueryKey, useListPortalOpportunityOptions, useRenamePortalOpportunityOption, useRetirePortalOpportunityOption, useMergePortalOpportunityOption, getListPortalOpportunityOptionsQueryKey } from "@workspace/api-client-react";
+import { useListPortalMembers, useUpdatePortalMember, useGetPortalSession, PortalRole, PortalMember, getListPortalMembersQueryKey, useListPortalOpportunityOptions, useRenamePortalOpportunityOption, useRetirePortalOpportunityOption, useRestorePortalOpportunityOption, useMergePortalOpportunityOption, getListPortalOpportunityOptionsQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
@@ -36,6 +36,7 @@ export default function SettingsPage() {
   );
   const renameOption = useRenamePortalOpportunityOption();
   const retireOption = useRetirePortalOpportunityOption();
+  const restoreOption = useRestorePortalOpportunityOption();
   const mergeOption = useMergePortalOpportunityOption();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -145,6 +146,16 @@ export default function SettingsPage() {
       toast({ title: "Option retired", description: "It remains visible on opportunities that already use it." });
     } catch (error: any) {
       toast({ title: "Could not retire option", description: error?.data?.error || "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleRestoreOption = async (id: string) => {
+    try {
+      await restoreOption.mutateAsync({ id });
+      await invalidateOptions();
+      toast({ title: "Option restored", description: "It is available for new opportunities again." });
+    } catch (error: any) {
+      toast({ title: "Could not restore option", description: error?.data?.error || "Please try again.", variant: "destructive" });
     }
   };
 
@@ -280,7 +291,7 @@ export default function SettingsPage() {
         <div className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31] min-w-0">
           <h2 className="font-mono text-lg uppercase tracking-widest font-medium break-words">Opportunity Categories</h2>
           <p className="text-xs text-[#85898a] mt-2 break-words">
-            Rename, retire, or merge departments and role types. These actions never rewrite labels on existing opportunities.
+            Rename, retire, restore, or merge departments and role types. These actions never rewrite labels on existing opportunities.
           </p>
         </div>
         <div className="divide-y divide-[#2a2f31]">
@@ -330,6 +341,10 @@ export default function SettingsPage() {
                 {option.active && (
                   <Button type="button" variant="ghost" className="rounded-none text-destructive hover:bg-destructive/10 hover:text-destructive"
                     disabled={retireOption.isPending} onClick={() => handleRetireOption(option.id)}>Retire</Button>
+                )}
+                {!option.active && (
+                  <Button type="button" variant="outline" className="rounded-none border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-500"
+                    disabled={restoreOption.isPending} onClick={() => handleRestoreOption(option.id)}>Restore</Button>
                 )}
               </div>
             );

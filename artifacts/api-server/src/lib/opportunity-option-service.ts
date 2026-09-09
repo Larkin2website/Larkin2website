@@ -150,6 +150,43 @@ export async function retireOpportunityOption(id: string, actor: PortalActor) {
   });
 }
 
+export async function restoreOpportunityOption(id: string, actor: PortalActor) {
+  try {
+    return await db.transaction(async (tx) => {
+      const [before] = await tx.select().from(opportunityOptionsTable)
+        .where(eq(opportunityOptionsTable.id, id)).for("update");
+      if (!before) throw new Error("OPTION_NOT_FOUND");
+      if (before.active) throw new Error("OPTION_ACTIVE");
+
+      const duplicate = await tx.select({ id: opportunityOptionsTable.id })
+        .from(opportunityOptionsTable)
+        .where(and(
+          eq(opportunityOptionsTable.kind, before.kind),
+          eq(opportunityOptionsTable.normalizedLabel, before.normalizedLabel),
+          eq(opportunityOptionsTable.active, true),
+        ))
+        .for("update");
+      if (duplicate.length > 0) throw new Error("DUPLICATE_OPTION");
+
+      const [updated] = await tx.update(opportunityOptionsTable)
+        .set({ active: true, retiredAt: null, retiredBy: null })
+        .where(and(eq(opportunityOptionsTable.id, id), eq(opportunityOptionsTable.active, false)))
+        .returning();
+      if (!updated) throw new Error("OPTION_ACTIVE");
+
+      await tx.insert(auditEventsTable).values({
+        action: "opportunity_option.restored", actorUserId: actor.userId, actorName: actor.displayName,
+        beforeState: { id: before.id, kind: before.kind, label: before.label, active: before.active },
+        afterState: { id: updated.id, kind: updated.kind, label: updated.label, active: updated.active },
+      });
+      return updated;
+    });
+  } catch (error: any) {
+    if (error?.code === "23505") throw new Error("DUPLICATE_OPTION");
+    throw error;
+  }
+}
+
 export function validateMergeOptions(
   source: { id: string; kind: OpportunityOptionKind; active: boolean } | undefined,
   target: { id: string; kind: OpportunityOptionKind; active: boolean } | undefined,

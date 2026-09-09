@@ -300,6 +300,23 @@ export const RetirePortalOpportunityOptionResponse = zod.object({
 
 
 /**
+ * @summary Restore a retired department or role type for future selection
+ */
+export const RestorePortalOpportunityOptionParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const RestorePortalOpportunityOptionResponse = zod.object({
+  "id": zod.string().uuid(),
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string(),
+  "active": zod.boolean(),
+  "retiredAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * @summary Merge an option into an active option of the same kind while preserving historical labels
  */
 export const MergePortalOpportunityOptionParams = zod.object({

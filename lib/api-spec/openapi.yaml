@@ -207,6 +207,32 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
+  /portal/opportunity-options/{id}/restore:
+    post:
+      operationId: restorePortalOpportunityOption
+      tags: [portal-opportunity-options]
+      summary: Restore a retired department or role type for future selection
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OpportunityOptionId"
+      responses:
+        "200":
+          description: Restored opportunity option
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpportunityOption"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
   /portal/opportunity-options/{id}/merge:
     post:
       operationId: mergePortalOpportunityOption

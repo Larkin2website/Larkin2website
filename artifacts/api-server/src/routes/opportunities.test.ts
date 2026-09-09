@@ -141,6 +141,66 @@ test("category creation returns clear whitespace-only and duplicate errors", asy
   });
 });
 
+test("only super admins can restore a retired category", async () => {
+  let calls = 0;
+  const restored = {
+    id: optionId, kind: "department", label: "Wardrobe", active: true,
+    retiredAt: null, createdAt,
+  };
+  await withServer(async () => restored, async (baseUrl) => {
+    const forbidden = await fetch(`${baseUrl}/portal/opportunity-options/${optionId}/restore`, {
+      method: "POST",
+      headers: { "x-test-role": "opportunity_manager" },
+    });
+    assert.equal(forbidden.status, 403);
+
+    const response = await fetch(`${baseUrl}/portal/opportunity-options/${optionId}/restore`, {
+      method: "POST",
+      headers: { "x-test-role": "super_admin" },
+    });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json() as { active: boolean }).active, true);
+    assert.equal(calls, 1);
+  }, {
+    opportunityOptions: {
+      listOpportunityOptions: async () => ({ departments: [], roleTypes: [] }),
+      createOpportunityOption: async () => restored,
+      restoreOpportunityOption: async () => {
+        calls += 1;
+        return restored;
+      },
+    } as any,
+  });
+});
+
+test("category restore returns safe lifecycle and duplicate errors", async () => {
+  let errorCode = "OPTION_ACTIVE";
+  await withServer(async () => {
+    throw new Error("should not be called");
+  }, async (baseUrl) => {
+    const alreadyActive = await fetch(`${baseUrl}/portal/opportunity-options/${optionId}/restore`, {
+      method: "POST",
+      headers: { "x-test-role": "super_admin" },
+    });
+    assert.equal(alreadyActive.status, 400);
+    assert.deepEqual(await alreadyActive.json(), { error: "This option is already active" });
+
+    errorCode = "DUPLICATE_OPTION";
+    const duplicate = await fetch(`${baseUrl}/portal/opportunity-options/${optionId}/restore`, {
+      method: "POST",
+      headers: { "x-test-role": "super_admin" },
+    });
+    assert.equal(duplicate.status, 409);
+    assert.deepEqual(await duplicate.json(), { error: "An active option with this name already exists" });
+  }, {
+    opportunityOptions: {
+      listOpportunityOptions: async () => ({ departments: [], roleTypes: [] }),
+      createOpportunityOption: async () => undefined,
+      restoreOpportunityOption: async () => { throw new Error(errorCode); },
+    } as any,
+  });
+});
+
 test("unknown selector values return a clear opportunity error", async () => {
   await withServer(async () => {
     throw new Error("should not be called");

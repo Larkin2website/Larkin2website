@@ -764,6 +764,77 @@ export const useRetirePortalOpportunityOption = <TError = ErrorType<BadRequestRe
       return useMutation(getRetirePortalOpportunityOptionMutationOptions(options));
     }
 
+export const getRestorePortalOpportunityOptionUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/opportunity-options/${id}/restore`
+}
+
+/**
+ * @summary Restore a retired department or role type for future selection
+ */
+export const restorePortalOpportunityOption = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityOption> => {
+
+  return customFetch<OpportunityOption>(getRestorePortalOpportunityOptionUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRestorePortalOpportunityOptionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restorePortalOpportunityOption>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof restorePortalOpportunityOption>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['restorePortalOpportunityOption'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof restorePortalOpportunityOption>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  restorePortalOpportunityOption(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RestorePortalOpportunityOptionMutationResult = NonNullable<Awaited<ReturnType<typeof restorePortalOpportunityOption>>>
+
+    export type RestorePortalOpportunityOptionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Restore a retired department or role type for future selection
+ */
+export const useRestorePortalOpportunityOption = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restorePortalOpportunityOption>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof restorePortalOpportunityOption>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getRestorePortalOpportunityOptionMutationOptions(options));
+    }
+
 export const getMergePortalOpportunityOptionUrl = (id: string,) => {
 
 

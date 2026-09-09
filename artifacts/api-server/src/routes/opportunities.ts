@@ -7,7 +7,8 @@ import {
   ListPortalMembersResponse, ListPortalOpportunitiesQueryParams, ListPortalOpportunitiesResponse, ListPortalOpportunityOptionsResponse,
   ListPublicOpportunitiesQueryParams, ListPublicOpportunitiesResponse, MergePortalOpportunityOptionBody, MergePortalOpportunityOptionParams,
   MergePortalOpportunityOptionResponse, RenamePortalOpportunityOptionBody, RenamePortalOpportunityOptionParams,
-  RenamePortalOpportunityOptionResponse, RetirePortalOpportunityOptionParams, RetirePortalOpportunityOptionResponse, TransitionPortalOpportunityBody,
+  RenamePortalOpportunityOptionResponse, RestorePortalOpportunityOptionParams, RestorePortalOpportunityOptionResponse,
+  RetirePortalOpportunityOptionParams, RetirePortalOpportunityOptionResponse, TransitionPortalOpportunityBody,
   TransitionPortalOpportunityParams, TransitionPortalOpportunityResponse, UpdatePortalMemberBody, UpdatePortalMemberParams,
   UpdatePortalMemberResponse, UpdatePortalOpportunityBody, UpdatePortalOpportunityParams, UpdatePortalOpportunityResponse,
 } from "@workspace/api-zod";
@@ -125,6 +126,20 @@ router.post("/portal/opportunity-options/:id/retire", dependencies.requirePortal
   } catch (error) {
     if ((error as Error).message === "OPTION_NOT_FOUND") { res.status(404).json({ error: "Opportunity option not found" }); return; }
     if ((error as Error).message === "OPTION_RETIRED") { res.status(400).json({ error: "This option is already retired" }); return; }
+    throw error;
+  }
+});
+router.post("/portal/opportunity-options/:id/restore", dependencies.requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
+  const params = RestorePortalOpportunityOptionParams.safeParse(req.params);
+  if (!params.success) { invalid(res, params.error); return; }
+  try {
+    res.json(RestorePortalOpportunityOptionResponse.parse(
+      await dependencies.opportunityOptions.restoreOpportunityOption(params.data.id, req.portalActor!),
+    ));
+  } catch (error) {
+    if ((error as Error).message === "OPTION_NOT_FOUND") { res.status(404).json({ error: "Opportunity option not found" }); return; }
+    if ((error as Error).message === "OPTION_ACTIVE") { res.status(400).json({ error: "This option is already active" }); return; }
+    if ((error as Error).message === "DUPLICATE_OPTION") { res.status(409).json({ error: "An active option with this name already exists" }); return; }
     throw error;
   }
 });
