@@ -127,7 +127,7 @@ export const GetPortalSessionResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'opportunity-options:manage', 'members:manage']))
+  "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'opportunity-options:manage', 'opportunity-options:lifecycle', 'members:manage']))
 })
 
 
@@ -207,17 +207,27 @@ export const GetPortalDashboardResponse = zod.object({
 /**
  * @summary List selectable departments and role types
  */
+export const listPortalOpportunityOptionsQueryIncludeRetiredDefault = false;
+
+export const ListPortalOpportunityOptionsQueryParams = zod.object({
+  "includeRetired": zod.coerce.boolean().default(listPortalOpportunityOptionsQueryIncludeRetiredDefault)
+})
+
 export const ListPortalOpportunityOptionsResponse = zod.object({
   "departments": zod.array(zod.object({
   "id": zod.string().uuid(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
+  "active": zod.boolean(),
+  "retiredAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date()
 })),
   "roleTypes": zod.array(zod.object({
   "id": zod.string().uuid(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
+  "active": zod.boolean(),
+  "retiredAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date()
 }))
 })
@@ -240,6 +250,72 @@ export const CreatePortalOpportunityOptionResponse = zod.object({
   "id": zod.string().uuid(),
   "kind": zod.enum(['department', 'role_type']),
   "label": zod.string(),
+  "active": zod.boolean(),
+  "retiredAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Rename a department or role type without changing historical opportunities
+ */
+export const RenamePortalOpportunityOptionParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const renamePortalOpportunityOptionBodyLabelMin = 2;
+export const renamePortalOpportunityOptionBodyLabelMax = 100;
+
+
+
+export const RenamePortalOpportunityOptionBody = zod.object({
+  "label": zod.string().min(renamePortalOpportunityOptionBodyLabelMin).max(renamePortalOpportunityOptionBodyLabelMax)
+})
+
+export const RenamePortalOpportunityOptionResponse = zod.object({
+  "id": zod.string().uuid(),
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string(),
+  "active": zod.boolean(),
+  "retiredAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Retire a department or role type from future selection
+ */
+export const RetirePortalOpportunityOptionParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const RetirePortalOpportunityOptionResponse = zod.object({
+  "id": zod.string().uuid(),
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string(),
+  "active": zod.boolean(),
+  "retiredAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Merge an option into an active option of the same kind while preserving historical labels
+ */
+export const MergePortalOpportunityOptionParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const MergePortalOpportunityOptionBody = zod.object({
+  "targetId": zod.string().uuid()
+})
+
+export const MergePortalOpportunityOptionResponse = zod.object({
+  "id": zod.string().uuid(),
+  "kind": zod.enum(['department', 'role_type']),
+  "label": zod.string(),
+  "active": zod.boolean(),
+  "retiredAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date()
 })
 

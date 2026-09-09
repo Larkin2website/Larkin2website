@@ -11,5 +11,8 @@ export interface OpportunityOption {
   id: string;
   kind: OpportunityOptionKind;
   label: string;
+  active: boolean;
+  /** @nullable */
+  retiredAt: Date | null;
   createdAt: Date;
 }

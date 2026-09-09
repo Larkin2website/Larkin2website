@@ -56,6 +56,9 @@ export interface OpportunityOption {
   id: string;
   kind: OpportunityOptionKind;
   label: string;
+  active: boolean;
+  /** @nullable */
+  retiredAt: string | null;
   createdAt: string;
 }
 
@@ -71,6 +74,18 @@ export interface OpportunityOptionInput {
      * @maxLength 100
      */
   label: string;
+}
+
+export interface OpportunityOptionRename {
+  /**
+     * @minLength 2
+     * @maxLength 100
+     */
+  label: string;
+}
+
+export interface OpportunityOptionMerge {
+  targetId: string;
 }
 
 export type OpportunityContentItemSection = typeof OpportunityContentItemSection[keyof typeof OpportunityContentItemSection];
@@ -356,6 +371,7 @@ export const PortalSessionPermissionsItem = {
   'opportunities:publish': 'opportunities:publish',
   'opportunities:delete': 'opportunities:delete',
   'opportunity-options:manage': 'opportunity-options:manage',
+  'opportunity-options:lifecycle': 'opportunity-options:lifecycle',
   'members:manage': 'members:manage',
 } as const;
 
@@ -394,6 +410,10 @@ export type ListPublicOpportunitiesParams = {
  * @maxLength 120
  */
 q?: string;
+};
+
+export type ListPortalOpportunityOptionsParams = {
+includeRetired?: boolean;
 };
 
 export type ListPortalOpportunitiesParams = {

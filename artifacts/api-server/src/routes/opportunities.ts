@@ -5,7 +5,9 @@ import {
   GetPortalDashboardResponse, GetPortalOpportunityParams, GetPortalOpportunityResponse, GetPortalSessionResponse,
   GetPublicOpportunityParams, GetPublicOpportunityResponse, ListOpportunityAuditEventsParams, ListOpportunityAuditEventsResponse,
   ListPortalMembersResponse, ListPortalOpportunitiesQueryParams, ListPortalOpportunitiesResponse, ListPortalOpportunityOptionsResponse,
-  ListPublicOpportunitiesQueryParams, ListPublicOpportunitiesResponse, TransitionPortalOpportunityBody,
+  ListPublicOpportunitiesQueryParams, ListPublicOpportunitiesResponse, MergePortalOpportunityOptionBody, MergePortalOpportunityOptionParams,
+  MergePortalOpportunityOptionResponse, RenamePortalOpportunityOptionBody, RenamePortalOpportunityOptionParams,
+  RenamePortalOpportunityOptionResponse, RetirePortalOpportunityOptionParams, RetirePortalOpportunityOptionResponse, TransitionPortalOpportunityBody,
   TransitionPortalOpportunityParams, TransitionPortalOpportunityResponse, UpdatePortalMemberBody, UpdatePortalMemberParams,
   UpdatePortalMemberResponse, UpdatePortalOpportunityBody, UpdatePortalOpportunityParams, UpdatePortalOpportunityResponse,
 } from "@workspace/api-zod";
@@ -52,8 +54,9 @@ router.get("/portal/session", requirePortal(), async (req, res): Promise<void> =
 router.get("/portal/dashboard", requirePortal("opportunities:read"), async (_req, res): Promise<void> => {
   res.json(GetPortalDashboardResponse.parse(await opportunities.dashboard()));
 });
-router.get("/portal/opportunity-options", requirePortal("opportunities:read"), async (_req, res): Promise<void> => {
-  res.json(ListPortalOpportunityOptionsResponse.parse(await opportunityOptions.listOpportunityOptions()));
+router.get("/portal/opportunity-options", requirePortal("opportunities:read"), async (req, res): Promise<void> => {
+  const includeRetired = req.query.includeRetired === "true" && req.portalActor!.role === "super_admin";
+  res.json(ListPortalOpportunityOptionsResponse.parse(await opportunityOptions.listOpportunityOptions(includeRetired)));
 });
 router.post("/portal/opportunity-options", requirePortal("opportunity-options:manage"), async (req, res): Promise<void> => {
   const parsed = CreatePortalOpportunityOptionBody.safeParse(req.body);
@@ -70,6 +73,51 @@ router.post("/portal/opportunity-options", requirePortal("opportunity-options:ma
       res.status(409).json({ error: "This option already exists" });
       return;
     }
+    throw error;
+  }
+});
+router.patch("/portal/opportunity-options/:id", requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
+  const params = RenamePortalOpportunityOptionParams.safeParse(req.params);
+  const body = RenamePortalOpportunityOptionBody.safeParse(req.body);
+  if (!params.success) { invalid(res, params.error); return; }
+  if (!body.success) { invalid(res, body.error); return; }
+  try {
+    res.json(RenamePortalOpportunityOptionResponse.parse(
+      await opportunityOptions.renameOpportunityOption(params.data.id, body.data.label, req.portalActor!),
+    ));
+  } catch (error) {
+    if ((error as Error).message === "OPTION_NOT_FOUND") { res.status(404).json({ error: "Opportunity option not found" }); return; }
+    if ((error as Error).message === "OPTION_RETIRED") { res.status(400).json({ error: "Retired options cannot be renamed" }); return; }
+    if ((error as Error).message === "INVALID_OPTION") { res.status(400).json({ error: "Option names must be between 2 and 100 characters" }); return; }
+    if ((error as Error).message === "DUPLICATE_OPTION") { res.status(409).json({ error: "This option already exists" }); return; }
+    throw error;
+  }
+});
+router.post("/portal/opportunity-options/:id/retire", requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
+  const params = RetirePortalOpportunityOptionParams.safeParse(req.params);
+  if (!params.success) { invalid(res, params.error); return; }
+  try {
+    res.json(RetirePortalOpportunityOptionResponse.parse(
+      await opportunityOptions.retireOpportunityOption(params.data.id, req.portalActor!),
+    ));
+  } catch (error) {
+    if ((error as Error).message === "OPTION_NOT_FOUND") { res.status(404).json({ error: "Opportunity option not found" }); return; }
+    if ((error as Error).message === "OPTION_RETIRED") { res.status(400).json({ error: "This option is already retired" }); return; }
+    throw error;
+  }
+});
+router.post("/portal/opportunity-options/:id/merge", requirePortal("opportunity-options:lifecycle"), async (req, res): Promise<void> => {
+  const params = MergePortalOpportunityOptionParams.safeParse(req.params);
+  const body = MergePortalOpportunityOptionBody.safeParse(req.body);
+  if (!params.success) { invalid(res, params.error); return; }
+  if (!body.success) { invalid(res, body.error); return; }
+  try {
+    res.json(MergePortalOpportunityOptionResponse.parse(
+      await opportunityOptions.mergeOpportunityOption(params.data.id, body.data.targetId, req.portalActor!),
+    ));
+  } catch (error) {
+    if ((error as Error).message === "OPTION_NOT_FOUND") { res.status(404).json({ error: "Opportunity option not found" }); return; }
+    if ((error as Error).message === "INVALID_MERGE") { res.status(400).json({ error: "Choose a different active option of the same kind" }); return; }
     throw error;
   }
 });

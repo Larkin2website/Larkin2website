@@ -80,6 +80,9 @@ export const opportunityOptionsTable = pgTable(
     kind: opportunityOptionKindEnum("kind").notNull(),
     label: text("label").notNull(),
     normalizedLabel: text("normalized_label").notNull(),
+    active: boolean("active").notNull().default(true),
+    retiredAt: timestamp("retired_at", { withTimezone: true }),
+    retiredBy: text("retired_by"),
     createdBy: text("created_by").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -89,6 +92,7 @@ export const opportunityOptionsTable = pgTable(
       table.normalizedLabel,
     ),
     index("opportunity_options_kind_label_idx").on(table.kind, table.label),
+    index("opportunity_options_kind_active_label_idx").on(table.kind, table.active, table.label),
   ],
 );
 

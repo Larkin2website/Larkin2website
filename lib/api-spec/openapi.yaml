@@ -107,6 +107,12 @@ paths:
       summary: List selectable departments and role types
       security:
         - cookieAuth: []
+      parameters:
+        - in: query
+          name: includeRetired
+          schema:
+            type: boolean
+            default: false
       responses:
         "200":
           description: Managed opportunity options
@@ -145,6 +151,92 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "409":
           $ref: "#/components/responses/Conflict"
+  /portal/opportunity-options/{id}:
+    patch:
+      operationId: renamePortalOpportunityOption
+      tags: [portal-opportunity-options]
+      summary: Rename a department or role type without changing historical opportunities
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OpportunityOptionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpportunityOptionRename"
+      responses:
+        "200":
+          description: Renamed opportunity option
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpportunityOption"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /portal/opportunity-options/{id}/retire:
+    post:
+      operationId: retirePortalOpportunityOption
+      tags: [portal-opportunity-options]
+      summary: Retire a department or role type from future selection
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OpportunityOptionId"
+      responses:
+        "200":
+          description: Retired opportunity option
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpportunityOption"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /portal/opportunity-options/{id}/merge:
+    post:
+      operationId: mergePortalOpportunityOption
+      tags: [portal-opportunity-options]
+      summary: Merge an option into an active option of the same kind while preserving historical labels
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OpportunityOptionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpportunityOptionMerge"
+      responses:
+        "200":
+          description: Merged and retired source option
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpportunityOption"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /portal/opportunities:
     get:
       operationId: listPortalOpportunities
@@ -439,6 +531,13 @@ components:
         minLength: 2
         maxLength: 100
         pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    OpportunityOptionId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
   responses:
     BadRequest:
       description: Invalid request
@@ -499,7 +598,7 @@ components:
       enum: [department, role_type]
     OpportunityOption:
       type: object
-      required: [id, kind, label, createdAt]
+      required: [id, kind, label, active, retiredAt, createdAt]
       properties:
         id:
           type: string
@@ -508,6 +607,11 @@ components:
           $ref: "#/components/schemas/OpportunityOptionKind"
         label:
           type: string
+        active:
+          type: boolean
+        retiredAt:
+          type: ["string", "null"]
+          format: date-time
         createdAt:
           type: string
           format: date-time
@@ -534,6 +638,23 @@ components:
           type: string
           minLength: 2
           maxLength: 100
+    OpportunityOptionRename:
+      type: object
+      additionalProperties: false
+      required: [label]
+      properties:
+        label:
+          type: string
+          minLength: 2
+          maxLength: 100
+    OpportunityOptionMerge:
+      type: object
+      additionalProperties: false
+      required: [targetId]
+      properties:
+        targetId:
+          type: string
+          format: uuid
     OpportunityContentItem:
       type: object
       required: [id, section, position, content]
@@ -956,4 +1077,5 @@ components:
               - opportunities:publish
               - opportunities:delete
               - opportunity-options:manage
+              - opportunity-options:lifecycle
               - members:manage

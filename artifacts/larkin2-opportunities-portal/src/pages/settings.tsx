@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useListPortalMembers, useUpdatePortalMember, useGetPortalSession, PortalRole, PortalMember, getListPortalMembersQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useListPortalMembers, useUpdatePortalMember, useGetPortalSession, PortalRole, PortalMember, getListPortalMembersQueryKey, useListPortalOpportunityOptions, useRenamePortalOpportunityOption, useRetirePortalOpportunityOption, useMergePortalOpportunityOption, getListPortalOpportunityOptionsQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { ShieldAlert, ShieldCheck, UserCog, UserX, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -23,9 +25,24 @@ export default function SettingsPage() {
   });
   
   const updateMember = useUpdatePortalMember();
+  const { data: managedOptions, isLoading: optionsLoading } = useListPortalOpportunityOptions(
+    { includeRetired: true },
+    {
+      query: {
+        enabled: session?.member?.role === "super_admin",
+        queryKey: getListPortalOpportunityOptionsQueryKey({ includeRetired: true }),
+      },
+    },
+  );
+  const renameOption = useRenamePortalOpportunityOption();
+  const retireOption = useRetirePortalOpportunityOption();
+  const mergeOption = useMergePortalOpportunityOption();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [renameLabels, setRenameLabels] = useState<Record<string, string>>({});
+  const [mergeTargets, setMergeTargets] = useState<Record<string, string>>({});
   
-  if (sessionLoading || membersLoading) {
+  if (sessionLoading || membersLoading || optionsLoading) {
     return <div className="p-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider animate-pulse break-words">Loading settings...</div>;
   }
   
@@ -105,6 +122,48 @@ export default function SettingsPage() {
       )}
     </Button>
   );
+
+  const invalidateOptions = () => queryClient.invalidateQueries({
+    queryKey: getListPortalOpportunityOptionsQueryKey(),
+  });
+
+  const handleRenameOption = async (id: string, label: string) => {
+    try {
+      await renameOption.mutateAsync({ id, data: { label } });
+      await invalidateOptions();
+      toast({ title: "Option renamed", description: "Historical opportunity labels were not changed." });
+    } catch (error: any) {
+      toast({ title: "Could not rename option", description: error?.data?.error || "Please try a different name.", variant: "destructive" });
+    }
+  };
+
+  const handleRetireOption = async (id: string) => {
+    if (!window.confirm("Retire this category? It will remain on existing opportunities but cannot be selected for new ones.")) return;
+    try {
+      await retireOption.mutateAsync({ id });
+      await invalidateOptions();
+      toast({ title: "Option retired", description: "It remains visible on opportunities that already use it." });
+    } catch (error: any) {
+      toast({ title: "Could not retire option", description: error?.data?.error || "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleMergeOption = async (id: string, targetId: string) => {
+    if (!targetId) return;
+    if (!window.confirm("Merge this category into the selected option? The source will be retired and historical opportunity labels will remain unchanged.")) return;
+    try {
+      await mergeOption.mutateAsync({ id, data: { targetId } });
+      await invalidateOptions();
+      toast({ title: "Options merged", description: "The source was retired; historical opportunity labels were preserved." });
+    } catch (error: any) {
+      toast({ title: "Could not merge options", description: error?.data?.error || "Choose another active option of the same kind.", variant: "destructive" });
+    }
+  };
+
+  const managedOptionRows = [
+    ...(managedOptions?.departments ?? []),
+    ...(managedOptions?.roleTypes ?? []),
+  ];
 
   return (
     <div className="space-y-6 sm:space-y-10 min-w-0">
@@ -214,6 +273,67 @@ export default function SettingsPage() {
               </div>
             </>
           )}
+        </div>
+      </div>
+
+      <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0">
+        <div className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31] min-w-0">
+          <h2 className="font-mono text-lg uppercase tracking-widest font-medium break-words">Opportunity Categories</h2>
+          <p className="text-xs text-[#85898a] mt-2 break-words">
+            Rename, retire, or merge departments and role types. These actions never rewrite labels on existing opportunities.
+          </p>
+        </div>
+        <div className="divide-y divide-[#2a2f31]">
+          {!managedOptionRows.length ? (
+            <p className="p-6 text-sm text-[#85898a]">No categories found.</p>
+          ) : managedOptionRows.map((option) => {
+            const targetOptions = managedOptionRows.filter((candidate) =>
+              candidate.active && candidate.kind === option.kind && candidate.id !== option.id,
+            );
+            const label = renameLabels[option.id] ?? option.label;
+            return (
+              <div key={option.id} className="p-4 sm:p-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#85898a]">
+                      {option.kind === "department" ? "Department" : "Role type"}
+                    </span>
+                    <span className={`font-mono text-[10px] uppercase tracking-widest ${option.active ? "text-emerald-500" : "text-amber-500"}`}>
+                      {option.active ? "Active" : "Retired"}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input value={label} maxLength={100} disabled={!option.active}
+                      onChange={(event) => setRenameLabels((current) => ({ ...current, [option.id]: event.target.value }))}
+                      className="h-10 rounded-none border-[#2a2f31] bg-[#101315] font-mono" />
+                    <Button type="button" variant="outline" className="rounded-none" disabled={!option.active || label.trim() === option.label || renameOption.isPending}
+                      onClick={() => handleRenameOption(option.id, label)}>
+                      Rename
+                    </Button>
+                  </div>
+                </div>
+                {option.active && (
+                  <div className="min-w-0">
+                    <label className="mb-2 block font-mono text-[10px] uppercase tracking-widest text-[#85898a]">Merge into</label>
+                    <div className="flex gap-2">
+                      <Select value={mergeTargets[option.id]} onValueChange={(value) => setMergeTargets((current) => ({ ...current, [option.id]: value }))}>
+                        <SelectTrigger className="h-10 rounded-none bg-[#101315] border-[#2a2f31] font-mono min-w-0"><SelectValue placeholder="Select active option" /></SelectTrigger>
+                        <SelectContent className="bg-[#171b1d] border-[#2a2f31] rounded-none">
+                          {targetOptions.map((target) => <SelectItem key={target.id} value={target.id}>{target.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <Button type="button" variant="outline" className="rounded-none" disabled={!mergeTargets[option.id] || mergeOption.isPending}
+                        onClick={() => handleMergeOption(option.id, mergeTargets[option.id])}>Merge</Button>
+                    </div>
+                  </div>
+                )}
+                {option.active && (
+                  <Button type="button" variant="ghost" className="rounded-none text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    disabled={retireOption.isPending} onClick={() => handleRetireOption(option.id)}>Retire</Button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -45,9 +45,9 @@ async function audit(actor: PortalActor, action: string, opportunityId: string |
   });
 }
 export async function createOpportunity(input: Input, actor: PortalActor) {
-  const canonicalOptions = await canonicalizeOpportunityOptions(input);
   try {
     return await db.transaction(async (tx) => {
+      const canonicalOptions = await canonicalizeOpportunityOptions(input, undefined, tx, true);
       const { contentItems, details: inputDetails, ...fields } = input;
       const [row] = await tx.insert(opportunitiesTable).values({ ...fields, ...canonicalOptions, status: "draft", createdBy: actor.userId, updatedBy: actor.userId }).returning();
       const content = await tx.insert(opportunityContentItemsTable).values(contentItems.map((x) => ({ ...x, opportunityId: row.id }))).returning();
@@ -59,10 +59,25 @@ export async function createOpportunity(input: Input, actor: PortalActor) {
   } catch (error: any) { if (error?.code === "23505") throw new Error("DUPLICATE"); throw error; }
 }
 export async function updateOpportunity(id: string, input: Input, actor: PortalActor) {
-  const before = await getOpportunity(id); if (!before) return undefined;
-  const canonicalOptions = await canonicalizeOpportunityOptions(input);
   try {
     return await db.transaction(async (tx) => {
+      const [current] = await tx.select().from(opportunitiesTable)
+        .where(eq(opportunitiesTable.id, id)).for("update");
+      if (!current) return undefined;
+      const [currentContent, currentDetails] = await Promise.all([
+        tx.select().from(opportunityContentItemsTable)
+          .where(eq(opportunityContentItemsTable.opportunityId, id))
+          .orderBy(asc(opportunityContentItemsTable.section), asc(opportunityContentItemsTable.position)),
+        tx.select().from(opportunityDetailsTable)
+          .where(eq(opportunityDetailsTable.opportunityId, id))
+          .orderBy(asc(opportunityDetailsTable.position)),
+      ]);
+      const before = {
+        ...current,
+        contentItems: currentContent.map(({ opportunityId: _, ...item }) => item),
+        details: currentDetails.map(({ opportunityId: _, ...detail }) => detail),
+      };
+      const canonicalOptions = await canonicalizeOpportunityOptions(input, current, tx, true);
       const { contentItems, details: inputDetails, ...fields } = input;
       const [row] = await tx.update(opportunitiesTable).set({ ...fields, ...canonicalOptions, updatedBy: actor.userId }).where(eq(opportunitiesTable.id, id)).returning();
       await tx.delete(opportunityContentItemsTable).where(eq(opportunityContentItemsTable.opportunityId, id));
