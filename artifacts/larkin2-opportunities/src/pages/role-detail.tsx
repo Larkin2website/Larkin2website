@@ -100,6 +100,18 @@ export function RoleDetailPage({ id }: { id: string }) {
               </div>
               <h1 className="roles-detail-title">{role.title}</h1>
               <p className="roles-detail-summary">{role.summary}</p>
+              {acceptingApplications && role.applicationUrl && (
+                <div className="roles-card-action roles-detail-apply">
+                  <MaskedLink
+                    href={role.applicationUrl}
+                    testId="link-role-apply-now"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Apply now
+                  </MaskedLink>
+                </div>
+              )}
             </div>
             <div className="roles-detail-meta" aria-label="Role summary">
               <div><span>Status</span><strong><i className={`roles-status-indicator is-${role.status.toLowerCase()}`} />{role.status}</strong></div>
