@@ -100,8 +100,8 @@ export function RoleDetailPage({ id }: { id: string }) {
               </div>
               <h1 className="roles-detail-title">{role.title}</h1>
               <p className="roles-detail-summary">{role.summary}</p>
-              {acceptingApplications && role.applicationUrl && (
-                <div className="roles-card-action roles-detail-apply">
+              <div className="roles-card-action roles-detail-apply">
+                {role.applicationUrl ? (
                   <MaskedLink
                     href={role.applicationUrl}
                     testId="link-role-apply-now"
@@ -110,8 +110,23 @@ export function RoleDetailPage({ id }: { id: string }) {
                   >
                     Apply now
                   </MaskedLink>
-                </div>
-              )}
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="larkin2-link"
+                      data-testid="button-role-apply-now-disabled"
+                      disabled
+                      aria-describedby="role-application-unavailable"
+                    >
+                      Apply now
+                    </button>
+                    <p id="role-application-unavailable" className="roles-detail-apply-note">
+                      Application link unavailable.
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
             <div className="roles-detail-meta" aria-label="Role summary">
               <div><span>Status</span><strong><i className={`roles-status-indicator is-${role.status.toLowerCase()}`} />{role.status}</strong></div>
