@@ -4,7 +4,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { Redirect, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
+import { Redirect, Route, Switch, useLocation, useParams, Router as WouterRouter } from 'wouter';
 import { AppClerkProvider, clerkBasePath } from '@/lib/clerk';
 import { useAuth, useClerk } from '@clerk/react';
 import { getGetPortalSessionQueryKey, useGetPortalSession } from '@workspace/api-client-react';
@@ -23,6 +23,10 @@ import OpportunitiesPage from '@/pages/opportunities/index';
 import NewOpportunityPage from '@/pages/opportunities/new';
 import DetailOpportunityPage from '@/pages/opportunities/detail';
 import EditOpportunityPage from '@/pages/opportunities/edit';
+import ProgrammesPage from '@/pages/programmes/index';
+import NewProgrammePage from '@/pages/programmes/new';
+import DetailProgrammePage from '@/pages/programmes/detail';
+import EditProgrammePage from '@/pages/programmes/edit';
 import SettingsPage from '@/pages/settings';
 
 const queryClient = new QueryClient({
@@ -59,7 +63,7 @@ function PortalAccessGate({ children }: { children: ReactNode }) {
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed mb-8">
             {status === 403
-              ? "A portal administrator must approve your account before you can view opportunity data."
+              ? "A portal administrator must approve your account before you can view role data."
               : "Please try signing in again. If the problem continues, contact a portal administrator."}
           </p>
           {portalDemoMode ? (
@@ -100,6 +104,10 @@ type PortalPermission =
   | "opportunities:publish"
   | "opportunities:delete"
   | "opportunity-options:manage"
+  | "programmes:read"
+  | "programmes:write"
+  | "programmes:publish"
+  | "programmes:delete"
   | "members:manage";
 
 function PermissionGate({
@@ -132,14 +140,36 @@ function AuthenticatedRoutes() {
       <PortalLayout>
         <Switch>
           <Route path="/dashboard" component={DashboardPage} />
-          <Route path="/opportunities" component={OpportunitiesPage} />
+
+          <Route path="/opportunities">
+            <PermissionGate permission="programmes:read">
+              <ProgrammesPage />
+            </PermissionGate>
+          </Route>
           <Route path="/opportunities/new">
+            <PermissionGate permission="programmes:write">
+              <NewProgrammePage />
+            </PermissionGate>
+          </Route>
+          <Route path="/opportunities/:id">
+            <PermissionGate permission="programmes:read">
+              <DetailProgrammePage />
+            </PermissionGate>
+          </Route>
+          <Route path="/opportunities/:id/edit">
+            <PermissionGate permission="programmes:write">
+              <EditProgrammePage />
+            </PermissionGate>
+          </Route>
+
+          <Route path="/roles" component={OpportunitiesPage} />
+          <Route path="/roles/new">
             <PermissionGate permission="opportunities:write">
               <NewOpportunityPage />
             </PermissionGate>
           </Route>
-          <Route path="/opportunities/:id" component={DetailOpportunityPage} />
-          <Route path="/opportunities/:id/edit">
+          <Route path="/roles/:id" component={DetailOpportunityPage} />
+          <Route path="/roles/:id/edit">
             <PermissionGate permission="opportunities:write">
               <EditOpportunityPage />
             </PermissionGate>

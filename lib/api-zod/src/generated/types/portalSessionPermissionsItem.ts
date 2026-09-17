@@ -17,4 +17,8 @@ export const PortalSessionPermissionsItem = {
   'opportunity-options:manage': 'opportunity-options:manage',
   'opportunity-options:lifecycle': 'opportunity-options:lifecycle',
   'members:manage': 'members:manage',
+  'programmes:read': 'programmes:read',
+  'programmes:write': 'programmes:write',
+  'programmes:publish': 'programmes:publish',
+  'programmes:delete': 'programmes:delete',
 } as const;

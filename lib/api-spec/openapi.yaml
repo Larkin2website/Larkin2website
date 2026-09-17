@@ -15,6 +15,8 @@ tags:
   - name: portal-opportunities
   - name: portal-opportunity-options
   - name: portal-members
+  - name: public-programmes
+  - name: portal-programmes
 paths:
   /healthz:
     get:
@@ -523,6 +525,111 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
+  /public/programmes:
+    get:
+      operationId: listPublicProgrammes
+      tags: [public-programmes]
+      summary: List published programmes
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string, maxLength: 120 }
+      responses:
+        "200":
+          description: Public programmes
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/PublicProgramme" } }
+  /public/programmes/{slug}:
+    get:
+      operationId: getPublicProgramme
+      tags: [public-programmes]
+      summary: Get a published programme
+      parameters:
+        - $ref: "#/components/parameters/OpportunitySlug"
+      responses:
+        "200":
+          description: Public programme
+          content:
+            application/json: { schema: { $ref: "#/components/schemas/PublicProgramme" } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /portal/programmes:
+    get:
+      operationId: listPortalProgrammes
+      tags: [portal-programmes]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - { in: query, name: q, schema: { type: string, maxLength: 120 } }
+        - { in: query, name: status, schema: { $ref: "#/components/schemas/ProgrammeStatus" } }
+        - { in: query, name: page, schema: { type: integer, minimum: 1, default: 1 } }
+        - { in: query, name: pageSize, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { in: query, name: sort, schema: { type: string, enum: [updatedAt, title, displayOrder, status], default: updatedAt } }
+        - { in: query, name: order, schema: { type: string, enum: [asc, desc], default: desc } }
+      responses:
+        "200":
+          description: Programme page
+          content:
+            application/json: { schema: { $ref: "#/components/schemas/ProgrammePage" } }
+    post:
+      operationId: createPortalProgramme
+      tags: [portal-programmes]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/ProgrammeInput" } } }
+      responses:
+        "201":
+          description: Created programme
+          content: { application/json: { schema: { $ref: "#/components/schemas/Programme" } } }
+  /portal/programmes/{id}:
+    get:
+      operationId: getPortalProgramme
+      tags: [portal-programmes]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/OpportunityId" }]
+      responses:
+        "200": { description: Programme, content: { application/json: { schema: { $ref: "#/components/schemas/Programme" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: updatePortalProgramme
+      tags: [portal-programmes]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/OpportunityId" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/ProgrammeInput" } } }
+      responses:
+        "200": { description: Updated programme, content: { application/json: { schema: { $ref: "#/components/schemas/Programme" } } } }
+    delete:
+      operationId: deletePortalProgramme
+      tags: [portal-programmes]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/OpportunityId" }]
+      responses: { "204": { description: Permanently deleted } }
+  /portal/programmes/{id}/transition:
+    post:
+      operationId: transitionPortalProgramme
+      tags: [portal-programmes]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/OpportunityId" }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: "#/components/schemas/ProgrammeTransition" } }
+      responses:
+        "200": { description: Transitioned programme, content: { application/json: { schema: { $ref: "#/components/schemas/Programme" } } } }
+  /portal/programmes/{id}/audit:
+    get:
+      operationId: listProgrammeAuditEvents
+      tags: [portal-programmes]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ $ref: "#/components/parameters/OpportunityId" }]
+      responses:
+        "200":
+          description: Programme audit events
+          content:
+            application/json: { schema: { $ref: "#/components/schemas/ProgrammeAuditEvents" } }
+        "404": { $ref: "#/components/responses/NotFound" }
   /portal/members:
     get:
       operationId: listPortalMembers
@@ -658,6 +765,118 @@ components:
     OpportunityStatus:
       type: string
       enum: [draft, published, closed, filled, archived]
+    ProgrammeStatus:
+      type: string
+      enum: [draft, published, closed, archived]
+    ProgrammeSection:
+      type: object
+      required: [id, section, position, content]
+      properties:
+        id: { type: string, format: uuid }
+        section:
+          type: string
+          enum: [about, placement, training, eligibility, timeline, application_guidance]
+        position: { type: integer, minimum: 0 }
+        content: { type: string }
+    Programme:
+      type: object
+      required: [id, slug, num, cardTitle, cardCopy, cardCta, image, title, shortDescription, status, applicationStatus, location, featured, displayOrder, sections, createdAt, updatedAt, createdBy, updatedBy]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string, minLength: 2, maxLength: 100, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        num: { type: string, minLength: 1, maxLength: 10 }
+        cardTitle: { type: string, minLength: 2, maxLength: 160 }
+        cardCopy: { type: string, minLength: 1, maxLength: 2000 }
+        cardCta: { type: string, minLength: 1, maxLength: 100 }
+        image: { type: string, minLength: 1, maxLength: 500 }
+        title: { type: string, minLength: 2, maxLength: 160 }
+        shortDescription: { type: string, minLength: 1, maxLength: 4000 }
+        status: { $ref: "#/components/schemas/ProgrammeStatus" }
+        applicationStatus: { type: string }
+        applicationDeadline: { type: ["string", "null"] }
+        deadline: { type: ["string", "null"], format: date-time }
+        location: { type: string }
+        applicationUrl: { type: ["string", "null"], format: uri }
+        featured: { type: boolean }
+        displayOrder: { type: integer }
+        sections: { type: array, items: { $ref: "#/components/schemas/ProgrammeSection" } }
+        publishedAt: { type: ["string", "null"], format: date-time }
+        archivedAt: { type: ["string", "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        createdBy: { type: string }
+        updatedBy: { type: string }
+    PublicProgramme:
+      type: object
+      required: [slug, num, cardTitle, cardCopy, cardCta, image, title, shortDescription, status, applicationStatus, location, featured, displayOrder, about, placement, training, eligibility, timeline, applicationGuidance]
+      properties:
+        slug: { type: string }
+        num: { type: string }
+        cardTitle: { type: string }
+        cardCopy: { type: string }
+        cardCta: { type: string }
+        image: { type: string }
+        title: { type: string }
+        shortDescription: { type: string }
+        status: { $ref: "#/components/schemas/ProgrammeStatus" }
+        applicationStatus: { type: string, minLength: 1, maxLength: 100 }
+        location: { type: string, minLength: 1, maxLength: 500 }
+        applicationUrl: { type: ["string", "null"], format: uri }
+        applicationDeadline: { type: ["string", "null"] }
+        deadline: { type: ["string", "null"], format: date-time }
+        featured: { type: boolean }
+        displayOrder: { type: integer }
+        about: { type: array, items: { type: string } }
+        placement: { type: array, items: { type: string } }
+        training: { type: array, items: { type: string } }
+        eligibility: { type: array, items: { type: string } }
+        timeline: { type: array, items: { type: string } }
+        applicationGuidance: { type: array, items: { type: string } }
+    ProgrammeInput:
+      type: object
+      required: [slug, num, cardTitle, cardCopy, cardCta, image, title, shortDescription, applicationStatus, location, featured, displayOrder, sections]
+      properties:
+        slug: { type: string, minLength: 2, maxLength: 100, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        num: { type: string, minLength: 1, maxLength: 10 }
+        cardTitle: { type: string, minLength: 2, maxLength: 160 }
+        cardCopy: { type: string, minLength: 1, maxLength: 2000 }
+        cardCta: { type: string, minLength: 1, maxLength: 100 }
+        image: { type: string, minLength: 1, maxLength: 500 }
+        title: { type: string, minLength: 2, maxLength: 160 }
+        shortDescription: { type: string, minLength: 1, maxLength: 4000 }
+        applicationStatus: { type: string, minLength: 1, maxLength: 100 }
+        applicationDeadline: { type: ["string", "null"] }
+        deadline: { type: ["string", "null"], format: date-time }
+        location: { type: string, minLength: 1, maxLength: 500 }
+        applicationUrl: { type: ["string", "null"], format: uri }
+        featured: { type: boolean }
+        displayOrder: { type: integer, minimum: 0 }
+        sections: { type: array, items: { $ref: "#/components/schemas/ProgrammeSectionInput" } }
+    ProgrammeSectionInput:
+      type: object
+      required: [section, position, content]
+      properties:
+        section: { type: string, enum: [about, placement, training, eligibility, timeline, application_guidance] }
+        position: { type: integer, minimum: 0 }
+        content: { type: string }
+    ProgrammePage:
+      type: object
+      required: [items, page, pageSize, total, pageCount]
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/Programme" } }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+        pageCount: { type: integer }
+    ProgrammeAuditEvents:
+      type: array
+      items:
+        $ref: "#/components/schemas/AuditEvent"
+    ProgrammeTransition:
+      type: object
+      required: [status]
+      properties:
+                status: { type: string, enum: [draft, published, closed, archived] }
     PublicOpportunityStatus:
       type: string
       enum: [Open, Closed, Filled]
@@ -1168,3 +1387,7 @@ components:
               - opportunity-options:manage
               - opportunity-options:lifecycle
               - members:manage
+              - programmes:read
+              - programmes:write
+              - programmes:publish
+              - programmes:delete

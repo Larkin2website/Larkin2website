@@ -101,7 +101,7 @@ export default function SignInPage() {
             <span className="text-[#f4773f] tracking-tight">assurance.</span>
           </h1>
           <p className="text-[#f4f1ed]/80 text-base sm:text-lg lg:text-xl leading-[1.6] max-w-md font-sans">
-            The central cockpit for managing public job roles, curating opportunities, and guiding candidates through the Larkin2 ecosystem.
+            The central cockpit for managing public job roles, curating roles, and guiding candidates through the Larkin2 ecosystem.
           </p>
         </div>
 

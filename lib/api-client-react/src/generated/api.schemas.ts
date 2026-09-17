@@ -26,6 +26,268 @@ export const OpportunityStatus = {
   archived: 'archived',
 } as const;
 
+export type ProgrammeStatus = typeof ProgrammeStatus[keyof typeof ProgrammeStatus];
+
+
+export const ProgrammeStatus = {
+  draft: 'draft',
+  published: 'published',
+  closed: 'closed',
+  archived: 'archived',
+} as const;
+
+export type ProgrammeSectionSection = typeof ProgrammeSectionSection[keyof typeof ProgrammeSectionSection];
+
+
+export const ProgrammeSectionSection = {
+  about: 'about',
+  placement: 'placement',
+  training: 'training',
+  eligibility: 'eligibility',
+  timeline: 'timeline',
+  application_guidance: 'application_guidance',
+} as const;
+
+export interface ProgrammeSection {
+  id: string;
+  section: ProgrammeSectionSection;
+  /** @minimum 0 */
+  position: number;
+  content: string;
+}
+
+export interface Programme {
+  id: string;
+  /**
+     * @minLength 2
+     * @maxLength 100
+     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
+     */
+  slug: string;
+  /**
+     * @minLength 1
+     * @maxLength 10
+     */
+  num: string;
+  /**
+     * @minLength 2
+     * @maxLength 160
+     */
+  cardTitle: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  cardCopy: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  cardCta: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  image: string;
+  /**
+     * @minLength 2
+     * @maxLength 160
+     */
+  title: string;
+  /**
+     * @minLength 1
+     * @maxLength 4000
+     */
+  shortDescription: string;
+  status: ProgrammeStatus;
+  applicationStatus: string;
+  /** @nullable */
+  applicationDeadline?: string | null;
+  /** @nullable */
+  deadline?: string | null;
+  location: string;
+  /** @nullable */
+  applicationUrl?: string | null;
+  featured: boolean;
+  displayOrder: number;
+  sections: ProgrammeSection[];
+  /** @nullable */
+  publishedAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface PublicProgramme {
+  slug: string;
+  num: string;
+  cardTitle: string;
+  cardCopy: string;
+  cardCta: string;
+  image: string;
+  title: string;
+  shortDescription: string;
+  status: ProgrammeStatus;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  applicationStatus: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  location: string;
+  /** @nullable */
+  applicationUrl?: string | null;
+  /** @nullable */
+  applicationDeadline?: string | null;
+  /** @nullable */
+  deadline?: string | null;
+  featured: boolean;
+  displayOrder: number;
+  about: string[];
+  placement: string[];
+  training: string[];
+  eligibility: string[];
+  timeline: string[];
+  applicationGuidance: string[];
+}
+
+export type ProgrammeSectionInputSection = typeof ProgrammeSectionInputSection[keyof typeof ProgrammeSectionInputSection];
+
+
+export const ProgrammeSectionInputSection = {
+  about: 'about',
+  placement: 'placement',
+  training: 'training',
+  eligibility: 'eligibility',
+  timeline: 'timeline',
+  application_guidance: 'application_guidance',
+} as const;
+
+export interface ProgrammeSectionInput {
+  section: ProgrammeSectionInputSection;
+  /** @minimum 0 */
+  position: number;
+  content: string;
+}
+
+export interface ProgrammeInput {
+  /**
+     * @minLength 2
+     * @maxLength 100
+     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
+     */
+  slug: string;
+  /**
+     * @minLength 1
+     * @maxLength 10
+     */
+  num: string;
+  /**
+     * @minLength 2
+     * @maxLength 160
+     */
+  cardTitle: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  cardCopy: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  cardCta: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  image: string;
+  /**
+     * @minLength 2
+     * @maxLength 160
+     */
+  title: string;
+  /**
+     * @minLength 1
+     * @maxLength 4000
+     */
+  shortDescription: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  applicationStatus: string;
+  /** @nullable */
+  applicationDeadline?: string | null;
+  /** @nullable */
+  deadline?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  location: string;
+  /** @nullable */
+  applicationUrl?: string | null;
+  featured: boolean;
+  /** @minimum 0 */
+  displayOrder: number;
+  sections: ProgrammeSectionInput[];
+}
+
+export interface ProgrammePage {
+  items: Programme[];
+  page: number;
+  pageSize: number;
+  total: number;
+  pageCount: number;
+}
+
+/**
+ * @nullable
+ */
+export type AuditEventBeforeState = { [key: string]: unknown } | null;
+
+/**
+ * @nullable
+ */
+export type AuditEventAfterState = { [key: string]: unknown } | null;
+
+export interface AuditEvent {
+  id: string;
+  /** @nullable */
+  opportunityId?: string | null;
+  action: string;
+  actorUserId: string;
+  actorName: string;
+  /** @nullable */
+  beforeState?: AuditEventBeforeState;
+  /** @nullable */
+  afterState?: AuditEventAfterState;
+  createdAt: string;
+}
+
+export type ProgrammeAuditEvents = AuditEvent[];
+
+export type ProgrammeTransitionStatus = typeof ProgrammeTransitionStatus[keyof typeof ProgrammeTransitionStatus];
+
+
+export const ProgrammeTransitionStatus = {
+  draft: 'draft',
+  published: 'published',
+  closed: 'closed',
+  archived: 'archived',
+} as const;
+
+export interface ProgrammeTransition {
+  status: ProgrammeTransitionStatus;
+}
+
 export type PublicOpportunityStatus = typeof PublicOpportunityStatus[keyof typeof PublicOpportunityStatus];
 
 
@@ -317,30 +579,6 @@ export interface DashboardCounts {
   archived: number;
 }
 
-/**
- * @nullable
- */
-export type AuditEventBeforeState = { [key: string]: unknown } | null;
-
-/**
- * @nullable
- */
-export type AuditEventAfterState = { [key: string]: unknown } | null;
-
-export interface AuditEvent {
-  id: string;
-  /** @nullable */
-  opportunityId?: string | null;
-  action: string;
-  actorUserId: string;
-  actorName: string;
-  /** @nullable */
-  beforeState?: AuditEventBeforeState;
-  /** @nullable */
-  afterState?: AuditEventAfterState;
-  createdAt: string;
-}
-
 export interface PortalDashboard {
   counts: DashboardCounts;
   recentOpportunities: Opportunity[];
@@ -396,6 +634,10 @@ export const PortalSessionPermissionsItem = {
   'opportunity-options:manage': 'opportunity-options:manage',
   'opportunity-options:lifecycle': 'opportunity-options:lifecycle',
   'members:manage': 'members:manage',
+  'programmes:read': 'programmes:read',
+  'programmes:write': 'programmes:write',
+  'programmes:publish': 'programmes:publish',
+  'programmes:delete': 'programmes:delete',
 } as const;
 
 export interface PortalSession {
@@ -473,6 +715,50 @@ export type ListPortalOpportunitiesOrder = typeof ListPortalOpportunitiesOrder[k
 
 
 export const ListPortalOpportunitiesOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type ListPublicProgrammesParams = {
+/**
+ * @maxLength 120
+ */
+q?: string;
+};
+
+export type ListPortalProgrammesParams = {
+/**
+ * @maxLength 120
+ */
+q?: string;
+status?: ProgrammeStatus;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+pageSize?: number;
+sort?: ListPortalProgrammesSort;
+order?: ListPortalProgrammesOrder;
+};
+
+export type ListPortalProgrammesSort = typeof ListPortalProgrammesSort[keyof typeof ListPortalProgrammesSort];
+
+
+export const ListPortalProgrammesSort = {
+  updatedAt: 'updatedAt',
+  title: 'title',
+  displayOrder: 'displayOrder',
+  status: 'status',
+} as const;
+
+export type ListPortalProgrammesOrder = typeof ListPortalProgrammesOrder[keyof typeof ListPortalProgrammesOrder];
+
+
+export const ListPortalProgrammesOrder = {
   asc: 'asc',
   desc: 'desc',
 } as const;

@@ -114,9 +114,9 @@ export default function DetailOpportunityPage() {
     return (
       <div className="text-center py-32 border border-[#2a2f31] bg-[#171b1d] px-4 break-words min-w-0">
         <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-6 shrink-0" />
-        <h2 className="font-mono text-2xl font-medium mb-3">Opportunity not found</h2>
-        <p className="text-muted-foreground mb-8">The opportunity may have been permanently deleted.</p>
-        <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 w-full sm:w-auto" onClick={() => setLocation("/opportunities")}>Back to Opportunities</Button>
+        <h2 className="font-mono text-2xl font-medium mb-3">Role not found</h2>
+        <p className="text-muted-foreground mb-8">The role may have been permanently deleted.</p>
+        <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 w-full sm:w-auto" onClick={() => setLocation("/roles")}>Back to Roles</Button>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function DetailOpportunityPage() {
     try {
       await del.mutateAsync({ id, data: { confirm: "DELETE" } });
       toast({ title: "Permanently deleted" });
-      setLocation("/opportunities");
+      setLocation("/roles");
       queryClient.invalidateQueries({ queryKey: getListPortalOpportunitiesQueryKey() });
       queryClient.invalidateQueries({ queryKey: getGetPortalDashboardQueryKey() });
     } catch (e: any) {
@@ -160,7 +160,7 @@ export default function DetailOpportunityPage() {
   const ActionButtons = () => (
     <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full lg:w-auto mt-4 lg:mt-0 min-w-0">
       {canWrite && opp.status !== "archived" && (
-        <Link href={`/opportunities/${id}/edit`} className="w-full sm:w-auto block">
+        <Link href={`/roles/${id}/edit`} className="w-full sm:w-auto block">
           <Button variant="outline" className="w-full sm:w-auto rounded-full h-11 sm:h-10 px-5 font-mono text-xs uppercase tracking-wider border-border shrink-0">
             <Edit className="w-3.5 h-3.5 mr-2 shrink-0" /> Edit Content
           </Button>
@@ -187,7 +187,7 @@ export default function DetailOpportunityPage() {
                 Change the status of “{opp.title}”
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed mt-2 break-words">
-                Choose how this live role should appear. The change takes effect on the public opportunities site immediately.
+                Choose how this live role should appear. The change takes effect on the public roles site immediately.
               </AlertDialogDescription>
             </AlertDialogHeader>
 
@@ -289,7 +289,7 @@ export default function DetailOpportunityPage() {
             <AlertDialogHeader className="shrink-0 text-left">
               <AlertDialogTitle className="font-mono font-medium tracking-tight text-xl text-foreground break-words">Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed mt-2 break-words">
-                This action cannot be undone. This will permanently delete the opportunity "{opp.title}" and its history.
+                This action cannot be undone. This will permanently delete the role "{opp.title}" and its history.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="my-6 shrink-0 min-w-0">
@@ -322,8 +322,8 @@ export default function DetailOpportunityPage() {
   return (
     <div className="space-y-6 sm:space-y-8 pb-20 min-w-0">
       <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono break-all min-w-0">
-        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center shrink-0">
-          <ChevronLeft className="w-3 h-3 mr-1 shrink-0" /> Opportunities
+        <Link href="/roles" className="hover:text-primary transition-colors flex items-center shrink-0">
+          <ChevronLeft className="w-3 h-3 mr-1 shrink-0" /> Roles
         </Link>
         <span className="shrink-0">/</span>
         <span className="truncate">{opp.slug}</span>

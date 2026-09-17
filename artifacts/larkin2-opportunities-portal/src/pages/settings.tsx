@@ -103,7 +103,7 @@ export default function SettingsPage() {
       </SelectTrigger>
       <SelectContent className="bg-[#171b1d] border-[#2a2f31] rounded-none">
         <SelectItem value="viewer" className="font-mono text-[10px] uppercase tracking-wider break-words">Viewer</SelectItem>
-        <SelectItem value="opportunity_manager" className="font-mono text-[10px] uppercase tracking-wider break-words">Opportunity Manager</SelectItem>
+        <SelectItem value="opportunity_manager" className="font-mono text-[10px] uppercase tracking-wider break-words">Role Manager</SelectItem>
         <SelectItem value="super_admin" className="font-mono text-[10px] uppercase tracking-wider break-words">Super Admin</SelectItem>
       </SelectContent>
     </Select>
@@ -136,18 +136,18 @@ export default function SettingsPage() {
     try {
       await renameOption.mutateAsync({ id, data: { label } });
       await invalidateOptions();
-      toast({ title: "Option renamed", description: "Historical opportunity labels were not changed." });
+      toast({ title: "Option renamed", description: "Historical role labels were not changed." });
     } catch (error: any) {
       toast({ title: "Could not rename option", description: error?.data?.error || "Please try a different name.", variant: "destructive" });
     }
   };
 
   const handleRetireOption = async (id: string) => {
-    if (!window.confirm("Retire this category? It will remain on existing opportunities but cannot be selected for new ones.")) return;
+    if (!window.confirm("Retire this category? It will remain on existing roles but cannot be selected for new ones.")) return;
     try {
       await retireOption.mutateAsync({ id });
       await invalidateOptions();
-      toast({ title: "Option retired", description: "It remains visible on opportunities that already use it." });
+      toast({ title: "Option retired", description: "It remains visible on roles that already use it." });
     } catch (error: any) {
       toast({ title: "Could not retire option", description: error?.data?.error || "Please try again.", variant: "destructive" });
     }
@@ -157,7 +157,7 @@ export default function SettingsPage() {
     try {
       await restoreOption.mutateAsync({ id });
       await invalidateOptions();
-      toast({ title: "Option restored", description: "It is available for new opportunities again." });
+      toast({ title: "Option restored", description: "It is available for new roles again." });
     } catch (error: any) {
       toast({ title: "Could not restore option", description: error?.data?.error || "Please try again.", variant: "destructive" });
     }
@@ -165,11 +165,11 @@ export default function SettingsPage() {
 
   const handleMergeOption = async (id: string, targetId: string) => {
     if (!targetId) return;
-    if (!window.confirm("Merge this category into the selected option? The source will be retired and historical opportunity labels will remain unchanged.")) return;
+    if (!window.confirm("Merge this category into the selected option? The source will be retired and historical role labels will remain unchanged.")) return;
     try {
       await mergeOption.mutateAsync({ id, data: { targetId } });
       await invalidateOptions();
-      toast({ title: "Options merged", description: "The source was retired; historical opportunity labels were preserved." });
+      toast({ title: "Options merged", description: "The source was retired; historical role labels were preserved." });
     } catch (error: any) {
       toast({ title: "Could not merge options", description: error?.data?.error || "Choose another active option of the same kind.", variant: "destructive" });
     }
@@ -204,7 +204,7 @@ export default function SettingsPage() {
     <div className="space-y-6 sm:space-y-10 min-w-0">
       <PageHeader
         title="Settings"
-        subtitle="Manage users, roles, and access controls for the opportunities portal."
+        subtitle="Manage users, roles, and access controls for the roles portal."
       />
 
       <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0">
@@ -234,7 +234,7 @@ export default function SettingsPage() {
               </SelectTrigger>
               <SelectContent className="bg-[#171b1d] border-[#2a2f31] rounded-none">
                 <SelectItem value="viewer">Viewer</SelectItem>
-                <SelectItem value="opportunity_manager">Opportunity Manager</SelectItem>
+                <SelectItem value="opportunity_manager">Role Manager</SelectItem>
                 <SelectItem value="super_admin">Super Admin</SelectItem>
               </SelectContent>
             </Select>
@@ -352,9 +352,9 @@ export default function SettingsPage() {
 
       <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0">
         <div className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31] min-w-0">
-          <h2 className="font-mono text-lg uppercase tracking-widest font-medium break-words">Opportunity Categories</h2>
+          <h2 className="font-mono text-lg uppercase tracking-widest font-medium break-words">Role Categories</h2>
           <p className="text-xs text-[#85898a] mt-2 break-words">
-            Rename, retire, restore, or merge departments and role types. These actions never rewrite labels on existing opportunities.
+            Rename, retire, restore, or merge departments and role types. These actions never rewrite labels on existing roles.
           </p>
         </div>
         <div className="divide-y divide-[#2a2f31]">

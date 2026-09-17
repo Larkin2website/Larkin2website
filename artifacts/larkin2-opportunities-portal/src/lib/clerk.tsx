@@ -114,7 +114,7 @@ export function AppClerkProvider({ children }: { children: ReactNode }) {
         signIn: {
           start: {
             title: "Welcome back",
-            subtitle: "Sign in to manage Larkin2 opportunities",
+            subtitle: "Sign in to manage Larkin2 roles",
           },
         },
         signUp: {

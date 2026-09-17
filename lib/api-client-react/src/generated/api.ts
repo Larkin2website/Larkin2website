@@ -27,7 +27,9 @@ import type {
   HealthStatus,
   ListPortalOpportunitiesParams,
   ListPortalOpportunityOptionsParams,
+  ListPortalProgrammesParams,
   ListPublicOpportunitiesParams,
+  ListPublicProgrammesParams,
   NotFoundResponse,
   Opportunity,
   OpportunityDeleteConfirmation,
@@ -44,7 +46,13 @@ import type {
   PortalMember,
   PortalMemberUpdate,
   PortalSession,
+  Programme,
+  ProgrammeAuditEvents,
+  ProgrammeInput,
+  ProgrammePage,
+  ProgrammeTransition,
   PublicOpportunity,
+  PublicProgramme,
   UnauthorizedResponse
 } from './api.schemas';
 
@@ -1635,6 +1643,649 @@ export function useListOpportunityAuditEvents<TData = Awaited<ReturnType<typeof 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListOpportunityAuditEventsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListPublicProgrammesUrl = (params?: ListPublicProgrammesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/public/programmes?${stringifiedParams}` : `/api/public/programmes`
+}
+
+/**
+ * @summary List published programmes
+ */
+export const listPublicProgrammes = async (params?: ListPublicProgrammesParams, options?: Parameters<typeof customFetch>[1]): Promise<PublicProgramme[]> => {
+
+  return customFetch<PublicProgramme[]>(getListPublicProgrammesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPublicProgrammesQueryKey = (params?: ListPublicProgrammesParams,) => {
+    return [
+    `/api/public/programmes`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListPublicProgrammesQueryOptions = <TData = Awaited<ReturnType<typeof listPublicProgrammes>>, TError = ErrorType<unknown>>(params?: ListPublicProgrammesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPublicProgrammes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPublicProgrammesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPublicProgrammes>>> = ({ signal }) => listPublicProgrammes(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPublicProgrammes>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPublicProgrammesQueryResult = NonNullable<Awaited<ReturnType<typeof listPublicProgrammes>>>
+export type ListPublicProgrammesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List published programmes
+ */
+
+export function useListPublicProgrammes<TData = Awaited<ReturnType<typeof listPublicProgrammes>>, TError = ErrorType<unknown>>(
+ params?: ListPublicProgrammesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPublicProgrammes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPublicProgrammesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetPublicProgrammeUrl = (slug: string,) => {
+
+
+
+
+  return `/api/public/programmes/${slug}`
+}
+
+/**
+ * @summary Get a published programme
+ */
+export const getPublicProgramme = async (slug: string, options?: Parameters<typeof customFetch>[1]): Promise<PublicProgramme> => {
+
+  return customFetch<PublicProgramme>(getGetPublicProgrammeUrl(slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPublicProgrammeQueryKey = (slug: string,) => {
+    return [
+    `/api/public/programmes/${slug}`
+    ] as const;
+    }
+
+
+export const getGetPublicProgrammeQueryOptions = <TData = Awaited<ReturnType<typeof getPublicProgramme>>, TError = ErrorType<NotFoundResponse>>(slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicProgramme>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPublicProgrammeQueryKey(slug);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicProgramme>>> = ({ signal }) => getPublicProgramme(slug, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: slug !== null && slug !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicProgramme>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPublicProgrammeQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicProgramme>>>
+export type GetPublicProgrammeQueryError = ErrorType<NotFoundResponse>
+
+
+/**
+ * @summary Get a published programme
+ */
+
+export function useGetPublicProgramme<TData = Awaited<ReturnType<typeof getPublicProgramme>>, TError = ErrorType<NotFoundResponse>>(
+ slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicProgramme>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPublicProgrammeQueryOptions(slug,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListPortalProgrammesUrl = (params?: ListPortalProgrammesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/portal/programmes?${stringifiedParams}` : `/api/portal/programmes`
+}
+
+export const listPortalProgrammes = async (params?: ListPortalProgrammesParams, options?: Parameters<typeof customFetch>[1]): Promise<ProgrammePage> => {
+
+  return customFetch<ProgrammePage>(getListPortalProgrammesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPortalProgrammesQueryKey = (params?: ListPortalProgrammesParams,) => {
+    return [
+    `/api/portal/programmes`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListPortalProgrammesQueryOptions = <TData = Awaited<ReturnType<typeof listPortalProgrammes>>, TError = ErrorType<unknown>>(params?: ListPortalProgrammesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPortalProgrammes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPortalProgrammesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPortalProgrammes>>> = ({ signal }) => listPortalProgrammes(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPortalProgrammes>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPortalProgrammesQueryResult = NonNullable<Awaited<ReturnType<typeof listPortalProgrammes>>>
+export type ListPortalProgrammesQueryError = ErrorType<unknown>
+
+
+
+export function useListPortalProgrammes<TData = Awaited<ReturnType<typeof listPortalProgrammes>>, TError = ErrorType<unknown>>(
+ params?: ListPortalProgrammesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPortalProgrammes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPortalProgrammesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreatePortalProgrammeUrl = () => {
+
+
+
+
+  return `/api/portal/programmes`
+}
+
+export const createPortalProgramme = async (programmeInput: ProgrammeInput, options?: Parameters<typeof customFetch>[1]): Promise<Programme> => {
+
+  return customFetch<Programme>(getCreatePortalProgrammeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(programmeInput)
+  }
+);}
+
+
+
+
+
+export const getCreatePortalProgrammeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalProgramme>>, TError,{data: BodyType<ProgrammeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPortalProgramme>>, TError,{data: BodyType<ProgrammeInput>}, TContext> => {
+
+const mutationKey = ['createPortalProgramme'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPortalProgramme>>, {data: BodyType<ProgrammeInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPortalProgramme(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePortalProgrammeMutationResult = NonNullable<Awaited<ReturnType<typeof createPortalProgramme>>>
+    export type CreatePortalProgrammeMutationBody = BodyType<ProgrammeInput>
+    export type CreatePortalProgrammeMutationError = ErrorType<unknown>
+
+    export const useCreatePortalProgramme = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalProgramme>>, TError,{data: BodyType<ProgrammeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPortalProgramme>>,
+        TError,
+        {data: BodyType<ProgrammeInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePortalProgrammeMutationOptions(options));
+    }
+
+export const getGetPortalProgrammeUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/programmes/${id}`
+}
+
+export const getPortalProgramme = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<Programme> => {
+
+  return customFetch<Programme>(getGetPortalProgrammeUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPortalProgrammeQueryKey = (id: string,) => {
+    return [
+    `/api/portal/programmes/${id}`
+    ] as const;
+    }
+
+
+export const getGetPortalProgrammeQueryOptions = <TData = Awaited<ReturnType<typeof getPortalProgramme>>, TError = ErrorType<NotFoundResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPortalProgramme>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPortalProgrammeQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPortalProgramme>>> = ({ signal }) => getPortalProgramme(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPortalProgramme>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPortalProgrammeQueryResult = NonNullable<Awaited<ReturnType<typeof getPortalProgramme>>>
+export type GetPortalProgrammeQueryError = ErrorType<NotFoundResponse>
+
+
+
+export function useGetPortalProgramme<TData = Awaited<ReturnType<typeof getPortalProgramme>>, TError = ErrorType<NotFoundResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPortalProgramme>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPortalProgrammeQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdatePortalProgrammeUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/programmes/${id}`
+}
+
+export const updatePortalProgramme = async (id: string,
+    programmeInput: ProgrammeInput, options?: Parameters<typeof customFetch>[1]): Promise<Programme> => {
+
+  return customFetch<Programme>(getUpdatePortalProgrammeUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(programmeInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePortalProgrammeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalProgramme>>, TError,{id: string;data: BodyType<ProgrammeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePortalProgramme>>, TError,{id: string;data: BodyType<ProgrammeInput>}, TContext> => {
+
+const mutationKey = ['updatePortalProgramme'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePortalProgramme>>, {id: string;data: BodyType<ProgrammeInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePortalProgramme(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePortalProgrammeMutationResult = NonNullable<Awaited<ReturnType<typeof updatePortalProgramme>>>
+    export type UpdatePortalProgrammeMutationBody = BodyType<ProgrammeInput>
+    export type UpdatePortalProgrammeMutationError = ErrorType<unknown>
+
+    export const useUpdatePortalProgramme = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalProgramme>>, TError,{id: string;data: BodyType<ProgrammeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePortalProgramme>>,
+        TError,
+        {id: string;data: BodyType<ProgrammeInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePortalProgrammeMutationOptions(options));
+    }
+
+export const getDeletePortalProgrammeUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/programmes/${id}`
+}
+
+export const deletePortalProgramme = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeletePortalProgrammeUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeletePortalProgrammeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePortalProgramme>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePortalProgramme>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deletePortalProgramme'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePortalProgramme>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deletePortalProgramme(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePortalProgrammeMutationResult = NonNullable<Awaited<ReturnType<typeof deletePortalProgramme>>>
+
+    export type DeletePortalProgrammeMutationError = ErrorType<unknown>
+
+    export const useDeletePortalProgramme = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePortalProgramme>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deletePortalProgramme>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getDeletePortalProgrammeMutationOptions(options));
+    }
+
+export const getTransitionPortalProgrammeUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/programmes/${id}/transition`
+}
+
+export const transitionPortalProgramme = async (id: string,
+    programmeTransition: ProgrammeTransition, options?: Parameters<typeof customFetch>[1]): Promise<Programme> => {
+
+  return customFetch<Programme>(getTransitionPortalProgrammeUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(programmeTransition)
+  }
+);}
+
+
+
+
+
+export const getTransitionPortalProgrammeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof transitionPortalProgramme>>, TError,{id: string;data: BodyType<ProgrammeTransition>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof transitionPortalProgramme>>, TError,{id: string;data: BodyType<ProgrammeTransition>}, TContext> => {
+
+const mutationKey = ['transitionPortalProgramme'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof transitionPortalProgramme>>, {id: string;data: BodyType<ProgrammeTransition>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  transitionPortalProgramme(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TransitionPortalProgrammeMutationResult = NonNullable<Awaited<ReturnType<typeof transitionPortalProgramme>>>
+    export type TransitionPortalProgrammeMutationBody = BodyType<ProgrammeTransition>
+    export type TransitionPortalProgrammeMutationError = ErrorType<unknown>
+
+    export const useTransitionPortalProgramme = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof transitionPortalProgramme>>, TError,{id: string;data: BodyType<ProgrammeTransition>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof transitionPortalProgramme>>,
+        TError,
+        {id: string;data: BodyType<ProgrammeTransition>},
+        TContext
+      > => {
+      return useMutation(getTransitionPortalProgrammeMutationOptions(options));
+    }
+
+export const getListProgrammeAuditEventsUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/programmes/${id}/audit`
+}
+
+export const listProgrammeAuditEvents = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<ProgrammeAuditEvents> => {
+
+  return customFetch<ProgrammeAuditEvents>(getListProgrammeAuditEventsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProgrammeAuditEventsQueryKey = (id: string,) => {
+    return [
+    `/api/portal/programmes/${id}/audit`
+    ] as const;
+    }
+
+
+export const getListProgrammeAuditEventsQueryOptions = <TData = Awaited<ReturnType<typeof listProgrammeAuditEvents>>, TError = ErrorType<NotFoundResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProgrammeAuditEvents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProgrammeAuditEventsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProgrammeAuditEvents>>> = ({ signal }) => listProgrammeAuditEvents(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProgrammeAuditEvents>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProgrammeAuditEventsQueryResult = NonNullable<Awaited<ReturnType<typeof listProgrammeAuditEvents>>>
+export type ListProgrammeAuditEventsQueryError = ErrorType<NotFoundResponse>
+
+
+
+export function useListProgrammeAuditEvents<TData = Awaited<ReturnType<typeof listProgrammeAuditEvents>>, TError = ErrorType<NotFoundResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProgrammeAuditEvents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProgrammeAuditEventsQueryOptions(id,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

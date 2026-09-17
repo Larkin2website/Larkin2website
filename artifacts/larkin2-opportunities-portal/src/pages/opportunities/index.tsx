@@ -183,7 +183,7 @@ export default function OpportunitiesPage() {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-      <Link href={`/opportunities/${opp.id}`} data-testid={`link-opportunity-${opp.id}`}>
+      <Link href={`/roles/${opp.id}`} data-testid={`link-role-${opp.id}`}>
         <Button variant="ghost" size="icon" className="h-11 w-11 xl:h-9 xl:w-9 text-[#85898a] group-hover:text-primary transition-colors hover:bg-transparent shrink-0">
           <ArrowRight className="w-5 h-5" />
         </Button>
@@ -194,14 +194,14 @@ export default function OpportunitiesPage() {
   return (
     <div className="space-y-6 sm:space-y-8 min-w-0">
       <PageHeader
-        title="Opportunities"
+        title="Roles"
         subtitle="Manage public roles and job postings."
         action={
           canWrite && (
-            <Link href="/opportunities/new" className="block w-full lg:w-auto">
+            <Link href="/roles/new" className="block w-full lg:w-auto">
               <Button className="w-full lg:w-auto rounded-full font-mono text-xs uppercase tracking-wider h-11 px-6">
                 <Plus className="w-4 h-4 mr-2 shrink-0" />
-                New Opportunity
+                New Role
               </Button>
             </Link>
           )
@@ -265,11 +265,11 @@ export default function OpportunitiesPage() {
       <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0">
         {isLoading ? (
           <div className="p-8 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider animate-pulse">
-            Loading opportunities...
+            Loading roles...
           </div>
         ) : !pageData?.items.length ? (
           <div className="p-8 text-center text-muted-foreground text-sm break-words">
-            No opportunities match your filters.
+            No roles match your filters.
           </div>
         ) : (
           <>
@@ -278,7 +278,7 @@ export default function OpportunitiesPage() {
               {pageData.items.map((opp) => (
                 <div key={opp.id} className="p-4 sm:p-5 hover:bg-[#101315] transition-colors group flex flex-col gap-4 min-w-0">
                   <div className="min-w-0">
-                    <Link href={`/opportunities/${opp.id}`} className="font-mono text-base sm:text-[15px] font-medium text-[#f4f1ed] group-hover:text-primary transition-colors block mb-1 break-words">
+                    <Link href={`/roles/${opp.id}`} className="font-mono text-base sm:text-[15px] font-medium text-[#f4f1ed] group-hover:text-primary transition-colors block mb-1 break-words">
                       {opp.title}
                     </Link>
                     <div className="text-[11px] text-[#85898a] tracking-wide break-all">/{opp.slug}</div>
@@ -315,7 +315,7 @@ export default function OpportunitiesPage() {
                   {pageData.items.map((opp) => (
                     <tr key={opp.id} className="hover:bg-[#101315] transition-colors group">
                       <td className="px-6 py-5 min-w-0 max-w-sm">
-                        <Link href={`/opportunities/${opp.id}`} className="font-mono text-[15px] font-medium text-[#f4f1ed] group-hover:text-primary transition-colors block mb-1 break-words">
+                        <Link href={`/roles/${opp.id}`} className="font-mono text-[15px] font-medium text-[#f4f1ed] group-hover:text-primary transition-colors block mb-1 break-words">
                           {opp.title}
                         </Link>
                         <div className="text-[11px] text-[#85898a] tracking-wide break-all">/{opp.slug}</div>

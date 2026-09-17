@@ -11,6 +11,7 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,7 +96,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/opportunities", label: "Opportunities", icon: Briefcase },
+    { href: "/opportunities", label: "Opportunities", icon: Target },
+    { href: "/roles", label: "Roles", icon: Briefcase },
     ...(session?.member?.role === "super_admin" 
       ? [{ href: "/settings", label: "Settings", icon: Settings }] 
       : []),
@@ -121,9 +123,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                 : "border-border/60 text-muted-foreground hover:bg-accent/70 hover:text-foreground hover:border-border"
             }`}
           >
-              <div className={`flex items-center min-w-0 ${collapsed ? "justify-center" : "gap-3"}`}>
+              <div className={`flex items-center min-w-0 ${collapsed ? "justify-center" : "flex-1 gap-3"}`}>
                 <Icon size={16} className={isActive ? "text-primary shrink-0" : "text-muted-foreground shrink-0 group-hover:text-foreground transition-colors"} />
-                {!collapsed && <span className="uppercase tracking-widest text-[10px] break-words truncate">{item.label}</span>}
+                {!collapsed && <span className="truncate text-[11px] uppercase tracking-widest text-foreground">{item.label}</span>}
               </div>
               {!collapsed && <ChevronRight size={14} className={`shrink-0 transition-transform ${isActive ? "text-primary translate-x-0" : "text-transparent -translate-x-2 group-hover:text-muted-foreground group-hover:translate-x-0"}`} />}
           </Link>

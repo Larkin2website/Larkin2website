@@ -57,12 +57,12 @@ export default function LandingPage() {
         <div className="w-full max-w-4xl space-y-12 min-w-0">
           <div className="animate-in slide-in-from-bottom-8 fade-in duration-1000 fill-mode-both ease-[cubic-bezier(0.23,1,0.32,1)]">
             <h1 className="font-mono text-4xl sm:text-5xl md:text-7xl lg:text-[90px] xl:text-[110px] leading-[1.05] md:leading-[0.9] tracking-tight text-foreground font-medium break-words">
-              Opportunities<br />Portal
+              Roles<br />Portal
             </h1>
           </div>
           
           <p className="text-lg md:text-xl text-[#c6c6c0] max-w-2xl mx-auto leading-relaxed break-words animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-150 fill-mode-both ease-[cubic-bezier(0.23,1,0.32,1)]">
-            The internal cockpit for managing public roles. Create, review, and confidently publish opportunities to the Larkin2 careers site.
+            The internal cockpit for managing public roles. Create, review, and confidently publish roles to the Larkin2 careers site.
           </p>
 
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-6 animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-300 fill-mode-both ease-[cubic-bezier(0.23,1,0.32,1)]">
@@ -82,7 +82,7 @@ export default function LandingPage() {
       </main>
       
       <footer className="py-8 text-center text-[10px] font-mono uppercase tracking-widest text-[#85898a] z-10 break-words px-4">
-        &copy; {new Date().getFullYear()} 60Forty Films. Official Larkin2 opportunities.
+        &copy; {new Date().getFullYear()} 60Forty Films. Official Larkin2 roles.
       </footer>
     </div>
   );

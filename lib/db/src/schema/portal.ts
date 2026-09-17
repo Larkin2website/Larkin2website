@@ -49,6 +49,7 @@ export const auditEventsTable = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     opportunityId: uuid("opportunity_id"),
+    programmeId: uuid("programme_id"),
     action: text("action").notNull(),
     actorUserId: text("actor_user_id").notNull(),
     actorName: text("actor_name").notNull(),
@@ -58,6 +59,7 @@ export const auditEventsTable = pgTable(
   },
   (table) => [
     index("portal_audit_events_opportunity_created_idx").on(table.opportunityId, table.createdAt),
+    index("portal_audit_events_programme_created_idx").on(table.programmeId, table.createdAt),
     index("portal_audit_events_created_idx").on(table.createdAt),
   ],
 );

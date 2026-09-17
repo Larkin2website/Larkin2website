@@ -124,7 +124,7 @@ export function OpportunityOptionSelect({
                 Add {noun}
               </DialogTitle>
               <DialogDescription>
-                This option will become available to every opportunity editor.
+                This option will become available to every role editor.
               </DialogDescription>
             </DialogHeader>
             <div className="py-6">

@@ -28,11 +28,11 @@ export default function EditOpportunityPage() {
       await update.mutateAsync({ id, data });
       toast({
         title: "Changes saved",
-        description: "Opportunity content has been updated."
+        description: "Role content has been updated."
       });
       queryClient.invalidateQueries({ queryKey: getGetPortalOpportunityQueryKey(id) });
       queryClient.invalidateQueries({ queryKey: getListPortalOpportunitiesQueryKey() });
-      setLocation(`/opportunities/${id}`);
+      setLocation(`/roles/${id}`);
     } catch (error: any) {
       toast({
         title: "Failed to save",
@@ -50,8 +50,8 @@ export default function EditOpportunityPage() {
     return (
       <div className="text-center py-32 border border-[#2a2f31] bg-[#171b1d] px-4 break-words min-w-0">
         <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-6 shrink-0" />
-        <h2 className="font-mono text-2xl font-medium mb-3">Opportunity not found</h2>
-        <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 mt-6 w-full sm:w-auto" onClick={() => setLocation("/opportunities")}>Back to Opportunities</Button>
+        <h2 className="font-mono text-2xl font-medium mb-3">Role not found</h2>
+        <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 mt-6 w-full sm:w-auto" onClick={() => setLocation("/roles")}>Back to Roles</Button>
       </div>
     );
   }
@@ -60,10 +60,10 @@ export default function EditOpportunityPage() {
     return (
       <div className="text-center py-32 border border-[#2a2f31] bg-[#171b1d] px-4 break-words min-w-0">
         <ShieldAlert className="w-12 h-12 text-muted-foreground mx-auto mb-6 shrink-0" />
-        <h2 className="font-mono text-2xl font-medium mb-3">Cannot edit archived opportunity</h2>
-        <p className="text-muted-foreground mb-8">Restore this opportunity to draft state before editing.</p>
-        <Link href={`/opportunities/${id}`} className="block w-full sm:w-auto">
-          <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 w-full sm:w-auto">View Opportunity</Button>
+        <h2 className="font-mono text-2xl font-medium mb-3">Cannot edit archived role</h2>
+        <p className="text-muted-foreground mb-8">Restore this role to draft state before editing.</p>
+        <Link href={`/roles/${id}`} className="block w-full sm:w-auto">
+          <Button variant="outline" className="rounded-none font-mono text-xs uppercase tracking-wider h-11 px-8 w-full sm:w-auto">View Role</Button>
         </Link>
       </div>
     );
@@ -72,11 +72,11 @@ export default function EditOpportunityPage() {
   return (
     <div className="space-y-8 pb-20 min-w-0">
       <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-[#85898a] mb-2 font-mono min-w-0">
-        <Link href="/opportunities" className="hover:text-primary transition-colors flex items-center shrink-0">
-          <ChevronLeft className="w-3 h-3 mr-1 shrink-0" /> Opportunities
+        <Link href="/roles" className="hover:text-primary transition-colors flex items-center shrink-0">
+          <ChevronLeft className="w-3 h-3 mr-1 shrink-0" /> Roles
         </Link>
         <span className="shrink-0">/</span>
-        <Link href={`/opportunities/${id}`} className="hover:text-primary transition-colors truncate">
+        <Link href={`/roles/${id}`} className="hover:text-primary transition-colors truncate">
           {opp.slug}
         </Link>
         <span className="shrink-0">/</span>
@@ -85,7 +85,7 @@ export default function EditOpportunityPage() {
 
       <PageHeader
         title={`Edit ${opp.title}`}
-        subtitle="Update content, requirements, and metadata for this opportunity."
+        subtitle="Update content, requirements, and metadata for this role."
       />
 
       <OpportunityForm 

@@ -129,7 +129,7 @@ export const GetPortalSessionResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'opportunity-options:manage', 'opportunity-options:lifecycle', 'members:manage']))
+  "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'opportunity-options:manage', 'opportunity-options:lifecycle', 'members:manage', 'programmes:read', 'programmes:write', 'programmes:publish', 'programmes:delete']))
 })
 
 
@@ -858,6 +858,559 @@ export const ListOpportunityAuditEventsResponseItem = zod.object({
   "createdAt": zod.coerce.date()
 })
 export const ListOpportunityAuditEventsResponse = zod.array(ListOpportunityAuditEventsResponseItem)
+
+
+/**
+ * @summary List published programmes
+ */
+export const listPublicProgrammesQueryQMax = 120;
+
+
+
+export const ListPublicProgrammesQueryParams = zod.object({
+  "q": zod.coerce.string().max(listPublicProgrammesQueryQMax).optional()
+})
+
+export const listPublicProgrammesResponseApplicationStatusMax = 100;
+
+export const listPublicProgrammesResponseLocationMax = 500;
+
+
+
+export const ListPublicProgrammesResponseItem = zod.object({
+  "slug": zod.string(),
+  "num": zod.string(),
+  "cardTitle": zod.string(),
+  "cardCopy": zod.string(),
+  "cardCta": zod.string(),
+  "image": zod.string(),
+  "title": zod.string(),
+  "shortDescription": zod.string(),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']),
+  "applicationStatus": zod.string().min(1).max(listPublicProgrammesResponseApplicationStatusMax),
+  "location": zod.string().min(1).max(listPublicProgrammesResponseLocationMax),
+  "applicationUrl": zod.string().url().nullish(),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int(),
+  "about": zod.array(zod.string()),
+  "placement": zod.array(zod.string()),
+  "training": zod.array(zod.string()),
+  "eligibility": zod.array(zod.string()),
+  "timeline": zod.array(zod.string()),
+  "applicationGuidance": zod.array(zod.string())
+})
+export const ListPublicProgrammesResponse = zod.array(ListPublicProgrammesResponseItem)
+
+
+/**
+ * @summary Get a published programme
+ */
+export const getPublicProgrammePathSlugMin = 2;
+export const getPublicProgrammePathSlugMax = 100;
+
+
+export const getPublicProgrammePathSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+
+
+export const GetPublicProgrammeParams = zod.object({
+  "slug": zod.coerce.string().min(getPublicProgrammePathSlugMin).max(getPublicProgrammePathSlugMax).regex(getPublicProgrammePathSlugRegExp)
+})
+
+export const getPublicProgrammeResponseApplicationStatusMax = 100;
+
+export const getPublicProgrammeResponseLocationMax = 500;
+
+
+
+export const GetPublicProgrammeResponse = zod.object({
+  "slug": zod.string(),
+  "num": zod.string(),
+  "cardTitle": zod.string(),
+  "cardCopy": zod.string(),
+  "cardCta": zod.string(),
+  "image": zod.string(),
+  "title": zod.string(),
+  "shortDescription": zod.string(),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']),
+  "applicationStatus": zod.string().min(1).max(getPublicProgrammeResponseApplicationStatusMax),
+  "location": zod.string().min(1).max(getPublicProgrammeResponseLocationMax),
+  "applicationUrl": zod.string().url().nullish(),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int(),
+  "about": zod.array(zod.string()),
+  "placement": zod.array(zod.string()),
+  "training": zod.array(zod.string()),
+  "eligibility": zod.array(zod.string()),
+  "timeline": zod.array(zod.string()),
+  "applicationGuidance": zod.array(zod.string())
+})
+
+
+export const listPortalProgrammesQueryQMax = 120;
+
+export const listPortalProgrammesQueryPageDefault = 1;
+
+export const listPortalProgrammesQueryPageSizeDefault = 20;
+export const listPortalProgrammesQueryPageSizeMax = 100;
+
+export const listPortalProgrammesQuerySortDefault = `updatedAt`;
+export const listPortalProgrammesQueryOrderDefault = `desc`;
+
+export const ListPortalProgrammesQueryParams = zod.object({
+  "q": zod.coerce.string().max(listPortalProgrammesQueryQMax).optional(),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']).optional(),
+  "page": zod.coerce.number().int().min(1).default(listPortalProgrammesQueryPageDefault),
+  "pageSize": zod.coerce.number().int().min(1).max(listPortalProgrammesQueryPageSizeMax).default(listPortalProgrammesQueryPageSizeDefault),
+  "sort": zod.enum(['updatedAt', 'title', 'displayOrder', 'status']).default(listPortalProgrammesQuerySortDefault),
+  "order": zod.enum(['asc', 'desc']).default(listPortalProgrammesQueryOrderDefault)
+})
+
+export const listPortalProgrammesResponseItemsItemSlugMin = 2;
+export const listPortalProgrammesResponseItemsItemSlugMax = 100;
+
+
+export const listPortalProgrammesResponseItemsItemSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const listPortalProgrammesResponseItemsItemNumMax = 10;
+
+export const listPortalProgrammesResponseItemsItemCardTitleMin = 2;
+export const listPortalProgrammesResponseItemsItemCardTitleMax = 160;
+
+export const listPortalProgrammesResponseItemsItemCardCopyMax = 2000;
+
+export const listPortalProgrammesResponseItemsItemCardCtaMax = 100;
+
+export const listPortalProgrammesResponseItemsItemImageMax = 500;
+
+export const listPortalProgrammesResponseItemsItemTitleMin = 2;
+export const listPortalProgrammesResponseItemsItemTitleMax = 160;
+
+export const listPortalProgrammesResponseItemsItemShortDescriptionMax = 4000;
+
+export const listPortalProgrammesResponseItemsItemSectionsItemPositionMin = 0;
+
+
+
+export const ListPortalProgrammesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "slug": zod.string().min(listPortalProgrammesResponseItemsItemSlugMin).max(listPortalProgrammesResponseItemsItemSlugMax).regex(listPortalProgrammesResponseItemsItemSlugRegExp),
+  "num": zod.string().min(1).max(listPortalProgrammesResponseItemsItemNumMax),
+  "cardTitle": zod.string().min(listPortalProgrammesResponseItemsItemCardTitleMin).max(listPortalProgrammesResponseItemsItemCardTitleMax),
+  "cardCopy": zod.string().min(1).max(listPortalProgrammesResponseItemsItemCardCopyMax),
+  "cardCta": zod.string().min(1).max(listPortalProgrammesResponseItemsItemCardCtaMax),
+  "image": zod.string().min(1).max(listPortalProgrammesResponseItemsItemImageMax),
+  "title": zod.string().min(listPortalProgrammesResponseItemsItemTitleMin).max(listPortalProgrammesResponseItemsItemTitleMax),
+  "shortDescription": zod.string().min(1).max(listPortalProgrammesResponseItemsItemShortDescriptionMax),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']),
+  "applicationStatus": zod.string(),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "location": zod.string(),
+  "applicationUrl": zod.string().url().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "section": zod.enum(['about', 'placement', 'training', 'eligibility', 'timeline', 'application_guidance']),
+  "position": zod.number().int().min(listPortalProgrammesResponseItemsItemSectionsItemPositionMin),
+  "content": zod.string()
+})),
+  "publishedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string(),
+  "updatedBy": zod.string()
+})),
+  "page": zod.number().int(),
+  "pageSize": zod.number().int(),
+  "total": zod.number().int(),
+  "pageCount": zod.number().int()
+})
+
+
+export const createPortalProgrammeBodySlugMin = 2;
+export const createPortalProgrammeBodySlugMax = 100;
+
+
+export const createPortalProgrammeBodySlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const createPortalProgrammeBodyNumMax = 10;
+
+export const createPortalProgrammeBodyCardTitleMin = 2;
+export const createPortalProgrammeBodyCardTitleMax = 160;
+
+export const createPortalProgrammeBodyCardCopyMax = 2000;
+
+export const createPortalProgrammeBodyCardCtaMax = 100;
+
+export const createPortalProgrammeBodyImageMax = 500;
+
+export const createPortalProgrammeBodyTitleMin = 2;
+export const createPortalProgrammeBodyTitleMax = 160;
+
+export const createPortalProgrammeBodyShortDescriptionMax = 4000;
+
+export const createPortalProgrammeBodyApplicationStatusMax = 100;
+
+export const createPortalProgrammeBodyLocationMax = 500;
+
+export const createPortalProgrammeBodyDisplayOrderMin = 0;
+
+export const createPortalProgrammeBodySectionsItemPositionMin = 0;
+
+
+
+export const CreatePortalProgrammeBody = zod.object({
+  "slug": zod.string().min(createPortalProgrammeBodySlugMin).max(createPortalProgrammeBodySlugMax).regex(createPortalProgrammeBodySlugRegExp),
+  "num": zod.string().min(1).max(createPortalProgrammeBodyNumMax),
+  "cardTitle": zod.string().min(createPortalProgrammeBodyCardTitleMin).max(createPortalProgrammeBodyCardTitleMax),
+  "cardCopy": zod.string().min(1).max(createPortalProgrammeBodyCardCopyMax),
+  "cardCta": zod.string().min(1).max(createPortalProgrammeBodyCardCtaMax),
+  "image": zod.string().min(1).max(createPortalProgrammeBodyImageMax),
+  "title": zod.string().min(createPortalProgrammeBodyTitleMin).max(createPortalProgrammeBodyTitleMax),
+  "shortDescription": zod.string().min(1).max(createPortalProgrammeBodyShortDescriptionMax),
+  "applicationStatus": zod.string().min(1).max(createPortalProgrammeBodyApplicationStatusMax),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "location": zod.string().min(1).max(createPortalProgrammeBodyLocationMax),
+  "applicationUrl": zod.string().url().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int().min(createPortalProgrammeBodyDisplayOrderMin),
+  "sections": zod.array(zod.object({
+  "section": zod.enum(['about', 'placement', 'training', 'eligibility', 'timeline', 'application_guidance']),
+  "position": zod.number().int().min(createPortalProgrammeBodySectionsItemPositionMin),
+  "content": zod.string()
+}))
+})
+
+export const createPortalProgrammeResponseSlugMin = 2;
+export const createPortalProgrammeResponseSlugMax = 100;
+
+
+export const createPortalProgrammeResponseSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const createPortalProgrammeResponseNumMax = 10;
+
+export const createPortalProgrammeResponseCardTitleMin = 2;
+export const createPortalProgrammeResponseCardTitleMax = 160;
+
+export const createPortalProgrammeResponseCardCopyMax = 2000;
+
+export const createPortalProgrammeResponseCardCtaMax = 100;
+
+export const createPortalProgrammeResponseImageMax = 500;
+
+export const createPortalProgrammeResponseTitleMin = 2;
+export const createPortalProgrammeResponseTitleMax = 160;
+
+export const createPortalProgrammeResponseShortDescriptionMax = 4000;
+
+export const createPortalProgrammeResponseSectionsItemPositionMin = 0;
+
+
+
+export const CreatePortalProgrammeResponse = zod.object({
+  "id": zod.string().uuid(),
+  "slug": zod.string().min(createPortalProgrammeResponseSlugMin).max(createPortalProgrammeResponseSlugMax).regex(createPortalProgrammeResponseSlugRegExp),
+  "num": zod.string().min(1).max(createPortalProgrammeResponseNumMax),
+  "cardTitle": zod.string().min(createPortalProgrammeResponseCardTitleMin).max(createPortalProgrammeResponseCardTitleMax),
+  "cardCopy": zod.string().min(1).max(createPortalProgrammeResponseCardCopyMax),
+  "cardCta": zod.string().min(1).max(createPortalProgrammeResponseCardCtaMax),
+  "image": zod.string().min(1).max(createPortalProgrammeResponseImageMax),
+  "title": zod.string().min(createPortalProgrammeResponseTitleMin).max(createPortalProgrammeResponseTitleMax),
+  "shortDescription": zod.string().min(1).max(createPortalProgrammeResponseShortDescriptionMax),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']),
+  "applicationStatus": zod.string(),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "location": zod.string(),
+  "applicationUrl": zod.string().url().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "section": zod.enum(['about', 'placement', 'training', 'eligibility', 'timeline', 'application_guidance']),
+  "position": zod.number().int().min(createPortalProgrammeResponseSectionsItemPositionMin),
+  "content": zod.string()
+})),
+  "publishedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string(),
+  "updatedBy": zod.string()
+})
+
+
+export const GetPortalProgrammeParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const getPortalProgrammeResponseSlugMin = 2;
+export const getPortalProgrammeResponseSlugMax = 100;
+
+
+export const getPortalProgrammeResponseSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const getPortalProgrammeResponseNumMax = 10;
+
+export const getPortalProgrammeResponseCardTitleMin = 2;
+export const getPortalProgrammeResponseCardTitleMax = 160;
+
+export const getPortalProgrammeResponseCardCopyMax = 2000;
+
+export const getPortalProgrammeResponseCardCtaMax = 100;
+
+export const getPortalProgrammeResponseImageMax = 500;
+
+export const getPortalProgrammeResponseTitleMin = 2;
+export const getPortalProgrammeResponseTitleMax = 160;
+
+export const getPortalProgrammeResponseShortDescriptionMax = 4000;
+
+export const getPortalProgrammeResponseSectionsItemPositionMin = 0;
+
+
+
+export const GetPortalProgrammeResponse = zod.object({
+  "id": zod.string().uuid(),
+  "slug": zod.string().min(getPortalProgrammeResponseSlugMin).max(getPortalProgrammeResponseSlugMax).regex(getPortalProgrammeResponseSlugRegExp),
+  "num": zod.string().min(1).max(getPortalProgrammeResponseNumMax),
+  "cardTitle": zod.string().min(getPortalProgrammeResponseCardTitleMin).max(getPortalProgrammeResponseCardTitleMax),
+  "cardCopy": zod.string().min(1).max(getPortalProgrammeResponseCardCopyMax),
+  "cardCta": zod.string().min(1).max(getPortalProgrammeResponseCardCtaMax),
+  "image": zod.string().min(1).max(getPortalProgrammeResponseImageMax),
+  "title": zod.string().min(getPortalProgrammeResponseTitleMin).max(getPortalProgrammeResponseTitleMax),
+  "shortDescription": zod.string().min(1).max(getPortalProgrammeResponseShortDescriptionMax),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']),
+  "applicationStatus": zod.string(),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "location": zod.string(),
+  "applicationUrl": zod.string().url().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "section": zod.enum(['about', 'placement', 'training', 'eligibility', 'timeline', 'application_guidance']),
+  "position": zod.number().int().min(getPortalProgrammeResponseSectionsItemPositionMin),
+  "content": zod.string()
+})),
+  "publishedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string(),
+  "updatedBy": zod.string()
+})
+
+
+export const UpdatePortalProgrammeParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const updatePortalProgrammeBodySlugMin = 2;
+export const updatePortalProgrammeBodySlugMax = 100;
+
+
+export const updatePortalProgrammeBodySlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const updatePortalProgrammeBodyNumMax = 10;
+
+export const updatePortalProgrammeBodyCardTitleMin = 2;
+export const updatePortalProgrammeBodyCardTitleMax = 160;
+
+export const updatePortalProgrammeBodyCardCopyMax = 2000;
+
+export const updatePortalProgrammeBodyCardCtaMax = 100;
+
+export const updatePortalProgrammeBodyImageMax = 500;
+
+export const updatePortalProgrammeBodyTitleMin = 2;
+export const updatePortalProgrammeBodyTitleMax = 160;
+
+export const updatePortalProgrammeBodyShortDescriptionMax = 4000;
+
+export const updatePortalProgrammeBodyApplicationStatusMax = 100;
+
+export const updatePortalProgrammeBodyLocationMax = 500;
+
+export const updatePortalProgrammeBodyDisplayOrderMin = 0;
+
+export const updatePortalProgrammeBodySectionsItemPositionMin = 0;
+
+
+
+export const UpdatePortalProgrammeBody = zod.object({
+  "slug": zod.string().min(updatePortalProgrammeBodySlugMin).max(updatePortalProgrammeBodySlugMax).regex(updatePortalProgrammeBodySlugRegExp),
+  "num": zod.string().min(1).max(updatePortalProgrammeBodyNumMax),
+  "cardTitle": zod.string().min(updatePortalProgrammeBodyCardTitleMin).max(updatePortalProgrammeBodyCardTitleMax),
+  "cardCopy": zod.string().min(1).max(updatePortalProgrammeBodyCardCopyMax),
+  "cardCta": zod.string().min(1).max(updatePortalProgrammeBodyCardCtaMax),
+  "image": zod.string().min(1).max(updatePortalProgrammeBodyImageMax),
+  "title": zod.string().min(updatePortalProgrammeBodyTitleMin).max(updatePortalProgrammeBodyTitleMax),
+  "shortDescription": zod.string().min(1).max(updatePortalProgrammeBodyShortDescriptionMax),
+  "applicationStatus": zod.string().min(1).max(updatePortalProgrammeBodyApplicationStatusMax),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "location": zod.string().min(1).max(updatePortalProgrammeBodyLocationMax),
+  "applicationUrl": zod.string().url().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int().min(updatePortalProgrammeBodyDisplayOrderMin),
+  "sections": zod.array(zod.object({
+  "section": zod.enum(['about', 'placement', 'training', 'eligibility', 'timeline', 'application_guidance']),
+  "position": zod.number().int().min(updatePortalProgrammeBodySectionsItemPositionMin),
+  "content": zod.string()
+}))
+})
+
+export const updatePortalProgrammeResponseSlugMin = 2;
+export const updatePortalProgrammeResponseSlugMax = 100;
+
+
+export const updatePortalProgrammeResponseSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const updatePortalProgrammeResponseNumMax = 10;
+
+export const updatePortalProgrammeResponseCardTitleMin = 2;
+export const updatePortalProgrammeResponseCardTitleMax = 160;
+
+export const updatePortalProgrammeResponseCardCopyMax = 2000;
+
+export const updatePortalProgrammeResponseCardCtaMax = 100;
+
+export const updatePortalProgrammeResponseImageMax = 500;
+
+export const updatePortalProgrammeResponseTitleMin = 2;
+export const updatePortalProgrammeResponseTitleMax = 160;
+
+export const updatePortalProgrammeResponseShortDescriptionMax = 4000;
+
+export const updatePortalProgrammeResponseSectionsItemPositionMin = 0;
+
+
+
+export const UpdatePortalProgrammeResponse = zod.object({
+  "id": zod.string().uuid(),
+  "slug": zod.string().min(updatePortalProgrammeResponseSlugMin).max(updatePortalProgrammeResponseSlugMax).regex(updatePortalProgrammeResponseSlugRegExp),
+  "num": zod.string().min(1).max(updatePortalProgrammeResponseNumMax),
+  "cardTitle": zod.string().min(updatePortalProgrammeResponseCardTitleMin).max(updatePortalProgrammeResponseCardTitleMax),
+  "cardCopy": zod.string().min(1).max(updatePortalProgrammeResponseCardCopyMax),
+  "cardCta": zod.string().min(1).max(updatePortalProgrammeResponseCardCtaMax),
+  "image": zod.string().min(1).max(updatePortalProgrammeResponseImageMax),
+  "title": zod.string().min(updatePortalProgrammeResponseTitleMin).max(updatePortalProgrammeResponseTitleMax),
+  "shortDescription": zod.string().min(1).max(updatePortalProgrammeResponseShortDescriptionMax),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']),
+  "applicationStatus": zod.string(),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "location": zod.string(),
+  "applicationUrl": zod.string().url().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "section": zod.enum(['about', 'placement', 'training', 'eligibility', 'timeline', 'application_guidance']),
+  "position": zod.number().int().min(updatePortalProgrammeResponseSectionsItemPositionMin),
+  "content": zod.string()
+})),
+  "publishedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string(),
+  "updatedBy": zod.string()
+})
+
+
+export const DeletePortalProgrammeParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const DeletePortalProgrammeResponse = zod.void()
+
+
+export const TransitionPortalProgrammeParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const TransitionPortalProgrammeBody = zod.object({
+  "status": zod.enum(['draft', 'published', 'closed', 'archived'])
+})
+
+export const transitionPortalProgrammeResponseSlugMin = 2;
+export const transitionPortalProgrammeResponseSlugMax = 100;
+
+
+export const transitionPortalProgrammeResponseSlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const transitionPortalProgrammeResponseNumMax = 10;
+
+export const transitionPortalProgrammeResponseCardTitleMin = 2;
+export const transitionPortalProgrammeResponseCardTitleMax = 160;
+
+export const transitionPortalProgrammeResponseCardCopyMax = 2000;
+
+export const transitionPortalProgrammeResponseCardCtaMax = 100;
+
+export const transitionPortalProgrammeResponseImageMax = 500;
+
+export const transitionPortalProgrammeResponseTitleMin = 2;
+export const transitionPortalProgrammeResponseTitleMax = 160;
+
+export const transitionPortalProgrammeResponseShortDescriptionMax = 4000;
+
+export const transitionPortalProgrammeResponseSectionsItemPositionMin = 0;
+
+
+
+export const TransitionPortalProgrammeResponse = zod.object({
+  "id": zod.string().uuid(),
+  "slug": zod.string().min(transitionPortalProgrammeResponseSlugMin).max(transitionPortalProgrammeResponseSlugMax).regex(transitionPortalProgrammeResponseSlugRegExp),
+  "num": zod.string().min(1).max(transitionPortalProgrammeResponseNumMax),
+  "cardTitle": zod.string().min(transitionPortalProgrammeResponseCardTitleMin).max(transitionPortalProgrammeResponseCardTitleMax),
+  "cardCopy": zod.string().min(1).max(transitionPortalProgrammeResponseCardCopyMax),
+  "cardCta": zod.string().min(1).max(transitionPortalProgrammeResponseCardCtaMax),
+  "image": zod.string().min(1).max(transitionPortalProgrammeResponseImageMax),
+  "title": zod.string().min(transitionPortalProgrammeResponseTitleMin).max(transitionPortalProgrammeResponseTitleMax),
+  "shortDescription": zod.string().min(1).max(transitionPortalProgrammeResponseShortDescriptionMax),
+  "status": zod.enum(['draft', 'published', 'closed', 'archived']),
+  "applicationStatus": zod.string(),
+  "applicationDeadline": zod.string().nullish(),
+  "deadline": zod.coerce.date().nullish(),
+  "location": zod.string(),
+  "applicationUrl": zod.string().url().nullish(),
+  "featured": zod.boolean(),
+  "displayOrder": zod.number().int(),
+  "sections": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "section": zod.enum(['about', 'placement', 'training', 'eligibility', 'timeline', 'application_guidance']),
+  "position": zod.number().int().min(transitionPortalProgrammeResponseSectionsItemPositionMin),
+  "content": zod.string()
+})),
+  "publishedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string(),
+  "updatedBy": zod.string()
+})
+
+
+export const ListProgrammeAuditEventsParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const ListProgrammeAuditEventsResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "opportunityId": zod.string().uuid().nullish(),
+  "action": zod.string(),
+  "actorUserId": zod.string(),
+  "actorName": zod.string(),
+  "beforeState": zod.record(zod.string(), zod.unknown()).nullish(),
+  "afterState": zod.record(zod.string(), zod.unknown()).nullish(),
+  "createdAt": zod.coerce.date()
+})
+export const ListProgrammeAuditEventsResponse = zod.array(ListProgrammeAuditEventsResponseItem)
 
 
 /**

@@ -68,9 +68,9 @@ export default function DashboardPage() {
         subtitle="Overview of your publishing operations"
         className="sticky top-0 z-20 rounded-[28px] border border-border bg-card p-5 sm:p-7 mb-0"
         action={
-          <Link href="/opportunities/new" className="w-full lg:w-auto block">
+          <Link href="/roles/new" className="w-full lg:w-auto block">
             <Button className="w-full rounded-full border-0 font-mono text-xs uppercase tracking-wider h-11 px-6">
-              Create Opportunity
+              Create Role
             </Button>
           </Link>
         }
@@ -126,8 +126,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 min-w-0">
         <div className="xl:col-span-2 space-y-5 min-w-0 rounded-[28px] border border-border bg-card p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between border-b border-border pb-4 gap-4">
-            <h2 className="font-mono text-xl font-medium tracking-tight break-words">Recent Opportunities</h2>
-            <Link href="/opportunities">
+            <h2 className="font-mono text-xl font-medium tracking-tight break-words">Recent Roles</h2>
+            <Link href="/roles">
               <Button variant="ghost" size="sm" className="text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-transparent p-0 flex items-center group">
                 View all <ArrowRight className="ml-2 w-4 h-4 shrink-0 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -137,11 +137,11 @@ export default function DashboardPage() {
           <div className="grid gap-4 min-w-0">
             {recentOpportunities.length === 0 ? (
               <div className="p-12 text-center bg-[#171b1d] border border-dashed border-[#2a2f31] rounded-[20px]">
-                <p className="text-muted-foreground text-sm">No opportunities created yet.</p>
+                <p className="text-muted-foreground text-sm">No roles created yet.</p>
               </div>
             ) : (
               recentOpportunities.map((opp) => (
-                <Link key={opp.id} href={`/opportunities/${opp.id}`} className="block min-w-0">
+                <Link key={opp.id} href={`/roles/${opp.id}`} className="block min-w-0">
                   <div className="group bg-[#171b1d] border border-[#2a2f31] hover:border-primary/50 transition-colors flex flex-col lg:flex-row cursor-pointer min-w-0 overflow-hidden rounded-[20px]">
                     <div className="flex-1 p-5 sm:p-6 min-w-0">
                       <div className="flex flex-wrap items-center gap-3 mb-3">

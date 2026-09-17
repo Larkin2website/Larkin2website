@@ -62,7 +62,7 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
     defaultValues: {
       slug: "",
       title: "",
-      publicationLabel: "Opportunities",
+      publicationLabel: "Roles",
       department: "",
       roleType: "full time",
       summary: "",
@@ -208,7 +208,7 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
                       <FormItem className="min-w-0">
                         <FormLabel className={sharedLabelClasses}>Publication Label (Eyebrow)</FormLabel>
                         <FormControl>
-                          <Input className={sharedInputClasses} placeholder="e.g. Opportunities" {...field} />
+                          <Input className={sharedInputClasses} placeholder="e.g. Roles" {...field} />
                         </FormControl>
                         <FormMessage className="break-words" />
                       </FormItem>
@@ -506,7 +506,7 @@ export function OpportunityForm({ initialValues, onSubmit, isSubmitting }: Oppor
 
         <div className="flex flex-col sm:flex-row items-center justify-end gap-4 border-t border-[#2a2f31] pt-6 sm:pt-8 mt-8 sm:mt-12 min-w-0">
           <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto rounded-full h-14 px-10 font-mono text-xs uppercase tracking-wider font-bold shrink-0">
-            {isSubmitting ? "Saving..." : "Save Opportunity"}
+            {isSubmitting ? "Saving..." : "Save Role"}
           </Button>
         </div>
       </form>
