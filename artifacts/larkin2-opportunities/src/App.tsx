@@ -13,6 +13,7 @@ import { RolesPage } from "./pages/roles";
 import { RoleDetailPage } from "./pages/role-detail";
 import { OpportunityPage } from "./pages/opportunity";
 import { PrivacyNoticePage, TermsPage } from "./pages/legal";
+import { UnsubscribePage } from "./pages/unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ function Router() {
         </Route>
         <Route path="/privacy" component={PrivacyNoticePage} />
         <Route path="/terms" component={TermsPage} />
+        <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

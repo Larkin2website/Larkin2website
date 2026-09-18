@@ -35,7 +35,7 @@ export function RoleDetailPage({ id }: { id: string }) {
 
   useEffect(() => {
     if (!role) return;
-    document.title = `${role.title} | Larkin2 Opportunities`;
+    document.title = `${role.title} | HETV Opportunities Hub`;
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", role.summary);
   }, [role]);
@@ -62,7 +62,7 @@ export function RoleDetailPage({ id }: { id: string }) {
       <div className="larkin2-page roles-detail-page">
         <main id="content">
           <section className="roles-detail-hero larkin2-section" role="status">
-            <div className="larkin2-eyebrow">Larkin2 opportunities</div>
+            <div className="larkin2-eyebrow">HETV Hub opportunities</div>
             <h1 className="roles-detail-title">Loading role</h1>
             <p className="roles-detail-summary">Fetching the latest details.</p>
           </section>
@@ -155,7 +155,7 @@ export function RoleDetailPage({ id }: { id: string }) {
                   Apply for this role
                 </MaskedLink>
               ) : (
-                <MaskedLink href="/#signup" className="roles-detail-alert-link" testId="link-role-alerts">Sign up for alerts</MaskedLink>
+                <MaskedLink href="/#signup" className="roles-detail-alert-link" testId="link-role-alerts">Sign up for updates</MaskedLink>
               )}
             </div>
           </aside>
@@ -196,7 +196,7 @@ export function RoleDetailPage({ id }: { id: string }) {
 
         <section className="roles-detail-footer larkin2-section" id="role-search">
           <div className="roles-detail-footer-copy">
-            <p className="larkin2-eyebrow">Larkin2 opportunities</p>
+            <p className="larkin2-eyebrow">HETV Hub opportunities</p>
             <h2>Explore every role connected to the production.</h2>
           </div>
           <RoleSearchComposer

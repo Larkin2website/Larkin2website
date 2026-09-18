@@ -88,9 +88,9 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
     };
 
     if (location === "/") {
-      return <a href="#top" className="larkin2-mark" onClick={handleHashClick} aria-label="Larkin2 home" data-testid="link-home">Larkin2<span aria-hidden="true">.</span></a>;
+      return <a href="#top" className="larkin2-mark" onClick={handleHashClick} aria-label="HETV Opportunities Hub home" data-testid="link-home">HETV Opportunities Hub<span aria-hidden="true">.</span></a>;
     }
-    return <Link href="/" className="larkin2-mark" aria-label="Larkin2 home" data-testid="link-home">Larkin2<span aria-hidden="true">.</span></Link>;
+    return <Link href="/" className="larkin2-mark" aria-label="HETV Opportunities Hub home" data-testid="link-home">HETV Opportunities Hub<span aria-hidden="true">.</span></Link>;
   };
 
   const OpportunitiesSubmenu = () => {
@@ -111,6 +111,15 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
         className="larkin2-nav-group" 
         onMouseEnter={onEnter} 
         onMouseLeave={onLeave}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setIsOpen(false);
+            event.currentTarget.querySelector("button")?.focus();
+          }
+        }}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false);
+        }}
       >
         <button 
           type="button"
@@ -123,6 +132,8 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
         </button>
         
         <div className={`larkin2-nav-sub ${isOpen ? "is-open" : ""}`}>
+          <NavLink href="#training" testId="link-nav-training">Training Courses</NavLink>
+          <NavLink href="#development" testId="link-nav-development">Development</NavLink>
           <NavLink href="/opportunities/first-credit" testId="link-nav-first-credit">First Credit</NavLink>
           <NavLink href="/opportunities/director-pathway" testId="link-nav-director">Director Pathway</NavLink>
           <NavLink href="/opportunities/producer-pathway" testId="link-nav-producer">Producer Pathway</NavLink>
@@ -172,17 +183,19 @@ export function SiteFooter() {
 
   return (
     <footer className="larkin2-foot">
-      <div className="larkin2-foot-brand"><span className="larkin2-mark">Larkin2<span aria-hidden="true">.</span></span><p>Official production opportunities.</p></div>
+      <div className="larkin2-foot-brand"><span className="larkin2-mark">HETV Opportunities Hub<span aria-hidden="true">.</span></span><p>Roles, training and development across high-end television.</p></div>
       <div className="larkin2-foot-col">
         <span>Explore</span>
         <FooterLink href="/roles" testId="link-footer-roles">Roles</FooterLink>
-        <FooterLink href="#paths" testId="link-footer-opportunities">Pathways</FooterLink>
+        <FooterLink href="#paths" testId="link-footer-opportunities">Opportunities</FooterLink>
+        <FooterLink href="#training" testId="link-footer-training">Training Courses</FooterLink>
         <FooterLink href="#commitments" testId="link-footer-commitments">Commitments</FooterLink>
-        <FooterLink href="#about" testId="link-footer-about">About Larkin2</FooterLink>
+        <FooterLink href="#about" testId="link-footer-about">About HETV Opportunities Hub</FooterLink>
       </div>
       <div className="larkin2-foot-col">
         <span>Contact</span>
         <FooterLink href="#signup" testId="link-footer-signup">Sign up for updates</FooterLink>
+        <FooterLink href="/unsubscribe" testId="link-footer-unsubscribe">Unsubscribe</FooterLink>
         <a href="mailto:opportunities@baileyopportunities.com" data-testid="link-footer-contact">Contact us ↗</a>
       </div>
       <div className="larkin2-foot-col">
@@ -190,7 +203,7 @@ export function SiteFooter() {
         <FooterLink href="/privacy" testId="link-footer-privacy">Privacy Notice</FooterLink>
         <FooterLink href="/terms" testId="link-footer-terms">Terms &amp; Conditions</FooterLink>
       </div>
-      <div className="larkin2-foot-bottom"><span>London / UK</span><span>© 60Forty Films</span><span>Official Larkin2 opportunities</span></div>
+      <div className="larkin2-foot-bottom"><span>London / UK</span><span>© Larkin AV Limited</span><span>HETV Opportunities Hub</span></div>
     </footer>
   );
 }
@@ -282,7 +295,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
       aria-hidden={!menuOpen}
     >
       <div className="larkin2-mobile-menu-head">
-        <span className="larkin2-mobile-label">Larkin2 / navigation</span>
+        <span className="larkin2-mobile-label">HETV Opportunities Hub / navigation</span>
         <button ref={closeButtonRef} type="button" className="larkin2-menu-close" onClick={closeMenu} aria-label="Close menu" data-testid="button-menu-close">
           Close <span aria-hidden="true">×</span>
         </button>
@@ -304,6 +317,8 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
           </button>
           {opportunitiesOpen && (
             <div className="larkin2-mobile-sub" id="mobile-opportunities-submenu">
+              <MobileLink href="#training" testId="link-mobile-training">Training Courses</MobileLink>
+              <MobileLink href="#development" testId="link-mobile-development">Development Programmes</MobileLink>
               <MobileLink href="/opportunities/first-credit" testId="link-mobile-first-credit">First Credit</MobileLink>
               <MobileLink href="/opportunities/director-pathway" testId="link-mobile-director">Director Pathway</MobileLink>
               <MobileLink href="/opportunities/producer-pathway" testId="link-mobile-producer">Producer Pathway</MobileLink>
@@ -311,7 +326,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
           )}
         </div>
         <MobileLink href="#commitments" testId="link-mobile-commitments" num="03">Our commitments</MobileLink>
-        <MobileLink href="#about" testId="link-mobile-about" num="04">About Larkin2</MobileLink>
+        <MobileLink href="#about" testId="link-mobile-about" num="04">About</MobileLink>
         <MobileLink href="#signup" testId="link-mobile-signup" num="05">Sign up</MobileLink>
       </nav>
       <div className="larkin2-mobile-contact">

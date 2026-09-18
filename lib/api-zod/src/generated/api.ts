@@ -65,6 +65,55 @@ export const ListPublicOpportunitiesResponse = zod.array(ListPublicOpportunities
 
 
 /**
+ * Records explicit consent. A new subscription receives its personal management token; callers must save the resulting personal unsubscribe link because no email is sent. Duplicate requests have the same response shape but do not rotate an existing token, reactivate an inactive subscription, or disclose membership. A caller that still has the original token may submit it to preserve that capability for a matching subscription, including an inactive one, without reactivating it. A lost link cannot be recovered through this endpoint; contact support.
+ * @summary Subscribe an email address to opportunity updates
+ */
+export const createPublicSubscriptionBodyEmailMin = 3;
+export const createPublicSubscriptionBodyEmailMax = 320;
+
+export const createPublicSubscriptionBodyExistingManagementTokenMin = 43;
+export const createPublicSubscriptionBodyExistingManagementTokenMax = 128;
+
+
+export const createPublicSubscriptionBodyExistingManagementTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+
+
+export const CreatePublicSubscriptionBody = zod.object({
+  "email": zod.string().email().min(createPublicSubscriptionBodyEmailMin).max(createPublicSubscriptionBodyEmailMax),
+  "consent": zod.literal(true),
+  "existingManagementToken": zod.string().min(createPublicSubscriptionBodyExistingManagementTokenMin).max(createPublicSubscriptionBodyExistingManagementTokenMax).regex(createPublicSubscriptionBodyExistingManagementTokenRegExp).optional().describe('The caller\'s previously saved personal token. It is returned only when it belongs to the same subscription, including an inactive one; it never reactivates an inactive subscription.')
+})
+
+export const createPublicSubscriptionResponseManagementTokenMin = 43;
+
+
+
+export const CreatePublicSubscriptionResponse = zod.object({
+  "managementToken": zod.string().min(createPublicSubscriptionResponseManagementTokenMin)
+})
+
+
+/**
+ * Idempotently deactivates only the subscription represented by the supplied personal token. The response does not reveal whether the token matched. This action is POST-only; no GET request mutates subscription state.
+ * @summary Stop updates using a personal management token
+ */
+export const unsubscribePublicSubscriptionBodyManagementTokenMin = 43;
+export const unsubscribePublicSubscriptionBodyManagementTokenMax = 128;
+
+
+export const unsubscribePublicSubscriptionBodyManagementTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+
+
+export const UnsubscribePublicSubscriptionBody = zod.object({
+  "managementToken": zod.string().min(unsubscribePublicSubscriptionBodyManagementTokenMin).max(unsubscribePublicSubscriptionBodyManagementTokenMax).regex(unsubscribePublicSubscriptionBodyManagementTokenRegExp)
+})
+
+export const UnsubscribePublicSubscriptionResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
  * @summary Get one publicly visible opportunity
  */
 export const getPublicOpportunityPathSlugMin = 2;

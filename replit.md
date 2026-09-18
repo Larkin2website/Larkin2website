@@ -1,6 +1,8 @@
-# Larkin2 Opportunities
+# HETV Opportunities Hub
 
-Public Larkin2 role listings backed by PostgreSQL, plus a separate authenticated portal for managing opportunity content, lifecycle, access, and audit history.
+Public HETV Opportunities Hub role listings backed by PostgreSQL, plus the separate Larkin2 portal for managing opportunity content, lifecycle, access, and audit history. The public hub covers multiple productions; its existing domain, URLs and deployment routing remain unchanged.
+
+The user's explicit correction, “change the name, but leave the domain for the moment,” supersedes the feedback PDF's proposed HETVOpportunitiesHub.com domain. Domain purchase, hostname routing and publishing are excluded from this website-feedback work.
 
 ## Run & Operate
 
@@ -59,7 +61,7 @@ Public Larkin2 role listings backed by PostgreSQL, plus a separate authenticated
 
 ## User preferences
 
-- Use Larkin2 orange `#f4773f` and dark production colors `#171b1d` / `#101315`.
+- Public pages use a light, accessible sage-accented palette and HETV Opportunities Hub branding. Keep the separate portal's branding and theme unchanged.
 - Roles are the primary public navigation.
 - Never add thick decorative top-edge accent bars.
 

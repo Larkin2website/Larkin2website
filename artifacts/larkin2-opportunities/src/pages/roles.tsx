@@ -42,10 +42,10 @@ export function RolesPage() {
   const hasActiveFilters = Boolean(search.trim() || statusFilter || departmentFilter || roleTypeFilter);
 
   useEffect(() => {
-    document.title = "Roles | Larkin2 Opportunities";
+    document.title = "Roles | HETV Opportunities Hub";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute("content", "Explore available roles and opportunities at Larkin2. Find your next position in television production.");
+      metaDesc.setAttribute("content", "Explore available television production roles from the HETV Opportunities Hub.");
     }
   }, []);
 
@@ -105,7 +105,7 @@ export function RolesPage() {
         <section className="roles-hero larkin2-section">
           <div className="larkin2-eyebrow" style={{ marginBottom: "20px" }}>Opportunities</div>
           <h1 className="roles-title">Roles</h1>
-          <p className="roles-intro">Explore currently open positions and closed placements to understand the scope of opportunities at Larkin2.</p>
+          <p className="roles-intro">Explore open positions and previous placements across the productions represented by the HETV Opportunities Hub.</p>
         </section>
 
         <section className="roles-filters larkin2-section">
@@ -158,7 +158,7 @@ export function RolesPage() {
           {rolesLoading ? (
             <div className="roles-empty" role="status" aria-live="polite">
               <h3 className="roles-empty-title">Loading roles</h3>
-              <p>Fetching the latest Larkin2 opportunities.</p>
+              <p>Fetching the latest HETV Opportunities Hub roles.</p>
             </div>
           ) : rolesFailed ? (
             <div className="roles-empty" role="alert">

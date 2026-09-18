@@ -15,6 +15,40 @@ export interface ApiError {
   details?: string | null;
 }
 
+export interface PublicSubscriptionInput {
+  /**
+     * @minLength 3
+     * @maxLength 320
+     */
+  email: string;
+  consent: true;
+  /**
+     * The caller's previously saved personal token. It is returned only when it belongs to the same subscription, including an inactive one; it never reactivates an inactive subscription.
+     * @minLength 43
+     * @maxLength 128
+     * @pattern ^[A-Za-z0-9_-]+$
+     */
+  existingManagementToken?: string;
+}
+
+export interface PublicSubscriptionUnsubscribeInput {
+  /**
+     * @minLength 43
+     * @maxLength 128
+     * @pattern ^[A-Za-z0-9_-]+$
+     */
+  managementToken: string;
+}
+
+export interface PublicSubscriptionResult {
+  /** @minLength 43 */
+  managementToken: string;
+}
+
+export interface PublicSubscriptionMessage {
+  message: string;
+}
+
 export type OpportunityStatus = typeof OpportunityStatus[keyof typeof OpportunityStatus];
 
 
@@ -669,6 +703,16 @@ export type NotFoundResponse = ApiError;
  * Conflicting state or duplicate slug
  */
 export type ConflictResponse = ApiError;
+
+/**
+ * Too many requests
+ */
+export type TooManyRequestsResponse = ApiError;
+
+/**
+ * Subscription storage is temporarily unavailable
+ */
+export type ServiceUnavailableResponse = ApiError;
 
 export type ListPublicOpportunitiesParams = {
 /**

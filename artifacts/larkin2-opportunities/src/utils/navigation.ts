@@ -10,7 +10,12 @@ export function scrollToHash(hash: string) {
   
   requestAnimationFrame(() => {
     setTimeout(() => {
-      const target = document.querySelector(hash);
+      // Hashes may contain private management tokens, not CSS selectors.
+      // Resolve only actual element IDs and ignore unknown/malformed fragments.
+      let id: string;
+      try { id = decodeURIComponent(hash.replace(/^#/, "")); }
+      catch { return; }
+      const target = document.getElementById(id);
       if (!target) return;
       
       const header = document.querySelector('header.larkin2-top');

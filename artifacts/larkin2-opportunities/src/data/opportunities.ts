@@ -31,7 +31,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
     location: "In person (studio base in North London, with location filming across Greater London)",
     about: [
       "The programme is designed to provide meaningful first industry experience for those with little or no previous access to the Film & Television sector.",
-      "Delivered on a returning 60Forty Films production, the initiative builds practical skills, professional networks, and confidence through structured training and supported placements.",
+      "Delivered on a returning major HETV production, the initiative builds practical skills, professional networks, and confidence through structured training and supported placements.",
       "The programme includes ongoing alumni support, such as monthly masterclasses for six months, to assist with long-term professional development after the placement concludes."
     ],
     placement: [
@@ -71,7 +71,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
     cardCta: "Learn about the Director Pathway",
     image: "director-pathway-control-room.webp",
     title: "Creative Leadership Shadowing Programme: Director Pathway",
-    shortDescription: "A development programme for experienced directors transitioning into High-End Television (HETV) drama through extended shadowing on a 60Forty Films production.",
+    shortDescription: "A development programme for experienced directors transitioning into High-End Television (HETV) drama through extended shadowing on a major HETV production.",
     applicationStatus: "Closed",
     location: "In-person at a studio base in North London, with location filming across Greater London",
     about: [
@@ -117,7 +117,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
     cardCta: "Learn about the Producer Pathway",
     image: "producer-pathway-monitor.webp",
     title: "Creative Leadership Shadowing Programme: Producer Pathway",
-    shortDescription: "A shadowing programme for experienced producers seeking to progress into High-End Television (HETV) drama through an extended, paid placement on Season 2 of a 60Forty Films production.",
+    shortDescription: "A shadowing programme for experienced producers seeking to progress into High-End Television (HETV) drama through an extended, paid placement on a major HETV production.",
     applicationStatus: "Closed",
     location: "North London (studio base) with location filming across Greater London",
     about: [

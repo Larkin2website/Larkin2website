@@ -18,7 +18,7 @@ function LegalPage({ title, eyebrow, description, children }: LegalPageProps) {
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    document.title = `${title} | Larkin2 Opportunities`;
+    document.title = `${title} | HETV Opportunities Hub`;
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) metaDescription.setAttribute("content", description);
   }, [description, title]);
@@ -82,10 +82,10 @@ export function PrivacyNoticePage() {
     <LegalPage
       title="Privacy Notice"
       eyebrow="Legal / Privacy"
-      description="How Larkin AV Limited collects, uses, shares and protects personal data through the Larkin2 Opportunities website."
+      description="How Larkin AV Limited collects, uses, shares and protects personal data through the HETV Opportunities Hub."
     >
       <Section number={1} title="Introduction">
-        <p>This privacy notice sets out how we, Larkin AV Limited (<strong>we, us, Larkin</strong>), process your personal data when you visit [insert URL] (the <strong>Website</strong>). Larkin is the controller of your personal data meaning that we are responsible for determining the purposes for processing your personal data.</p>
+        <p>This privacy notice sets out how we, Larkin AV Limited (<strong>we, us, Larkin</strong>), process your personal data when you visit this website (the <strong>Website</strong>). Larkin is the controller of your personal data meaning that we are responsible for determining the purposes for processing your personal data.</p>
         <p>We understand that people may not have time to review every privacy notice that they come across so we have set out below a quick summary about how we process your personal data. Please read our privacy notice in full however to understand more about our processing and your rights.</p>
       </Section>
       <Section number={2} title="Summary">
@@ -120,6 +120,9 @@ export function PrivacyNoticePage() {
             </tbody>
           </table>
         </div>
+        <h3>Update subscriptions</h3>
+        <p>When you subscribe, we persist your email address, affirmative consent and consent timestamp in our database. We are currently collecting interest only and do not currently send update emails. We also store a hash of the private management token used by your personal unsubscribe link; the private token itself may optionally be saved in your browser&apos;s local storage so that you can retrieve the link on that device.</p>
+        <p>Unsubscribing requires the private token and sends a request to our unsubscribe service; an email address alone cannot remove a subscription or reveal whether somebody is subscribed. When a subscription is deactivated, we retain a suppression record so that the opt-out continues to be respected. If you lose your private link, or wish to make an erasure or other data-rights request, email <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>. We will verify requests before making changes.</p>
       </Section>
       <Section number={5} title="Automated decision-making">
         <p>Under data protection laws, you have the right not to have significant decisions made about you without human involvement. All decisions about our roles are made by humans.</p>
@@ -162,7 +165,7 @@ export function PrivacyNoticePage() {
         <p>You also have the right to complain to us or your supervisory authority (in the UK this is the ICO) if you have any concerns about how our personal data is being processed. We ask that you contact us with any complaints in the first instance.</p>
       </Section>
       <Section number={11} title="Contact us">
-        <p>If you have any questions about our privacy notice or wish to exercise your rights, please contact us at [CONTACT EMAIL ADDRESS].</p>
+        <p>If you have any questions about our privacy notice or wish to exercise your rights, please contact us at <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>.</p>
       </Section>
     </LegalPage>
   );
@@ -173,11 +176,11 @@ export function TermsPage() {
     <LegalPage
       title="Website Terms & Conditions"
       eyebrow="Legal / Terms"
-      description="The rules and conditions that apply when using the Larkin2 Opportunities website."
+      description="The rules and conditions that apply when using the HETV Opportunities Hub."
     >
       <p className="legal-updated">Last updated: [DATE]</p>
       <Section number={1} title="Introduction">
-        <p>Welcome to our website, [URL] (the <strong>Website</strong>).</p>
+        <p>Welcome to this website (the <strong>Website</strong>).</p>
         <p>These terms and conditions (the <strong>Terms</strong>) explain the rules for using the Website. Please read them carefully before using the Website. By accessing or using the Website, you confirm that you accept these Terms and agree to follow them. If you do not agree, please do not use the Website.</p>
       </Section>
       <Section number={2} title="About us">
@@ -248,7 +251,7 @@ export function TermsPage() {
         <p>These Terms are governed by the laws of England and Wales. Any disputes arising from or in connection with these Terms or your use of the Website shall be subject to the exclusive jurisdiction of the courts of England and Wales.</p>
       </Section>
       <Section number={16} title="Contact us">
-        <p>If you have any questions about these Terms or the Website, please contact us at [CONTACT EMAIL ADDRESS].</p>
+        <p>If you have any questions about these Terms or the Website, please contact us at <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>.</p>
       </Section>
     </LegalPage>
   );

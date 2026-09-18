@@ -30,8 +30,8 @@ export function RoleSearchComposer({
     <div className={`roles-chat-search ${className}`.trim()}>
       {showPrompt && (
         <div className="roles-chat-prompt">
-          <span className="roles-chat-label">Role finder</span>
-          <p>What kind of role are you looking for?</p>
+          <span className="roles-chat-label">Search roles</span>
+          <p>Enter keywords such as a job title, department, role type or status.</p>
         </div>
       )}
       <form className="roles-chat-composer" role="search" onSubmit={handleSubmit}>
@@ -40,7 +40,7 @@ export function RoleSearchComposer({
           id={id}
           type="search"
           className="roles-chat-input"
-          placeholder="Message the role finder"
+          placeholder="Search by title, department, type or status"
           value={value}
           onChange={event => onChange(event.target.value)}
           autoComplete="off"

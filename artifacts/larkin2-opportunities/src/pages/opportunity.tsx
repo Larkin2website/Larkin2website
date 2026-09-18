@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
-import { OPPORTUNITIES } from "../data/opportunities";
+import { OPPORTUNITIES, type Opportunity } from "../data/opportunities";
 import NotFound from "./not-found";
 
 export function OpportunityPage({ id }: { id: string }) {
-  const opp = OPPORTUNITIES[id];
+  const opp = OPPORTUNITIES[id] as (Opportunity & { applicationLink?: string }) | undefined;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -14,7 +14,7 @@ export function OpportunityPage({ id }: { id: string }) {
 
   useEffect(() => {
     if (opp) {
-      document.title = `${opp.title} | Larkin2 Opportunities`;
+      document.title = `${opp.title} | HETV Opportunities Hub`;
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
         metaDesc.setAttribute("content", opp.shortDescription);
@@ -87,8 +87,11 @@ export function OpportunityPage({ id }: { id: string }) {
             <aside className="opp-sidebar">
               <div className="opp-status-card">
                  <h3>{opp.applicationStatus === "Closed" ? "Applications Closed" : "Applications Open"}</h3>
-                 <p>Sign up to receive an alert when this or similar opportunities open on Larkin2.</p>
-                 <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Sign up for alerts</MaskedLink>
+                 <p>Sign up to receive an alert when this or similar opportunities open on the HETV Opportunities Hub.</p>
+                 {opp.applicationStatus === "Open" && opp.applicationLink && (
+                   <a href={opp.applicationLink} className="larkin2-btn" data-testid="link-opp-apply">Apply now</a>
+                 )}
+                 <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Sign up for updates</MaskedLink>
               </div>
             </aside>
             

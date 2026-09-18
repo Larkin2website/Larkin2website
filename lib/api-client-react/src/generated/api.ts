@@ -53,6 +53,12 @@ import type {
   ProgrammeTransition,
   PublicOpportunity,
   PublicProgramme,
+  PublicSubscriptionInput,
+  PublicSubscriptionMessage,
+  PublicSubscriptionResult,
+  PublicSubscriptionUnsubscribeInput,
+  ServiceUnavailableResponse,
+  TooManyRequestsResponse,
   UnauthorizedResponse
 } from './api.schemas';
 
@@ -243,6 +249,150 @@ export function useListPublicOpportunities<TData = Awaited<ReturnType<typeof lis
 
 
 
+
+export const getCreatePublicSubscriptionUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions`
+}
+
+/**
+ * Records explicit consent. A new subscription receives its personal management token; callers must save the resulting personal unsubscribe link because no email is sent. Duplicate requests have the same response shape but do not rotate an existing token, reactivate an inactive subscription, or disclose membership. A caller that still has the original token may submit it to preserve that capability for a matching subscription, including an inactive one, without reactivating it. A lost link cannot be recovered through this endpoint; contact support.
+ * @summary Subscribe an email address to opportunity updates
+ */
+export const createPublicSubscription = async (publicSubscriptionInput: PublicSubscriptionInput, options?: Parameters<typeof customFetch>[1]): Promise<PublicSubscriptionResult> => {
+
+  return customFetch<PublicSubscriptionResult>(getCreatePublicSubscriptionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(publicSubscriptionInput)
+  }
+);}
+
+
+
+
+
+export const getCreatePublicSubscriptionMutationOptions = <TError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPublicSubscription>>, TError,{data: BodyType<PublicSubscriptionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPublicSubscription>>, TError,{data: BodyType<PublicSubscriptionInput>}, TContext> => {
+
+const mutationKey = ['createPublicSubscription'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPublicSubscription>>, {data: BodyType<PublicSubscriptionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPublicSubscription(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePublicSubscriptionMutationResult = NonNullable<Awaited<ReturnType<typeof createPublicSubscription>>>
+    export type CreatePublicSubscriptionMutationBody = BodyType<PublicSubscriptionInput>
+    export type CreatePublicSubscriptionMutationError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>
+
+    /**
+ * @summary Subscribe an email address to opportunity updates
+ */
+export const useCreatePublicSubscription = <TError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPublicSubscription>>, TError,{data: BodyType<PublicSubscriptionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPublicSubscription>>,
+        TError,
+        {data: BodyType<PublicSubscriptionInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePublicSubscriptionMutationOptions(options));
+    }
+
+export const getUnsubscribePublicSubscriptionUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/unsubscribe`
+}
+
+/**
+ * Idempotently deactivates only the subscription represented by the supplied personal token. The response does not reveal whether the token matched. This action is POST-only; no GET request mutates subscription state.
+ * @summary Stop updates using a personal management token
+ */
+export const unsubscribePublicSubscription = async (publicSubscriptionUnsubscribeInput: PublicSubscriptionUnsubscribeInput, options?: Parameters<typeof customFetch>[1]): Promise<PublicSubscriptionMessage> => {
+
+  return customFetch<PublicSubscriptionMessage>(getUnsubscribePublicSubscriptionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(publicSubscriptionUnsubscribeInput)
+  }
+);}
+
+
+
+
+
+export const getUnsubscribePublicSubscriptionMutationOptions = <TError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsubscribePublicSubscription>>, TError,{data: BodyType<PublicSubscriptionUnsubscribeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof unsubscribePublicSubscription>>, TError,{data: BodyType<PublicSubscriptionUnsubscribeInput>}, TContext> => {
+
+const mutationKey = ['unsubscribePublicSubscription'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof unsubscribePublicSubscription>>, {data: BodyType<PublicSubscriptionUnsubscribeInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  unsubscribePublicSubscription(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UnsubscribePublicSubscriptionMutationResult = NonNullable<Awaited<ReturnType<typeof unsubscribePublicSubscription>>>
+    export type UnsubscribePublicSubscriptionMutationBody = BodyType<PublicSubscriptionUnsubscribeInput>
+    export type UnsubscribePublicSubscriptionMutationError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>
+
+    /**
+ * @summary Stop updates using a personal management token
+ */
+export const useUnsubscribePublicSubscription = <TError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsubscribePublicSubscription>>, TError,{data: BodyType<PublicSubscriptionUnsubscribeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof unsubscribePublicSubscription>>,
+        TError,
+        {data: BodyType<PublicSubscriptionUnsubscribeInput>},
+        TContext
+      > => {
+      return useMutation(getUnsubscribePublicSubscriptionMutationOptions(options));
+    }
 
 export const getGetPublicOpportunityUrl = (slug: string,) => {
 
