@@ -1260,9 +1260,6 @@
   line-height: 1.48;
 }
 .roles-filters {
-  position: sticky;
-  z-index: 20;
-  top: 0;
   padding-top: 0;
   padding-bottom: 40px;
   border-top: none;
