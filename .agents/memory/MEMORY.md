@@ -2,3 +2,5 @@
 - [Portal responsive contract](portal-responsive-contract.md) — Treat tablet and compact desktop as first-class layouts; reserve full sidebar and dense tables for wide screens.
 - [Access grants stay additive](portal-access-grants.md) — Keep pending grants separate from memberships until identity claim; do not make existing auth identity keys nullable.
 - [Public subscription boundary](public-subscription-boundary.md) — Interest collection is intentionally separate from email delivery; don't promise alerts before a provider is connected.
+- [Public visual-change boundaries](public-visual-change-boundaries.md) — Keep functional subscription and unsubscribe behavior outside broad presentation rewrites.
+- [Preview video codecs](preview-video-codecs.md) — A served MP4 can still fail in the preview test browser; check canPlayType before blaming playback logic.

@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import { Route, Switch, useLocation, Router as WouterRouter } from "wouter";
 import { useEffect } from "react";
 import "./index.css";
+import "./paper-orange.css";
 import { scrollToHash } from "./utils/navigation";
 
 import { Home } from "./pages/home";

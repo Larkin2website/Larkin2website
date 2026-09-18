@@ -1,0 +1,171 @@
+/* Restored paper/orange presentation. Foreground and surface tokens stay separate. */
+:root, .dark {
+  --background: 34 24% 94%;
+  --foreground: 180 5% 12%;
+  --card: 36 19% 89%;
+  --card-foreground: 180 5% 12%;
+  --border: 36 13% 77%;
+  --card-border: 36 13% 77%;
+  --popover: 34 24% 94%;
+  --popover-foreground: 180 5% 12%;
+  --popover-border: 36 13% 77%;
+  --primary: 19 89% 60%;
+  --primary-foreground: 180 5% 12%;
+  --secondary: 36 19% 89%;
+  --secondary-foreground: 180 5% 12%;
+  --muted: 36 19% 89%;
+  --muted-foreground: 33 5% 33%;
+  --accent: 19 89% 60%;
+  --accent-foreground: 180 5% 12%;
+  --input: 36 13% 77%;
+  --ring: 17 71% 34%;
+}
+html { background: #f4f1ed; }
+.larkin2-page :focus-visible { outline-color: var(--accent-text); }
+.larkin2-top, .larkin2-top.is-scrolled {
+  background: var(--stage);
+  border-bottom-color: var(--line);
+}
+.larkin2-page .larkin2-link,
+.larkin2-kicker, .larkin2-eyebrow,
+.larkin2-commit-meta,
+.larkin2-foot-col > span,
+.larkin2-mobile-nav a span,
+.larkin2-menu-close span,
+.larkin2-mobile-group-icon,
+.larkin2-nav-sub a:hover,
+.larkin2-nav-sub a:focus-visible,
+.larkin2-nav-link:hover, .larkin2-chevron,
+.hetv-subscription a, .hetv-subscription-link-block a {
+  color: var(--accent-text);
+}
+.larkin2-page .larkin2-btn,
+.larkin2-top .larkin2-header-cta,
+.roles-card-action .larkin2-link,
+.larkin2-path .larkin2-link:hover,
+.larkin2-path .larkin2-link:focus-visible,
+.larkin2-production .larkin2-link,
+.larkin2-culture .larkin2-link,
+.larkin2-role-status-actions .larkin2-link,
+.hetv-subscription button[type="submit"],
+.hetv-subscription button[type="button"],
+.hetv-subscription-submit {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--ink);
+}
+.larkin2-top .larkin2-header-cta::before { background: var(--ink); }
+.larkin2-page .larkin2-btn:hover,
+.larkin2-page .larkin2-btn:focus-visible,
+.larkin2-top .larkin2-header-cta:hover,
+.larkin2-top .larkin2-header-cta:focus-visible,
+.roles-card-action .larkin2-link:hover,
+.roles-card-action .larkin2-link:focus-visible,
+.larkin2-production .larkin2-link:hover,
+.larkin2-production .larkin2-link:focus-visible,
+.larkin2-culture .larkin2-link:hover,
+.larkin2-culture .larkin2-link:focus-visible,
+.larkin2-role-status-actions .larkin2-link:hover,
+.larkin2-role-status-actions .larkin2-link:focus-visible {
+  background: var(--paper);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.larkin2-page .larkin2-btn.secondary,
+.larkin2-page .larkin2-path .larkin2-link {
+  background: var(--stage);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.larkin2-page .larkin2-path .larkin2-link:hover,
+.larkin2-page .larkin2-path .larkin2-link:focus-visible {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--ink);
+}
+.roles-detail-apply .larkin2-link:disabled {
+  background: #d1cbc3;
+  border-color: #d1cbc3;
+  color: #55514b;
+}
+.larkin2-signup, .roles-detail-footer { background: var(--orange); color: var(--ink); }
+.larkin2-signup { --secondary: var(--ink); --muted: var(--ink); }
+.roles-detail-footer .larkin2-eyebrow,
+.roles-detail-footer .roles-chat-hint { color: var(--ink); }
+.larkin2-signup .hetv-subscription { --muted: #595650; }
+.larkin2-carousel-btn:hover:not(:disabled) { color: var(--ink); background: var(--orange); }
+.larkin2-page ul > li > span:first-child { color: var(--accent-text); }
+
+/* Keep photos and their original zoom interactions, but remove black card surfaces. */
+.larkin2-path, .larkin2-production { background: var(--paper); }
+.larkin2-path-gradient {
+  background: linear-gradient(to bottom, transparent 15%, rgba(233,229,223,.12) 35%, #e9e5df 76%);
+}
+.larkin2-path h3, .larkin2-path-bottom-main p { color: var(--ink); }
+.larkin2-culture .larkin2-image-caption { background: var(--paper); color: var(--ink); }
+
+/* Original sticky video / scroll morph, surrounded by paper rather than black. */
+.larkin2-hero-sticky, .larkin2-hero-bg { background: var(--paper); }
+.larkin2-hero-shade {
+  /* This is a media scrim, not a page surface; it follows the shrinking footage. */
+  transform: translateY(calc(var(--hero-progress) * 2svh));
+  clip-path: inset(
+    calc(var(--hero-progress) * 10svh) calc(var(--hero-progress) * 6vw)
+    calc(var(--hero-progress) * 47svh) calc(var(--hero-progress) * 6vw)
+    round calc(var(--hero-progress) * 24px)
+  );
+}
+.larkin2-hero-shade::after { background: none; }
+.larkin2-hero-content { color: #f4f1ed; }
+.larkin2-hero-content .larkin2-intro, .larkin2-hero-meta { color: #f4f1ed; }
+.larkin2-hero-content .larkin2-h1 { font-size: clamp(46px, 7vw, 106px); line-height: .98; letter-spacing: -.065em; }
+.larkin2-hero-left { min-width: 0; }
+.larkin2-hero-right { flex-basis: 340px; }
+.larkin2-video-toggle {
+  position: absolute;
+  z-index: 3;
+  top: 96px;
+  right: clamp(20px, 4vw, 64px);
+  padding: 10px 16px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.larkin2-video-toggle:hover { background: var(--orange); }
+.larkin2-intro-bg, .larkin2-intro-aperture { background: var(--stage); }
+.larkin2-intro-brand { max-width: calc(100vw - 40px); text-align: center; }
+.larkin2-intro-brand > span { font-size: clamp(20px, 4vw, 44px); }
+.larkin2-intro-brand i { background: var(--orange); }
+
+/* The newly raised signup must not be overlapped by the old content offset. */
+.larkin2-page > #content { margin-top: 0; }
+@media (max-width: 1024px) {
+  .larkin2-hero-split { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .larkin2-hero-left, .larkin2-hero-right { flex: none; }
+  .larkin2-hero-right { max-width: 620px; padding-bottom: 0; }
+  .larkin2-hero-content .larkin2-intro { max-width: 620px; }
+}
+@media (max-width: 767px) {
+  .larkin2-hero-content .larkin2-h1 { font-size: clamp(36px, 9vw, 66px); }
+  .larkin2-hero-shade {
+    transform: translateY(calc(var(--hero-progress) * 4svh));
+    clip-path: inset(
+      calc(var(--hero-progress) * 12svh) calc(var(--hero-progress) * 4vw)
+      calc(var(--hero-progress) * 24svh) calc(var(--hero-progress) * 4vw)
+      round calc(var(--hero-progress) * 16px)
+    );
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .larkin2-hero-track { height: auto; }
+  .larkin2-hero-sticky { position: relative; min-height: 100svh; }
+  .larkin2-hero-media, .larkin2-hero-shade { clip-path: none; filter: none; animation: none; transform: none; }
+  .larkin2-hero-content-wrap, .larkin2-hero-media-wrap, .larkin2-hero-meta-wrap { opacity: 1; transform: none; }
+  .larkin2-hero-meta-wrap { left: 20px; right: 20px; }
+  .larkin2-reveal, .larkin2-media-reveal, .larkin2-mask > span { opacity: 1; transform: none; }
+}

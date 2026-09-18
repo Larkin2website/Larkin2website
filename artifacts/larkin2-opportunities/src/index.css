@@ -83,15 +83,17 @@
 }
 
 .larkin2-page {
-  --stage: #f8faf8;
-  --deep: #ffffff;
-  --ink: #1d2b23;
-  --muted: #56665b;
-  --secondary: #4a5c50;
-  --line: #dbe2db;
-  --sage: #506e58;
-  --paper: #edf2ed;
-  --paper-ink: #1d2b23;
+  --stage: #f4f1ed;
+  --deep: #f4f1ed;
+  --ink: #1d2020;
+  --muted: #595650;
+  --secondary: #4f4b45;
+  --line: #cbc5bc;
+  --orange: #f4773f;
+  --accent-text: #943719;
+  --sage: var(--orange); /* Compatibility for existing accent selectors. */
+  --paper: #e9e5df;
+  --paper-ink: #1d2020;
   --ease-cinematic: cubic-bezier(.23, 1, .32, 1);
   --ease-smooth: cubic-bezier(.43, 0, .57, 1);
   min-height: 100dvh;
@@ -1069,7 +1071,7 @@
 .larkin2-mask { display: block; overflow: hidden; padding-bottom: .08em; }
 .larkin2-mask > span { display: block; transform: translateY(108%); transition: transform .9s var(--ease-cinematic); }
 .is-visible .larkin2-mask > span, .larkin2-reveal:not([data-reveal]) .larkin2-mask > span { transform: translateY(0); }
-.larkin2-reveal { opacity: 1; transform: translateY(28px); transition: transform .5s var(--ease-cinematic); transition-delay: var(--reveal-delay, 0ms); }
+.larkin2-reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .9s var(--ease-cinematic); transition-delay: var(--reveal-delay, 0ms); }
 .larkin2-reveal.is-visible { opacity: 1; transform: translateY(0); }
 .larkin2-reveal.larkin2-hero-content { opacity: 1; transform: none; animation: larkin2-hero-enter 1s .16s var(--ease-cinematic) both; }
 /* Old scroll transforms moved to wrapper classes */

@@ -61,7 +61,7 @@ The user's explicit correction, “change the name, but leave the domain for the
 
 ## User preferences
 
-- Public pages use a light, accessible sage-accented palette and HETV Opportunities Hub branding. Keep the separate portal's branding and theme unchanged.
+- Public pages retain the original paper-and-orange identity, original video hero and intro/scroll/reveal animations, with light or orange UI surfaces instead of dark backgrounds. Keep HETV Opportunities Hub naming, reduced-motion support and the separate portal's branding/theme unchanged.
 - Roles are the primary public navigation.
 - Never add thick decorative top-edge accent bars.
 

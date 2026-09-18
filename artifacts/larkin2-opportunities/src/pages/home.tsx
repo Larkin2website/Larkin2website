@@ -1,7 +1,8 @@
-import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { OPPORTUNITIES } from "../data/opportunities";
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { SubscriptionSignup } from "../components/subscription-signup";
+
+let hasVisitedHomeThisPageLoad = false;
 
 const commitments = [
   ["01", "Free to participate.", "Work experience, shadowing, and training courses are completely free to attend. We do not charge fees for any development programme.", "path-training.jpg"],
@@ -9,6 +10,74 @@ const commitments = [
   ["03", "Time to apply.", "We aim to keep all applications open for at least five days so you have a fair chance to put yourself forward.", "path-development.jpg"],
   ["04", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time.", "culture-set.jpg"],
 ] as const;
+
+function IntroOverlay({ onComplete }: { onComplete: () => void }) {
+  const introFrames = [
+    "bailey-craft.jpg",
+    "larkin2-commitment-open.jpg",
+    "bailey-crew.jpg",
+    "larkin2-commitment-paid.jpg",
+  ];
+
+  useEffect(() => {
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (motionQuery.matches) {
+      onComplete();
+      return;
+    }
+
+    const handleMotionChange = (event: MediaQueryListEvent) => {
+      if (event.matches) onComplete();
+    };
+    const timer = window.setTimeout(onComplete, 3090);
+    const safeTimer = window.setTimeout(onComplete, 4000);
+    motionQuery.addEventListener("change", handleMotionChange);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(safeTimer);
+      motionQuery.removeEventListener("change", handleMotionChange);
+    };
+  }, [onComplete]);
+
+  return (
+    <div className="larkin2-intro-overlay" role="status" aria-label="HETV Opportunities Hub loading" data-testid="status-intro">
+      <div className="larkin2-intro-bg" aria-hidden="true" />
+      <div className="larkin2-intro-loading" aria-hidden="true">
+        <span>Loading</span>
+        <span className="larkin2-intro-count-window">
+          <span className="larkin2-intro-count">
+            <span>00</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
+          </span>
+        </span>
+      </div>
+      <div className="larkin2-intro-aperture" aria-hidden="true">
+        <div className="larkin2-intro-reel">
+          {introFrames.map((frame, index) => (
+            <img
+              key={frame}
+              src={`/larkin2-opportunities/images/${frame}`}
+              alt=""
+              style={{ "--intro-frame": index } as CSSProperties}
+            />
+          ))}
+          <img
+            className="larkin2-intro-final-frame"
+            src="/larkin2-opportunities/videos/hero-poster.webp"
+            alt=""
+          />
+        </div>
+        <span className="larkin2-intro-corner is-top-left" />
+        <span className="larkin2-intro-corner is-top-right" />
+        <span className="larkin2-intro-corner is-bottom-left" />
+        <span className="larkin2-intro-corner is-bottom-right" />
+      </div>
+      <div className="larkin2-intro-brand" aria-hidden="true">
+        <span>HETV Opportunities Hub</span><i />
+      </div>
+    </div>
+  );
+}
 
 function CommitmentsCarousel() {
   const [active, setActive] = useState(0);
@@ -196,10 +265,31 @@ export function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
+  const [introVisible, setIntroVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const isFirstHomeVisit = !hasVisitedHomeThisPageLoad;
+    hasVisitedHomeThisPageLoad = true;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return isFirstHomeVisit && !window.location.hash && !reducedMotion;
+  });
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
+  const [videoPaused, setVideoPaused] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const heroTrackRef = useRef<HTMLElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const lastScrollY = useRef(0);
+
+  const finishIntro = useCallback(() => {
+    setIntroVisible(false);
+  }, []);
 
   useEffect(() => {
     document.title = "HETV Opportunities Hub";
@@ -210,11 +300,57 @@ export function Home() {
   }, []);
 
   useEffect(() => {
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleMotionChange = (event: MediaQueryListEvent) => {
+      setReducedMotion(event.matches);
+      if (event.matches) {
+        setVideoPaused(true);
+        setIntroVisible(false);
+      }
+    };
+    motionQuery.addEventListener("change", handleMotionChange);
+    return () => motionQuery.removeEventListener("change", handleMotionChange);
+  }, []);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    const syncPlayback = () => {
+      if (introVisible || videoPaused || document.hidden) {
+        video.pause();
+        if (reducedMotion) video.currentTime = 0;
+        return;
+      }
+
+      const playback = video.play();
+      if (playback) {
+        playback.catch(() => {
+          setVideoPaused(true);
+        });
+      }
+    };
+
+    syncPlayback();
+    document.addEventListener("visibilitychange", syncPlayback);
+    return () => {
+      document.removeEventListener("visibilitychange", syncPlayback);
+      video.pause();
+    };
+  }, [introVisible, reducedMotion, videoPaused]);
+
+  useEffect(() => {
     let frame = 0;
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         const current = window.scrollY;
+        const heroTrack = heroTrackRef.current;
+        if (heroTrack) {
+          const travel = Math.max(1, heroTrack.offsetHeight - window.innerHeight);
+          const morphTravel = travel * 0.75;
+          heroTrack.style.setProperty("--hero-progress", Math.min(1, Math.max(0, current / morphTravel)).toFixed(4));
+        }
         setScrolled(current > 38);
         if (current < 20 || current < lastScrollY.current - 5) {
           setHeaderHidden(false);
@@ -227,6 +363,7 @@ export function Home() {
         frame = 0;
       });
     };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -254,6 +391,7 @@ export function Home() {
 
   return (
     <main className="larkin2-page" id="top">
+      {introVisible && <IntroOverlay onComplete={finishIntro} />}
       <a className="larkin2-skip" href="#content" data-testid="link-skip-content">Skip to content</a>
 
       <SiteHeader 
@@ -270,23 +408,68 @@ export function Home() {
         menuButtonRef={menuButtonRef} 
       />
 
-      <section className="larkin2-hero-static" aria-labelledby="hero-title">
-        <div className="larkin2-hero-bg-static">
-          <img src="/larkin2-opportunities/images/hero-bg.jpg" alt="A diverse film and television crew working collaboratively on a drama production set." loading="eager" />
-        </div>
-        <div className="larkin2-hero-shade-static" />
-        <div className="larkin2-hero-content-static">
-          <h1 className="larkin2-h1" id="hero-title">HETV Opportunities Hub</h1>
-          <p className="larkin2-intro">A welcoming home for newcomers and experienced drama crew to find jobs, training, and development across multiple high-end television productions.</p>
-          <div className="larkin2-actions">
-            <MaskedLink href="/roles" className="larkin2-btn" testId="link-hero-roles">View Crew Roles</MaskedLink>
-            <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
-            <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
+      <section ref={heroTrackRef} className="larkin2-hero-track" aria-labelledby="hero-title">
+        <div className="larkin2-hero-sticky">
+          <div className="larkin2-hero-bg" />
+          <div className="larkin2-hero-stage">
+            <div className="larkin2-hero-media-wrap">
+              <video
+                ref={heroVideoRef}
+                className="larkin2-hero-media"
+                loop
+                muted
+                playsInline
+                preload={reducedMotion ? "none" : "metadata"}
+                poster="/larkin2-opportunities/videos/hero-poster.webp"
+                aria-hidden="true"
+                data-testid="video-hero-background"
+              >
+                <source src="/larkin2-opportunities/videos/hero-loop.mp4" type={'video/mp4; codecs="avc1.64001f"'} />
+                <source src="/larkin2-opportunities/videos/hero-loop.webm" type={'video/webm; codecs="vp9"'} />
+              </video>
+            </div>
+            <div className="larkin2-hero-shade" />
+            <button
+              type="button"
+              className="larkin2-video-toggle"
+              onClick={() => setVideoPaused((paused) => !paused)}
+              aria-label={videoPaused ? "Play background video" : "Pause background video"}
+              aria-pressed={videoPaused}
+            >
+              {videoPaused ? "Play video" : "Pause video"}
+            </button>
+            <div className="larkin2-hero-content-wrap">
+              <div className="larkin2-hero-content larkin2-reveal">
+                <div className="larkin2-hero-split">
+                  <div className="larkin2-hero-left">
+                    <h1 className="larkin2-h1" id="hero-title">
+                      <span className="larkin2-mask"><span className="larkin2-hero-wordmark">HETV</span></span>
+                    </h1>
+                    <div className="larkin2-sub larkin2-mask"><span>Opportunities Hub</span></div>
+                  </div>
+                  <div className="larkin2-hero-right">
+                    <p className="larkin2-intro larkin2-mask"><span>A welcoming home for newcomers and experienced drama crew to find jobs, training, and development across multiple high-end television productions.</span></p>
+                  </div>
+                </div>
+                <div className="larkin2-hero-actions-wrap">
+                  <div className="larkin2-actions">
+                    <MaskedLink href="/roles" className="larkin2-btn" testId="link-hero-roles">View Crew Roles</MaskedLink>
+                    <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
+                    <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="larkin2-hero-meta-wrap">
+              <div className="larkin2-hero-meta">
+                <span>Scroll to enter the production</span><span className="larkin2-scroll-line" aria-hidden="true" /><span>01 — 06</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="larkin2-section larkin2-signup" id="signup" aria-labelledby="signup-title" style={{ background: 'var(--paper)', borderTop: 'none', borderBottom: '1px solid var(--line)' }}>
+      <section className="larkin2-section larkin2-signup" id="signup" aria-labelledby="signup-title" style={{ borderTop: 'none', borderBottom: '1px solid var(--line)' }}>
         <div className="larkin2-signup-layout larkin2-reveal" data-reveal>
           <div>
             <h2 className="larkin2-title" id="signup-title" style={{ color: 'var(--paper-ink)' }}><span className="larkin2-mask"><span>Stay connected to opportunities</span></span></h2>
@@ -310,7 +493,7 @@ export function Home() {
               <p>This is a central place where you can find genuine crew roles, work experience placements, shadowing programmes, and training courses connected to our active productions. We manage these opportunities directly, ensuring you get accurate, up-to-date information directly from the source.</p>
               <p>We work with training providers, community organisations, and regional talent networks to reach people who might not otherwise hear about these routes into the industry.</p>
 
-              <span className="hetv-disclaimer">The homepage images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
+              <span className="hetv-disclaimer">The opportunity and commitment images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
             </div>
           </div>
         </section>
