@@ -155,30 +155,26 @@ export function DevelopmentPage() {
 
       <main id="content">
         <section className="larkin2-section larkin2-commit programme-overview-section" aria-labelledby="development-title" style={{ background: 'var(--stage)' }}>
-          <div className="larkin2-grid">
-            <div>
-              <h1 className="larkin2-title" id="development-title">Development Programmes</h1>
-              <p className="larkin2-copy mt-6">Designed for industry professionals looking to step up or transition into High-End Television drama.</p>
-            </div>
-            <div className="larkin2-copy">
-              <div className="hetv-programme-list">
-                <div className="hetv-programme-item">
-                  <div className={`programme-status-badge ${directorStatus === "Open" ? "is-open" : "is-closed"}`}>
-                    Applications {directorStatus}
-                  </div>
-                  <h3>Creative Leadership Shadowing Programme: Director Pathway</h3>
-                  <p>The Creative Leadership Shadowing Programme: Director Pathway is designed for experienced directors who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
-                  <MaskedLink href="/opportunities/director-pathway" testId="link-opp-director">Learn More</MaskedLink>
-                </div>
-                <div className="hetv-programme-item mt-8">
-                  <div className={`programme-status-badge ${producerStatus === "Open" ? "is-open" : "is-closed"}`}>
-                    Applications {producerStatus}
-                  </div>
-                  <h3>Creative Leadership Shadowing Programme: Producer Pathway</h3>
-                  <p>The Creative Leadership Shadowing Programme: Producer Pathway is designed for experienced producers who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
-                  <MaskedLink href="/opportunities/producer-pathway" testId="link-opp-producer">Learn More</MaskedLink>
-                </div>
+          <div className="programme-overview-intro">
+            <h1 className="larkin2-title" id="development-title">Development Programmes</h1>
+            <p className="larkin2-copy">Designed for industry professionals looking to step up or transition into High-End Television drama.</p>
+          </div>
+          <div className="hetv-programme-list">
+            <div className="hetv-programme-item">
+              <div className={`programme-status-badge ${directorStatus === "Open" ? "is-open" : "is-closed"}`}>
+                Applications {directorStatus}
               </div>
+              <h3>Creative Leadership Shadowing Programme: Director Pathway</h3>
+              <p>The Creative Leadership Shadowing Programme: Director Pathway is designed for experienced directors who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
+              <MaskedLink href="/opportunities/director-pathway" testId="link-opp-director">View Director Pathway</MaskedLink>
+            </div>
+            <div className="hetv-programme-item">
+              <div className={`programme-status-badge ${producerStatus === "Open" ? "is-open" : "is-closed"}`}>
+                Applications {producerStatus}
+              </div>
+              <h3>Creative Leadership Shadowing Programme: Producer Pathway</h3>
+              <p>The Creative Leadership Shadowing Programme: Producer Pathway is designed for experienced producers who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
+              <MaskedLink href="/opportunities/producer-pathway" testId="link-opp-producer">View Producer Pathway</MaskedLink>
             </div>
           </div>
         </section>
