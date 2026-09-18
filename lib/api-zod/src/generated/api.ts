@@ -65,6 +65,15 @@ export const ListPublicOpportunitiesResponse = zod.array(ListPublicOpportunities
 
 
 /**
+ * @summary List active opportunity options for public filters
+ */
+export const ListPublicOpportunityOptionsResponse = zod.object({
+  "departments": zod.array(zod.string()),
+  "roleTypes": zod.array(zod.string())
+})
+
+
+/**
  * Records explicit consent. A new subscription receives its personal management token; callers must save the resulting personal unsubscribe link because no email is sent. Duplicate requests have the same response shape but do not rotate an existing token, reactivate an inactive subscription, or disclose membership. A caller that still has the original token may submit it to preserve that capability for a matching subscription, including an inactive one, without reactivating it. A lost link cannot be recovered through this endpoint; contact support.
  * @summary Subscribe an email address to opportunity updates
  */

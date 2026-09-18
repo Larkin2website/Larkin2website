@@ -52,6 +52,7 @@ import type {
   ProgrammePage,
   ProgrammeTransition,
   PublicOpportunity,
+  PublicOpportunityOptions,
   PublicProgramme,
   PublicSubscriptionInput,
   PublicSubscriptionMessage,
@@ -238,6 +239,83 @@ export function useListPublicOpportunities<TData = Awaited<ReturnType<typeof lis
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListPublicOpportunitiesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListPublicOpportunityOptionsUrl = () => {
+
+
+
+
+  return `/api/public/opportunity-options`
+}
+
+/**
+ * @summary List active opportunity options for public filters
+ */
+export const listPublicOpportunityOptions = async ( options?: Parameters<typeof customFetch>[1]): Promise<PublicOpportunityOptions> => {
+
+  return customFetch<PublicOpportunityOptions>(getListPublicOpportunityOptionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPublicOpportunityOptionsQueryKey = () => {
+    return [
+    `/api/public/opportunity-options`
+    ] as const;
+    }
+
+
+export const getListPublicOpportunityOptionsQueryOptions = <TData = Awaited<ReturnType<typeof listPublicOpportunityOptions>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPublicOpportunityOptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPublicOpportunityOptionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPublicOpportunityOptions>>> = ({ signal }) => listPublicOpportunityOptions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPublicOpportunityOptions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPublicOpportunityOptionsQueryResult = NonNullable<Awaited<ReturnType<typeof listPublicOpportunityOptions>>>
+export type ListPublicOpportunityOptionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List active opportunity options for public filters
+ */
+
+export function useListPublicOpportunityOptions<TData = Awaited<ReturnType<typeof listPublicOpportunityOptions>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPublicOpportunityOptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPublicOpportunityOptionsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

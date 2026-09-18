@@ -64,6 +64,7 @@ export * from './programmeStatus';
 export * from './programmeTransition';
 export * from './programmeTransitionStatus';
 export * from './publicOpportunity';
+export * from './publicOpportunityOptions';
 export * from './publicOpportunityStatus';
 export * from './publicProgramme';
 export * from './publicSubscriptionInput';

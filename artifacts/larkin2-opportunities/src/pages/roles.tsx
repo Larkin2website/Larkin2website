@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
+  getListPublicOpportunityOptionsQueryKey,
   getListPublicOpportunitiesQueryKey,
+  useListPublicOpportunityOptions,
   useListPublicOpportunities,
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
@@ -29,15 +31,25 @@ export function RolesPage() {
       retry: 2,
     },
   });
+  const { data: publicOpportunityOptions } = useListPublicOpportunityOptions({
+    query: {
+      queryKey: getListPublicOpportunityOptionsQueryKey(),
+      staleTime: 60_000,
+      retry: 2,
+    },
+  });
   const roles = useMemo(
     () => publicOpportunities.map(publicOpportunityToRole),
     [publicOpportunities],
   );
   const filterOptions = useMemo(() => ({
     statuses: [...new Set(roles.map(role => role.status))].sort(),
-    departments: [...new Set(roles.map(role => role.department))].sort(),
+    departments: [...new Set([
+      ...(publicOpportunityOptions?.departments ?? []),
+      ...roles.map(role => role.department),
+    ])].sort(),
     roleTypes: [...new Set(roles.map(role => role.roleType))].sort(),
-  }), [roles]);
+  }), [publicOpportunityOptions, roles]);
   const hasActiveFilters = Boolean(search.trim() || statusFilter || departmentFilter || roleTypeFilter);
 
   useEffect(() => {

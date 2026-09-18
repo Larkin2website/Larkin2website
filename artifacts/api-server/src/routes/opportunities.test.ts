@@ -76,6 +76,37 @@ const validOpportunityInput = {
   details: [{ position: 0, label: "Location", value: "London" }],
 };
 
+test("public opportunity options need no authentication and expose active labels only", async () => {
+  let includeRetiredValue: boolean | undefined;
+  await withServer(async () => {
+    throw new Error("should not be called");
+  }, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/public/opportunity-options`);
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), {
+      departments: ["Art", "Wardrobe"],
+      roleTypes: ["Freelance"],
+    });
+    assert.equal(includeRetiredValue, false);
+  }, {
+    opportunityOptions: {
+      listOpportunityOptions: async (includeRetired = false) => {
+        includeRetiredValue = includeRetired;
+        return {
+          departments: [
+            { id: optionId, kind: "department", label: "Art", active: true, retiredAt: null, createdAt },
+            { id: optionId, kind: "department", label: "Wardrobe", active: true, retiredAt: null, createdAt },
+          ],
+          roleTypes: [
+            { id: optionId, kind: "role_type", label: "Freelance", active: true, retiredAt: null, createdAt },
+          ],
+        };
+      },
+      createOpportunityOption: async () => undefined,
+    } as any,
+  });
+});
+
 test("viewer requests cannot create categories", async () => {
   let calls = 0;
   await withServer(async () => {

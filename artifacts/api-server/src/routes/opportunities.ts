@@ -5,7 +5,8 @@ import {
   GetPortalDashboardResponse, GetPortalOpportunityParams, GetPortalOpportunityResponse, GetPortalSessionResponse,
   GetPublicOpportunityParams, GetPublicOpportunityResponse, ListOpportunityAuditEventsParams, ListOpportunityAuditEventsResponse,
   ListPortalMembersResponse, ListPortalOpportunitiesQueryParams, ListPortalOpportunitiesResponse, ListPortalOpportunityOptionsResponse,
-  ListPublicOpportunitiesQueryParams, ListPublicOpportunitiesResponse, MergePortalOpportunityOptionBody, MergePortalOpportunityOptionParams,
+  ListPublicOpportunitiesQueryParams, ListPublicOpportunitiesResponse, ListPublicOpportunityOptionsResponse,
+  MergePortalOpportunityOptionBody, MergePortalOpportunityOptionParams,
   MergePortalOpportunityOptionResponse, RenamePortalOpportunityOptionBody, RenamePortalOpportunityOptionParams,
   RenamePortalOpportunityOptionResponse, RestorePortalOpportunityOptionParams, RestorePortalOpportunityOptionResponse,
   RetirePortalOpportunityOptionParams, RetirePortalOpportunityOptionResponse, TransitionPortalOpportunityBody,
@@ -68,6 +69,13 @@ router.get("/public/opportunities", async (req, res): Promise<void> => {
   const parsed = ListPublicOpportunitiesQueryParams.safeParse(req.query);
   if (!parsed.success) { invalid(res, parsed.error); return; }
   res.json(ListPublicOpportunitiesResponse.parse((await opportunities.listPublic(parsed.data.q)).map(publicMap)));
+});
+router.get("/public/opportunity-options", async (_req, res): Promise<void> => {
+  const options = await dependencies.opportunityOptions.listOpportunityOptions();
+  res.json(ListPublicOpportunityOptionsResponse.parse({
+    departments: options.departments.map((option) => option.label),
+    roleTypes: options.roleTypes.map((option) => option.label),
+  }));
 });
 router.get("/public/opportunities/:slug", async (req, res): Promise<void> => {
   const parsed = GetPublicOpportunityParams.safeParse(req.params);

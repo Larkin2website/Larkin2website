@@ -363,6 +363,11 @@ export interface OpportunityOptions {
   roleTypes: OpportunityOption[];
 }
 
+export interface PublicOpportunityOptions {
+  departments: string[];
+  roleTypes: string[];
+}
+
 export interface OpportunityOptionInput {
   kind: OpportunityOptionKind;
   /**

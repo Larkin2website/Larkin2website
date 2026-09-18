@@ -51,6 +51,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PublicOpportunity"
+  /public/opportunity-options:
+    get:
+      operationId: listPublicOpportunityOptions
+      tags: [public-opportunities]
+      summary: List active opportunity options for public filters
+      responses:
+        "200":
+          description: Active public opportunity option labels
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicOpportunityOptions"
   /public/subscriptions:
     post:
       operationId: createPublicSubscription
@@ -1037,6 +1049,19 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OpportunityOption"
+    PublicOpportunityOptions:
+      type: object
+      additionalProperties: false
+      required: [departments, roleTypes]
+      properties:
+        departments:
+          type: array
+          items:
+            type: string
+        roleTypes:
+          type: array
+          items:
+            type: string
     OpportunityOptionInput:
       type: object
       additionalProperties: false
