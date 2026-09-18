@@ -6,13 +6,30 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 const home = read("../pages/home.tsx");
 const reference = read("../../../../.local/tasks/use-original-website-copy.md");
 
-test("homepage includes the original introduction and all culture paragraphs", () => {
+test("homepage retains the original hero introduction", () => {
   const originalHome = reference.split("### Source: https://larkin2opportunities.com/roles/")[0];
   const paragraphs = originalHome.split("\n\n").filter((text) =>
-    /^(Your central hub|At Larkin 2|We actively seek|Our production values|Welcome to the official home)/.test(text),
+    /^Your central hub/.test(text),
   );
-  assert.equal(paragraphs.length, 5);
+  assert.equal(paragraphs.length, 1);
   for (const paragraph of paragraphs) assert.ok(home.includes(paragraph), paragraph);
+});
+
+test("Production & Culture combines the introduction into one concise group", () => {
+  const section = home.match(/<section[^>]+id="about"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section);
+  assert.equal((section.match(/<h2\b/g) ?? []).length, 1);
+  assert.equal((section.match(/className="larkin2-grid"/g) ?? []).length, 1);
+  assert.ok(section.includes('id="about-title"'));
+  assert.ok(section.includes("Production &amp; Culture"));
+  assert.ok(!section.includes("About Us"));
+  const body = section.match(/<p>(.*?)<\/p>/g) ?? [];
+  assert.equal(body.length, 1);
+  assert.ok(body[0].includes("Explore roles, work experience, training and development on Larkin 2"));
+  assert.ok(body[0].includes("fair, inclusive recruitment"));
+  assert.ok(body[0].split(/\s+/).length <= 55);
+  assert.ok(section.includes('<p className="larkin2-small">HETV Opportunities Hub is operated by Larkin AV Limited.</p>'));
+  assert.ok(section.includes("AI-generated illustrations of television production"));
 });
 
 test("HETV naming, existing sections and source CTA wording are retained", () => {

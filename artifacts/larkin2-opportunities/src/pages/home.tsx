@@ -506,24 +506,13 @@ export function Home() {
         <section className="larkin2-section larkin2-about" id="about" aria-labelledby="about-title">
           <div className="larkin2-grid">
             <div className="larkin2-reveal" data-reveal>
-              <div className="larkin2-eyebrow">About Us</div>
-              <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>HETV Opportunities Hub</span></span></h2>
+              <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>Production &amp; Culture</span></span></h2>
             </div>
             <div className="larkin2-copy larkin2-reveal" data-reveal>
-              <p>Welcome to the official home for all live roles, work experience placements, shadowing programmes, and industry events connected to Larkin 2. Whether you’re an experienced crew member or exploring the industry for the first time, this is the place to start.</p>
-              <p>HETV Opportunities Hub is operated by Larkin AV Limited.</p>
+              <p>Explore roles, work experience, training and development on Larkin 2, whether you’re new to television or an experienced crew member. We’re committed to fair, inclusive recruitment and a respectful, supportive production culture—creating opportunities for people from every background.</p>
+              <p className="larkin2-small">HETV Opportunities Hub is operated by Larkin AV Limited.</p>
 
               <span className="hetv-disclaimer">The opportunity and commitment images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
-            </div>
-          </div>
-          <div className="larkin2-grid" style={{ marginTop: '64px' }}>
-            <div className="larkin2-reveal" data-reveal>
-              <h2 className="larkin2-title"><span className="larkin2-mask"><span>Production &amp; Culture</span></span></h2>
-            </div>
-            <div className="larkin2-copy larkin2-reveal" data-reveal>
-              <p>At Larkin 2, we believe everyone should have the opportunity to work in film and television — regardless of background, experience level, or personal circumstances. Our recruitment processes are designed to be transparent, inclusive, and fair at every stage.</p>
-              <p>We actively seek to create pathways for people who are new to the industry. Through partnerships with training providers, community organisations, and regional talent networks, we ensure that opportunity reaches those who might not otherwise have access to it.</p>
-              <p>Our production values centre on respect, collaboration, and genuine support. We are committed to building crews that reflect the diversity of the communities we work in — and to creating a working environment where every person feels valued and heard.</p>
             </div>
           </div>
         </section>
