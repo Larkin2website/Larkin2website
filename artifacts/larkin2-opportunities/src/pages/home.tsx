@@ -497,6 +497,9 @@ export function Home() {
       </section>
       <div id="content">
         <section className="larkin2-split-section" id="about" aria-labelledby="about-title">
+          <div className="larkin2-split-image">
+            <img src="/larkin2-opportunities/images/bailey-crew.jpg" alt="" role="presentation" loading="lazy" />
+          </div>
           <div className="larkin2-split-content">
             <div className="larkin2-reveal" data-reveal>
               <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>Production &amp; Culture</span></span></h2>
@@ -514,9 +517,6 @@ export function Home() {
                 <span className="larkin2-split-disclaimer">The opportunity and commitment images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
               </div>
             </div>
-          </div>
-          <div className="larkin2-split-image larkin2-reveal" data-reveal>
-            <img src="/larkin2-opportunities/images/bailey-crew.jpg" alt="" role="presentation" loading="lazy" />
           </div>
         </section>
 

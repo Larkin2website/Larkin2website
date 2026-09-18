@@ -84,6 +84,31 @@ test("entry cards use dark gradients with readable text and keyboard focus", () 
   }
 });
 
+test("Production & Culture overlay keeps all text readable over bright imagery", () => {
+  const shade = declarationsFor(".larkin2-split-section::after");
+  const stops = [...shade.background.matchAll(/rgba\((\d+),(\d+),(\d+),([\d.]+)\)\s+(\d+)%/g)];
+  assert.equal(stops.length, 3);
+  const lightestStop = stops.reduce((a, b) => Number(a[4]) < Number(b[4]) ? a : b);
+  const alpha = Number(lightestStop[4]);
+  // Even a white image under the weakest part of the shade must meet AA.
+  const surface = "#" + lightestStop.slice(1, 4).map(channel =>
+    Math.round(Number(channel) * alpha + 255 * (1 - alpha)).toString(16).padStart(2, "0")
+  ).join("");
+  for (const selector of [
+    ".larkin2-split-section .larkin2-title",
+    ".larkin2-split-section .larkin2-copy",
+    ".larkin2-split-section .larkin2-small",
+    ".larkin2-split-section .larkin2-split-disclaimer",
+  ]) {
+    const color = declarationsFor(selector).color;
+    assert.ok(ratio(color, surface) >= 4.5, `${selector} over image`);
+    assert.ok(ratio(color, declarationsFor(".larkin2-split-section").background) >= 4.5, `${selector} before image loads`);
+  }
+  assert.equal(declarationsFor(".larkin2-split-image").position, "absolute");
+  assert.equal(declarationsFor(".larkin2-split-content").position, "relative");
+  assert.ok(Number(shade["z-index"]) < Number(declarationsFor(".larkin2-split-content")["z-index"]));
+});
+
 test("formerly dark public panels use light surfaces, not the ink text token", () => {
   for (const selector of [".larkin2-commit-card-inner", ".larkin2-carousel-btn", ".opp-status-card", ".larkin2-about", ".roles-detail-page .larkin2-top"]) {
     const rules = [...css.matchAll(new RegExp(selector.replaceAll(".", "\\.") + " \\{[^}]*\\}", "g"))].map(match => match[0]);
