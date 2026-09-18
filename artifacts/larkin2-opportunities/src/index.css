@@ -525,12 +525,22 @@
 .larkin2-paths .larkin2-eyebrow { color: #a43c25; }
 .larkin2-paths .larkin2-title { max-width: 680px; color: var(--paper-ink); }
 .larkin2-paths .larkin2-small { max-width: 500px; color: rgba(29,32,32,.68); margin-top: 20px; }
+.larkin2-paths-intro { grid-column: 1 / -1; }
 
 .larkin2-paths-header {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   gap: clamp(40px, 6vw, 120px);
   margin-bottom: clamp(60px, 8vw, 100px);
+}
+@media (min-width: 1025px) {
+  .larkin2-paths-intro { display: contents; }
+  .larkin2-paths-header { align-items: center; }
+  .larkin2-paths-intro > .larkin2-small {
+    margin: 0;
+    font-size: clamp(20px, 1.65vw, 24px);
+    line-height: 1.5;
+  }
 }
 .larkin2-role-status {
   align-self: end;
