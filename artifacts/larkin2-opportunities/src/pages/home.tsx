@@ -441,15 +441,6 @@ export function Home() {
               </video>
             </div>
             <div className="larkin2-hero-shade" />
-            <button
-              type="button"
-              className="larkin2-video-toggle"
-              onClick={() => setVideoPaused((paused) => !paused)}
-              aria-label={videoPaused ? "Play background video" : "Pause background video"}
-              aria-pressed={videoPaused}
-            >
-              {videoPaused ? "Play video" : "Pause video"}
-            </button>
             <div className="larkin2-hero-content-wrap" onFocusCapture={() => {
               // Bring fading hero links back into view when reached by keyboard.
               const track = heroTrackRef.current;
@@ -599,7 +590,7 @@ export function Home() {
           <div className="larkin2-commit-header">
             <div className="larkin2-commit-header-text">
               <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>Our Commitments</span></span></h2>
-              <p className="larkin2-small larkin2-reveal" data-reveal>Uncertainty is a major barrier in this industry. 
+              <p className="larkin2-small larkin2-reveal text-[20px]" data-reveal>Uncertainty is a major barrier in this industry.
               Here are the principles we uphold for every applicant.</p>
             </div>
           </div>

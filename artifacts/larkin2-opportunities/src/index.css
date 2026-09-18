@@ -808,6 +808,7 @@
 .larkin2-commit-header-text .larkin2-small {
   max-width: 580px;
   color: rgba(29,32,32,.68);
+  font-size: 20px;
   margin: 0;
 }
 .larkin2-commit-header-cta { display: flex; justify-content: flex-end; margin-bottom: 0; }
