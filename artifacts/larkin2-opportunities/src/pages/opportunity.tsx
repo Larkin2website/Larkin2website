@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
-import { OPPORTUNITIES, type Opportunity } from "../data/opportunities";
+import { OPPORTUNITIES } from "../data/opportunities";
 import NotFound from "./not-found";
 
 export function OpportunityPage({ id }: { id: string }) {
-  const opp = OPPORTUNITIES[id] as (Opportunity & { applicationLink?: string }) | undefined;
+  const opp = OPPORTUNITIES[id];
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -87,48 +87,39 @@ export function OpportunityPage({ id }: { id: string }) {
             <aside className="opp-sidebar">
               <div className="opp-status-card">
                  <h3>{opp.applicationStatus === "Closed" ? "Applications Closed" : "Applications Open"}</h3>
-                 <p>Sign up to receive an alert when this or similar opportunities open on the HETV Opportunities Hub.</p>
+                  <p>You can register your interest in future opportunities. Email alerts are not currently enabled.</p>
                  {opp.applicationStatus === "Open" && opp.applicationLink && (
                    <a href={opp.applicationLink} className="larkin2-btn" data-testid="link-opp-apply">Apply now</a>
                  )}
-                 <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Sign up for updates</MaskedLink>
+                  <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>
               </div>
             </aside>
             
             <div className="opp-main">
-               <div className="opp-block">
-                  <h2>About the programme</h2>
-                  {opp.about.map((p, i) => <p key={i}>{p}</p>)}
-               </div>
-               
-               {opp.placement && opp.placement.length > 0 && (
-                 <div className="opp-block">
-                    <h2>Placement details</h2>
-                    <ul>{opp.placement.map((p, i) => <li key={i}>{p}</li>)}</ul>
+               {opp.sections.map((section) => (
+                 <div className="opp-block" key={section.heading}>
+                   <h2>{section.heading}</h2>
+                   {section.blocks.map((block, index) => {
+                     if (block.type === "paragraph") {
+                       return <p key={index}>{block.text}</p>;
+                     }
+
+                     if (block.type === "links") {
+                       return (
+                         <ul key={index}>
+                           {block.items.map((item) => (
+                             <li key={item.href}>
+                               <a href={item.href} target="_blank" rel="noreferrer">{item.label}</a>
+                             </li>
+                           ))}
+                         </ul>
+                       );
+                     }
+
+                     return <ul key={index}>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>;
+                   })}
                  </div>
-               )}
-               
-               {opp.training && opp.training.length > 0 && (
-                 <div className="opp-block">
-                    <h2>Training & support</h2>
-                    <ul>{opp.training.map((p, i) => <li key={i}>{p}</li>)}</ul>
-                 </div>
-               )}
-               
-               <div className="opp-block">
-                  <h2>Eligibility</h2>
-                  <ul>{opp.eligibility.map((p, i) => <li key={i}>{p}</li>)}</ul>
-               </div>
-               
-               <div className="opp-block">
-                  <h2>Timeline</h2>
-                  <ul>{opp.timeline.map((p, i) => <li key={i}>{p}</li>)}</ul>
-               </div>
-               
-               <div className="opp-block">
-                  <h2>Application guidance</h2>
-                  <ul>{opp.applicationGuidance.map((p, i) => <li key={i}>{p}</li>)}</ul>
-               </div>
+               ))}
             </div>
           </div>
         </section>

@@ -60,17 +60,17 @@ export function SubscriptionSignup() {
 
   return (
     <form className="hetv-subscription" onSubmit={submit}>
-      <label htmlFor="signup-email">Email address</label>
+      <label htmlFor="signup-email">Email</label>
       <input id="signup-email" type="email" autoComplete="email" required maxLength={254}
         placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)}
         disabled={busy} data-testid="input-signup-email" />
       <label className="hetv-subscription-consent">
         <input type="checkbox" required checked={consent} disabled={busy}
           onChange={event => setConsent(event.target.checked)} data-testid="checkbox-signup-consent" />
-        <span>I agree to my email being stored so HETV Opportunities Hub can contact me about roles, training and development opportunities.</span>
+        <span>I want to receive updates. I agree to my email being stored so HETV Opportunities Hub can contact me about roles, training and development opportunities.</span>
       </label>
       <button type="submit" disabled={busy || !consent} data-testid="button-signup-submit">
-        {busy ? "Saving your preference…" : "Sign up for updates"}
+        {busy ? "Saving your preference…" : "Sign Up"}
       </button>
       {error && <p role="alert">{error}</p>}
       <p>We are collecting interest; automated email alerts are not running yet. No spam. <Link href="/unsubscribe">Unsubscribe</Link> using your personal link at any time. Read our <Link href="/privacy">Privacy Notice</Link>.</p>

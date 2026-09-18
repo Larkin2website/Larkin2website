@@ -45,7 +45,7 @@ export function RolesPage() {
     document.title = "Roles | HETV Opportunities Hub";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute("content", "Explore available television production roles from the HETV Opportunities Hub.");
+      metaDesc.setAttribute("content", "Find Jobs, Employment & Career Opportunities | HETV Opportunities Hub");
     }
   }, []);
 
@@ -104,8 +104,8 @@ export function RolesPage() {
       <main id="content">
         <section className="roles-hero larkin2-section">
           <div className="larkin2-eyebrow" style={{ marginBottom: "20px" }}>Opportunities</div>
-          <h1 className="roles-title">Roles</h1>
-          <p className="roles-intro">Explore open positions and previous placements across the productions represented by the HETV Opportunities Hub.</p>
+          <h1 className="roles-title">Search Available roles here</h1>
+          <p className="roles-intro">Find Jobs, Employment &amp; Career Opportunities</p>
         </section>
 
         <section className="roles-filters larkin2-section">

@@ -295,7 +295,7 @@ export function Home() {
     document.title = "HETV Opportunities Hub";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute("content", "A welcoming home for newcomers and experienced drama crew to find jobs, training, and development across multiple high-end television productions.");
+      metaDesc.setAttribute("content", "Your central hub for jobs, training and development on Larkin 2 a high-end TV drama production");
     }
   }, []);
 
@@ -448,14 +448,14 @@ export function Home() {
                     <div className="larkin2-sub larkin2-mask"><span>Opportunities Hub</span></div>
                   </div>
                   <div className="larkin2-hero-right">
-                    <p className="larkin2-intro larkin2-mask"><span>A welcoming home for newcomers and experienced drama crew to find jobs, training, and development across multiple high-end television productions.</span></p>
+                    <p className="larkin2-intro larkin2-mask"><span>Your central hub for jobs, training and development on Larkin 2 a high-end TV drama production</span></p>
                   </div>
                 </div>
                 <div className="larkin2-hero-actions-wrap">
                   <div className="larkin2-actions">
-                    <MaskedLink href="/roles" className="larkin2-btn" testId="link-hero-roles">View Crew Roles</MaskedLink>
-                    <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore opportunities</MaskedLink>
-                    <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign up for updates</MaskedLink>
+                    <MaskedLink href="/roles" className="larkin2-btn" testId="link-hero-roles">View Live Roles</MaskedLink>
+                    <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore Opportunities</MaskedLink>
+                    <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign Up For Updates</MaskedLink>
                   </div>
                 </div>
               </div>
@@ -472,7 +472,7 @@ export function Home() {
       <section className="larkin2-section larkin2-signup" id="signup" aria-labelledby="signup-title" style={{ borderTop: 'none', borderBottom: '1px solid var(--line)' }}>
         <div className="larkin2-signup-layout larkin2-reveal" data-reveal>
           <div>
-            <h2 className="larkin2-title" id="signup-title" style={{ color: 'var(--paper-ink)' }}><span className="larkin2-mask"><span>Stay connected to opportunities</span></span></h2>
+            <h2 className="larkin2-title" id="signup-title" style={{ color: 'var(--paper-ink)' }}><span className="larkin2-mask"><span>Sign Up</span></span></h2>
             <p className="larkin2-copy" style={{ color: 'var(--secondary)' }}>Register your interest in roles, training and development across our productions. We aim to keep applications open for at least five days.</p>
             <p className="larkin2-small" style={{ color: 'var(--muted)', marginTop: '20px' }}>Sign up to be notified when roles or programmes become available. We are currently collecting interest, so while automated email alerts are not running yet, your preference will be saved securely.</p>
           </div>
@@ -486,14 +486,24 @@ export function Home() {
         <section className="larkin2-section larkin2-about" id="about" aria-labelledby="about-title">
           <div className="larkin2-grid">
             <div className="larkin2-reveal" data-reveal>
-              <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>Who we are and what we cover</span></span></h2>
+              <div className="larkin2-eyebrow">About Us</div>
+              <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>HETV Opportunities Hub</span></span></h2>
             </div>
             <div className="larkin2-copy larkin2-reveal" data-reveal>
-              <p>Larkin2 is a special-purpose production company. HETV Opportunities Hub is operated by Larkin AV Limited and brings together opportunities across multiple high-end television (HETV) drama productions.</p>
-              <p>This is a central place where you can find genuine crew roles, work experience placements, shadowing programmes, and training courses connected to our active productions. We manage these opportunities directly, ensuring you get accurate, up-to-date information directly from the source.</p>
-              <p>We work with training providers, community organisations, and regional talent networks to reach people who might not otherwise hear about these routes into the industry.</p>
+              <p>Welcome to the official home for all live roles, work experience placements, shadowing programmes, and industry events connected to Larkin 2. Whether you’re an experienced crew member or exploring the industry for the first time, this is the place to start.</p>
+              <p>HETV Opportunities Hub is operated by Larkin AV Limited.</p>
 
               <span className="hetv-disclaimer">The opportunity and commitment images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
+            </div>
+          </div>
+          <div className="larkin2-grid" style={{ marginTop: '64px' }}>
+            <div className="larkin2-reveal" data-reveal>
+              <h2 className="larkin2-title"><span className="larkin2-mask"><span>Production &amp; Culture</span></span></h2>
+            </div>
+            <div className="larkin2-copy larkin2-reveal" data-reveal>
+              <p>At Larkin 2, we believe everyone should have the opportunity to work in film and television — regardless of background, experience level, or personal circumstances. Our recruitment processes are designed to be transparent, inclusive, and fair at every stage.</p>
+              <p>We actively seek to create pathways for people who are new to the industry. Through partnerships with training providers, community organisations, and regional talent networks, we ensure that opportunity reaches those who might not otherwise have access to it.</p>
+              <p>Our production values centre on respect, collaboration, and genuine support. We are committed to building crews that reflect the diversity of the communities we work in — and to creating a working environment where every person feels valued and heard.</p>
             </div>
           </div>
         </section>
@@ -501,7 +511,7 @@ export function Home() {
         <section className="larkin2-section larkin2-paths" id="paths" aria-labelledby="paths-title">
           <div className="larkin2-paths-header larkin2-reveal" data-reveal>
             <div className="larkin2-paths-intro">
-              <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Something for every level of industry experience</span></span></h2>
+              <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Roles &amp; Opportunities</span></span></h2>
               <p className="larkin2-small">Whether you are looking for your first set experience, specific skills training, or a standard crew role, we have clear entry points.</p>
             </div>
           </div>
@@ -517,10 +527,10 @@ export function Home() {
               <div className="larkin2-path-bottom">
                 <div className="larkin2-path-bottom-main">
                   <h3>Crew Roles</h3>
-                  <p>Paid crew positions posted as productions need them, across every department from Accounts to VFX.</p>
+                  <p>Find Jobs, Employment &amp; Career Opportunities</p>
                 </div>
                 <div className="larkin2-path-cta">
-                  <MaskedLink href="/roles" testId="link-path-roles">View current roles</MaskedLink>
+                  <MaskedLink href="/roles" testId="link-path-roles">View Live Roles</MaskedLink>
                 </div>
               </div>
             </article>
@@ -575,8 +585,8 @@ export function Home() {
               <div className="hetv-programme-list">
                 <div className="hetv-programme-item">
                   <h3>First Credit Work Experience</h3>
-                  <p>A paid production placement and training course for those with no experience or industry contacts.</p>
-                  <MaskedLink href={`/opportunities/first-credit`} testId="link-opp-first-credit">Learn about First Credit</MaskedLink>
+                  <p>The First Credit Work Experience Programme has been designed to provide meaningful first industry experience for people who have had little or no opportunity to access the Film &amp; Television industry.</p>
+                  <MaskedLink href={`/opportunities/first-credit`} testId="link-opp-first-credit">Learn More</MaskedLink>
                 </div>
                 <div className="hetv-empty-state">
                   <h4>No active training courses</h4>
@@ -596,14 +606,14 @@ export function Home() {
             <div className="larkin2-copy larkin2-reveal" data-reveal>
               <div className="hetv-programme-list">
                 <div className="hetv-programme-item">
-                  <h3>Director Pathway</h3>
-                  <p>A paid six-week shadowing placement for freelance directors with a qualifying screen credit.</p>
-                  <MaskedLink href={`/opportunities/director-pathway`} testId="link-opp-director">Learn about Director Pathway</MaskedLink>
+                  <h3>Creative Leadership Shadowing Programme: Director Pathway</h3>
+                  <p>The Creative Leadership Shadowing Programme: Director Pathway is designed for experienced directors who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
+                  <MaskedLink href={`/opportunities/director-pathway`} testId="link-opp-director">Learn More</MaskedLink>
                 </div>
                 <div className="hetv-programme-item mt-8">
-                  <h3>Producer Pathway</h3>
-                  <p>A paid shadowing placement of up to fourteen weeks for experienced freelance producers.</p>
-                  <MaskedLink href={`/opportunities/producer-pathway`} testId="link-opp-producer">Learn about Producer Pathway</MaskedLink>
+                  <h3>Creative Leadership Shadowing Programme: Producer Pathway</h3>
+                  <p>The Creative Leadership Shadowing Programme: Producer Pathway is designed for experienced producers who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
+                  <MaskedLink href={`/opportunities/producer-pathway`} testId="link-opp-producer">Learn More</MaskedLink>
                 </div>
               </div>
             </div>
