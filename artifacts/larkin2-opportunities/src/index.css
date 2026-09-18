@@ -458,7 +458,8 @@
   line-height: .95;
 }
 .larkin2-split-section .larkin2-copy {
-  max-width: 720px;
+  width: 100%;
+  max-width: 1200px;
   color: #e9e5df;
 }
 .larkin2-split-action {
