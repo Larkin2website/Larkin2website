@@ -599,7 +599,8 @@ export function Home() {
           <div className="larkin2-commit-header">
             <div className="larkin2-commit-header-text">
               <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>Our Commitments</span></span></h2>
-              <p className="larkin2-small larkin2-reveal" data-reveal>Uncertainty is a major barrier in this industry. Here are the principles we uphold for every applicant.</p>
+              <p className="larkin2-small larkin2-reveal" data-reveal>Uncertainty is a major barrier in this industry. 
+              Here are the principles we uphold for every applicant.</p>
             </div>
           </div>
           <CommitmentsCarousel />
