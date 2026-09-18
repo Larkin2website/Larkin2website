@@ -1113,6 +1113,24 @@
 .larkin2-foot-col a:hover { color: var(--ink); }
 .larkin2-foot-bottom { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 
+/* Homepage only: the FAQs scroll away over a stationary footer.
+   Clipping to its measured spacer prevents it showing behind earlier sections. */
+.home-footer-reveal { position: relative; }
+.home-footer-reveal[data-reveal-enabled="true"] {
+  height: var(--home-footer-height);
+  clip-path: inset(0);
+}
+.home-footer-reveal[data-reveal-enabled="true"] .home-footer-reveal-panel {
+  position: fixed;
+  inset: auto 0 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-footer-reveal[data-reveal-enabled="true"] { height: auto; clip-path: none; }
+  .home-footer-reveal[data-reveal-enabled="true"] .home-footer-reveal-panel {
+    position: static;
+  }
+}
+
 /* Legal documents */
 .legal-page { background: var(--paper); color: var(--paper-ink); }
 .legal-page .larkin2-top { color: var(--ink); }

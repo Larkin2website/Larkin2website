@@ -5,3 +5,4 @@
 - [Public visual-change boundaries](public-visual-change-boundaries.md) — Keep functional subscription and unsubscribe behavior outside broad presentation rewrites.
 - [Preview video codecs](preview-video-codecs.md) — A served MP4 can still fail in the preview test browser; check canPlayType before blaming playback logic.
 - [Animated hero layout](animated-hero-layout.md) — Coordinate the video crop with reserved layout space; avoid offsets that depend on which section follows.
+- [Homepage footer reference](homepage-footer-reference.md) — The FAQ-to-footer transition follows Dick Clark’s stationary-footer reveal, not a scaling or fading FAQ effect.

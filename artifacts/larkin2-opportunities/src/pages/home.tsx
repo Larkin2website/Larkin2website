@@ -1,5 +1,6 @@
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
-import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
+import { SiteHeader, MobileMenu, MaskedLink } from "../components/layout";
+import { HomeFooterReveal } from "../components/home-footer-reveal";
 import { SubscriptionSignup } from "../components/subscription-signup";
 
 let hasVisitedHomeThisPageLoad = false;
@@ -615,7 +616,7 @@ export function Home() {
           </div>
         </section>
       </div>
-      <SiteFooter />
+      <HomeFooterReveal />
     </main>
   );
 }
