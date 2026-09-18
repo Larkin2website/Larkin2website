@@ -61,6 +61,29 @@ test("small text on the orange role footer stays readable", () => {
   }
 });
 
+test("entry cards use dark gradients with readable text and keyboard focus", () => {
+  const gradient = declarationsFor(".larkin2-path-gradient").background;
+  const stops = [...gradient.matchAll(/rgba\((\d+),(\d+),(\d+),([\d.]+)\)\s+(\d+)%/g)];
+  assert.equal(stops.length, 4);
+  assert.ok(Number(stops[0][4]) < Number(stops.at(-1)[4]));
+  const textStop = stops.find(stop => Number(stop[5]) === 55);
+  assert.ok(textStop && Number(textStop[4]) >= .82);
+  // Worst case: a white image behind the lower text's translucent overlay.
+  const alpha = Number(textStop[4]);
+  const surface = "#" + textStop.slice(1, 4).map(channel =>
+    Math.round(Number(channel) * alpha + 255 * (1 - alpha)).toString(16).padStart(2, "0")
+  ).join("");
+  for (const selector of [".larkin2-path h3", ".larkin2-path-bottom-main p"]) {
+    assert.ok(ratio(resolveColor(declarationsFor(selector).color), surface) >= 4.5, selector);
+  }
+  const focus = resolveColor(declarationsFor(".larkin2-page .larkin2-path :focus-visible")["outline-color"]);
+  assert.ok(ratio(focus, surface) >= 3);
+  for (const selector of [".larkin2-path-label", ".larkin2-page .larkin2-path .larkin2-link"]) {
+    const rule = declarationsFor(selector);
+    assert.ok(ratio(resolveColor(rule.color), resolveColor(rule.background)) >= 4.5, selector);
+  }
+});
+
 test("formerly dark public panels use light surfaces, not the ink text token", () => {
   for (const selector of [".larkin2-commit-card-inner", ".larkin2-carousel-btn", ".opp-status-card", ".larkin2-about", ".roles-detail-page .larkin2-top"]) {
     const rules = [...css.matchAll(new RegExp(selector.replaceAll(".", "\\.") + " \\{[^}]*\\}", "g"))].map(match => match[0]);

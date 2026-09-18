@@ -96,12 +96,15 @@ html { background: #f4f1ed; }
 .larkin2-carousel-btn:hover:not(:disabled) { color: var(--ink); background: var(--orange); }
 .larkin2-page ul > li > span:first-child { color: var(--accent-text); }
 
-/* Keep photos and their original zoom interactions, but remove black card surfaces. */
-.larkin2-path, .larkin2-production { background: var(--paper); }
+/* Dark media overlays are confined to the three entry cards. */
+.larkin2-production { background: var(--paper); }
+.larkin2-path { background: #0f1112; }
 .larkin2-path-gradient {
-  background: linear-gradient(to bottom, transparent 15%, rgba(233,229,223,.12) 35%, #e9e5df 76%);
+  background: linear-gradient(to bottom, rgba(15,17,18,.12) 0%, rgba(15,17,18,.3) 30%, rgba(15,17,18,.82) 55%, rgba(15,17,18,.98) 100%);
 }
-.larkin2-path h3, .larkin2-path-bottom-main p { color: var(--ink); }
+.larkin2-path h3 { color: var(--stage); }
+.larkin2-path-bottom-main p { color: var(--paper); }
+.larkin2-page .larkin2-path :focus-visible { outline-color: var(--stage); }
 .larkin2-culture .larkin2-image-caption { background: var(--paper); color: var(--ink); }
 
 /* Original sticky video / scroll morph, surrounded by paper rather than black. */
