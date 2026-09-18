@@ -31,8 +31,11 @@ test("Production & Culture preserves its copy over the full-width image", () => 
   assert.ok(body[0].includes("Explore roles, work experience, training and development on Larkin 2"));
   assert.ok(body[0].includes("fair, inclusive recruitment"));
   assert.ok(body[0].split(/\s+/).length <= 55);
-  assert.ok(section.includes('<p className="larkin2-small">HETV Opportunities Hub is operated by Larkin AV Limited.</p>'));
-  assert.ok(section.includes("AI-generated illustrations of television production"));
+  assert.ok(!section.includes("HETV Opportunities Hub is operated by Larkin AV Limited."));
+  assert.ok(!section.includes("AI-generated illustrations of television production"));
+  assert.ok(section.includes('href="/roles"'));
+  assert.ok(section.includes('testId="link-about-roles"'));
+  assert.ok(section.includes("View Live Roles"));
 });
 
 test("HETV naming, existing sections and source CTA wording are retained", () => {

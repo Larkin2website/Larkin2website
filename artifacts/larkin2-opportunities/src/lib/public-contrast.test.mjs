@@ -97,8 +97,6 @@ test("Production & Culture overlay keeps all text readable over bright imagery",
   for (const selector of [
     ".larkin2-split-section .larkin2-title",
     ".larkin2-split-section .larkin2-copy",
-    ".larkin2-split-section .larkin2-small",
-    ".larkin2-split-section .larkin2-split-disclaimer",
   ]) {
     const color = declarationsFor(selector).color;
     assert.ok(ratio(color, surface) >= 4.5, `${selector} over image`);
@@ -106,6 +104,8 @@ test("Production & Culture overlay keeps all text readable over bright imagery",
   }
   assert.equal(declarationsFor(".larkin2-split-image").position, "absolute");
   assert.equal(declarationsFor(".larkin2-split-content").position, "relative");
+  assert.equal(declarationsFor(".larkin2-split-content")["justify-content"], "flex-end");
+  assert.equal(declarationsFor(".larkin2-split-content")["text-align"], "center");
   assert.ok(Number(shade["z-index"]) < Number(declarationsFor(".larkin2-split-content")["z-index"]));
 });
 

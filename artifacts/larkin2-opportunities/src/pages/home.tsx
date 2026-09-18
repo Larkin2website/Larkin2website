@@ -508,14 +508,8 @@ export function Home() {
             <div className="larkin2-copy larkin2-reveal" data-reveal>
               <p>Explore roles, work experience, training and development on Larkin 2, whether you’re new to television or an experienced crew member. We’re committed to fair, inclusive recruitment and a respectful, supportive production culture—creating opportunities for people from every background.</p>
             </div>
-
-            <div className="larkin2-bordered-rows larkin2-reveal" data-reveal>
-              <div className="larkin2-bordered-row">
-                <p className="larkin2-small">HETV Opportunities Hub is operated by Larkin AV Limited.</p>
-              </div>
-              <div className="larkin2-bordered-row">
-                <span className="larkin2-split-disclaimer">The opportunity and commitment images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
-              </div>
+            <div className="larkin2-split-action larkin2-reveal" data-reveal>
+              <MaskedLink href="/roles" className="larkin2-btn" testId="link-about-roles">View Live Roles</MaskedLink>
             </div>
           </div>
         </section>

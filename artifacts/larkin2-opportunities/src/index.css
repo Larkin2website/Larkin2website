@@ -420,17 +420,19 @@
   inset: 0;
   content: "";
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(8,10,12,.88) 0%, rgba(8,10,12,.72) 58%, rgba(8,10,12,.64) 100%);
+  background: linear-gradient(0deg, rgba(8,10,12,.9) 0%, rgba(8,10,12,.72) 48%, rgba(8,10,12,.64) 100%);
 }
 .larkin2-split-content {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
+  align-items: center;
   min-height: clamp(640px, 60vw, 860px);
-  padding: clamp(64px, 8vw, 112px) clamp(20px, 7.5vw, 120px);
+  padding: clamp(64px, 8vw, 112px) clamp(20px, 7.5vw, 120px) clamp(52px, 7vw, 96px);
   max-width: 100%;
+  text-align: center;
 }
 .larkin2-split-image {
   position: absolute;
@@ -456,18 +458,16 @@
   line-height: .95;
 }
 .larkin2-split-section .larkin2-copy {
-  max-width: 580px;
+  max-width: 720px;
   color: #e9e5df;
 }
-.larkin2-split-section .larkin2-bordered-rows {
-  max-width: 580px;
+.larkin2-split-action {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(28px, 4vw, 42px);
 }
-.larkin2-split-section .larkin2-bordered-row {
-  border-color: rgba(244,241,237,.36);
-}
-.larkin2-split-section .larkin2-small,
-.larkin2-split-section .larkin2-split-disclaimer {
-  color: #e9e5df;
+.larkin2-split-action .larkin2-btn {
+  color: #080a0c;
 }
 .larkin2-bordered-rows {
   margin-top: clamp(40px, 6vh, 64px);
