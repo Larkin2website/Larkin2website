@@ -4,7 +4,6 @@ import {
   useListPublicOpportunities,
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
-import { RoleSearchComposer } from "../components/role-search-composer";
 import { publicOpportunityToRole } from "../data/role-api";
 
 export function RolesPage() {
@@ -109,13 +108,6 @@ export function RolesPage() {
         </section>
 
         <section className="roles-filters larkin2-section">
-          <RoleSearchComposer
-            id="search-roles"
-            value={search}
-            onChange={setSearch}
-            inputTestId="input-roles-search"
-            clearTestId="button-clear-roles-search"
-          />
           <div className="roles-classic-filters" aria-label="Filter roles">
             <div className="roles-filter-field">
               <label htmlFor="filter-status">Status</label>
