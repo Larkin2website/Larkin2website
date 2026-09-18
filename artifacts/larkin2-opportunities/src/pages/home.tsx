@@ -341,15 +341,24 @@ export function Home() {
 
   useEffect(() => {
     let frame = 0;
+    const heroTrack = heroTrackRef.current;
+    const sticky = heroTrack?.querySelector<HTMLElement>(".larkin2-hero-sticky");
+    let morphTravel = 1;
+    const measure = () => {
+      if (heroTrack && sticky) {
+        // min-height is the final visible crop plus its gap, resolved by CSS per viewport.
+        morphTravel = Math.max(1, heroTrack.offsetHeight - parseFloat(getComputedStyle(sticky).minHeight));
+      }
+      onScroll();
+    };
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         const current = window.scrollY;
-        const heroTrack = heroTrackRef.current;
         if (heroTrack) {
-          const travel = Math.max(1, heroTrack.offsetHeight - window.innerHeight);
-          const morphTravel = travel * 0.75;
-          heroTrack.style.setProperty("--hero-progress", Math.min(1, Math.max(0, current / morphTravel)).toFixed(4));
+          const travelled = -heroTrack.getBoundingClientRect().top;
+          const progress = reducedMotion ? 0 : Math.min(1, Math.max(0, travelled / morphTravel));
+          heroTrack.style.setProperty("--hero-progress", progress.toFixed(4));
         }
         setScrolled(current > 38);
         if (current < 20 || current < lastScrollY.current - 5) {
@@ -363,13 +372,18 @@ export function Home() {
         frame = 0;
       });
     };
-    onScroll();
+    measure();
+    const resizeObserver = new ResizeObserver(measure);
+    if (heroTrack) resizeObserver.observe(heroTrack);
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+      resizeObserver.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [menuOpen]);
+  }, [menuOpen, reducedMotion]);
 
   useEffect(() => {
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
@@ -438,7 +452,13 @@ export function Home() {
             >
               {videoPaused ? "Play video" : "Pause video"}
             </button>
-            <div className="larkin2-hero-content-wrap">
+            <div className="larkin2-hero-content-wrap" onFocusCapture={() => {
+              // Bring fading hero links back into view when reached by keyboard.
+              const track = heroTrackRef.current;
+              if (track && track.getBoundingClientRect().top < 0) {
+                window.scrollTo({ top: window.scrollY + track.getBoundingClientRect().top, behavior: "instant" });
+              }
+            }}>
               <div className="larkin2-hero-content larkin2-reveal">
                 <div className="larkin2-hero-split">
                   <div className="larkin2-hero-left">

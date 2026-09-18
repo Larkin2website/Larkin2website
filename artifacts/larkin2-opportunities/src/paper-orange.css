@@ -108,12 +108,8 @@ html { background: #f4f1ed; }
 .larkin2-hero-sticky, .larkin2-hero-bg { background: var(--paper); }
 .larkin2-hero-shade {
   /* This is a media scrim, not a page surface; it follows the shrinking footage. */
-  transform: translateY(calc(var(--hero-progress) * 2svh));
-  clip-path: inset(
-    calc(var(--hero-progress) * 10svh) calc(var(--hero-progress) * 6vw)
-    calc(var(--hero-progress) * 47svh) calc(var(--hero-progress) * 6vw)
-    round calc(var(--hero-progress) * 24px)
-  );
+  transform: translateY(calc(var(--hero-progress) * var(--hero-shift)));
+  clip-path: var(--hero-clip);
 }
 .larkin2-hero-shade::after { background: none; }
 .larkin2-hero-content { color: #f4f1ed; }
@@ -151,19 +147,11 @@ html { background: #f4f1ed; }
 }
 @media (max-width: 767px) {
   .larkin2-hero-content .larkin2-h1 { font-size: clamp(36px, 9vw, 66px); }
-  .larkin2-hero-shade {
-    transform: translateY(calc(var(--hero-progress) * 4svh));
-    clip-path: inset(
-      calc(var(--hero-progress) * 12svh) calc(var(--hero-progress) * 4vw)
-      calc(var(--hero-progress) * 24svh) calc(var(--hero-progress) * 4vw)
-      round calc(var(--hero-progress) * 16px)
-    );
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .larkin2-hero-track { height: auto; }
-  .larkin2-hero-sticky { position: relative; min-height: 100svh; }
+  .larkin2-hero-sticky { position: relative; height: var(--hero-height); min-height: var(--hero-height); }
   .larkin2-hero-media, .larkin2-hero-shade { clip-path: none; filter: none; animation: none; transform: none; }
   .larkin2-hero-content-wrap, .larkin2-hero-media-wrap, .larkin2-hero-meta-wrap { opacity: 1; transform: none; }
   .larkin2-hero-meta-wrap { left: 20px; right: 20px; }

@@ -4,3 +4,4 @@
 - [Public subscription boundary](public-subscription-boundary.md) — Interest collection is intentionally separate from email delivery; don't promise alerts before a provider is connected.
 - [Public visual-change boundaries](public-visual-change-boundaries.md) — Keep functional subscription and unsubscribe behavior outside broad presentation rewrites.
 - [Preview video codecs](preview-video-codecs.md) — A served MP4 can still fail in the preview test browser; check canPlayType before blaming playback logic.
+- [Animated hero layout](animated-hero-layout.md) — Coordinate the video crop with reserved layout space; avoid offsets that depend on which section follows.
