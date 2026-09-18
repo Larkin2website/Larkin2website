@@ -48,7 +48,10 @@ export function RolesPage() {
       ...(publicOpportunityOptions?.departments ?? []),
       ...roles.map(role => role.department),
     ])].sort(),
-    roleTypes: [...new Set(roles.map(role => role.roleType))].sort(),
+    roleTypes: [...new Set([
+      ...(publicOpportunityOptions?.roleTypes ?? []),
+      ...roles.map(role => role.roleType),
+    ])].sort(),
   }), [publicOpportunityOptions, roles]);
   const hasActiveFilters = Boolean(search.trim() || statusFilter || departmentFilter || roleTypeFilter);
 
