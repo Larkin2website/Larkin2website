@@ -407,7 +407,6 @@ export function Home() {
     <main className="larkin2-page" id="top">
       {introVisible && <IntroOverlay onComplete={finishIntro} />}
       <a className="larkin2-skip" href="#content" data-testid="link-skip-content">Skip to content</a>
-
       <SiteHeader 
         scrolled={scrolled} 
         headerHidden={headerHidden} 
@@ -421,7 +420,6 @@ export function Home() {
         setMenuOpen={setMenuOpen} 
         menuButtonRef={menuButtonRef} 
       />
-
       <section ref={heroTrackRef} className="larkin2-hero-track" aria-labelledby="hero-title">
         <div className="larkin2-hero-sticky">
           <div className="larkin2-hero-bg" />
@@ -493,7 +491,6 @@ export function Home() {
           </div>
         </div>
       </section>
-
       <section className="larkin2-section larkin2-signup" id="signup" aria-labelledby="signup-title" style={{ borderTop: 'none', borderBottom: '1px solid var(--line)' }}>
         <div className="larkin2-signup-layout larkin2-reveal" data-reveal>
           <div>
@@ -506,7 +503,6 @@ export function Home() {
           </div>
         </div>
       </section>
-
       <div id="content">
         <section className="larkin2-split-section" id="about" aria-labelledby="about-title">
           <div className="larkin2-split-content">
@@ -536,7 +532,7 @@ export function Home() {
           <div className="larkin2-paths-header larkin2-reveal" data-reveal>
             <div className="larkin2-paths-intro">
               <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Roles &amp; Opportunities</span></span></h2>
-              <p className="larkin2-small">Whether you are looking for your first set experience, specific skills training, or a standard crew role, we have clear entry points.</p>
+              <p className="larkin2-small text-[21px]">Whether you are looking for your first set experience, specific skills training, or a standard crew role, we have clear entry points.</p>
             </div>
           </div>
           <div className="larkin2-path-grid">
@@ -627,7 +623,6 @@ export function Home() {
           </div>
         </section>
       </div>
-
       <SiteFooter />
     </main>
   );
