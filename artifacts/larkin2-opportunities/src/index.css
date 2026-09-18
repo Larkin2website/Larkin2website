@@ -618,7 +618,12 @@
 }
 .larkin2-paths .larkin2-eyebrow { color: #a43c25; }
 .larkin2-paths .larkin2-title { max-width: 680px; color: var(--paper-ink); }
-.larkin2-paths .larkin2-small { max-width: 500px; color: rgba(29,32,32,.68); margin-top: 20px; }
+.larkin2-paths .larkin2-small {
+  max-width: 500px;
+  margin-top: 20px;
+  color: rgba(29,32,32,.68);
+  font-size: clamp(14px, 1.4vw, 18px);
+}
 .larkin2-paths-intro { grid-column: 1 / -1; }
 
 .larkin2-paths-header {
@@ -632,7 +637,7 @@
   .larkin2-paths-header { align-items: center; }
   .larkin2-paths-intro > .larkin2-small {
     margin: 0;
-    font-size: clamp(20px, 1.65vw, 24px);
+    font-size: clamp(16px, 1.3vw, 19px);
     line-height: 1.5;
   }
 }

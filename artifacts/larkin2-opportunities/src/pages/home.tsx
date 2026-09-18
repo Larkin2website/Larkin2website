@@ -518,7 +518,7 @@ export function Home() {
           <div className="larkin2-paths-header larkin2-reveal" data-reveal>
             <div className="larkin2-paths-intro">
               <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Roles &amp; Opportunities</span></span></h2>
-              <p className="larkin2-small text-[21px]">Whether you are looking for your first set experience, specific skills training, or a standard crew role, we have clear entry points.</p>
+              <p className="larkin2-small">Whether you are looking for your first set experience, specific skills training, or a standard crew role, we have clear entry points.</p>
             </div>
           </div>
           <div className="larkin2-path-grid">
