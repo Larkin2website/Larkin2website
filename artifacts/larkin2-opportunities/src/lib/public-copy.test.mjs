@@ -36,7 +36,7 @@ test("HETV naming, existing sections and source CTA wording are retained", () =>
   for (const text of ["HETV Opportunities Hub", "View Live Roles", "Explore Opportunities", "Sign Up For Updates"]) {
     assert.ok(home.includes(text), text);
   }
-  for (const id of ["signup", "about", "paths", "training", "development", "commitments", "faqs"]) {
+  for (const id of ["signup", "about", "paths", "commitments", "faqs"]) {
     assert.ok(home.includes(`id="${id}"`), id);
   }
   const metadata = read("../../index.html");

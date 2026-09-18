@@ -7,7 +7,7 @@ import { Route, Switch, useLocation, Router as WouterRouter } from "wouter";
 import { useEffect } from "react";
 import "./index.css";
 import "./paper-orange.css";
-import { scrollToHash } from "./utils/navigation";
+import { programmeRouteForHash, scrollToHash } from "./utils/navigation";
 
 import { Home } from "./pages/home";
 import { RolesPage } from "./pages/roles";
@@ -15,19 +15,27 @@ import { RoleDetailPage } from "./pages/role-detail";
 import { OpportunityPage } from "./pages/opportunity";
 import { PrivacyNoticePage, TermsPage } from "./pages/legal";
 import { UnsubscribePage } from "./pages/unsubscribe";
+import { TrainingPage, DevelopmentPage } from "./pages/programme-overview";
 
 const queryClient = new QueryClient();
 
 function ScrollManager() {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
 
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash;
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const pathname = window.location.pathname.slice(base.length);
+      const programmeRoute = programmeRouteForHash(pathname, hash);
+      if (programmeRoute) {
+        navigate(`${programmeRoute}${window.location.search}`, { replace: true });
+        return;
+      }
       if (hash) {
         scrollToHash(hash);
       } else {
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       }
     };
 
@@ -35,8 +43,12 @@ function ScrollManager() {
 
     // Optionally handle native hash changes (like back/forward buttons)
     window.addEventListener("hashchange", handleHash);
-    return () => window.removeEventListener("hashchange", handleHash);
-  }, [location]);
+    window.addEventListener("popstate", handleHash);
+    return () => {
+      window.removeEventListener("hashchange", handleHash);
+      window.removeEventListener("popstate", handleHash);
+    };
+  }, [location, navigate]);
 
   return null;
 }
@@ -47,6 +59,8 @@ function Router() {
       <ScrollManager />
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/training" component={TrainingPage} />
+        <Route path="/development" component={DevelopmentPage} />
         <Route path="/roles" component={RolesPage} />
         <Route path="/roles/:id">
           {(params) => <RoleDetailPage id={params.id} />}

@@ -1,3 +1,13 @@
+export function programmeRouteForHash(pathname: string, hash: string) {
+  if (pathname !== "/" && pathname !== "") return undefined;
+  let id: string;
+  try { id = decodeURIComponent(hash.replace(/^#/, "")); }
+  catch { return undefined; }
+  if (id === "training") return "/training";
+  if (id === "development") return "/development";
+  return undefined;
+}
+
 export function scrollToHash(hash: string) {
   const behavior: ScrollBehavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ? "auto"

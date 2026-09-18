@@ -558,7 +558,7 @@ export function Home() {
                   <p>Build practical skills and explore supported learning opportunities. Check each listing for the experience level it is designed for.</p>
                 </div>
                 <div className="larkin2-path-cta">
-                  <MaskedLink href="#training" testId="link-path-training">View courses</MaskedLink>
+                  <MaskedLink href="/training" testId="link-path-training">View courses</MaskedLink>
                 </div>
               </div>
             </article>
@@ -577,55 +577,10 @@ export function Home() {
                   <p>Shadowing and progression placements for experienced professionals moving into High-End Television.</p>
                 </div>
                 <div className="larkin2-path-cta">
-                  <MaskedLink href="#development" testId="link-path-development">View programmes</MaskedLink>
+                  <MaskedLink href="/development" testId="link-path-development">View programmes</MaskedLink>
                 </div>
               </div>
             </article>
-          </div>
-        </section>
-
-        <section className="larkin2-section larkin2-commit" id="training" aria-labelledby="training-title">
-          <div className="larkin2-grid">
-            <div className="larkin2-reveal" data-reveal>
-              <h2 className="larkin2-title" id="training-title"><span className="larkin2-mask"><span>Training Courses &amp; Work Experience</span></span></h2>
-              <p className="larkin2-copy mt-6">Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment. Check each listing for eligibility, support and pay. Free participation means no fees; it does not mean every course is paid.</p>
-            </div>
-            <div className="larkin2-copy larkin2-reveal" data-reveal>
-              <div className="hetv-programme-list">
-                <div className="hetv-programme-item">
-                  <h3>First Credit Work Experience</h3>
-                  <p>The First Credit Work Experience Programme has been designed to provide meaningful first industry experience for people who have had little or no opportunity to access the Film &amp; Television industry.</p>
-                  <MaskedLink href={`/opportunities/first-credit`} testId="link-opp-first-credit">Learn More</MaskedLink>
-                </div>
-                <div className="hetv-empty-state">
-                  <h4>No active training courses</h4>
-                  <p>No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available. In the meantime, you can read about First Credit above.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="larkin2-section larkin2-commit" id="development" aria-labelledby="development-title" style={{ background: 'var(--stage)' }}>
-          <div className="larkin2-grid">
-            <div className="larkin2-reveal" data-reveal>
-              <h2 className="larkin2-title" id="development-title"><span className="larkin2-mask"><span>Development Programmes</span></span></h2>
-              <p className="larkin2-copy mt-6">Designed for industry professionals looking to step up or transition into High-End Television drama.</p>
-            </div>
-            <div className="larkin2-copy larkin2-reveal" data-reveal>
-              <div className="hetv-programme-list">
-                <div className="hetv-programme-item">
-                  <h3>Creative Leadership Shadowing Programme: Director Pathway</h3>
-                  <p>The Creative Leadership Shadowing Programme: Director Pathway is designed for experienced directors who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
-                  <MaskedLink href={`/opportunities/director-pathway`} testId="link-opp-director">Learn More</MaskedLink>
-                </div>
-                <div className="hetv-programme-item mt-8">
-                  <h3>Creative Leadership Shadowing Programme: Producer Pathway</h3>
-                  <p>The Creative Leadership Shadowing Programme: Producer Pathway is designed for experienced producers who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
-                  <MaskedLink href={`/opportunities/producer-pathway`} testId="link-opp-producer">Learn More</MaskedLink>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 

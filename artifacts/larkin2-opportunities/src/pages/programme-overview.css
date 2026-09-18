@@ -1,0 +1,45 @@
+.programme-overview-page {
+  padding-top: var(--header-height, 90px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.programme-overview-page main {
+  flex: 1;
+}
+
+.programme-overview-section {
+  padding-top: 4rem;
+  padding-bottom: 8rem;
+}
+
+@media (max-width: 768px) {
+  .programme-overview-page {
+    padding-top: 70px;
+  }
+  .programme-overview-section {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+  }
+}
+
+.programme-status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.6rem;
+  background: var(--line, #e5e5e5);
+  color: var(--ink, #1a1a1a);
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.programme-status-badge.is-open {
+  background: var(--orange);
+  color: var(--ink);
+}
