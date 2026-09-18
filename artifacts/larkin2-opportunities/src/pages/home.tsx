@@ -463,7 +463,12 @@ export function Home() {
                 <div className="larkin2-hero-split">
                   <div className="larkin2-hero-left">
                     <h1 className="larkin2-h1" id="hero-title">
-                      <span className="larkin2-mask"><span className="larkin2-hero-wordmark">HETV</span></span>
+                      <span className="larkin2-mask">
+                        <span className="larkin2-hero-wordmark">
+                          HETV
+                          <span className="larkin2-hero-title-dot" aria-hidden="true" />
+                        </span>
+                      </span>
                     </h1>
                     <div className="larkin2-sub larkin2-mask"><span>Opportunities Hub</span></div>
                   </div>
