@@ -96,26 +96,22 @@ export function TrainingPage() {
 
       <main id="content">
         <section className="larkin2-section larkin2-commit programme-overview-section" aria-labelledby="training-title">
-          <div className="larkin2-grid">
-            <div>
-              <h1 className="larkin2-title" id="training-title">Training Courses &amp; Work Experience</h1>
-              <p className="larkin2-copy mt-6">Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment. Check each listing for eligibility, support and pay. Free participation means no fees; it does not mean every course is paid.</p>
-            </div>
-            <div className="larkin2-copy">
-              <div className="hetv-programme-list">
-                <div className="hetv-programme-item">
-                  <div className={`programme-status-badge ${firstCreditStatus === "Open" ? "is-open" : "is-closed"}`}>
-                    Applications {firstCreditStatus}
-                  </div>
-                  <h3>First Credit Work Experience</h3>
-                  <p>The First Credit Work Experience Programme has been designed to provide meaningful first industry experience for people who have had little or no opportunity to access the Film &amp; Television industry.</p>
-                  <MaskedLink href="/opportunities/first-credit" testId="link-opp-first-credit">Learn More</MaskedLink>
-                </div>
-                <div className="hetv-empty-state">
-                  <h4>No active training courses</h4>
-                  <p>No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available. In the meantime, you can read about First Credit above.</p>
-                </div>
+          <div className="programme-overview-intro">
+            <h1 className="larkin2-title" id="training-title">Training Courses &amp; Work Experience</h1>
+            <p className="larkin2-copy">Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment. Check each listing for eligibility, support and pay. Free participation means no fees; it does not mean every course is paid.</p>
+          </div>
+          <div className="hetv-programme-list">
+            <div className="hetv-programme-item">
+              <div className={`programme-status-badge ${firstCreditStatus === "Open" ? "is-open" : "is-closed"}`}>
+                Applications {firstCreditStatus}
               </div>
+              <h3>First Credit Work Experience</h3>
+              <p>The First Credit Work Experience Programme has been designed to provide meaningful first industry experience for people who have had little or no opportunity to access the Film &amp; Television industry.</p>
+              <MaskedLink href="/opportunities/first-credit" testId="link-opp-first-credit">View First Credit Programme</MaskedLink>
+            </div>
+            <div className="hetv-empty-state">
+              <h4>No active training courses</h4>
+              <p>No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available. In the meantime, you can read about First Credit.</p>
             </div>
           </div>
         </section>
