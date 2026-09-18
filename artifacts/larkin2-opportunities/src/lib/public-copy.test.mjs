@@ -15,11 +15,12 @@ test("homepage retains the original hero introduction", () => {
   for (const paragraph of paragraphs) assert.ok(home.includes(paragraph), paragraph);
 });
 
-test("Production & Culture combines the introduction into one concise group", () => {
+test("Production & Culture keeps its concise copy in the split image layout", () => {
   const section = home.match(/<section[^>]+id="about"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section);
   assert.equal((section.match(/<h2\b/g) ?? []).length, 1);
-  assert.equal((section.match(/className="larkin2-grid"/g) ?? []).length, 1);
+  assert.equal((section.match(/className="larkin2-split-content"/g) ?? []).length, 1);
+  assert.equal((section.match(/className="larkin2-split-image /g) ?? []).length, 1);
   assert.ok(section.includes('id="about-title"'));
   assert.ok(section.includes("Production &amp; Culture"));
   assert.ok(!section.includes("About Us"));

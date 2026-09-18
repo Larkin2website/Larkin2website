@@ -508,17 +508,27 @@ export function Home() {
       </section>
 
       <div id="content">
-        <section className="larkin2-section larkin2-about" id="about" aria-labelledby="about-title">
-          <div className="larkin2-grid">
+        <section className="larkin2-split-section" id="about" aria-labelledby="about-title">
+          <div className="larkin2-split-content">
             <div className="larkin2-reveal" data-reveal>
               <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>Production &amp; Culture</span></span></h2>
             </div>
+
             <div className="larkin2-copy larkin2-reveal" data-reveal>
               <p>Explore roles, work experience, training and development on Larkin 2, whether you’re new to television or an experienced crew member. We’re committed to fair, inclusive recruitment and a respectful, supportive production culture—creating opportunities for people from every background.</p>
-              <p className="larkin2-small">HETV Opportunities Hub is operated by Larkin AV Limited.</p>
-
-              <span className="hetv-disclaimer">The opportunity and commitment images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
             </div>
+
+            <div className="larkin2-bordered-rows larkin2-reveal" data-reveal>
+              <div className="larkin2-bordered-row">
+                <p className="larkin2-small">HETV Opportunities Hub is operated by Larkin AV Limited.</p>
+              </div>
+              <div className="larkin2-bordered-row">
+                <span className="larkin2-split-disclaimer">The opportunity and commitment images are AI-generated illustrations of television production, not photographs of a particular production, crew or cast.</span>
+              </div>
+            </div>
+          </div>
+          <div className="larkin2-split-image larkin2-reveal" data-reveal>
+            <img src="/larkin2-opportunities/images/bailey-crew.jpg" alt="" role="presentation" loading="lazy" />
           </div>
         </section>
 

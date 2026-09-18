@@ -401,8 +401,93 @@
 }
 .larkin2-intro { max-width: 390px; margin: 0; color: var(--secondary); font-size: clamp(18px, 1.5vw, 22px); line-height: 1.48; }
 .larkin2-actions { display: flex; flex-wrap: wrap; gap: 11px; }
-.larkin2-about .larkin2-actions { margin-top: 32px; }
 .larkin2-hero-actions-wrap .larkin2-actions { margin-top: 0; justify-content: center; }
+
+/* Split Section (Production & Culture) */
+.larkin2-split-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+  background: var(--stage);
+}
+@media (min-width: 1025px) {
+  .larkin2-split-section {
+    flex-direction: row;
+    align-items: stretch;
+    min-height: max(90vh, 700px);
+  }
+}
+.larkin2-split-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(64px, 8vw, 112px) clamp(20px, 7.5vw, 120px);
+  max-width: 100%;
+}
+@media (min-width: 1025px) {
+  .larkin2-split-content {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: clamp(64px, 8vw, 112px) clamp(60px, 6vw, 100px) clamp(64px, 8vw, 112px) clamp(20px, 7.5vw, 120px);
+  }
+}
+.larkin2-split-image {
+  position: relative;
+  min-height: 60vh;
+  width: 100%;
+}
+@media (min-width: 1025px) {
+  .larkin2-split-image {
+    flex: 0 0 50%;
+    max-width: 50%;
+    min-height: 100%;
+  }
+}
+.larkin2-split-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.8) contrast(1.05);
+}
+.larkin2-split-section .larkin2-title {
+  margin: 0 0 32px;
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: .95;
+}
+.larkin2-split-section .larkin2-copy {
+  max-width: 580px;
+}
+.larkin2-bordered-rows {
+  margin-top: clamp(40px, 6vh, 64px);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.larkin2-bordered-row {
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+  color: var(--secondary);
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.55;
+  max-width: 100%;
+}
+.larkin2-bordered-row .larkin2-small { margin: 0; }
+.larkin2-bordered-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.larkin2-split-disclaimer {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  max-width: 580px;
+}
 .larkin2-hero-meta-wrap {
   position: absolute;
   z-index: 1;
