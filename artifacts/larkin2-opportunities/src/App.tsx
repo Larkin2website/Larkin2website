@@ -13,6 +13,7 @@ import { Home } from "./pages/home";
 import { RolesPage } from "./pages/roles";
 import { RoleDetailPage } from "./pages/role-detail";
 import { OpportunityPage } from "./pages/opportunity";
+import { OpportunitiesIndexPage } from "./pages/opportunities-index";
 import { PrivacyNoticePage, TermsPage } from "./pages/legal";
 import { UnsubscribePage } from "./pages/unsubscribe";
 import { TrainingPage, DevelopmentPage } from "./pages/programme-overview";
@@ -65,6 +66,7 @@ function Router() {
         <Route path="/roles/:id">
           {(params) => <RoleDetailPage id={params.id} />}
         </Route>
+        <Route path="/opportunities" component={OpportunitiesIndexPage} />
         <Route path="/opportunities/:id">
           {(params) => <OpportunityPage id={params.id} />}
         </Route>

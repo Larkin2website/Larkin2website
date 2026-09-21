@@ -469,7 +469,7 @@ export function Home() {
                 <div className="larkin2-hero-actions-wrap">
                   <div className="larkin2-actions">
                     <MaskedLink href="/roles" className="larkin2-btn" testId="link-hero-roles">View Live Roles</MaskedLink>
-                    <MaskedLink href="#paths" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore Opportunities</MaskedLink>
+                    <MaskedLink href="/opportunities" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore Opportunities</MaskedLink>
                     <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign Up For Updates</MaskedLink>
                   </div>
                 </div>

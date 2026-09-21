@@ -127,7 +127,7 @@ export function OpportunityPage({ id }: { id: string }) {
         <section className="opp-footer larkin2-section">
            <div>
              <h2 className="larkin2-title">Explore other pathways</h2>
-             <MaskedLink href="/#paths" className="larkin2-btn secondary" testId="link-back-paths">Return to opportunities</MaskedLink>
+             <MaskedLink href="/opportunities" className="larkin2-btn secondary" testId="link-back-paths">Return to opportunities</MaskedLink>
            </div>
         </section>
       </main>

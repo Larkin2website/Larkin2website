@@ -2016,15 +2016,22 @@
   position: relative;
 }
 .larkin2-nav-trigger {
-  background: transparent;
-  border: none;
-  cursor: pointer;
   padding: 10px 0;
   display: flex;
   align-items: center;
   gap: 6px;
 }
-.larkin2-nav-trigger:focus-visible {
+.larkin2-nav-sub-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.larkin2-nav-sub-toggle:focus-visible {
   outline: 2px solid var(--sage);
   outline-offset: 4px;
 }
@@ -2032,7 +2039,7 @@
   font-size: 10px;
   transition: transform .3s ease;
 }
-.larkin2-nav-trigger[aria-expanded="true"] .larkin2-chevron {
+.larkin2-nav-sub-toggle[aria-expanded="true"] .larkin2-chevron {
   transform: rotate(180deg);
 }
 .larkin2-nav-sub {
@@ -3045,4 +3052,101 @@
 @media (max-width: 480px) {
   .larkin2-top .larkin2-mark { max-width: 240px; font-size: 18px; }
   .hetv-subscription { padding: 22px 18px; }
+}
+
+/* Opportunities Index Page */
+.opp-index-hero {
+  padding-bottom: clamp(40px, 6vw, 80px);
+}
+.opp-index-hero .larkin2-title {
+  margin-bottom: 24px;
+}
+.opp-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6vw, 80px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.opp-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--paper);
+  border: 1px solid rgba(29,32,32,.12);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04);
+}
+@media (min-width: 900px) {
+  .opp-card {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+  .opp-card.is-reversed {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+  .opp-card.is-reversed .opp-card-media {
+    order: 2;
+  }
+}
+.opp-card-media {
+  position: relative;
+  min-height: 320px;
+  background: #171b1d;
+}
+.opp-card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.8) contrast(1.05);
+}
+.opp-card-content {
+  padding: clamp(40px, 6vw, 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.opp-card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  color: var(--paper-ink);
+  margin: 16px 0 24px;
+  line-height: 1.05;
+}
+.opp-card-desc {
+  color: rgba(29,32,32,.75);
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.5;
+  margin: 0 0 40px;
+}
+.opp-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+.opp-card-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opp-card-meta-item span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+.opp-card-meta-item strong {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--paper-ink);
+}
+.opp-card-action {
+  margin-top: auto;
 }

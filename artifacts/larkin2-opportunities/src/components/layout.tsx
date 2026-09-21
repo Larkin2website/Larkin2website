@@ -121,17 +121,22 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
           if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false);
         }}
       >
-        <button 
-          type="button"
-          className="larkin2-nav-link larkin2-nav-trigger"
-          aria-expanded={isOpen}
-          onClick={() => setIsOpen(!isOpen)}
-          data-testid="button-nav-opportunities"
-        >
-          OPPORTUNITIES <span aria-hidden="true" className="larkin2-chevron">↓</span>
-        </button>
+        <div className="larkin2-nav-trigger">
+          <NavLink href="/opportunities" testId="link-nav-opportunities">Opportunities</NavLink>
+          <button
+            type="button"
+            className="larkin2-nav-sub-toggle"
+            aria-label="Toggle opportunities menu"
+            aria-expanded={isOpen}
+            onClick={() => setIsOpen(!isOpen)}
+            data-testid="button-nav-opportunities"
+          >
+            <span aria-hidden="true" className="larkin2-chevron">↓</span>
+          </button>
+        </div>
         
         <div className={`larkin2-nav-sub ${isOpen ? "is-open" : ""}`}>
+          <NavLink href="/opportunities" testId="link-nav-opportunities-index">All Opportunities</NavLink>
           <NavLink href="/training" testId="link-nav-training">Training Courses</NavLink>
           <NavLink href="/development" testId="link-nav-development">Development</NavLink>
           <NavLink href="/opportunities/first-credit" testId="link-nav-first-credit">First Credit</NavLink>
@@ -187,7 +192,7 @@ export function SiteFooter() {
       <div className="larkin2-foot-col">
         <span>Explore</span>
         <FooterLink href="/roles" testId="link-footer-roles">Roles</FooterLink>
-        <FooterLink href="#paths" testId="link-footer-opportunities">Opportunities</FooterLink>
+        <FooterLink href="/opportunities" testId="link-footer-opportunities">Opportunities</FooterLink>
         <FooterLink href="/training" testId="link-footer-training">Training Courses</FooterLink>
         <FooterLink href="/development" testId="link-footer-development">Development Programmes</FooterLink>
         <FooterLink href="#commitments" testId="link-footer-commitments">Commitments</FooterLink>
@@ -318,6 +323,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
           </button>
           {opportunitiesOpen && (
             <div className="larkin2-mobile-sub" id="mobile-opportunities-submenu">
+              <MobileLink href="/opportunities" testId="link-mobile-opportunities-index">All Opportunities</MobileLink>
               <MobileLink href="/training" testId="link-mobile-training">Training Courses</MobileLink>
               <MobileLink href="/development" testId="link-mobile-development">Development Programmes</MobileLink>
               <MobileLink href="/opportunities/first-credit" testId="link-mobile-first-credit">First Credit</MobileLink>
