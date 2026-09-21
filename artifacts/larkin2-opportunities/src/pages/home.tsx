@@ -6,10 +6,10 @@ import { SubscriptionSignup } from "../components/subscription-signup";
 let hasVisitedHomeThisPageLoad = false;
 
 const commitments = [
-  ["01", "Free to participate.", "Work experience, shadowing, and training courses are completely free to attend. We do not charge fees for any development programme.", "path-training.jpg"],
-  ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts.", "path-roles.jpg"],
-  ["03", "Time to apply.", "We aim to keep all applications open for at least five days so you have a fair chance to put yourself forward.", "path-development.jpg"],
-  ["04", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time.", "culture-set.jpg"],
+  ["01", "Free to participate.", "Work experience, shadowing, and training courses are completely free to attend. We do not charge fees for any development programme.", "commitment-paid-camera-crew.webp"],
+  ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts.", "commitment-open-camera.webp"],
+  ["03", "Time to apply.", "We aim to keep all applications open for at least five days so you have a fair chance to put yourself forward.", "commitment-alerts-slate.webp"],
+  ["04", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time.", "commitment-dates-calendar.webp"],
 ] as const;
 
 function IntroOverlay({ onComplete }: { onComplete: () => void }) {
