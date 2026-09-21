@@ -77,6 +77,11 @@ html { background: #f4f1ed; }
   border-color: var(--ink);
   color: var(--ink);
 }
+.larkin2-page .roles-detail-footer .roles-detail-footer-link {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+}
 .larkin2-page .larkin2-path .larkin2-link:hover,
 .larkin2-page .larkin2-path .larkin2-link:focus-visible {
   background: var(--orange);
