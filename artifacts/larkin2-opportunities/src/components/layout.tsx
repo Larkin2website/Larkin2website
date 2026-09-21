@@ -139,9 +139,6 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
           <NavLink href="/opportunities" testId="link-nav-opportunities-index">All Opportunities</NavLink>
           <NavLink href="/training" testId="link-nav-training">Training Courses</NavLink>
           <NavLink href="/development" testId="link-nav-development">Development</NavLink>
-          <NavLink href="/opportunities/first-credit" testId="link-nav-first-credit">First Credit</NavLink>
-          <NavLink href="/opportunities/director-pathway" testId="link-nav-director">Director Pathway</NavLink>
-          <NavLink href="/opportunities/producer-pathway" testId="link-nav-producer">Producer Pathway</NavLink>
         </div>
       </div>
     );
@@ -326,9 +323,6 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
               <MobileLink href="/opportunities" testId="link-mobile-opportunities-index">All Opportunities</MobileLink>
               <MobileLink href="/training" testId="link-mobile-training">Training Courses</MobileLink>
               <MobileLink href="/development" testId="link-mobile-development">Development Programmes</MobileLink>
-              <MobileLink href="/opportunities/first-credit" testId="link-mobile-first-credit">First Credit</MobileLink>
-              <MobileLink href="/opportunities/director-pathway" testId="link-mobile-director">Director Pathway</MobileLink>
-              <MobileLink href="/opportunities/producer-pathway" testId="link-mobile-producer">Producer Pathway</MobileLink>
             </div>
           )}
         </div>
