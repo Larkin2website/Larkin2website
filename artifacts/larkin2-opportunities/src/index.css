@@ -2152,6 +2152,7 @@
 .larkin2-intro-reel .larkin2-intro-final-frame {
   z-index: 5;
   object-position: center;
+  filter: saturate(.65) contrast(1.05);
   animation: larkin2-intro-final-frame .5s 1.52s var(--ease-cinematic) forwards;
 }
 .larkin2-intro-corner {
