@@ -7,3 +7,4 @@
 - [Animated hero layout](animated-hero-layout.md) — Coordinate the video crop with reserved layout space; avoid offsets that depend on which section follows.
 - [Homepage footer reference](homepage-footer-reference.md) — The FAQ-to-footer transition follows Dick Clark’s stationary-footer reveal, not a scaling or fading FAQ effect.
 - [Browser inspection targets](browser-inspection-targets.md) — Chromium may list an extension before the app tab; select a non-extension page for direct CDP inspection.
+- [Programme seed safety](programme-seed-safety.md) — Treat approved programme seeding as explicit reconciliation, not an automatic startup step that can overwrite portal edits.

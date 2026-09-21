@@ -337,3 +337,76 @@ test("an access grant claimed during an admin update returns a refresh conflict"
     },
   });
 });
+
+test("portal role lifecycle controls public role visibility through the same service boundary", async () => {
+  const roleId = "22222222-2222-4222-8222-222222222222";
+  const state = new Map<string, any>();
+  const service: any = {
+    listPublic: async () => [...state.values()].filter((row) => ["published", "closed", "filled"].includes(row.status)),
+    createOpportunity: async (body: any, actor: PortalActor) => {
+      const now = new Date();
+      const row = {
+        ...body,
+        id: roleId,
+        status: "draft",
+        contentItems: body.contentItems.map((item: any, index: number) => ({
+          ...item,
+          id: `33333333-3333-4333-8333-${String(index).padStart(12, "0")}`,
+        })),
+        details: body.details.map((detail: any, index: number) => ({
+          ...detail,
+          id: `44444444-4444-4444-8444-${String(index).padStart(12, "0")}`,
+        })),
+        publishedAt: null,
+        archivedAt: null,
+        createdAt: now,
+        updatedAt: now,
+        createdBy: actor.userId,
+        updatedBy: actor.userId,
+      };
+      state.set(roleId, row);
+      return row;
+    },
+    transitionOpportunity: async (id: string, status: string, actor: PortalActor) => {
+      const row = state.get(id);
+      if (!row) return undefined;
+      row.status = status;
+      row.updatedBy = actor.userId;
+      row.updatedAt = new Date();
+      return row;
+    },
+  };
+
+  await withServer(async () => {
+    throw new Error("option creation should not be called");
+  }, async (baseUrl) => {
+    const headers = { "content-type": "application/json", "x-test-role": "super_admin" };
+    const create = await fetch(`${baseUrl}/portal/opportunities`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(validOpportunityInput),
+    });
+    assert.equal(create.status, 201);
+    assert.deepEqual(await (await fetch(`${baseUrl}/public/opportunities`)).json(), []);
+    assert.equal((await fetch(`${baseUrl}/public/opportunities/wardrobe-assistant`)).status, 404);
+
+    const transition = (status: string) => fetch(`${baseUrl}/portal/opportunities/${roleId}/transition`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ status }),
+    });
+    assert.equal((await transition("published")).status, 200);
+    const published = await (await fetch(`${baseUrl}/public/opportunities`)).json() as Array<{ slug: string; title: string }>;
+    assert.deepEqual(published.map(({ slug, title }) => ({ slug, title })), [{
+      slug: validOpportunityInput.slug,
+      title: validOpportunityInput.title,
+    }]);
+    assert.equal((await fetch(`${baseUrl}/public/opportunities/wardrobe-assistant`)).status, 200);
+
+    assert.equal((await transition("archived")).status, 200);
+    assert.deepEqual(await (await fetch(`${baseUrl}/public/opportunities`)).json(), []);
+    assert.equal((await fetch(`${baseUrl}/public/opportunities/wardrobe-assistant`)).status, 404);
+  }, {
+    opportunities: service,
+  });
+});

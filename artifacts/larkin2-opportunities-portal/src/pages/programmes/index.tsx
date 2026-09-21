@@ -60,16 +60,16 @@ type StatusAction = {
 
 const statusActions: Record<typeof ProgrammeStatus[keyof typeof ProgrammeStatus], StatusAction[]> = {
   draft: [
-    { status: "published", label: "Publish", publicEffect: "Status set to Published (will be visible when public site connects)." },
+    { status: "published", label: "Publish", publicEffect: "Status set to Published and the programme becomes visible on the public Opportunities page." },
     { status: "archived", label: "Archive", publicEffect: "Remains hidden and moves to the archive." },
   ],
   published: [
-    { status: "closed", label: "Close Applications", publicEffect: "Status set to Closed (will show as closed when public site connects)." },
-    { status: "archived", label: "Archive", publicEffect: "Status set to Archived (will be hidden when public site connects)." },
+    { status: "closed", label: "Close Applications", publicEffect: "Status set to Closed. The programme remains public and shows as closed." },
+    { status: "archived", label: "Archive", publicEffect: "Status set to Archived and the programme is removed from the public site." },
   ],
   closed: [
-    { status: "published", label: "Re-open", publicEffect: "Status set to Published (will accept applications when public site connects)." },
-    { status: "archived", label: "Archive", publicEffect: "Status set to Archived (will be hidden when public site connects)." },
+    { status: "published", label: "Re-open", publicEffect: "Status set to Published and the programme shows as open on the public site." },
+    { status: "archived", label: "Archive", publicEffect: "Status set to Archived and the programme is removed from the public site." },
   ],
   archived: [
     { status: "draft", label: "Restore to Draft", publicEffect: "Returns to the working area and remains hidden." },

@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from "react";
+import {
+  getListPublicProgrammesQueryKey,
+  useListPublicProgrammes,
+} from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
-import { OPPORTUNITIES } from "../data/opportunities";
 
 export function OpportunitiesIndexPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -61,7 +64,17 @@ export function OpportunitiesIndexPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [menuOpen]);
 
-  const opps = Object.values(OPPORTUNITIES);
+  const {
+    data: opps = [],
+    isLoading: programmesLoading,
+    isError: programmesFailed,
+  } = useListPublicProgrammes(undefined, {
+    query: {
+      queryKey: getListPublicProgrammesQueryKey(),
+      staleTime: 60_000,
+      retry: 2,
+    },
+  });
 
   return (
     <div className="larkin2-page opp-index-page" id="top">
@@ -92,8 +105,20 @@ export function OpportunitiesIndexPage() {
 
         <section className="larkin2-section" style={{ borderTop: "none", paddingTop: 0 }}>
           <div className="opp-list">
-            {opps.map((opp, index) => (
-              <article key={opp.id} className={`opp-card ${index % 2 !== 0 ? "is-reversed" : ""}`}>
+            {programmesLoading ? (
+              <div className="opp-list-state" role="status" aria-live="polite">
+                Loading opportunities…
+              </div>
+            ) : programmesFailed ? (
+              <div className="opp-list-state" role="alert">
+                We couldn’t load opportunities right now. Please refresh the page and try again.
+              </div>
+            ) : opps.length === 0 ? (
+              <div className="opp-list-state">
+                There are no published opportunities at the moment. Please check back soon.
+              </div>
+            ) : opps.map((opp, index) => (
+              <article key={opp.slug} className={`opp-card ${index % 2 !== 0 ? "is-reversed" : ""}`}>
                 <div className="opp-card-media">
                   <img src={`/larkin2-opportunities/images/${opp.image}`} alt="" loading="lazy" />
                 </div>
@@ -114,7 +139,7 @@ export function OpportunitiesIndexPage() {
                   </div>
                   
                   <div className="opp-card-action">
-                    <MaskedLink href={`/opportunities/${opp.id}`} className="larkin2-btn" testId={`link-opp-${opp.id}`}>
+                    <MaskedLink href={`/opportunities/${opp.slug}`} className="larkin2-btn" testId={`link-opp-${opp.slug}`}>
                       View Opportunity
                     </MaskedLink>
                   </div>

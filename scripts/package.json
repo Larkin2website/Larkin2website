@@ -8,6 +8,7 @@
     "seed:opportunities": "tsx ./src/seed-opportunities.ts",
     "seed:opportunity-options": "tsx ./src/seed-opportunity-options.ts",
     "seed:programmes": "tsx ./src/seed-programmes.ts",
+    "test:programme-seed-data": "tsx --test ./src/programme-seed-data.test.ts",
     "test:seed-opportunity-options": "tsx --test ./src/seed-opportunity-options.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

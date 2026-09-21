@@ -68,7 +68,7 @@ router.delete("/portal/demo-session", (_req, res): void => {
 router.get("/public/opportunities", async (req, res): Promise<void> => {
   const parsed = ListPublicOpportunitiesQueryParams.safeParse(req.query);
   if (!parsed.success) { invalid(res, parsed.error); return; }
-  res.json(ListPublicOpportunitiesResponse.parse((await opportunities.listPublic(parsed.data.q)).map(publicMap)));
+  res.json(ListPublicOpportunitiesResponse.parse((await dependencies.opportunities.listPublic(parsed.data.q)).map(publicMap)));
 });
 router.get("/public/opportunity-options", async (_req, res): Promise<void> => {
   const options = await dependencies.opportunityOptions.listOpportunityOptions();
@@ -80,7 +80,7 @@ router.get("/public/opportunity-options", async (_req, res): Promise<void> => {
 router.get("/public/opportunities/:slug", async (req, res): Promise<void> => {
   const parsed = GetPublicOpportunityParams.safeParse(req.params);
   if (!parsed.success) { invalid(res, parsed.error); return; }
-  const row = (await opportunities.listPublic()).find((item) => item.slug === parsed.data.slug);
+  const row = (await dependencies.opportunities.listPublic()).find((item) => item.slug === parsed.data.slug);
   if (!row) { res.status(404).json({ error: "Opportunity not found" }); return; }
   res.json(GetPublicOpportunityResponse.parse(publicMap(row)));
 });
@@ -184,7 +184,7 @@ router.post("/portal/opportunity-options/:id/merge", dependencies.requirePortal(
 router.get("/portal/opportunities", dependencies.requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = ListPortalOpportunitiesQueryParams.safeParse(req.query);
   if (!parsed.success) { invalid(res, parsed.error); return; }
-  res.json(ListPortalOpportunitiesResponse.parse(await opportunities.listOpportunities(parsed.data)));
+  res.json(ListPortalOpportunitiesResponse.parse(await dependencies.opportunities.listOpportunities(parsed.data)));
 });
 router.post("/portal/opportunities", dependencies.requirePortal("opportunities:write"), async (req, res): Promise<void> => {
   const parsed = CreatePortalOpportunityBody.safeParse(req.body);
@@ -199,7 +199,7 @@ router.post("/portal/opportunities", dependencies.requirePortal("opportunities:w
 router.get("/portal/opportunities/:id", dependencies.requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = GetPortalOpportunityParams.safeParse(req.params);
   if (!parsed.success) { invalid(res, parsed.error); return; }
-  const row = await opportunities.getOpportunity(parsed.data.id);
+  const row = await dependencies.opportunities.getOpportunity(parsed.data.id);
   if (!row) { res.status(404).json({ error: "Opportunity not found" }); return; }
   res.json(GetPortalOpportunityResponse.parse(row));
 });
@@ -207,7 +207,7 @@ router.patch("/portal/opportunities/:id", dependencies.requirePortal("opportunit
   const params = UpdatePortalOpportunityParams.safeParse(req.params), body = UpdatePortalOpportunityBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
   try {
-    const row = await opportunities.updateOpportunity(params.data.id, body.data, req.portalActor!);
+    const row = await dependencies.opportunities.updateOpportunity(params.data.id, body.data, req.portalActor!);
     if (!row) { res.status(404).json({ error: "Opportunity not found" }); return; }
     res.json(UpdatePortalOpportunityResponse.parse(row));
   } catch (error) {
@@ -221,7 +221,7 @@ router.post("/portal/opportunities/:id/transition", dependencies.requirePortal("
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
   if (!canTransition(req.portalActor!.role, body.data.status)) { res.status(403).json({ error: "Insufficient permission" }); return; }
   try {
-    const row = await opportunities.transitionOpportunity(params.data.id, body.data.status, req.portalActor!);
+    const row = await dependencies.opportunities.transitionOpportunity(params.data.id, body.data.status, req.portalActor!);
     if (!row) { res.status(404).json({ error: "Opportunity not found" }); return; }
     res.json(TransitionPortalOpportunityResponse.parse(row));
   } catch (error) { if ((error as Error).message === "INVALID_TRANSITION") { res.status(409).json({ error: "Invalid lifecycle transition" }); return; } throw error; }
@@ -229,7 +229,7 @@ router.post("/portal/opportunities/:id/transition", dependencies.requirePortal("
 router.delete("/portal/opportunities/:id", dependencies.requirePortal("opportunities:delete"), async (req, res): Promise<void> => {
   const params = DeletePortalOpportunityParams.safeParse(req.params), body = DeletePortalOpportunityBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
-  const outcome = await opportunities.deleteOpportunity(params.data.id, req.portalActor!);
+  const outcome = await dependencies.opportunities.deleteOpportunity(params.data.id, req.portalActor!);
   if (outcome === "NOT_FOUND") { res.status(404).json({ error: "Opportunity not found" }); return; }
   if (outcome === "NOT_ARCHIVED") { res.status(400).json({ error: "Only archived opportunities can be deleted" }); return; }
   res.status(204).send();
@@ -237,8 +237,8 @@ router.delete("/portal/opportunities/:id", dependencies.requirePortal("opportuni
 router.get("/portal/opportunities/:id/audit", dependencies.requirePortal("opportunities:read"), async (req, res): Promise<void> => {
   const parsed = ListOpportunityAuditEventsParams.safeParse(req.params);
   if (!parsed.success) { invalid(res, parsed.error); return; }
-  if (!await opportunities.getOpportunity(parsed.data.id)) { res.status(404).json({ error: "Opportunity not found" }); return; }
-  res.json(ListOpportunityAuditEventsResponse.parse(await opportunities.auditList(parsed.data.id)));
+  if (!await dependencies.opportunities.getOpportunity(parsed.data.id)) { res.status(404).json({ error: "Opportunity not found" }); return; }
+  res.json(ListOpportunityAuditEventsResponse.parse(await dependencies.opportunities.auditList(parsed.data.id)));
 });
 router.get("/portal/members", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
   const [members, grants] = await Promise.all([

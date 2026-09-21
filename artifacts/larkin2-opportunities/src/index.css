@@ -3150,3 +3150,21 @@
 .opp-card-action {
   margin-top: auto;
 }
+.opp-list-state {
+  min-height: 280px;
+  padding: clamp(48px, 7vw, 88px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--secondary);
+  font-size: clamp(17px, 1.6vw, 22px);
+  line-height: 1.5;
+}
+.opp-page > #content > .opp-list-state {
+  min-height: 100dvh;
+  padding-top: clamp(140px, 18vw, 220px);
+}
+.opp-block p {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
