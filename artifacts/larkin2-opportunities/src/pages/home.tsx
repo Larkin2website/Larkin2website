@@ -498,7 +498,7 @@ export function Home() {
       <div id="content">
         <section className="larkin2-split-section" id="about" aria-labelledby="about-title">
           <div className="larkin2-split-image">
-            <img src="/larkin2-opportunities/images/bailey-crew.jpg" alt="" role="presentation" loading="lazy" />
+             <img src="/larkin2-opportunities/images/production-culture.webp" alt="" role="presentation" loading="lazy" />
           </div>
           <div className="larkin2-split-content">
             <div className="larkin2-reveal" data-reveal>
