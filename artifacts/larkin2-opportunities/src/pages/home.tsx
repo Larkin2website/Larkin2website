@@ -524,7 +524,7 @@ export function Home() {
           <div className="larkin2-path-grid">
             <article className="larkin2-path larkin2-reveal" data-reveal style={{ "--reveal-delay": "0ms" } as CSSProperties}>
               <div className="larkin2-path-bg">
-                <img src="/larkin2-opportunities/images/path-roles.jpg" alt="" role="presentation" loading="lazy" />
+                 <img src="/larkin2-opportunities/images/path-roles-set.webp" alt="" role="presentation" loading="lazy" />
                 <div className="larkin2-path-gradient" />
               </div>
               <div className="larkin2-path-top">
