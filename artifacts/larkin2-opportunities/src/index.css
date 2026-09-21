@@ -1041,6 +1041,14 @@
 }
 
 @media (max-width: 767px) {
+  .larkin2-split-content {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .larkin2-split-action {
+    width: 100%;
+    justify-content: flex-start;
+  }
   .larkin2-commit-card-inner {
     flex-direction: column-reverse;
   }
