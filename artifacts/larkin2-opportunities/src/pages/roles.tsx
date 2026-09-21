@@ -211,6 +211,11 @@ export function RolesPage() {
             </div>
           )}
         </section>
+        <section className="roles-page-footer larkin2-section" aria-label="Return to homepage">
+          <MaskedLink href="/" className="larkin2-btn" testId="link-roles-home">
+            Back to homepage
+          </MaskedLink>
+        </section>
       </main>
 
       <SiteFooter />

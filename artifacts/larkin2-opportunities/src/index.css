@@ -1789,8 +1789,16 @@
   color: #55261c;
 }
 .roles-detail-footer .roles-detail-footer-link {
-  border-color: #171b1d;
+  border-color: var(--paper);
+  background: var(--paper);
   color: #171b1d;
+}
+.roles-page-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 48px;
+  padding-bottom: 48px;
+  border-top: 1px solid var(--line);
 }
 
 @media (max-width: 900px) {
