@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/hetv-audience-crm/"
+title = "HETV Audience & Engagement CRM"
+description = "Internal audience management, preferences, matching, communications, enquiries and engagement reporting for the HETV Opportunities Hub."
+version = "1.0.0"
+id = "artifacts/hetv-audience-crm"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/hetv-audience-crm/" ]
+localPort = 21668
+
+[services.development]
+run = "pnpm --filter @workspace/hetv-audience-crm run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/hetv-audience-crm", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/hetv-audience-crm/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21668"
+BASE_PATH = "/hetv-audience-crm/"

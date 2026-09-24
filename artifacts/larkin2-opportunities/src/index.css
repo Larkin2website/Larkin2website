@@ -2732,7 +2732,8 @@
 .hetv-subscription input[type="email"],
 .hetv-subscription input[type="text"],
 .hetv-subscription input[type="password"],
-.hetv-subscription input[readonly] {
+.hetv-subscription input[readonly],
+.hetv-subscription select {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid var(--line);
@@ -2743,9 +2744,46 @@
 .hetv-subscription input[type="email"]:focus-visible,
 .hetv-subscription input[type="text"]:focus-visible,
 .hetv-subscription input[type="password"]:focus-visible,
-.hetv-subscription input[readonly]:focus-visible {
+.hetv-subscription input[readonly]:focus-visible,
+.hetv-subscription select:focus-visible {
   outline: 2px solid var(--sage);
   outline-offset: 2px;
+}
+
+.hetv-subscription-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+}
+.hetv-subscription-options legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.hetv-subscription-options > label:not(.hetv-subscription-check) {
+  grid-column: 1 / -1;
+}
+.hetv-subscription-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.hetv-subscription-check input {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--sage);
+}
+.hetv-subscription-options p {
+  grid-column: 1 / -1;
 }
 
 .hetv-subscription button[type="submit"],
@@ -3052,6 +3090,7 @@
 @media (max-width: 480px) {
   .larkin2-top .larkin2-mark { max-width: 240px; font-size: 18px; }
   .hetv-subscription { padding: 22px 18px; }
+  .hetv-subscription-options { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Opportunities Index Page */

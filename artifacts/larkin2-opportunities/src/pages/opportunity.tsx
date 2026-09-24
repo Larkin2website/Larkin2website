@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import {
   getGetPublicProgrammeQueryKey,
+  recordPublicEngagement,
   useGetPublicProgramme,
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
@@ -45,6 +46,7 @@ export function OpportunityPage({ id }: { id: string }) {
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const trackedViewId = useRef("");
 
   useEffect(() => {
     if (opp) {
@@ -55,6 +57,16 @@ export function OpportunityPage({ id }: { id: string }) {
       }
     }
   }, [opp]);
+
+  useEffect(() => {
+    if (!opp || trackedViewId.current === opp.slug) return;
+    trackedViewId.current = opp.slug;
+    void recordPublicEngagement({ kind: "programme", id: opp.id, event: "view" }).catch(() => undefined);
+  }, [opp]);
+
+  function trackApply() {
+    if (opp) void recordPublicEngagement({ kind: "programme", id: opp.id, event: "apply" }).catch(() => undefined);
+  }
 
   useEffect(() => {
     const onScroll = () => {
@@ -144,7 +156,7 @@ export function OpportunityPage({ id }: { id: string }) {
                   <h3>{isOpen ? "Applications Open" : "Applications Closed"}</h3>
                   <p>You can register your interest in future opportunities. Email alerts are not currently enabled.</p>
                   {isOpen && opp.applicationUrl && (
-                    <a href={opp.applicationUrl} className="larkin2-btn" data-testid="link-opp-apply">Apply now</a>
+                    <a href={opp.applicationUrl} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>Apply now</a>
                  )}
                   <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>
               </div>

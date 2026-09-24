@@ -5,6 +5,8 @@
  * Shared contract for Larkin2 public opportunities and the internal management portal.
  * OpenAPI spec version: 1.0.0
  */
+import type { AudienceContentType } from './audienceContentType';
+import type { CareerLevel } from './careerLevel';
 
 export interface PublicSubscriptionInput {
   /**
@@ -20,4 +22,22 @@ export interface PublicSubscriptionInput {
      * @pattern ^[A-Za-z0-9_-]+$
      */
   existingManagementToken?: string;
+  /** @maxLength 160 */
+  name?: string;
+  /** @maxLength 120 */
+  craft?: string;
+  careerLevel?: CareerLevel;
+  /** @maxLength 160 */
+  location?: string;
+  /** @maxLength 120 */
+  acquisitionSource?: string;
+  /** @maxLength 500 */
+  acquisitionDetail?: string;
+  /** @items.maxLength 120 */
+  interests?: string[];
+  contentTypes?: AudienceContentType[];
+  careerLevels?: CareerLevel[];
+  /** @items.maxLength 120 */
+  crafts?: string[];
+  allOpportunities?: boolean;
 }

@@ -16,6 +16,7 @@ import { StatusBadge } from "@/pages/dashboard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/brand";
+import { MatchingCriteriaPanel } from "@/components/matching-criteria-panel";
 import { 
   ChevronLeft, Edit, ExternalLink, Calendar, Loader2, PlayCircle, Eye, RefreshCw, Trash2, ShieldAlert, SlidersHorizontal
 } from "lucide-react";
@@ -402,6 +403,8 @@ export default function DetailProgrammePage() {
               </dl>
             </CardContent>
           </Card>
+
+          <MatchingCriteriaPanel id={id} entityType="programme" canWrite={canWrite} />
         </div>
 
       </div>

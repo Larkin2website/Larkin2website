@@ -18,6 +18,7 @@ import { StatusBadge } from "@/pages/dashboard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/brand";
+import { MatchingCriteriaPanel } from "@/components/matching-criteria-panel";
 import { 
   ChevronLeft, Edit, ExternalLink, Calendar, Clock, Loader2, PlayCircle, Eye, RefreshCw, Trash2, ShieldAlert, SlidersHorizontal
 } from "lucide-react";
@@ -459,6 +460,8 @@ export default function DetailOpportunityPage() {
               </dl>
             </CardContent>
           </Card>
+
+          <MatchingCriteriaPanel id={id} entityType="role" canWrite={canWrite} />
 
           <Card className="bg-[#171b1d] border border-[#2a2f31] rounded-none shadow-none min-w-0">
             <CardHeader className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31] min-w-0">

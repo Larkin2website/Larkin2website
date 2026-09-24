@@ -85,12 +85,37 @@ export const createPublicSubscriptionBodyExistingManagementTokenMax = 128;
 
 
 export const createPublicSubscriptionBodyExistingManagementTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+export const createPublicSubscriptionBodyNameMax = 160;
+
+export const createPublicSubscriptionBodyCraftMax = 120;
+
+export const createPublicSubscriptionBodyLocationMax = 160;
+
+export const createPublicSubscriptionBodyAcquisitionSourceMax = 120;
+
+export const createPublicSubscriptionBodyAcquisitionDetailMax = 500;
+
+export const createPublicSubscriptionBodyInterestsItemMax = 120;
+
+export const createPublicSubscriptionBodyCraftsItemMax = 120;
+
 
 
 export const CreatePublicSubscriptionBody = zod.object({
   "email": zod.string().email().min(createPublicSubscriptionBodyEmailMin).max(createPublicSubscriptionBodyEmailMax),
   "consent": zod.literal(true),
-  "existingManagementToken": zod.string().min(createPublicSubscriptionBodyExistingManagementTokenMin).max(createPublicSubscriptionBodyExistingManagementTokenMax).regex(createPublicSubscriptionBodyExistingManagementTokenRegExp).optional().describe('The caller\'s previously saved personal token. It is returned only when it belongs to the same subscription, including an inactive one; it never reactivates an inactive subscription.')
+  "existingManagementToken": zod.string().min(createPublicSubscriptionBodyExistingManagementTokenMin).max(createPublicSubscriptionBodyExistingManagementTokenMax).regex(createPublicSubscriptionBodyExistingManagementTokenRegExp).optional().describe('The caller\'s previously saved personal token. It is returned only when it belongs to the same subscription, including an inactive one; it never reactivates an inactive subscription.'),
+  "name": zod.string().max(createPublicSubscriptionBodyNameMax).optional(),
+  "craft": zod.string().max(createPublicSubscriptionBodyCraftMax).optional(),
+  "careerLevel": zod.enum(['new_entrant', 'mid_level', 'senior']).optional(),
+  "location": zod.string().max(createPublicSubscriptionBodyLocationMax).optional(),
+  "acquisitionSource": zod.string().max(createPublicSubscriptionBodyAcquisitionSourceMax).optional(),
+  "acquisitionDetail": zod.string().max(createPublicSubscriptionBodyAcquisitionDetailMax).optional(),
+  "interests": zod.array(zod.string().max(createPublicSubscriptionBodyInterestsItemMax)).optional(),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
+  "crafts": zod.array(zod.string().max(createPublicSubscriptionBodyCraftsItemMax)).optional(),
+  "allOpportunities": zod.boolean().optional()
 })
 
 export const createPublicSubscriptionResponseManagementTokenMin = 43;
@@ -936,6 +961,7 @@ export const listPublicProgrammesResponseLocationMax = 500;
 
 
 export const ListPublicProgrammesResponseItem = zod.object({
+  "id": zod.string().uuid(),
   "slug": zod.string(),
   "num": zod.string(),
   "cardTitle": zod.string(),
@@ -983,6 +1009,7 @@ export const getPublicProgrammeResponseLocationMax = 500;
 
 
 export const GetPublicProgrammeResponse = zod.object({
+  "id": zod.string().uuid(),
   "slug": zod.string(),
   "num": zod.string(),
   "cardTitle": zod.string(),
@@ -1515,5 +1542,506 @@ export const UpdatePortalMemberResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 })
+
+
+/**
+ * Uses POST so the personal management token is sent in the request body rather than the URL.
+ * @summary Retrieve subscription preferences using a management token
+ */
+export const getPublicSubscriptionPreferencesBodyManagementTokenMin = 43;
+export const getPublicSubscriptionPreferencesBodyManagementTokenMax = 128;
+
+
+export const getPublicSubscriptionPreferencesBodyManagementTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+
+
+export const GetPublicSubscriptionPreferencesBody = zod.object({
+  "managementToken": zod.string().min(getPublicSubscriptionPreferencesBodyManagementTokenMin).max(getPublicSubscriptionPreferencesBodyManagementTokenMax).regex(getPublicSubscriptionPreferencesBodyManagementTokenRegExp)
+})
+
+export const getPublicSubscriptionPreferencesResponseNameMax = 160;
+
+export const getPublicSubscriptionPreferencesResponseCraftMax = 120;
+
+export const getPublicSubscriptionPreferencesResponseLocationMax = 160;
+
+export const getPublicSubscriptionPreferencesResponseAcquisitionSourceMax = 120;
+
+export const getPublicSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
+
+export const getPublicSubscriptionPreferencesResponseInterestsItemMax = 120;
+
+export const getPublicSubscriptionPreferencesResponseCraftsItemMax = 120;
+
+
+
+export const GetPublicSubscriptionPreferencesResponse = zod.object({
+  "name": zod.string().max(getPublicSubscriptionPreferencesResponseNameMax).nullish(),
+  "craft": zod.string().max(getPublicSubscriptionPreferencesResponseCraftMax).nullish(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]).optional(),
+  "location": zod.string().max(getPublicSubscriptionPreferencesResponseLocationMax).nullish(),
+  "acquisitionSource": zod.string().max(getPublicSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
+  "acquisitionDetail": zod.string().max(getPublicSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
+  "interests": zod.array(zod.string().max(getPublicSubscriptionPreferencesResponseInterestsItemMax)).optional(),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
+  "crafts": zod.array(zod.string().max(getPublicSubscriptionPreferencesResponseCraftsItemMax)).optional(),
+  "allOpportunities": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Update subscription preferences using a management token
+ */
+export const updatePublicSubscriptionPreferencesBodyManagementTokenMin = 43;
+export const updatePublicSubscriptionPreferencesBodyManagementTokenMax = 128;
+
+
+export const updatePublicSubscriptionPreferencesBodyManagementTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+export const updatePublicSubscriptionPreferencesBodyNameMax = 160;
+
+export const updatePublicSubscriptionPreferencesBodyCraftMax = 120;
+
+export const updatePublicSubscriptionPreferencesBodyLocationMax = 160;
+
+export const updatePublicSubscriptionPreferencesBodyAcquisitionSourceMax = 120;
+
+export const updatePublicSubscriptionPreferencesBodyAcquisitionDetailMax = 500;
+
+export const updatePublicSubscriptionPreferencesBodyInterestsItemMax = 120;
+
+export const updatePublicSubscriptionPreferencesBodyCraftsItemMax = 120;
+
+
+
+export const UpdatePublicSubscriptionPreferencesBody = zod.object({
+  "managementToken": zod.string().min(updatePublicSubscriptionPreferencesBodyManagementTokenMin).max(updatePublicSubscriptionPreferencesBodyManagementTokenMax).regex(updatePublicSubscriptionPreferencesBodyManagementTokenRegExp),
+  "name": zod.string().max(updatePublicSubscriptionPreferencesBodyNameMax).nullish(),
+  "craft": zod.string().max(updatePublicSubscriptionPreferencesBodyCraftMax).nullish(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]).optional(),
+  "location": zod.string().max(updatePublicSubscriptionPreferencesBodyLocationMax).nullish(),
+  "acquisitionSource": zod.string().max(updatePublicSubscriptionPreferencesBodyAcquisitionSourceMax).nullish(),
+  "acquisitionDetail": zod.string().max(updatePublicSubscriptionPreferencesBodyAcquisitionDetailMax).nullish(),
+  "interests": zod.array(zod.string().max(updatePublicSubscriptionPreferencesBodyInterestsItemMax)).optional(),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
+  "crafts": zod.array(zod.string().max(updatePublicSubscriptionPreferencesBodyCraftsItemMax)).optional(),
+  "allOpportunities": zod.boolean().optional()
+})
+
+export const updatePublicSubscriptionPreferencesResponseNameMax = 160;
+
+export const updatePublicSubscriptionPreferencesResponseCraftMax = 120;
+
+export const updatePublicSubscriptionPreferencesResponseLocationMax = 160;
+
+export const updatePublicSubscriptionPreferencesResponseAcquisitionSourceMax = 120;
+
+export const updatePublicSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
+
+export const updatePublicSubscriptionPreferencesResponseInterestsItemMax = 120;
+
+export const updatePublicSubscriptionPreferencesResponseCraftsItemMax = 120;
+
+
+
+export const UpdatePublicSubscriptionPreferencesResponse = zod.object({
+  "name": zod.string().max(updatePublicSubscriptionPreferencesResponseNameMax).nullish(),
+  "craft": zod.string().max(updatePublicSubscriptionPreferencesResponseCraftMax).nullish(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]).optional(),
+  "location": zod.string().max(updatePublicSubscriptionPreferencesResponseLocationMax).nullish(),
+  "acquisitionSource": zod.string().max(updatePublicSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
+  "acquisitionDetail": zod.string().max(updatePublicSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
+  "interests": zod.array(zod.string().max(updatePublicSubscriptionPreferencesResponseInterestsItemMax)).optional(),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
+  "crafts": zod.array(zod.string().max(updatePublicSubscriptionPreferencesResponseCraftsItemMax)).optional(),
+  "allOpportunities": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Record an anonymous view or application engagement event
+ */
+export const RecordPublicEngagementBody = zod.object({
+  "kind": zod.enum(['role', 'programme']),
+  "id": zod.string().uuid(),
+  "event": zod.enum(['view', 'apply'])
+})
+
+export const RecordPublicEngagementResponse = zod.object({
+  "recorded": zod.boolean()
+})
+
+
+/**
+ * @summary Get audience acquisition, engagement, delivery, and registration summaries
+ */
+export const getCrmDashboardResponseCountsTotalMin = 0;
+
+export const getCrmDashboardResponseCountsActiveMin = 0;
+
+export const getCrmDashboardResponseCountsInactiveMin = 0;
+
+export const getCrmDashboardResponseAcquisitionBreakdownItemCountMin = 0;
+
+export const getCrmDashboardResponseAcquisitionDetailBreakdownItemCountMin = 0;
+
+export const getCrmDashboardResponseEngagementViewsMin = 0;
+
+export const getCrmDashboardResponseEngagementApplicationsMin = 0;
+
+export const getCrmDashboardResponseEngagementRoleViewsMin = 0;
+
+export const getCrmDashboardResponseEngagementProgrammeViewsMin = 0;
+
+export const getCrmDashboardResponseDeliverySentMin = 0;
+
+export const getCrmDashboardResponseDeliveryDeliveredMin = 0;
+
+export const getCrmDashboardResponseDeliveryFailedMin = 0;
+
+export const getCrmDashboardResponseDeliveryPendingMin = 0;
+
+
+
+export const GetCrmDashboardResponse = zod.object({
+  "counts": zod.object({
+  "total": zod.number().int().min(getCrmDashboardResponseCountsTotalMin),
+  "active": zod.number().int().min(getCrmDashboardResponseCountsActiveMin),
+  "inactive": zod.number().int().min(getCrmDashboardResponseCountsInactiveMin)
+}),
+  "acquisitionBreakdown": zod.array(zod.object({
+  "source": zod.string().nullable(),
+  "count": zod.number().int().min(getCrmDashboardResponseAcquisitionBreakdownItemCountMin)
+})),
+  "acquisitionDetailBreakdown": zod.array(zod.object({
+  "source": zod.string().nullable(),
+  "detail": zod.string(),
+  "count": zod.number().int().min(getCrmDashboardResponseAcquisitionDetailBreakdownItemCountMin)
+})),
+  "engagement": zod.object({
+  "views": zod.number().int().min(getCrmDashboardResponseEngagementViewsMin),
+  "applications": zod.number().int().min(getCrmDashboardResponseEngagementApplicationsMin),
+  "roleViews": zod.number().int().min(getCrmDashboardResponseEngagementRoleViewsMin),
+  "programmeViews": zod.number().int().min(getCrmDashboardResponseEngagementProgrammeViewsMin)
+}),
+  "delivery": zod.object({
+  "sent": zod.number().int().min(getCrmDashboardResponseDeliverySentMin),
+  "delivered": zod.number().int().min(getCrmDashboardResponseDeliveryDeliveredMin),
+  "failed": zod.number().int().min(getCrmDashboardResponseDeliveryFailedMin),
+  "pending": zod.number().int().min(getCrmDashboardResponseDeliveryPendingMin)
+}),
+  "recentRegistrations": zod.array(zod.object({
+  "subscriberId": zod.string().uuid(),
+  "email": zod.string().email(),
+  "name": zod.string().nullable(),
+  "active": zod.boolean(),
+  "consentedAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "craft": zod.string().nullable(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]),
+  "location": zod.string().nullable(),
+  "acquisitionSource": zod.string().nullable(),
+  "acquisitionDetail": zod.string().nullable(),
+  "interests": zod.array(zod.string()),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string()),
+  "allOpportunities": zod.boolean()
+}))
+})
+
+
+/**
+ * @summary Search and filter audience subscribers
+ */
+export const listCrmAudienceQuerySearchMax = 120;
+
+export const listCrmAudienceQuerySourceMax = 120;
+
+
+
+export const ListCrmAudienceQueryParams = zod.object({
+  "search": zod.coerce.string().max(listCrmAudienceQuerySearchMax).optional(),
+  "active": zod.coerce.boolean().optional(),
+  "source": zod.coerce.string().max(listCrmAudienceQuerySourceMax).optional(),
+  "careerLevel": zod.enum(['new_entrant', 'mid_level', 'senior']).optional(),
+  "contentType": zod.enum(['content', 'role', 'programme', 'training']).optional()
+})
+
+export const ListCrmAudienceResponseItem = zod.object({
+  "subscriberId": zod.string().uuid(),
+  "email": zod.string().email(),
+  "name": zod.string().nullable(),
+  "active": zod.boolean(),
+  "consentedAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "craft": zod.string().nullable(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]),
+  "location": zod.string().nullable(),
+  "acquisitionSource": zod.string().nullable(),
+  "acquisitionDetail": zod.string().nullable(),
+  "interests": zod.array(zod.string()),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string()),
+  "allOpportunities": zod.boolean()
+})
+export const ListCrmAudienceResponse = zod.array(ListCrmAudienceResponseItem)
+
+
+/**
+ * @summary Get one audience subscriber
+ */
+export const GetCrmAudienceMemberParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const GetCrmAudienceMemberResponse = zod.object({
+  "subscriberId": zod.string().uuid(),
+  "email": zod.string().email(),
+  "name": zod.string().nullable(),
+  "active": zod.boolean(),
+  "consentedAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "craft": zod.string().nullable(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]),
+  "location": zod.string().nullable(),
+  "acquisitionSource": zod.string().nullable(),
+  "acquisitionDetail": zod.string().nullable(),
+  "interests": zod.array(zod.string()),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string()),
+  "allOpportunities": zod.boolean()
+})
+
+
+/**
+ * No provider is configured, so communications state may be empty.
+ * @summary Get communication delivery records
+ */
+export const listCrmCommunicationsResponseRecipientCountMin = 0;
+
+
+
+export const ListCrmCommunicationsResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "channel": zod.string(),
+  "status": zod.enum(['pending', 'sent', 'delivered', 'failed']),
+  "subject": zod.string().nullish(),
+  "recipientCount": zod.number().int().min(listCrmCommunicationsResponseRecipientCountMin).optional(),
+  "createdAt": zod.coerce.date(),
+  "sentAt": zod.coerce.date().nullish()
+})
+export const ListCrmCommunicationsResponse = zod.array(ListCrmCommunicationsResponseItem)
+
+
+/**
+ * @summary List audience enquiries
+ */
+export const ListCrmEnquiriesResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string().nullish(),
+  "email": zod.string().email(),
+  "subject": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "message": zod.string(),
+  "status": zod.enum(['new', 'open', 'in_progress', 'resolved', 'closed']),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date().nullish()
+})
+export const ListCrmEnquiriesResponse = zod.array(ListCrmEnquiriesResponseItem)
+
+
+/**
+ * @summary Record a contact enquiry received outside the CRM
+ */
+export const createCrmEnquiryBodyNameMax = 160;
+
+export const createCrmEnquiryBodyEmailMax = 254;
+
+export const createCrmEnquiryBodySubjectMax = 250;
+
+export const createCrmEnquiryBodySourceMax = 120;
+
+export const createCrmEnquiryBodyMessageMax = 5000;
+
+
+
+export const CreateCrmEnquiryBody = zod.object({
+  "name": zod.string().max(createCrmEnquiryBodyNameMax).optional(),
+  "email": zod.string().email().max(createCrmEnquiryBodyEmailMax),
+  "subject": zod.string().max(createCrmEnquiryBodySubjectMax).optional(),
+  "source": zod.string().max(createCrmEnquiryBodySourceMax).optional(),
+  "message": zod.string().min(1).max(createCrmEnquiryBodyMessageMax)
+})
+
+export const CreateCrmEnquiryResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string().nullish(),
+  "email": zod.string().email(),
+  "subject": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "message": zod.string(),
+  "status": zod.enum(['new', 'open', 'in_progress', 'resolved', 'closed']),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Update an enquiry status
+ */
+export const UpdateCrmEnquiryParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const UpdateCrmEnquiryBody = zod.object({
+  "status": zod.enum(['new', 'open', 'in_progress', 'resolved', 'closed'])
+})
+
+export const UpdateCrmEnquiryResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string().nullish(),
+  "email": zod.string().email(),
+  "subject": zod.string().nullish(),
+  "source": zod.string().nullish(),
+  "message": zod.string(),
+  "status": zod.enum(['new', 'open', 'in_progress', 'resolved', 'closed']),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Get audience taxonomy values
+ */
+export const GetCrmTaxonomyResponse = zod.object({
+  "interests": zod.array(zod.string()),
+  "crafts": zod.array(zod.string()),
+  "acquisitionSources": zod.array(zod.string()),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior']))
+})
+
+
+/**
+ * @summary Get matching criteria for an opportunity
+ */
+export const GetPortalOpportunityMatchingParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const getPortalOpportunityMatchingResponseOneCraftsItemMax = 120;
+
+export const getPortalOpportunityMatchingResponseOneTagsItemMax = 120;
+
+
+
+export const GetPortalOpportunityMatchingResponse = zod.object({
+  "contentType": zod.enum(['content', 'role', 'programme', 'training']),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string().max(getPortalOpportunityMatchingResponseOneCraftsItemMax)),
+  "tags": zod.array(zod.string().max(getPortalOpportunityMatchingResponseOneTagsItemMax))
+}).and(zod.object({
+  "id": zod.string().uuid()
+}))
+
+
+/**
+ * @summary Replace matching criteria for an opportunity
+ */
+export const UpdatePortalOpportunityMatchingParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const updatePortalOpportunityMatchingBodyCraftsItemMax = 120;
+
+export const updatePortalOpportunityMatchingBodyTagsItemMax = 120;
+
+
+
+export const UpdatePortalOpportunityMatchingBody = zod.object({
+  "contentType": zod.enum(['content', 'role', 'programme', 'training']),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string().max(updatePortalOpportunityMatchingBodyCraftsItemMax)),
+  "tags": zod.array(zod.string().max(updatePortalOpportunityMatchingBodyTagsItemMax))
+})
+
+export const updatePortalOpportunityMatchingResponseOneCraftsItemMax = 120;
+
+export const updatePortalOpportunityMatchingResponseOneTagsItemMax = 120;
+
+
+
+export const UpdatePortalOpportunityMatchingResponse = zod.object({
+  "contentType": zod.enum(['content', 'role', 'programme', 'training']),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string().max(updatePortalOpportunityMatchingResponseOneCraftsItemMax)),
+  "tags": zod.array(zod.string().max(updatePortalOpportunityMatchingResponseOneTagsItemMax))
+}).and(zod.object({
+  "id": zod.string().uuid()
+}))
+
+
+/**
+ * @summary Get matching criteria for a programme
+ */
+export const GetPortalProgrammeMatchingParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const getPortalProgrammeMatchingResponseOneCraftsItemMax = 120;
+
+export const getPortalProgrammeMatchingResponseOneTagsItemMax = 120;
+
+
+
+export const GetPortalProgrammeMatchingResponse = zod.object({
+  "contentType": zod.enum(['content', 'role', 'programme', 'training']),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string().max(getPortalProgrammeMatchingResponseOneCraftsItemMax)),
+  "tags": zod.array(zod.string().max(getPortalProgrammeMatchingResponseOneTagsItemMax))
+}).and(zod.object({
+  "id": zod.string().uuid()
+}))
+
+
+/**
+ * @summary Replace matching criteria for a programme
+ */
+export const UpdatePortalProgrammeMatchingParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const updatePortalProgrammeMatchingBodyCraftsItemMax = 120;
+
+export const updatePortalProgrammeMatchingBodyTagsItemMax = 120;
+
+
+
+export const UpdatePortalProgrammeMatchingBody = zod.object({
+  "contentType": zod.enum(['content', 'role', 'programme', 'training']),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string().max(updatePortalProgrammeMatchingBodyCraftsItemMax)),
+  "tags": zod.array(zod.string().max(updatePortalProgrammeMatchingBodyTagsItemMax))
+})
+
+export const updatePortalProgrammeMatchingResponseOneCraftsItemMax = 120;
+
+export const updatePortalProgrammeMatchingResponseOneTagsItemMax = 120;
+
+
+
+export const UpdatePortalProgrammeMatchingResponse = zod.object({
+  "contentType": zod.enum(['content', 'role', 'programme', 'training']),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
+  "crafts": zod.array(zod.string().max(updatePortalProgrammeMatchingResponseOneCraftsItemMax)),
+  "tags": zod.array(zod.string().max(updatePortalProgrammeMatchingResponseOneTagsItemMax))
+}).and(zod.object({
+  "id": zod.string().uuid()
+}))
 
 

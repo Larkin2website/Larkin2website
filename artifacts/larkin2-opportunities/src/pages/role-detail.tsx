@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   getGetPublicOpportunityQueryKey,
+  recordPublicEngagement,
   useGetPublicOpportunity,
 } from "@workspace/api-client-react";
 import { Link } from "wouter";
@@ -27,6 +28,7 @@ export function RoleDetailPage({ id }: { id: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
   const lastScrollY = useRef(0);
+  const trackedViewId = useRef("");
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -36,6 +38,18 @@ export function RoleDetailPage({ id }: { id: string }) {
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", role.summary);
   }, [role]);
+
+  useEffect(() => {
+    if (!publicOpportunity || trackedViewId.current === publicOpportunity.id) return;
+    trackedViewId.current = publicOpportunity.id;
+    void recordPublicEngagement({ kind: "role", id: publicOpportunity.id, event: "view" }).catch(() => undefined);
+  }, [publicOpportunity]);
+
+  function trackApply() {
+    if (publicOpportunity) {
+      void recordPublicEngagement({ kind: "role", id: publicOpportunity.id, event: "apply" }).catch(() => undefined);
+    }
+  }
 
   useEffect(() => {
     const onScroll = () => {
@@ -104,6 +118,7 @@ export function RoleDetailPage({ id }: { id: string }) {
                     testId="link-role-apply-now"
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={trackApply}
                   >
                     Apply now
                   </MaskedLink>
@@ -148,6 +163,7 @@ export function RoleDetailPage({ id }: { id: string }) {
                   testId="link-role-apply"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={trackApply}
                 >
                   Apply for this role
                 </MaskedLink>

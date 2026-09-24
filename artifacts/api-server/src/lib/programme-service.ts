@@ -2,6 +2,7 @@ import { and, asc, count, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { auditEventsTable, db, programmeSectionsTable, programmesTable } from "@workspace/db";
 import type { PortalActor } from "./portal-auth";
 import { canProgrammeTransition, type ProgrammeStatus } from "./programme-lifecycle";
+import { enqueuePublication } from "./audience-crm-service";
 
 export type ProgrammeInput = {
   slug: string; num: string; cardTitle: string; cardCopy: string; cardCta: string; image: string;
@@ -86,11 +87,26 @@ export async function updateProgramme(id: string, input: ProgrammeInput, actor: 
   } catch (error: any) { if (error?.code === "23505") throw new Error("DUPLICATE"); throw error; }
 }
 export async function transitionProgramme(id: string, status: ProgrammeStatus, actor: PortalActor) {
-  const before = await getProgramme(id); if (!before) return undefined;
-  if (!canProgrammeTransition(before.status, status)) throw new Error("INVALID_TRANSITION");
-  const now = new Date();
-  const [row] = await db.update(programmesTable).set({ status, updatedBy: actor.userId, publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt, archivedAt: status === "archived" ? now : null }).where(eq(programmesTable.id, id)).returning();
-  const result = (await hydrate([row]))[0]; await audit(actor, "programme.transitioned", id, before, result); return result;
+  const found = await db.transaction(async (tx) => {
+    const [before] = await tx.select().from(programmesTable).where(eq(programmesTable.id, id)).for("update");
+    if (!before) return false;
+    if (!canProgrammeTransition(before.status, status)) throw new Error("INVALID_TRANSITION");
+    const now = new Date();
+    const [row] = await tx.update(programmesTable).set({
+      status, updatedBy: actor.userId,
+      publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt,
+      archivedAt: status === "archived" ? now : null,
+    }).where(eq(programmesTable.id, id)).returning();
+    if (!actor.demo && !before.publishedAt && status === "published") {
+      await enqueuePublication(tx, "programme", id, row.title);
+    }
+    await tx.insert(auditEventsTable).values({
+      action: "programme.transitioned", programmeId: id, actorUserId: actor.userId, actorName: actor.displayName,
+      beforeState: snapshot(before), afterState: snapshot(row),
+    });
+    return true;
+  });
+  return found ? getProgramme(id) : undefined;
 }
 export async function deleteProgramme(id: string, actor: PortalActor) {
   const before = await getProgramme(id); if (!before) return "NOT_FOUND"; if (before.status !== "archived") return "NOT_ARCHIVED";

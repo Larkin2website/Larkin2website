@@ -23,8 +23,16 @@ import type {
   AuditEvent,
   BadRequestResponse,
   ConflictResponse,
+  CrmAudienceItem,
+  CrmCommunication,
+  CrmDashboard,
+  CrmEnquiry,
+  CrmEnquiryInput,
+  CrmEnquiryUpdate,
+  CrmTaxonomy,
   ForbiddenResponse,
   HealthStatus,
+  ListCrmAudienceParams,
   ListPortalOpportunitiesParams,
   ListPortalOpportunityOptionsParams,
   ListPortalProgrammesParams,
@@ -43,6 +51,8 @@ import type {
   OpportunityTransition,
   PortalAccessGrantInput,
   PortalDashboard,
+  PortalMatchingCriteria,
+  PortalMatchingCriteriaInput,
   PortalMember,
   PortalMemberUpdate,
   PortalSession,
@@ -51,11 +61,16 @@ import type {
   ProgrammeInput,
   ProgrammePage,
   ProgrammeTransition,
+  PublicAudiencePreferences,
+  PublicAudiencePreferencesUpdate,
+  PublicEngagementInput,
+  PublicEngagementResult,
   PublicOpportunity,
   PublicOpportunityOptions,
   PublicProgramme,
   PublicSubscriptionInput,
   PublicSubscriptionMessage,
+  PublicSubscriptionPreferencesLookup,
   PublicSubscriptionResult,
   PublicSubscriptionUnsubscribeInput,
   ServiceUnavailableResponse,
@@ -2673,5 +2688,1130 @@ export const useUpdatePortalMember = <TError = ErrorType<BadRequestResponse | Un
         TContext
       > => {
       return useMutation(getUpdatePortalMemberMutationOptions(options));
+    }
+
+export const getGetPublicSubscriptionPreferencesUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/preferences`
+}
+
+/**
+ * Uses POST so the personal management token is sent in the request body rather than the URL.
+ * @summary Retrieve subscription preferences using a management token
+ */
+export const getPublicSubscriptionPreferences = async (publicSubscriptionPreferencesLookup: PublicSubscriptionPreferencesLookup, options?: Parameters<typeof customFetch>[1]): Promise<PublicAudiencePreferences> => {
+
+  return customFetch<PublicAudiencePreferences>(getGetPublicSubscriptionPreferencesUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(publicSubscriptionPreferencesLookup)
+  }
+);}
+
+
+
+
+
+export const getGetPublicSubscriptionPreferencesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getPublicSubscriptionPreferences>>, TError,{data: BodyType<PublicSubscriptionPreferencesLookup>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getPublicSubscriptionPreferences>>, TError,{data: BodyType<PublicSubscriptionPreferencesLookup>}, TContext> => {
+
+const mutationKey = ['getPublicSubscriptionPreferences'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getPublicSubscriptionPreferences>>, {data: BodyType<PublicSubscriptionPreferencesLookup>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  getPublicSubscriptionPreferences(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetPublicSubscriptionPreferencesMutationResult = NonNullable<Awaited<ReturnType<typeof getPublicSubscriptionPreferences>>>
+    export type GetPublicSubscriptionPreferencesMutationBody = BodyType<PublicSubscriptionPreferencesLookup>
+    export type GetPublicSubscriptionPreferencesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse>
+
+    /**
+ * @summary Retrieve subscription preferences using a management token
+ */
+export const useGetPublicSubscriptionPreferences = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getPublicSubscriptionPreferences>>, TError,{data: BodyType<PublicSubscriptionPreferencesLookup>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getPublicSubscriptionPreferences>>,
+        TError,
+        {data: BodyType<PublicSubscriptionPreferencesLookup>},
+        TContext
+      > => {
+      return useMutation(getGetPublicSubscriptionPreferencesMutationOptions(options));
+    }
+
+export const getUpdatePublicSubscriptionPreferencesUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/preferences`
+}
+
+/**
+ * @summary Update subscription preferences using a management token
+ */
+export const updatePublicSubscriptionPreferences = async (publicAudiencePreferencesUpdate: PublicAudiencePreferencesUpdate, options?: Parameters<typeof customFetch>[1]): Promise<PublicAudiencePreferences> => {
+
+  return customFetch<PublicAudiencePreferences>(getUpdatePublicSubscriptionPreferencesUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(publicAudiencePreferencesUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdatePublicSubscriptionPreferencesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePublicSubscriptionPreferences>>, TError,{data: BodyType<PublicAudiencePreferencesUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePublicSubscriptionPreferences>>, TError,{data: BodyType<PublicAudiencePreferencesUpdate>}, TContext> => {
+
+const mutationKey = ['updatePublicSubscriptionPreferences'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePublicSubscriptionPreferences>>, {data: BodyType<PublicAudiencePreferencesUpdate>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updatePublicSubscriptionPreferences(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePublicSubscriptionPreferencesMutationResult = NonNullable<Awaited<ReturnType<typeof updatePublicSubscriptionPreferences>>>
+    export type UpdatePublicSubscriptionPreferencesMutationBody = BodyType<PublicAudiencePreferencesUpdate>
+    export type UpdatePublicSubscriptionPreferencesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse>
+
+    /**
+ * @summary Update subscription preferences using a management token
+ */
+export const useUpdatePublicSubscriptionPreferences = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePublicSubscriptionPreferences>>, TError,{data: BodyType<PublicAudiencePreferencesUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePublicSubscriptionPreferences>>,
+        TError,
+        {data: BodyType<PublicAudiencePreferencesUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdatePublicSubscriptionPreferencesMutationOptions(options));
+    }
+
+export const getRecordPublicEngagementUrl = () => {
+
+
+
+
+  return `/api/public/engagement`
+}
+
+/**
+ * @summary Record an anonymous view or application engagement event
+ */
+export const recordPublicEngagement = async (publicEngagementInput: PublicEngagementInput, options?: Parameters<typeof customFetch>[1]): Promise<PublicEngagementResult> => {
+
+  return customFetch<PublicEngagementResult>(getRecordPublicEngagementUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(publicEngagementInput)
+  }
+);}
+
+
+
+
+
+export const getRecordPublicEngagementMutationOptions = <TError = ErrorType<BadRequestResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordPublicEngagement>>, TError,{data: BodyType<PublicEngagementInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordPublicEngagement>>, TError,{data: BodyType<PublicEngagementInput>}, TContext> => {
+
+const mutationKey = ['recordPublicEngagement'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordPublicEngagement>>, {data: BodyType<PublicEngagementInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  recordPublicEngagement(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordPublicEngagementMutationResult = NonNullable<Awaited<ReturnType<typeof recordPublicEngagement>>>
+    export type RecordPublicEngagementMutationBody = BodyType<PublicEngagementInput>
+    export type RecordPublicEngagementMutationError = ErrorType<BadRequestResponse>
+
+    /**
+ * @summary Record an anonymous view or application engagement event
+ */
+export const useRecordPublicEngagement = <TError = ErrorType<BadRequestResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordPublicEngagement>>, TError,{data: BodyType<PublicEngagementInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordPublicEngagement>>,
+        TError,
+        {data: BodyType<PublicEngagementInput>},
+        TContext
+      > => {
+      return useMutation(getRecordPublicEngagementMutationOptions(options));
+    }
+
+export const getGetCrmDashboardUrl = () => {
+
+
+
+
+  return `/api/crm/dashboard`
+}
+
+/**
+ * @summary Get audience acquisition, engagement, delivery, and registration summaries
+ */
+export const getCrmDashboard = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmDashboard> => {
+
+  return customFetch<CrmDashboard>(getGetCrmDashboardUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCrmDashboardQueryKey = () => {
+    return [
+    `/api/crm/dashboard`
+    ] as const;
+    }
+
+
+export const getGetCrmDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getCrmDashboard>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCrmDashboardQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCrmDashboard>>> = ({ signal }) => getCrmDashboard({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCrmDashboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCrmDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getCrmDashboard>>>
+export type GetCrmDashboardQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Get audience acquisition, engagement, delivery, and registration summaries
+ */
+
+export function useGetCrmDashboard<TData = Awaited<ReturnType<typeof getCrmDashboard>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCrmDashboardQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListCrmAudienceUrl = (params?: ListCrmAudienceParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/crm/audience?${stringifiedParams}` : `/api/crm/audience`
+}
+
+/**
+ * @summary Search and filter audience subscribers
+ */
+export const listCrmAudience = async (params?: ListCrmAudienceParams, options?: Parameters<typeof customFetch>[1]): Promise<CrmAudienceItem[]> => {
+
+  return customFetch<CrmAudienceItem[]>(getListCrmAudienceUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCrmAudienceQueryKey = (params?: ListCrmAudienceParams,) => {
+    return [
+    `/api/crm/audience`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListCrmAudienceQueryOptions = <TData = Awaited<ReturnType<typeof listCrmAudience>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>>(params?: ListCrmAudienceParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCrmAudience>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCrmAudienceQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCrmAudience>>> = ({ signal }) => listCrmAudience(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCrmAudience>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCrmAudienceQueryResult = NonNullable<Awaited<ReturnType<typeof listCrmAudience>>>
+export type ListCrmAudienceQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Search and filter audience subscribers
+ */
+
+export function useListCrmAudience<TData = Awaited<ReturnType<typeof listCrmAudience>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>>(
+ params?: ListCrmAudienceParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCrmAudience>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCrmAudienceQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetCrmAudienceMemberUrl = (id: string,) => {
+
+
+
+
+  return `/api/crm/audience/${id}`
+}
+
+/**
+ * @summary Get one audience subscriber
+ */
+export const getCrmAudienceMember = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<CrmAudienceItem> => {
+
+  return customFetch<CrmAudienceItem>(getGetCrmAudienceMemberUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCrmAudienceMemberQueryKey = (id: string,) => {
+    return [
+    `/api/crm/audience/${id}`
+    ] as const;
+    }
+
+
+export const getGetCrmAudienceMemberQueryOptions = <TData = Awaited<ReturnType<typeof getCrmAudienceMember>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmAudienceMember>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCrmAudienceMemberQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCrmAudienceMember>>> = ({ signal }) => getCrmAudienceMember(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCrmAudienceMember>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCrmAudienceMemberQueryResult = NonNullable<Awaited<ReturnType<typeof getCrmAudienceMember>>>
+export type GetCrmAudienceMemberQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get one audience subscriber
+ */
+
+export function useGetCrmAudienceMember<TData = Awaited<ReturnType<typeof getCrmAudienceMember>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmAudienceMember>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCrmAudienceMemberQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListCrmCommunicationsUrl = () => {
+
+
+
+
+  return `/api/crm/communications`
+}
+
+/**
+ * No provider is configured, so communications state may be empty.
+ * @summary Get communication delivery records
+ */
+export const listCrmCommunications = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmCommunication[]> => {
+
+  return customFetch<CrmCommunication[]>(getListCrmCommunicationsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCrmCommunicationsQueryKey = () => {
+    return [
+    `/api/crm/communications`
+    ] as const;
+    }
+
+
+export const getListCrmCommunicationsQueryOptions = <TData = Awaited<ReturnType<typeof listCrmCommunications>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCrmCommunications>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCrmCommunicationsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCrmCommunications>>> = ({ signal }) => listCrmCommunications({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCrmCommunications>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCrmCommunicationsQueryResult = NonNullable<Awaited<ReturnType<typeof listCrmCommunications>>>
+export type ListCrmCommunicationsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Get communication delivery records
+ */
+
+export function useListCrmCommunications<TData = Awaited<ReturnType<typeof listCrmCommunications>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCrmCommunications>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCrmCommunicationsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListCrmEnquiriesUrl = () => {
+
+
+
+
+  return `/api/crm/enquiries`
+}
+
+/**
+ * @summary List audience enquiries
+ */
+export const listCrmEnquiries = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmEnquiry[]> => {
+
+  return customFetch<CrmEnquiry[]>(getListCrmEnquiriesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCrmEnquiriesQueryKey = () => {
+    return [
+    `/api/crm/enquiries`
+    ] as const;
+    }
+
+
+export const getListCrmEnquiriesQueryOptions = <TData = Awaited<ReturnType<typeof listCrmEnquiries>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCrmEnquiries>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCrmEnquiriesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCrmEnquiries>>> = ({ signal }) => listCrmEnquiries({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCrmEnquiries>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCrmEnquiriesQueryResult = NonNullable<Awaited<ReturnType<typeof listCrmEnquiries>>>
+export type ListCrmEnquiriesQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary List audience enquiries
+ */
+
+export function useListCrmEnquiries<TData = Awaited<ReturnType<typeof listCrmEnquiries>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCrmEnquiries>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCrmEnquiriesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateCrmEnquiryUrl = () => {
+
+
+
+
+  return `/api/crm/enquiries`
+}
+
+/**
+ * @summary Record a contact enquiry received outside the CRM
+ */
+export const createCrmEnquiry = async (crmEnquiryInput: CrmEnquiryInput, options?: Parameters<typeof customFetch>[1]): Promise<CrmEnquiry> => {
+
+  return customFetch<CrmEnquiry>(getCreateCrmEnquiryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(crmEnquiryInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCrmEnquiryMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCrmEnquiry>>, TError,{data: BodyType<CrmEnquiryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCrmEnquiry>>, TError,{data: BodyType<CrmEnquiryInput>}, TContext> => {
+
+const mutationKey = ['createCrmEnquiry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCrmEnquiry>>, {data: BodyType<CrmEnquiryInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCrmEnquiry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCrmEnquiryMutationResult = NonNullable<Awaited<ReturnType<typeof createCrmEnquiry>>>
+    export type CreateCrmEnquiryMutationBody = BodyType<CrmEnquiryInput>
+    export type CreateCrmEnquiryMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Record a contact enquiry received outside the CRM
+ */
+export const useCreateCrmEnquiry = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCrmEnquiry>>, TError,{data: BodyType<CrmEnquiryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCrmEnquiry>>,
+        TError,
+        {data: BodyType<CrmEnquiryInput>},
+        TContext
+      > => {
+      return useMutation(getCreateCrmEnquiryMutationOptions(options));
+    }
+
+export const getUpdateCrmEnquiryUrl = (id: string,) => {
+
+
+
+
+  return `/api/crm/enquiries/${id}`
+}
+
+/**
+ * @summary Update an enquiry status
+ */
+export const updateCrmEnquiry = async (id: string,
+    crmEnquiryUpdate: CrmEnquiryUpdate, options?: Parameters<typeof customFetch>[1]): Promise<CrmEnquiry> => {
+
+  return customFetch<CrmEnquiry>(getUpdateCrmEnquiryUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(crmEnquiryUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateCrmEnquiryMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCrmEnquiry>>, TError,{id: string;data: BodyType<CrmEnquiryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCrmEnquiry>>, TError,{id: string;data: BodyType<CrmEnquiryUpdate>}, TContext> => {
+
+const mutationKey = ['updateCrmEnquiry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCrmEnquiry>>, {id: string;data: BodyType<CrmEnquiryUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateCrmEnquiry(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCrmEnquiryMutationResult = NonNullable<Awaited<ReturnType<typeof updateCrmEnquiry>>>
+    export type UpdateCrmEnquiryMutationBody = BodyType<CrmEnquiryUpdate>
+    export type UpdateCrmEnquiryMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Update an enquiry status
+ */
+export const useUpdateCrmEnquiry = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCrmEnquiry>>, TError,{id: string;data: BodyType<CrmEnquiryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateCrmEnquiry>>,
+        TError,
+        {id: string;data: BodyType<CrmEnquiryUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateCrmEnquiryMutationOptions(options));
+    }
+
+export const getGetCrmTaxonomyUrl = () => {
+
+
+
+
+  return `/api/crm/taxonomy`
+}
+
+/**
+ * @summary Get audience taxonomy values
+ */
+export const getCrmTaxonomy = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmTaxonomy> => {
+
+  return customFetch<CrmTaxonomy>(getGetCrmTaxonomyUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCrmTaxonomyQueryKey = () => {
+    return [
+    `/api/crm/taxonomy`
+    ] as const;
+    }
+
+
+export const getGetCrmTaxonomyQueryOptions = <TData = Awaited<ReturnType<typeof getCrmTaxonomy>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmTaxonomy>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCrmTaxonomyQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCrmTaxonomy>>> = ({ signal }) => getCrmTaxonomy({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCrmTaxonomy>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCrmTaxonomyQueryResult = NonNullable<Awaited<ReturnType<typeof getCrmTaxonomy>>>
+export type GetCrmTaxonomyQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Get audience taxonomy values
+ */
+
+export function useGetCrmTaxonomy<TData = Awaited<ReturnType<typeof getCrmTaxonomy>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmTaxonomy>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCrmTaxonomyQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetPortalOpportunityMatchingUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/opportunities/${id}/matching`
+}
+
+/**
+ * @summary Get matching criteria for an opportunity
+ */
+export const getPortalOpportunityMatching = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<PortalMatchingCriteria> => {
+
+  return customFetch<PortalMatchingCriteria>(getGetPortalOpportunityMatchingUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPortalOpportunityMatchingQueryKey = (id: string,) => {
+    return [
+    `/api/portal/opportunities/${id}/matching`
+    ] as const;
+    }
+
+
+export const getGetPortalOpportunityMatchingQueryOptions = <TData = Awaited<ReturnType<typeof getPortalOpportunityMatching>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPortalOpportunityMatching>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPortalOpportunityMatchingQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPortalOpportunityMatching>>> = ({ signal }) => getPortalOpportunityMatching(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPortalOpportunityMatching>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPortalOpportunityMatchingQueryResult = NonNullable<Awaited<ReturnType<typeof getPortalOpportunityMatching>>>
+export type GetPortalOpportunityMatchingQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get matching criteria for an opportunity
+ */
+
+export function useGetPortalOpportunityMatching<TData = Awaited<ReturnType<typeof getPortalOpportunityMatching>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPortalOpportunityMatching>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPortalOpportunityMatchingQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdatePortalOpportunityMatchingUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/opportunities/${id}/matching`
+}
+
+/**
+ * @summary Replace matching criteria for an opportunity
+ */
+export const updatePortalOpportunityMatching = async (id: string,
+    portalMatchingCriteriaInput: PortalMatchingCriteriaInput, options?: Parameters<typeof customFetch>[1]): Promise<PortalMatchingCriteria> => {
+
+  return customFetch<PortalMatchingCriteria>(getUpdatePortalOpportunityMatchingUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(portalMatchingCriteriaInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePortalOpportunityMatchingMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalOpportunityMatching>>, TError,{id: string;data: BodyType<PortalMatchingCriteriaInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePortalOpportunityMatching>>, TError,{id: string;data: BodyType<PortalMatchingCriteriaInput>}, TContext> => {
+
+const mutationKey = ['updatePortalOpportunityMatching'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePortalOpportunityMatching>>, {id: string;data: BodyType<PortalMatchingCriteriaInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePortalOpportunityMatching(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePortalOpportunityMatchingMutationResult = NonNullable<Awaited<ReturnType<typeof updatePortalOpportunityMatching>>>
+    export type UpdatePortalOpportunityMatchingMutationBody = BodyType<PortalMatchingCriteriaInput>
+    export type UpdatePortalOpportunityMatchingMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Replace matching criteria for an opportunity
+ */
+export const useUpdatePortalOpportunityMatching = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalOpportunityMatching>>, TError,{id: string;data: BodyType<PortalMatchingCriteriaInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePortalOpportunityMatching>>,
+        TError,
+        {id: string;data: BodyType<PortalMatchingCriteriaInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePortalOpportunityMatchingMutationOptions(options));
+    }
+
+export const getGetPortalProgrammeMatchingUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/programmes/${id}/matching`
+}
+
+/**
+ * @summary Get matching criteria for a programme
+ */
+export const getPortalProgrammeMatching = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<PortalMatchingCriteria> => {
+
+  return customFetch<PortalMatchingCriteria>(getGetPortalProgrammeMatchingUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPortalProgrammeMatchingQueryKey = (id: string,) => {
+    return [
+    `/api/portal/programmes/${id}/matching`
+    ] as const;
+    }
+
+
+export const getGetPortalProgrammeMatchingQueryOptions = <TData = Awaited<ReturnType<typeof getPortalProgrammeMatching>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPortalProgrammeMatching>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPortalProgrammeMatchingQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPortalProgrammeMatching>>> = ({ signal }) => getPortalProgrammeMatching(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPortalProgrammeMatching>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPortalProgrammeMatchingQueryResult = NonNullable<Awaited<ReturnType<typeof getPortalProgrammeMatching>>>
+export type GetPortalProgrammeMatchingQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get matching criteria for a programme
+ */
+
+export function useGetPortalProgrammeMatching<TData = Awaited<ReturnType<typeof getPortalProgrammeMatching>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPortalProgrammeMatching>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPortalProgrammeMatchingQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdatePortalProgrammeMatchingUrl = (id: string,) => {
+
+
+
+
+  return `/api/portal/programmes/${id}/matching`
+}
+
+/**
+ * @summary Replace matching criteria for a programme
+ */
+export const updatePortalProgrammeMatching = async (id: string,
+    portalMatchingCriteriaInput: PortalMatchingCriteriaInput, options?: Parameters<typeof customFetch>[1]): Promise<PortalMatchingCriteria> => {
+
+  return customFetch<PortalMatchingCriteria>(getUpdatePortalProgrammeMatchingUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(portalMatchingCriteriaInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePortalProgrammeMatchingMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalProgrammeMatching>>, TError,{id: string;data: BodyType<PortalMatchingCriteriaInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePortalProgrammeMatching>>, TError,{id: string;data: BodyType<PortalMatchingCriteriaInput>}, TContext> => {
+
+const mutationKey = ['updatePortalProgrammeMatching'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePortalProgrammeMatching>>, {id: string;data: BodyType<PortalMatchingCriteriaInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePortalProgrammeMatching(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePortalProgrammeMatchingMutationResult = NonNullable<Awaited<ReturnType<typeof updatePortalProgrammeMatching>>>
+    export type UpdatePortalProgrammeMatchingMutationBody = BodyType<PortalMatchingCriteriaInput>
+    export type UpdatePortalProgrammeMatchingMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Replace matching criteria for a programme
+ */
+export const useUpdatePortalProgrammeMatching = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePortalProgrammeMatching>>, TError,{id: string;data: BodyType<PortalMatchingCriteriaInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePortalProgrammeMatching>>,
+        TError,
+        {id: string;data: BodyType<PortalMatchingCriteriaInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePortalProgrammeMatchingMutationOptions(options));
     }
 

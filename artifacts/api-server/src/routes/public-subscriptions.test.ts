@@ -42,6 +42,30 @@ class MemorySubscriptionStore implements PublicSubscriptionStore {
       }
     }
   }
+
+  async updatePreferencesByCapability(managementTokenHash: string, preferences: any): Promise<void> {
+    for (const record of this.records.values()) {
+      if (record.managementTokenHash === managementTokenHash) Object.assign(record, preferences);
+    }
+  }
+
+  async getPreferencesByCapability(managementTokenHash: string) {
+    const record = [...this.records.values()].find((item) => item.managementTokenHash === managementTokenHash);
+    if (!record) return undefined;
+    return {
+      name: record.name ?? null,
+      craft: record.craft ?? null,
+      careerLevel: record.careerLevel ?? null,
+      location: record.location ?? null,
+      acquisitionSource: record.acquisitionSource ?? null,
+      acquisitionDetail: record.acquisitionDetail ?? null,
+      interests: record.interests ?? [],
+      contentTypes: record.contentTypes ?? [],
+      careerLevels: record.careerLevels ?? [],
+      crafts: record.crafts ?? [],
+      allOpportunities: record.allOpportunities ?? false,
+    };
+  }
 }
 
 const noRateLimit: RequestHandler = (_req, _res, next) => next();
@@ -226,6 +250,60 @@ test("signup rate limiting returns the contracted generic 429 response", async (
     assert.equal(store.records.size, 1);
   }, {
     signupRateLimit: createFixedWindowRateLimit({ limit: 1, windowMs: 60_000, maxKeys: 1 }),
+  });
+});
+
+test("management token protects preference lookup and updates without changing consent or active state", async () => {
+  const store = new MemorySubscriptionStore();
+  await withServer(store, async (base) => {
+    const signup = await post(base, "/public/subscriptions", {
+      email: "audience@example.com",
+      consent: true,
+    });
+    const token = (await signup.json() as { managementToken: string }).managementToken;
+
+    const lookup = await post(base, "/public/subscriptions/preferences", { managementToken: token });
+    assert.equal(lookup.status, 200);
+    assert.deepEqual((await lookup.json() as { interests: string[] }).interests, []);
+
+    const updated = await fetch(`${base}/public/subscriptions/preferences`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        managementToken: token,
+        name: "Alex",
+        careerLevel: "mid_level",
+        interests: ["camera"],
+        contentTypes: ["role"],
+        allOpportunities: false,
+      }),
+    });
+    assert.equal(updated.status, 200);
+    assert.equal((await updated.json() as { name: string }).name, "Alex");
+    const stored = store.records.get("audience@example.com");
+    assert.equal(stored?.name, "Alex");
+    assert.equal(stored?.consent, true);
+    assert.equal(stored?.active, true);
+
+    const cleared = await fetch(`${base}/public/subscriptions/preferences`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ managementToken: token, name: null, careerLevel: null, interests: [] }),
+    });
+    assert.equal(cleared.status, 200);
+    assert.deepEqual(await cleared.json(), {
+      interests: [],
+      contentTypes: ["role"],
+      careerLevels: [],
+      crafts: [],
+      allOpportunities: false,
+    });
+    assert.equal(store.records.get("audience@example.com")?.name, null);
+    assert.equal(store.records.get("audience@example.com")?.careerLevel, null);
+
+    const unauthorized = await post(base, "/public/subscriptions/preferences", { managementToken: "z".repeat(43) });
+    assert.equal(unauthorized.status, 401);
+    assert.equal(store.records.get("audience@example.com")?.name, null);
   });
 });
 

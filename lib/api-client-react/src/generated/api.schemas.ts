@@ -15,6 +15,25 @@ export interface ApiError {
   details?: string | null;
 }
 
+export type CareerLevel = typeof CareerLevel[keyof typeof CareerLevel];
+
+
+export const CareerLevel = {
+  new_entrant: 'new_entrant',
+  mid_level: 'mid_level',
+  senior: 'senior',
+} as const;
+
+export type AudienceContentType = typeof AudienceContentType[keyof typeof AudienceContentType];
+
+
+export const AudienceContentType = {
+  content: 'content',
+  role: 'role',
+  programme: 'programme',
+  training: 'training',
+} as const;
+
 export interface PublicSubscriptionInput {
   /**
      * @minLength 3
@@ -29,6 +48,24 @@ export interface PublicSubscriptionInput {
      * @pattern ^[A-Za-z0-9_-]+$
      */
   existingManagementToken?: string;
+  /** @maxLength 160 */
+  name?: string;
+  /** @maxLength 120 */
+  craft?: string;
+  careerLevel?: CareerLevel;
+  /** @maxLength 160 */
+  location?: string;
+  /** @maxLength 120 */
+  acquisitionSource?: string;
+  /** @maxLength 500 */
+  acquisitionDetail?: string;
+  /** @items.maxLength 120 */
+  interests?: string[];
+  contentTypes?: AudienceContentType[];
+  careerLevels?: CareerLevel[];
+  /** @items.maxLength 120 */
+  crafts?: string[];
+  allOpportunities?: boolean;
 }
 
 export interface PublicSubscriptionUnsubscribeInput {
@@ -156,6 +193,7 @@ export interface Programme {
 }
 
 export interface PublicProgramme {
+  id: string;
   slug: string;
   num: string;
   cardTitle: string;
@@ -684,6 +722,290 @@ export interface PortalSession {
   permissions: PortalSessionPermissionsItem[];
 }
 
+export interface PublicAudiencePreferences {
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  name?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  craft?: string | null;
+  careerLevel?: CareerLevel | null;
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  location?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  acquisitionSource?: string | null;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  acquisitionDetail?: string | null;
+  /** @items.maxLength 120 */
+  interests?: string[];
+  contentTypes?: AudienceContentType[];
+  careerLevels?: CareerLevel[];
+  /** @items.maxLength 120 */
+  crafts?: string[];
+  allOpportunities?: boolean;
+}
+
+export interface PublicSubscriptionPreferencesLookup {
+  /**
+     * @minLength 43
+     * @maxLength 128
+     * @pattern ^[A-Za-z0-9_-]+$
+     */
+  managementToken: string;
+}
+
+export interface PublicAudiencePreferencesUpdate {
+  /**
+     * @minLength 43
+     * @maxLength 128
+     * @pattern ^[A-Za-z0-9_-]+$
+     */
+  managementToken: string;
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  name?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  craft?: string | null;
+  careerLevel?: CareerLevel | null;
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  location?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  acquisitionSource?: string | null;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  acquisitionDetail?: string | null;
+  /** @items.maxLength 120 */
+  interests?: string[];
+  contentTypes?: AudienceContentType[];
+  careerLevels?: CareerLevel[];
+  /** @items.maxLength 120 */
+  crafts?: string[];
+  allOpportunities?: boolean;
+}
+
+export type PublicEngagementInputKind = typeof PublicEngagementInputKind[keyof typeof PublicEngagementInputKind];
+
+
+export const PublicEngagementInputKind = {
+  role: 'role',
+  programme: 'programme',
+} as const;
+
+export type PublicEngagementInputEvent = typeof PublicEngagementInputEvent[keyof typeof PublicEngagementInputEvent];
+
+
+export const PublicEngagementInputEvent = {
+  view: 'view',
+  apply: 'apply',
+} as const;
+
+export interface PublicEngagementInput {
+  kind: PublicEngagementInputKind;
+  id: string;
+  event: PublicEngagementInputEvent;
+}
+
+export interface PublicEngagementResult {
+  recorded: boolean;
+}
+
+export interface CrmAudienceItem {
+  subscriberId: string;
+  email: string;
+  /** @nullable */
+  name: string | null;
+  active: boolean;
+  /** @nullable */
+  consentedAt: string | null;
+  createdAt: string;
+  /** @nullable */
+  craft: string | null;
+  careerLevel: CareerLevel | null;
+  /** @nullable */
+  location: string | null;
+  /** @nullable */
+  acquisitionSource: string | null;
+  /** @nullable */
+  acquisitionDetail: string | null;
+  interests: string[];
+  contentTypes: AudienceContentType[];
+  careerLevels: CareerLevel[];
+  crafts: string[];
+  allOpportunities: boolean;
+}
+
+export interface CrmAcquisitionBreakdown {
+  /** @nullable */
+  source: string | null;
+  /** @minimum 0 */
+  count: number;
+}
+
+export interface CrmAcquisitionDetailBreakdown {
+  /** @nullable */
+  source: string | null;
+  detail: string;
+  /** @minimum 0 */
+  count: number;
+}
+
+export interface CrmEngagementSummary {
+  /** @minimum 0 */
+  views: number;
+  /** @minimum 0 */
+  applications: number;
+  /** @minimum 0 */
+  roleViews: number;
+  /** @minimum 0 */
+  programmeViews: number;
+}
+
+export interface CrmDeliverySummary {
+  /** @minimum 0 */
+  sent: number;
+  /** @minimum 0 */
+  delivered: number;
+  /** @minimum 0 */
+  failed: number;
+  /** @minimum 0 */
+  pending: number;
+}
+
+export interface CrmAudienceCounts {
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 0 */
+  active: number;
+  /** @minimum 0 */
+  inactive: number;
+}
+
+export interface CrmDashboard {
+  counts: CrmAudienceCounts;
+  acquisitionBreakdown: CrmAcquisitionBreakdown[];
+  acquisitionDetailBreakdown: CrmAcquisitionDetailBreakdown[];
+  engagement: CrmEngagementSummary;
+  delivery: CrmDeliverySummary;
+  recentRegistrations: CrmAudienceItem[];
+}
+
+export type CrmCommunicationStatus = typeof CrmCommunicationStatus[keyof typeof CrmCommunicationStatus];
+
+
+export const CrmCommunicationStatus = {
+  pending: 'pending',
+  sent: 'sent',
+  delivered: 'delivered',
+  failed: 'failed',
+} as const;
+
+export interface CrmCommunication {
+  id: string;
+  channel: string;
+  status: CrmCommunicationStatus;
+  /** @nullable */
+  subject?: string | null;
+  /** @minimum 0 */
+  recipientCount?: number;
+  createdAt: string;
+  /** @nullable */
+  sentAt?: string | null;
+}
+
+export type CrmEnquiryStatus = typeof CrmEnquiryStatus[keyof typeof CrmEnquiryStatus];
+
+
+export const CrmEnquiryStatus = {
+  new: 'new',
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+  closed: 'closed',
+} as const;
+
+export interface CrmEnquiry {
+  id: string;
+  /** @nullable */
+  name?: string | null;
+  email: string;
+  /** @nullable */
+  subject?: string | null;
+  /** @nullable */
+  source?: string | null;
+  message: string;
+  status: CrmEnquiryStatus;
+  createdAt: string;
+  /** @nullable */
+  updatedAt?: string | null;
+}
+
+export interface CrmEnquiryInput {
+  /** @maxLength 160 */
+  name?: string;
+  /** @maxLength 254 */
+  email: string;
+  /** @maxLength 250 */
+  subject?: string;
+  /** @maxLength 120 */
+  source?: string;
+  /**
+     * @minLength 1
+     * @maxLength 5000
+     */
+  message: string;
+}
+
+export interface CrmEnquiryUpdate {
+  status: CrmEnquiryStatus;
+}
+
+export interface CrmTaxonomy {
+  interests: string[];
+  crafts: string[];
+  acquisitionSources: string[];
+  contentTypes: AudienceContentType[];
+  careerLevels: CareerLevel[];
+}
+
+export interface PortalMatchingCriteriaInput {
+  contentType: AudienceContentType;
+  careerLevels: CareerLevel[];
+  /** @items.maxLength 120 */
+  crafts: string[];
+  /** @items.maxLength 120 */
+  tags: string[];
+}
+
+export type PortalMatchingCriteria = PortalMatchingCriteriaInput & {
+  id: string;
+};
+
 /**
  * Invalid request
  */
@@ -811,4 +1133,18 @@ export const ListPortalProgrammesOrder = {
   asc: 'asc',
   desc: 'desc',
 } as const;
+
+export type ListCrmAudienceParams = {
+/**
+ * @maxLength 120
+ */
+search?: string;
+active?: boolean;
+/**
+ * @maxLength 120
+ */
+source?: string;
+careerLevel?: CareerLevel;
+contentType?: AudienceContentType;
+};
 

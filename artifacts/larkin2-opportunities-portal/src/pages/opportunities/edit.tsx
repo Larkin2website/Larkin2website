@@ -1,5 +1,6 @@
 import { 
   useGetPortalOpportunity, 
+  useGetPortalSession,
   useUpdatePortalOpportunity,
   OpportunityInput,
   getGetPortalOpportunityQueryKey,
@@ -12,6 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Loader2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/brand";
+import { MatchingCriteriaPanel } from "@/components/matching-criteria-panel";
 
 export default function EditOpportunityPage() {
   const params = useParams();
@@ -21,6 +23,7 @@ export default function EditOpportunityPage() {
   const queryClient = useQueryClient();
 
   const { data: opp, isLoading, error } = useGetPortalOpportunity(id);
+  const { data: session } = useGetPortalSession();
   const update = useUpdatePortalOpportunity();
 
   const handleSubmit = async (data: OpportunityInput) => {
@@ -92,6 +95,11 @@ export default function EditOpportunityPage() {
         initialValues={opp}
         onSubmit={handleSubmit} 
         isSubmitting={update.isPending}
+      />
+      <MatchingCriteriaPanel
+        id={id}
+        entityType="role"
+        canWrite={session?.permissions.includes("opportunities:write") ?? false}
       />
     </div>
   );

@@ -111,3 +111,37 @@ export function createRequirePortal(
 };
 
 export const requirePortal = createRequirePortal();
+
+/** CRM data is restricted to a verified, active real super-admin membership. */
+export const requireCrmAccess: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = getAuth(req).userId;
+    if (!userId) {
+      res.status(401).json({ error: "Authentication required" });
+      return;
+    }
+    const [member] = await db.select().from(portalMembershipsTable)
+      .where(eq(portalMembershipsTable.userId, userId)).limit(1);
+    if (!member?.active || member.role !== "super_admin") {
+      res.status(403).json({ error: "CRM access requires an active super admin" });
+      return;
+    }
+    const profile = verifiedPortalProfile(await clerkClient.users.getUser(userId));
+    if (!profile) {
+      res.status(403).json({ error: "A verified Clerk email address is required for CRM access" });
+      return;
+    }
+    // This middleware authenticates from Clerk + the active membership table directly;
+    // demo cookies and the portal demo actor are intentionally never considered.
+    req.portalActor = {
+      userId,
+      displayName: member.displayName,
+      email: member.email,
+      role: member.role,
+      permissions: permissionsForRole(member.role),
+    };
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

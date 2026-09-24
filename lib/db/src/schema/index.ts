@@ -21,3 +21,4 @@ export * from "./opportunities";
 export * from "./programmes";
 export * from "./portal";
 export * from "./public-subscriptions";
+export * from "./audience-crm";

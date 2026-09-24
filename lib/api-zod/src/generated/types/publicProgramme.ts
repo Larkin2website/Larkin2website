@@ -8,6 +8,7 @@
 import type { ProgrammeStatus } from './programmeStatus';
 
 export interface PublicProgramme {
+  id: string;
   slug: string;
   num: string;
   cardTitle: string;

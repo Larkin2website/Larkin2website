@@ -3,6 +3,7 @@ import healthRouter from "./health";
 import opportunitiesRouter from "./opportunities";
 import programmesRouter from "./programmes";
 import publicSubscriptionsRouter from "./public-subscriptions";
+import audienceCrmRouter from "./audience-crm";
 
 const router: IRouter = Router();
 
@@ -10,5 +11,6 @@ router.use(healthRouter);
 router.use(opportunitiesRouter);
 router.use(programmesRouter);
 router.use(publicSubscriptionsRouter);
+router.use(audienceCrmRouter);
 
 export default router;

@@ -16,7 +16,7 @@ const query = ListPortalProgrammesQueryParams;
 const id = GetPortalProgrammeParams;
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const publicMap = (row: any) => ({
-  slug: row.slug, num: row.num, cardTitle: row.cardTitle, cardCopy: row.cardCopy, cardCta: row.cardCta,
+  id: row.id, slug: row.slug, num: row.num, cardTitle: row.cardTitle, cardCopy: row.cardCopy, cardCta: row.cardCta,
   image: row.image, title: row.title, shortDescription: row.shortDescription, status: row.status,
   applicationStatus: row.applicationStatus, location: row.location, applicationUrl: row.applicationUrl,
   applicationDeadline: row.applicationDeadline, deadline: row.deadline, featured: row.featured,

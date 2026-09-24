@@ -1,5 +1,6 @@
 import { 
   useGetPortalProgramme,
+  useGetPortalSession,
   useUpdatePortalProgramme,
   getGetPortalProgrammeQueryKey,
   getListPortalProgrammesQueryKey
@@ -11,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ChevronLeft, Loader2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgrammeForm } from "@/components/programmes/programme-form";
+import { MatchingCriteriaPanel } from "@/components/matching-criteria-panel";
 
 export default function EditProgrammePage() {
   const params = useParams();
@@ -20,6 +22,7 @@ export default function EditProgrammePage() {
   const queryClient = useQueryClient();
 
   const { data: programme, isLoading, error } = useGetPortalProgramme(id);
+  const { data: session } = useGetPortalSession();
   const update = useUpdatePortalProgramme();
 
   if (isLoading) {
@@ -80,6 +83,11 @@ export default function EditProgrammePage() {
             });
           }
         }}
+      />
+      <MatchingCriteriaPanel
+        id={id}
+        entityType="programme"
+        canWrite={session?.permissions.includes("programmes:write") ?? false}
       />
     </div>
   );

@@ -9,6 +9,7 @@ import {
   type OpportunityStatus as Status,
 } from "./opportunity-domain";
 import { canonicalizeOpportunityOptions } from "./opportunity-option-service";
+import { enqueuePublication } from "./audience-crm-service";
 
 type Input = {
   slug: string; title: string; publicationLabel: string; department: string; roleType: string;
@@ -91,16 +92,25 @@ export async function updateOpportunity(id: string, input: Input, actor: PortalA
   } catch (error: any) { if (error?.code === "23505") throw new Error("DUPLICATE"); throw error; }
 }
 export async function transitionOpportunity(id: string, status: Status, actor: PortalActor) {
-  const before = await getOpportunity(id); if (!before) return undefined;
-  if (!canTransitionStatus(before.status as Status, status)) throw new Error("INVALID_TRANSITION");
-  const now = new Date();
-  const [row] = await db.update(opportunitiesTable).set({
-    status, updatedBy: actor.userId, publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt,
-    archivedAt: status === "archived" ? now : null,
-  }).where(eq(opportunitiesTable.id, id)).returning();
-  const result = (await hydrate([row]))[0];
-  await audit(actor, "opportunity.transitioned", id, before, result);
-  return result;
+  const found = await db.transaction(async (tx) => {
+    const [before] = await tx.select().from(opportunitiesTable).where(eq(opportunitiesTable.id, id)).for("update");
+    if (!before) return false;
+    if (!canTransitionStatus(before.status as Status, status)) throw new Error("INVALID_TRANSITION");
+    const now = new Date();
+    const [row] = await tx.update(opportunitiesTable).set({
+      status, updatedBy: actor.userId, publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt,
+      archivedAt: status === "archived" ? now : null,
+    }).where(eq(opportunitiesTable.id, id)).returning();
+    if (!actor.demo && !before.publishedAt && status === "published") {
+      await enqueuePublication(tx, "role", id, row.title);
+    }
+    await tx.insert(auditEventsTable).values({
+      action: "opportunity.transitioned", opportunityId: id, actorUserId: actor.userId, actorName: actor.displayName,
+      beforeState: snapshot(before), afterState: snapshot(row),
+    });
+    return true;
+  });
+  return found ? getOpportunity(id) : undefined;
 }
 export async function deleteOpportunity(id: string, actor: PortalActor) {
   const before = await getOpportunity(id); if (!before) return "NOT_FOUND";
