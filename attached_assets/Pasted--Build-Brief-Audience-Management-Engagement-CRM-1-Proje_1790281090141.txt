@@ -1,0 +1,1795 @@
+# Build Brief: Audience Management & Engagement CRM
+
+## 1. Project Context
+
+We already have an existing client platform consisting of:
+
+1. **Public Website**
+2. **Opportunities Management Portal**
+3. **This new Audience Management & Engagement CRM**
+
+The public website and Opportunities Management Portal have already been built as separate artifacts/apps in this Replit project.
+
+This CRM is the **third and final application** in the initial platform.
+
+IMPORTANT:
+
+This is NOT a traditional sales CRM.
+
+Do not build:
+
+* sales pipelines
+* sales leads
+* deal management
+* sales forecasting
+* traditional customer relationship management workflows
+* complex customer accounts
+* full marketing automation
+* a helpdesk/ticketing system
+
+The client has specifically confirmed that the CRM is intended to provide:
+
+> Audience management, automated communications, segmentation and engagement insights.
+
+The CRM should work alongside the existing website and Opportunities Management Portal so that all three applications share the same underlying data and business logic where appropriate.
+
+---
+
+# 2. Overall Platform Architecture
+
+The intended architecture is:
+
+```text
+                         CLIENT PLATFORM
+                               |
+              +----------------+----------------+
+              |                |                |
+              ▼                ▼                ▼
+       PUBLIC WEBSITE     OPPORTUNITIES       AUDIENCE &
+                          MANAGEMENT PORTAL    ENGAGEMENT CRM
+              |                |                |
+              +----------------+----------------+
+                               |
+                         Shared API /
+                       Backend Services
+                               |
+                         PostgreSQL DB
+                               |
+              +----------------+----------------+
+              |                |                |
+              ▼                ▼                ▼
+          Email Service    File Storage     Analytics
+```
+
+The three applications must NOT maintain independent copies of the same core data.
+
+For example:
+
+```text
+Opportunities
+Users/Audience
+Categories
+Tags
+Preferences
+```
+
+must have a clearly defined source of truth.
+
+The CRM should consume opportunity information from the Opportunities module rather than creating its own separate opportunity database.
+
+The public website should consume the same opportunity data.
+
+---
+
+# 3. VERY IMPORTANT: Inspect Existing Applications First
+
+Before writing substantial code, inspect the existing project and existing artifacts.
+
+You must understand:
+
+### Public Website
+
+* Framework
+* Folder structure
+* Existing design system
+* Existing components
+* Existing Roles page
+* Existing Opportunities page
+* Existing sign-up functionality
+* Existing contact functionality
+* Existing API/backend
+* Existing data models
+* Existing authentication, if any
+* Existing analytics
+* Existing environment variables
+
+### Opportunities Management Portal
+
+* Framework
+* Folder structure
+* Existing design system
+* Authentication
+* Existing opportunity models
+* Roles
+* Programmes
+* Categories
+* Role types
+* Departments
+* Existing tags/categories
+* Display Number
+* Display Order
+* External Application URL
+* Existing CRUD functionality
+* Existing API/backend
+* Existing database
+
+Do NOT rebuild existing functionality unnecessarily.
+
+Do NOT create duplicate infrastructure if the existing website/portal already has suitable infrastructure that can be extended.
+
+The new CRM must integrate with what already exists.
+
+---
+
+# 4. Design System
+
+The CRM must use the **same design system already established for the public website and Opportunities Management Portal**.
+
+Do not introduce a completely different visual identity.
+
+Inspect the existing applications and reuse, where appropriate:
+
+* Typography
+* Colours
+* Buttons
+* Form controls
+* Cards
+* Tables
+* Badges
+* Navigation patterns
+* Icons
+* Spacing
+* Borders
+* Modals
+* Toasts
+* Empty states
+* Loading states
+* Error states
+
+The CRM is an internal application, so its interface can use an appropriate admin/dashboard layout, but it must clearly feel like part of the same product ecosystem.
+
+If shared UI components already exist, reuse them.
+
+If they need to be moved into a shared component package, do so carefully without breaking the existing applications.
+
+---
+
+# 5. Core Concept
+
+The CRM should be understood as:
+
+> An audience database and engagement platform connected to the public website and Opportunities Portal.
+
+The central flow is:
+
+```text
+Visitor
+   |
+   ▼
+Website Registration
+   |
+   ▼
+Audience Record
+   |
+   +----------------------+
+   |                      |
+   ▼                      ▼
+Preferences          Acquisition Source
+   |                      |
+   +----------+-----------+
+              |
+              ▼
+        Audience Database
+              |
+              ▼
+     Segmentation / Matching
+              |
+              ▼
+      Published Opportunity
+              |
+              ▼
+       Automated Email
+              |
+              ▼
+          Engagement
+              |
+              ▼
+          Analytics
+```
+
+---
+
+# 6. Scope
+
+The initial CRM must provide:
+
+1. Audience registration management
+2. Audience profiles/records
+3. Audience segmentation
+4. Notification preferences
+5. Opportunity matching
+6. Automated email notifications
+7. Preference management without user accounts
+8. Unsubscribe functionality
+9. Acquisition/source tracking
+10. Basic engagement analytics
+11. Basic website enquiry records
+12. Integration with Roles and Opportunities
+13. Integration with the existing website
+14. Integration with the Opportunities Portal
+
+Keep the implementation intentionally lean.
+
+The client has specifically stated that they do not want anything overly sophisticated at this stage.
+
+---
+
+# 7. Audience Registration
+
+The existing website currently has a basic sign-up mechanism.
+
+The current sign-up process collects:
+
+* Name
+* Email address
+* Consent to receive updates
+
+There is currently no user account functionality.
+
+The new CRM should support an expanded registration form.
+
+The website will need to be updated to collect the additional information required by the CRM.
+
+Do NOT introduce user accounts or passwords.
+
+The registration should create an audience record in the CRM/database.
+
+---
+
+# 8. Registration Fields
+
+The exact UI should be determined after inspecting the existing website, but the audience record should support information such as:
+
+### Personal information
+
+```text
+name
+email
+craft
+career_level
+location
+```
+
+### How they found the website
+
+Primary source options should include:
+
+```text
+Instagram
+LinkedIn
+WhatsApp group
+Facebook group
+Industry organisation/network
+Recommendation / word of mouth
+Other
+Prefer not to say
+```
+
+When relevant, allow a secondary value:
+
+```text
+Instagram
+    → Which account?
+
+LinkedIn
+    → Which account/person?
+
+WhatsApp group
+    → Which group?
+
+Facebook group
+    → Which group?
+
+Industry organisation/network
+    → Which organisation/network?
+
+Recommendation / word of mouth
+    → Who recommended the website?
+
+Other
+    → Please specify
+```
+
+The user should be able to choose:
+
+> Prefer not to say
+
+without being forced to provide additional information.
+
+---
+
+# 9. What Are You Looking For?
+
+The registration process should include a simple multi-select question similar to:
+
+> What are you looking for? Select all that apply.
+
+Possible options:
+
+```text
+Roles for myself
+Training/development opportunities for myself
+Opportunities to share with my network/community
+Opportunities on behalf of someone else
+General industry interest
+Other
+```
+
+Allow multiple selections.
+
+Do not make the form unnecessarily long.
+
+Use conditional fields where appropriate.
+
+---
+
+# 10. Separate Personal Career Level From Preferences
+
+This is a critical business requirement.
+
+Do NOT treat:
+
+```text
+User's career level
+```
+
+as the same thing as:
+
+```text
+Career levels they are interested in hearing about
+```
+
+For example:
+
+```text
+User's own career level:
+Senior
+```
+
+could coexist with:
+
+```text
+Interested in:
+New Entrant
+Mid-Level
+Senior
+```
+
+This is intentional.
+
+A senior person may run an organisation, network or community supporting new talent and therefore want to receive new entrant opportunities.
+
+The data model must support this distinction.
+
+---
+
+# 11. Notification Preferences
+
+Audience records should have preferences for the content they want to receive.
+
+At minimum support preferences around:
+
+### Content type
+
+```text
+Roles
+Development Programmes
+Training Opportunities
+```
+
+### Career level
+
+Where applicable:
+
+```text
+New Entrant
+Mid-Level
+Senior
+```
+
+The exact values should be derived from the existing portal taxonomy where possible rather than duplicated independently.
+
+### Craft / area
+
+Where applicable, use the same categories/tags used by the Opportunities Portal.
+
+### Other relevant tags
+
+The architecture should support additional tags without requiring a database redesign every time a new tag is introduced.
+
+---
+
+# 12. Roles vs Development Programmes vs Training
+
+This distinction is important.
+
+## Roles
+
+Roles should support audience/tag matching.
+
+For example:
+
+```text
+Role
+Craft: Design
+Career Level: Senior
+```
+
+can match users interested in:
+
+```text
+Craft: Design
+Career Level: Senior
+```
+
+or other relevant combinations.
+
+## Development Programmes
+
+Development programmes should ALSO support audience/tag matching.
+
+For example:
+
+```text
+Programme:
+Work Experience Programme
+
+Target:
+New Entrants
+```
+
+A senior audience member who has opted into:
+
+```text
+New Entrant opportunities
+```
+
+should still receive the notification.
+
+## Training Opportunities
+
+Training opportunities can generally be communicated more broadly.
+
+Do not force training to use the same strict career-level matching rules as roles and development programmes.
+
+The system should therefore distinguish the content types and their notification behavior.
+
+---
+
+# 13. Integration With Opportunities Portal
+
+The Opportunities Portal already manages roles and programmes.
+
+Do NOT duplicate those records inside the CRM.
+
+The CRM should consume the existing opportunity/programme data.
+
+The existing portal should be enhanced where necessary to support the CRM requirements.
+
+For example, roles and programmes may need additional fields/tags such as:
+
+```text
+Content Type
+Craft
+Target Career Level
+Target Audience
+Relevant Tags
+```
+
+The exact taxonomy must be determined by inspecting the existing portal and the client's requirements.
+
+The CRM should use the same tags.
+
+There must be one source of truth.
+
+---
+
+# 14. Example Matching Logic
+
+Consider an audience member:
+
+```text
+Name: Jane Doe
+
+Own Career Level:
+Senior
+
+Interests:
+Design
+Technology
+
+Interested Career Levels:
+New Entrant
+Mid-Level
+
+Content Preferences:
+Roles
+Development Programmes
+```
+
+Now a programme is published:
+
+```text
+Work Experience Programme
+
+Type:
+Development Programme
+
+Craft:
+Design
+
+Target Career Level:
+New Entrant
+```
+
+The system should identify Jane as a matching recipient because:
+
+```text
+Programme:
+Design + New Entrant
+
+Jane preferences:
+Design + New Entrant
+```
+
+Her own career level being Senior does NOT prevent the notification.
+
+---
+
+# 15. "All Opportunities" Preference
+
+Users should be able to select an option equivalent to:
+
+> Receive notifications about all opportunities.
+
+When selected, the user should not be excluded because the opportunity does not match their specific career-level or craft preferences.
+
+This should be an explicit preference rather than an implicit assumption.
+
+---
+
+# 16. Automated Notifications
+
+When an eligible role or development programme is published:
+
+```text
+Admin publishes opportunity
+        |
+        ▼
+Opportunity becomes published
+        |
+        ▼
+Determine applicable audience
+        |
+        ▼
+Match audience preferences
+        |
+        ▼
+Generate recipient list
+        |
+        ▼
+Send email
+        |
+        ▼
+Record communication event
+```
+
+Avoid sending duplicate notifications to the same user for the same opportunity.
+
+Track the communication.
+
+At minimum store:
+
+```text
+recipient
+opportunity
+sent_at
+delivery_status
+```
+
+Where the email provider supports it, also track:
+
+```text
+delivered
+opened
+clicked
+bounced
+unsubscribed
+```
+
+---
+
+# 17. Email Provider
+
+Use an email provider capable of supporting:
+
+* transactional email
+* delivery tracking
+* open tracking
+* click tracking
+* unsubscribe handling
+
+Inspect the existing project for an existing email provider before introducing a new one.
+
+Do not hardcode credentials.
+
+Use environment variables.
+
+---
+
+# 18. Preference Management
+
+Users should NOT need accounts.
+
+Instead, emails should contain a secure:
+
+> Manage preferences
+
+link.
+
+The link should open a secure preference-management page.
+
+Example:
+
+```text
+Your Preferences
+
+Name
+Email
+
+Your career level:
+[Senior]
+
+Location:
+[Accra]
+
+Interested in:
+☑ Roles
+☑ Development programmes
+☐ Training
+
+Career levels:
+☑ New Entrants
+☑ Mid-Level
+☐ Senior
+
+[Save Preferences]
+
+[Unsubscribe from all communications]
+```
+
+Use secure, non-guessable tokens.
+
+Do not expose user records merely because someone knows another person's email address.
+
+---
+
+# 19. Unsubscribe
+
+Users must be able to unsubscribe without creating an account.
+
+The unsubscribe action should update the audience record.
+
+At minimum support:
+
+```text
+subscribed
+unsubscribed
+```
+
+Do not delete the audience record when someone unsubscribes.
+
+Retain the record for reporting and compliance purposes while respecting the communication preference.
+
+---
+
+# 20. Audience Management Portal
+
+Create a CRM dashboard with an internal admin interface.
+
+Suggested navigation:
+
+```text
+Dashboard
+
+Audience
+    All Audience
+    Segments
+
+Opportunities
+    Engagement
+
+Communications
+
+Enquiries
+
+Settings
+```
+
+Do not build unnecessary CRM modules.
+
+---
+
+# 21. Audience List
+
+Create an audience management table.
+
+Possible columns:
+
+```text
+Name
+Email
+Craft
+Career Level
+Location
+Interests
+Source
+Subscription Status
+Registered Date
+```
+
+Support:
+
+* search
+* filtering
+* sorting where appropriate
+* pagination
+
+Filters should include relevant audience attributes such as:
+
+```text
+Craft
+Career Level
+Location
+Interest
+Opportunity Preference
+Acquisition Source
+Subscription Status
+```
+
+---
+
+# 22. Audience Record
+
+Administrators should be able to view an individual audience record.
+
+Show:
+
+### Profile
+
+```text
+Name
+Email
+Craft
+Career Level
+Location
+```
+
+### Acquisition
+
+```text
+Source
+Specific Source
+```
+
+### Preferences
+
+```text
+Content interests
+Career-level preferences
+Craft/tag preferences
+All opportunities preference
+```
+
+### Engagement
+
+Where available:
+
+```text
+Opportunities viewed
+Application clicks
+Emails received
+Emails opened
+Emails clicked
+```
+
+Do not build a complex customer 360-degree profile.
+
+Keep it simple and useful.
+
+---
+
+# 23. Dashboard
+
+Create a basic CRM dashboard.
+
+At minimum show:
+
+### Audience
+
+```text
+Total registered
+Currently subscribed
+Unsubscribed
+New registrations
+```
+
+### Opportunities
+
+```text
+Published opportunities
+Most viewed opportunities
+Most clicked opportunities
+```
+
+### Communications
+
+```text
+Emails sent
+Delivered
+Opened
+Clicked
+Unsubscribed
+```
+
+### Audience insights
+
+Where data is available:
+
+```text
+Career level distribution
+Craft distribution
+Location distribution
+Acquisition source distribution
+```
+
+---
+
+# 24. Engagement Analytics
+
+The client has explicitly confirmed the following metrics:
+
+* Registrations
+* Opportunity views
+* Application clicks
+* Email delivery rates
+* Email open rates
+* Email click rates
+* Unsubscribes
+
+The system should also allow these metrics to be viewed in relation to audience information where practical.
+
+For example:
+
+```text
+Opportunity:
+Work Experience Programme
+
+Views:
+542
+
+Application clicks:
+127
+
+Audience:
+New Entrants: 64%
+Mid-Level: 21%
+Senior: 15%
+```
+
+Or:
+
+```text
+Registrations by source
+
+LinkedIn: 34%
+Instagram: 29%
+WhatsApp: 18%
+Industry networks: 12%
+Other: 7%
+```
+
+Do not build advanced BI functionality.
+
+The analytics should remain simple and useful.
+
+---
+
+# 25. Tracking Opportunity Views
+
+The public website should record opportunity views.
+
+The event should be associated with:
+
+```text
+opportunity_id
+timestamp
+```
+
+Where technically and legally appropriate, associate engagement with an audience member if they are known.
+
+Do not introduce invasive tracking.
+
+Use a sensible privacy-conscious approach.
+
+---
+
+# 26. Tracking Application Clicks
+
+When a user clicks an opportunity's external application URL:
+
+```text
+Public Website
+     |
+     ▼
+Application Click Event
+     |
+     ▼
+Analytics
+     |
+     ▼
+External Application URL
+```
+
+Track the click before redirecting the user to the external application URL.
+
+The existing Airtable application URL functionality should continue to work.
+
+Do not proxy or modify the external application process unnecessarily.
+
+---
+
+# 27. Acquisition Attribution
+
+The registration source data should allow the CRM to answer:
+
+> How are people finding the website?
+
+and:
+
+> Which specific sources are driving registrations?
+
+Examples:
+
+```text
+Instagram → @account
+LinkedIn → person/account
+WhatsApp → group
+Facebook → group
+Industry organisation → organisation
+Recommendation → person
+Other → specified source
+```
+
+This should be queryable in the dashboard.
+
+---
+
+# 28. Website Changes Required
+
+The CRM implementation requires changes to the existing public website.
+
+These are part of the integration, not a separate unrelated project.
+
+Update the existing sign-up functionality to support the new registration fields.
+
+The current website does not have user accounts.
+
+Do NOT introduce:
+
+* passwords
+* login
+* user dashboards
+* account management
+
+The website should simply submit registration data to the shared backend/API.
+
+---
+
+# 29. Website Registration Flow
+
+The intended flow is:
+
+```text
+Visitor
+  |
+  ▼
+Sign Up
+  |
+  ▼
+Name + Email
+  |
+  ▼
+Additional audience information
+  |
+  ▼
+Preferences
+  |
+  ▼
+Consent
+  |
+  ▼
+Registration completed
+  |
+  ▼
+Audience record created
+```
+
+Keep the form concise.
+
+Use conditional fields where appropriate.
+
+---
+
+# 30. Website Opportunity Integration
+
+The existing public Roles/Opportunities pages should use the same opportunity records managed by the Opportunities Portal.
+
+Do not create a separate CRM copy of the opportunities.
+
+The CRM should consume the same opportunity IDs, types, tags and categories.
+
+---
+
+# 31. Portal Changes Required
+
+The Opportunities Portal may need additional fields to support audience matching.
+
+For example:
+
+```text
+Role
+├── Department
+├── Role Type
+├── Craft
+├── Career Level
+├── Audience Tags
+└── Other relevant tags
+```
+
+Programmes may have:
+
+```text
+Programme
+├── Display Number
+├── Display Order
+├── Programme Type
+├── Target Audience
+├── Target Career Level
+└── Relevant Tags
+```
+
+Do not create duplicate taxonomies.
+
+Reuse existing categories where possible.
+
+---
+
+# 32. Shared Data Model
+
+Establish clear relationships between:
+
+```text
+Audience
+    |
+    +--- Preferences
+    |
+    +--- Engagement Events
+    |
+    +--- Communications
+    |
+    +--- Acquisition Source
+
+
+Opportunity
+    |
+    +--- Type
+    +--- Tags
+    +--- Target Audience
+    +--- Target Career Level
+    |
+    +--- Engagement Events
+    |
+    +--- Communications
+```
+
+Use stable IDs rather than matching records by names wherever possible.
+
+---
+
+# 33. Suggested Core Entities
+
+Evaluate and implement an appropriate relational structure around entities such as:
+
+```text
+audience_members
+audience_preferences
+audience_interests
+acquisition_sources
+opportunities
+opportunity_tags
+tags
+communications
+communication_events
+engagement_events
+enquiries
+```
+
+The exact schema should be based on the existing application's database architecture.
+
+Do not create duplicate opportunity tables if the portal already has them.
+
+---
+
+# 34. Enquiries
+
+The website may receive contact enquiries.
+
+These should be capable of being recorded in the CRM as basic enquiry records.
+
+The CRM is NOT a helpdesk.
+
+At minimum an enquiry may contain:
+
+```text
+name
+email
+message
+source
+created_at
+status
+```
+
+Possible statuses:
+
+```text
+New
+Reviewed
+Resolved
+```
+
+The website should still use the agreed shared Hub email as the primary communication channel.
+
+The CRM simply provides a record and basic visibility.
+
+Do NOT build an internal email inbox.
+
+Do NOT build email threading.
+
+Do NOT build a ticketing system.
+
+---
+
+# 35. Authentication
+
+The CRM is an internal application.
+
+It requires authentication.
+
+Reuse existing authentication infrastructure if one already exists in the project.
+
+If authentication has not yet been established, implement a secure standard authentication approach.
+
+Support appropriate administrative roles.
+
+At minimum consider:
+
+```text
+Admin
+Editor / Manager
+Viewer
+```
+
+Do not over-engineer permissions beyond what is required.
+
+---
+
+# 36. Security
+
+Implement:
+
+* authenticated CRM routes
+* server-side authorization
+* secure sessions/tokens
+* input validation
+* secure preference tokens
+* protection against unauthorized audience access
+* protection against unauthorized API access
+* rate limiting where appropriate
+* safe handling of email addresses and personal information
+
+Never expose audience data through public APIs.
+
+The public website should only receive data necessary for its public functions.
+
+---
+
+# 37. Privacy
+
+The audience database contains personal information.
+
+Follow data minimization principles.
+
+Only collect information that has a clear purpose.
+
+Provide clear consent for communications.
+
+Provide unsubscribe functionality.
+
+Do not expose audience lists publicly.
+
+Do not expose another person's preferences through a preference-management URL.
+
+Avoid invasive tracking.
+
+---
+
+# 38. API Architecture
+
+Use a clean API boundary between applications.
+
+Conceptually:
+
+```text
+/api/public/opportunities
+/api/public/registration
+
+/api/audience
+/api/audience/preferences
+
+/api/communications
+
+/api/engagement
+
+/api/enquiries
+```
+
+The exact routes should follow the existing application's conventions.
+
+Keep modules separated:
+
+```text
+modules/
+    audience/
+    opportunities/
+    communications/
+    analytics/
+    enquiries/
+    auth/
+```
+
+The CRM should not directly manipulate unrelated frontend state.
+
+---
+
+# 39. Event-Based Integration
+
+Where appropriate, use application events internally.
+
+For example:
+
+```text
+OPPORTUNITY_PUBLISHED
+        |
+        +--> Public website visibility
+        |
+        +--> Audience matching
+        |
+        +--> Notification
+        |
+        +--> Analytics
+```
+
+And:
+
+```text
+AUDIENCE_REGISTERED
+        |
+        +--> Audience database
+        |
+        +--> Acquisition analytics
+```
+
+This will make the platform easier to extend later without tightly coupling every application.
+
+Do not introduce a complex microservices architecture.
+
+A modular monolith/shared backend is sufficient for this project.
+
+---
+
+# 40. Error Handling
+
+Use consistent errors across the API.
+
+Do not expose:
+
+* stack traces
+* database errors
+* secrets
+* internal implementation details
+
+Provide useful user-facing messages.
+
+---
+
+# 41. Environment Configuration
+
+Use environment variables for:
+
+```text
+DATABASE_URL
+EMAIL_PROVIDER
+EMAIL_API_KEY
+AUTH_SECRET
+APP_URL
+CRM_URL
+WEBSITE_URL
+```
+
+Use the actual existing variable names if the project already has conventions.
+
+Never hardcode credentials.
+
+Update `.env.example` with required variables but no secrets.
+
+---
+
+# 42. Replit Portability
+
+The application will initially run on Replit.
+
+However, do not unnecessarily depend on Replit-specific infrastructure.
+
+The application should ideally be portable to:
+
+```text
+Node.js
+PostgreSQL
+Standard HTTP APIs
+Standard email provider
+Object storage if required
+Environment variables
+```
+
+The goal is to make future client-hosted deployment possible without rewriting the application.
+
+---
+
+# 43. Testing
+
+Test the most important end-to-end workflows.
+
+### Registration
+
+```text
+Visitor submits form
+      ↓
+Audience record created
+      ↓
+Preferences stored
+      ↓
+Source stored
+```
+
+### Preference management
+
+```text
+User receives email
+      ↓
+Clicks Manage Preferences
+      ↓
+Updates preferences
+      ↓
+Preferences saved
+```
+
+### Unsubscribe
+
+```text
+User clicks unsubscribe
+      ↓
+Subscription status changes
+      ↓
+Future notifications excluded
+```
+
+### Opportunity matching
+
+```text
+Admin publishes role
+      ↓
+Tags evaluated
+      ↓
+Matching audience identified
+      ↓
+Email sent
+      ↓
+Communication recorded
+```
+
+### Development programme matching
+
+Verify that a senior user who selected new entrant opportunities receives a new entrant programme notification.
+
+### Training
+
+Verify that training opportunities can be communicated broadly without requiring strict career-level matching.
+
+### Analytics
+
+Verify:
+
+* registration events
+* opportunity views
+* application clicks
+* email events
+* unsubscribes
+
+---
+
+# 44. Do Not Overbuild
+
+This is a deliberate MVP.
+
+DO NOT build:
+
+* Salesforce-like CRM
+* sales pipelines
+* customer accounts
+* user login for audience members
+* complex campaign automation
+* marketing journey builders
+* SMS
+* WhatsApp automation
+* advanced BI
+* AI recommendations
+* complex ticketing/helpdesk
+* internal email inbox
+* complex workflow engines
+* applicant tracking system
+* payroll/HR functionality
+
+If a feature is not necessary to fulfil the confirmed requirements, do not implement it.
+
+---
+
+# 45. Existing Website Must Remain Functional
+
+Do not break existing functionality.
+
+Before modifying the website:
+
+1. Understand the current implementation.
+2. Identify the existing sign-up component.
+3. Identify the existing Roles page.
+4. Identify the existing Opportunities page.
+5. Identify existing contact functionality.
+6. Identify existing API/data flows.
+
+Make the smallest appropriate changes required to integrate the CRM.
+
+---
+
+# 46. Existing Opportunities Portal Must Remain Functional
+
+Do not rebuild the portal.
+
+Extend it only where necessary.
+
+Specifically evaluate whether the portal needs:
+
+* additional audience tags
+* career-level tags
+* programme audience tags
+* content-type metadata
+
+These additions should integrate naturally with the existing role/programme creation and editing workflows.
+
+---
+
+# 47. Data Consistency
+
+The three applications must agree on:
+
+```text
+Opportunity IDs
+Opportunity types
+Role categories
+Programme categories
+Crafts
+Career levels
+Tags
+Audience preferences
+```
+
+Avoid hardcoding the same options separately in:
+
+```text
+Website
+Portal
+CRM
+```
+
+where possible.
+
+Use shared database/API values or shared configuration.
+
+This is critical.
+
+For example, if the portal adds:
+
+```text
+Career Level = New Entrant
+```
+
+the CRM should be able to use that value without manually updating another unrelated application.
+
+---
+
+# 48. Recommended Development Order
+
+Do not start by building the dashboard.
+
+Build the data foundation first.
+
+## Phase 1 — Inspect
+
+Inspect:
+
+* website
+* portal
+* existing backend
+* database
+* design system
+* authentication
+* existing APIs
+
+Then report the current architecture and proposed integration points.
+
+## Phase 2 — Shared Data Model
+
+Establish:
+
+* audience
+* preferences
+* tags
+* opportunity metadata
+* events
+* communications
+
+## Phase 3 — API
+
+Implement:
+
+* registration
+* audience
+* preferences
+* matching
+* communication events
+* analytics events
+* enquiries
+
+## Phase 4 — Website Integration
+
+Update:
+
+* registration form
+* preference-related functionality
+* opportunity tracking
+* application click tracking
+* contact enquiry recording
+
+Do not redesign the website.
+
+## Phase 5 — Portal Integration
+
+Add the necessary:
+
+* opportunity tags
+* career-level metadata
+* programme audience metadata
+* other matching fields
+
+Do not redesign the portal.
+
+## Phase 6 — CRM Interface
+
+Build:
+
+* authentication
+* dashboard
+* audience list
+* audience details
+* segmentation
+* communications
+* engagement analytics
+* enquiries
+
+## Phase 7 — Email Automation
+
+Implement:
+
+* matching
+* recipient selection
+* notification email
+* tracking
+* preference link
+* unsubscribe
+
+## Phase 8 — Testing
+
+Run complete end-to-end workflows across all three applications.
+
+---
+
+# 49. End-to-End Definition of Done
+
+The CRM implementation is complete when the following works:
+
+### Registration
+
+```text
+Visitor
+ ↓
+Website sign-up
+ ↓
+Audience record
+ ↓
+Preferences stored
+```
+
+### Opportunity publishing
+
+```text
+Admin
+ ↓
+Portal
+ ↓
+Creates/edits opportunity
+ ↓
+Adds appropriate tags
+ ↓
+Publishes
+```
+
+### Notification
+
+```text
+Opportunity published
+ ↓
+CRM identifies matching preferences
+ ↓
+Eligible audience identified
+ ↓
+Email sent
+```
+
+### Engagement
+
+```text
+User receives email
+ ↓
+Opens email
+ ↓
+Clicks opportunity
+ ↓
+Views opportunity
+ ↓
+Clicks Apply
+ ↓
+External application opens
+```
+
+Relevant events should be recorded.
+
+### Preference update
+
+```text
+Email
+ ↓
+Manage preferences
+ ↓
+Secure preference page
+ ↓
+User updates preferences
+ ↓
+Future matching uses new preferences
+```
+
+### Unsubscribe
+
+```text
+User
+ ↓
+Unsubscribe
+ ↓
+Subscription disabled
+ ↓
+No future marketing/opportunity notifications
+```
+
+### Analytics
+
+Administrators can see:
+
+```text
+Registrations
+Opportunity views
+Application clicks
+Email delivery
+Email opens
+Email clicks
+Unsubscribes
+Audience breakdowns
+Acquisition sources
+```
+
+---
+
+# 50. Final Instructions to Replit Agent
+
+This is an existing multi-application platform.
+
+Do not treat this as a standalone CRM project.
+
+The three applications must ultimately function as one coherent system:
+
+```text
+PUBLIC WEBSITE
+      ↕
+SHARED API / BACKEND
+      ↕
+OPPORTUNITIES PORTAL
+      ↕
+AUDIENCE & ENGAGEMENT CRM
+```
+
+However, maintain clear application/module boundaries so the applications can eventually be deployed independently if required.
+
+Before implementing anything:
+
+1. Inspect the existing website.
+2. Inspect the existing Opportunities Portal.
+3. Inspect the database.
+4. Inspect existing API/backend architecture.
+5. Inspect authentication.
+6. Inspect the existing design system.
+7. Identify what can be reused.
+8. Identify what needs to be extended.
+
+Then provide a concise implementation plan before making major changes.
+
+Do not overwrite or unnecessarily rebuild existing functionality.
+
+The CRM should use the same design system as the existing website and Opportunities Management Portal.
+
+Most importantly:
+
+**The CRM is an Audience Management & Engagement system, not a traditional sales CRM.**
+
+Build only the confirmed requirements.
+
+Keep the implementation lean, maintainable, secure and portable.
+
+The final result should make the three applications operate from a coherent shared data model, with the website handling public interaction, the Opportunities Portal handling content management, and the CRM handling audience management, notifications and engagement insights.
