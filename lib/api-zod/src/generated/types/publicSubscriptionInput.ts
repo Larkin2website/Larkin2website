@@ -16,14 +16,18 @@ export interface PublicSubscriptionInput {
   email: string;
   consent: true;
   /**
-     * The caller's previously saved personal token. It is returned only when it belongs to the same subscription, including an inactive one; it never reactivates an inactive subscription.
+     * Accepted for compatibility with previously issued private links. It is ignored by this endpoint and never changes or reveals a subscription.
      * @minLength 43
      * @maxLength 128
      * @pattern ^[A-Za-z0-9_-]+$
      */
   existingManagementToken?: string;
-  /** @maxLength 160 */
-  name?: string;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     * @pattern .*\S.*
+     */
+  name: string;
   /** @maxLength 120 */
   craft?: string;
   careerLevel?: CareerLevel;

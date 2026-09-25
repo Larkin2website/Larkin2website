@@ -71,7 +71,6 @@ import type {
   PublicSubscriptionInput,
   PublicSubscriptionMessage,
   PublicSubscriptionPreferencesLookup,
-  PublicSubscriptionResult,
   PublicSubscriptionUnsubscribeInput,
   ServiceUnavailableResponse,
   TooManyRequestsResponse,
@@ -352,12 +351,12 @@ export const getCreatePublicSubscriptionUrl = () => {
 }
 
 /**
- * Records explicit consent. A new subscription receives its personal management token; callers must save the resulting personal unsubscribe link because no email is sent. Duplicate requests have the same response shape but do not rotate an existing token, reactivate an inactive subscription, or disclose membership. A caller that still has the original token may submit it to preserve that capability for a matching subscription, including an inactive one, without reactivating it. A lost link cannot be recovered through this endpoint; contact support.
+ * Records explicit consent and optional preferences for a new subscription. A nonblank name is required. New and duplicate requests receive the same generic response. Duplicate requests never disclose or modify an existing subscription, even when a previously issued management token is supplied. This endpoint never issues or returns a management token.
  * @summary Subscribe an email address to opportunity updates
  */
-export const createPublicSubscription = async (publicSubscriptionInput: PublicSubscriptionInput, options?: Parameters<typeof customFetch>[1]): Promise<PublicSubscriptionResult> => {
+export const createPublicSubscription = async (publicSubscriptionInput: PublicSubscriptionInput, options?: Parameters<typeof customFetch>[1]): Promise<PublicSubscriptionMessage> => {
 
-  return customFetch<PublicSubscriptionResult>(getCreatePublicSubscriptionUrl(),
+  return customFetch<PublicSubscriptionMessage>(getCreatePublicSubscriptionUrl(),
   {
     ...options,
     method: 'POST',

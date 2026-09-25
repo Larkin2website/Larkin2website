@@ -32,7 +32,8 @@ export function UnsubscribePage() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [token, setToken] = useState(() =>
     new URLSearchParams(window.location.hash.slice(1)).get("token") ?? savedSubscriptionToken());
-  const [busy, setBusy] = useState(false);
+  const [showLegacyLink, setShowLegacyLink] = useState(() =>
+    !!(new URLSearchParams(window.location.hash.slice(1)).get("token") || savedSubscriptionToken()));
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [preferences, setPreferences] = useState<PublicAudiencePreferences | null>(null);
@@ -73,12 +74,13 @@ export function UnsubscribePage() {
 
   useEffect(() => {
     document.title = "Unsubscribe | HETV Opportunities Hub";
-    document.querySelector('meta[name="description"]')?.setAttribute("content", "Use your private link to stop an HETV Opportunities Hub subscription.");
+    document.querySelector('meta[name="description"]')?.setAttribute("content", "Request changes or unsubscribe from HETV Opportunities Hub news.");
     // The same page can receive another link without remounting (Wouter pushState).
     const consume = () => {
       const incomingToken = consumeSubscriptionFragment(window);
       if (incomingToken !== null) {
         setToken(incomingToken);
+        setShowLegacyLink(true);
         setDone(false);
         setError("");
         setPreferences(null);
@@ -170,7 +172,7 @@ export function UnsubscribePage() {
   }
 
   return (
-    <div className="larkin2-page legal-page" id="top">
+    <div className="larkin2-page legal-page subscription-management-page" id="top">
       <a className="larkin2-skip" href="#content">Skip to content</a>
       <SiteHeader scrolled headerHidden={false} menuOpen={menuOpen} setMenuOpen={setMenuOpen}
         headerRef={headerRef} menuButtonRef={menuButtonRef} />
@@ -178,16 +180,22 @@ export function UnsubscribePage() {
       <main id="content">
         <header className="legal-hero">
           <span className="larkin2-eyebrow">Your preferences</span>
-          <h1>Unsubscribe</h1>
-          <p>You can stop updates at any time. Opening this page alone does not change your preference.</p>
+           <h1>Manage your subscription</h1>
+           <p>You can request changes or unsubscribe at any time. Opening this page alone does not change your preference.</p>
         </header>
         <div className="legal-content">
           <article className="legal-document">
-            {done ? <div role="status" data-testid="status-unsubscribed">
+             <h2>Need to make a change?</h2>
+             <p>To update your preferences, unsubscribe, or make a privacy request, email <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>. HETV staff will verify your request before making changes. Email-only self-service is not available yet; no automated update emails are being sent.</p>
+             {done ? <div role="status" data-testid="status-unsubscribed">
               <h2>Request processed</h2>
               <p>Any subscription associated with this personal link is now stopped. If it was already stopped, it stays stopped.</p>
               <Link href="/">Return to the hub</Link>
-            </div> : <form className="hetv-subscription" onSubmit={loadPreferences}>
+             </div> : <>
+             {!showLegacyLink && <button type="button" onClick={() => setShowLegacyLink(true)} data-testid="button-existing-link">I already have a private link</button>}
+             {showLegacyLink && <form className="hetv-subscription" onSubmit={loadPreferences}>
+               <h2>Using an existing link</h2>
+               <p>If you received a private link previously, you can continue to use it here. New signups do not receive a link.</p>
               <label htmlFor="unsubscribe-token">Personal unsubscribe link</label>
               <input id="unsubscribe-token" type="password" autoComplete="off" value={token}
                 onChange={event => {
@@ -197,7 +205,7 @@ export function UnsubscribePage() {
                   setSavedMessage("");
                 }} required disabled={!!busyAction}
                 placeholder="Paste the link saved at signup" data-testid="input-unsubscribe-link" />
-              <p>If a link was saved in this browser, it is filled in above. Otherwise, paste your original link. Keep it private: anyone with the link can stop that subscription.</p>
+               <p>If an older link was saved in this browser, it is filled in above. Otherwise paste your original link. Keep it private: anyone with it can stop that subscription.</p>
               <button type="submit" disabled={!!busyAction || !token.trim()} data-testid="button-load-preferences">
                 {busyAction === "load" ? "Loading…" : preferences ? "Reload preferences" : "Load preferences"}
               </button>
@@ -291,9 +299,7 @@ export function UnsubscribePage() {
                   {busyAction === "save" ? "Saving…" : "Update preferences"}
                 </button>
               </>}
-              <h2>Lost your link?</h2>
-              <p>For your privacy, entering an email address alone cannot change a subscription. Automated email updates are not currently enabled. <a href="mailto:opportunities@baileyopportunities.com">Contact us</a> for help; we will need to verify your request.</p>
-            </form>}
+             </form>}</>}
           </article>
         </div>
       </main>

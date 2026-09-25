@@ -32,12 +32,16 @@ export interface PublicSubscriptionStore {
 
 export const drizzlePublicSubscriptionStore: PublicSubscriptionStore = {
   async create(record) {
-    const rows = await db
-      .insert(publicSubscriptionsTable)
-      .values(record)
-      .onConflictDoNothing({ target: publicSubscriptionsTable.email })
-      .returning({ id: publicSubscriptionsTable.id });
-    return rows.length === 1;
+    return db.transaction(async (tx) => {
+      const [subscriber] = await tx
+        .insert(publicSubscriptionsTable)
+        .values(record)
+        .onConflictDoNothing({ target: publicSubscriptionsTable.email })
+        .returning();
+      if (!subscriber) return false;
+      await reconcilePendingDeliveries(tx, subscriber);
+      return true;
+    });
   },
 
   async hasCapability(email, managementTokenHash) {
@@ -142,8 +146,8 @@ export function createPublicSubscriptionService(
     async subscribe(input: {
       email: string;
       consent: true;
+      name: string;
       existingManagementToken?: string;
-      name?: string;
       craft?: string;
       careerLevel?: string;
       location?: string;
@@ -154,7 +158,7 @@ export function createPublicSubscriptionService(
       careerLevels?: string[];
       crafts?: string[];
       allOpportunities?: boolean;
-    }): Promise<{ managementToken: string }> {
+    }): Promise<{ message: string }> {
       const email = normalizeSubscriptionEmail(input.email);
       const candidateToken = createToken();
       const {
@@ -163,34 +167,18 @@ export function createPublicSubscriptionService(
         existingManagementToken: _existingToken,
         ...preferences
       } = input;
-      const existingCapability = await store.hasCapability(
-        email,
-        hashManagementToken(input.existingManagementToken ?? candidateToken),
-      );
-      const created = await store.create({
+      await store.create({
         email,
         consent: true,
         consentedAt: now(),
         managementTokenHash: hashManagementToken(candidateToken),
-        ...preferencesFromInput(preferences),
+        ...preferencesFromInput({
+          ...preferences,
+          name: input.name.trim(),
+        }),
       });
 
-      if (created) {
-        return { managementToken: candidateToken };
-      }
-
-      if (
-        input.existingManagementToken
-        && existingCapability
-      ) {
-        if (store.updatePreferencesByCapability) {
-          const { email: _email, consent: _consent, existingManagementToken: _token, ...preferences } = input;
-          await store.updatePreferencesByCapability(hashManagementToken(input.existingManagementToken), preferencesFromInput(preferences), now());
-        }
-        return { managementToken: input.existingManagementToken };
-      }
-
-      return { managementToken: createToken() };
+      return { message: "Thanks for your interest. Your request has been processed. No email has been sent." };
     },
 
     async getPreferences(managementToken: string): Promise<SubscriptionPreferences | undefined> {

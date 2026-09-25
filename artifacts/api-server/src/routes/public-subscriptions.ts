@@ -35,6 +35,7 @@ function normalizeSignupBody(body: unknown): unknown {
   return {
     ...input,
     email: typeof input.email === "string" ? input.email.trim() : input.email,
+    name: typeof input.name === "string" ? input.name.trim() : input.name,
   };
 }
 

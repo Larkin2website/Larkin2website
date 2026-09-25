@@ -12,15 +12,6 @@ export function savedSubscriptionToken(): string {
   catch { return ""; }
 }
 
-export function saveSubscriptionToken(token: string): boolean {
-  try { localStorage.setItem(STORAGE_KEY, token); return true; }
-  catch { return false; }
-}
-
-export function subscriptionLink(token: string): string {
-  return new URL(`${import.meta.env.BASE_URL}unsubscribe#token=${encodeURIComponent(token)}`, window.location.origin).href;
-}
-
 export function tokenFromLink(value: string): string {
   try {
     const url = new URL(value);

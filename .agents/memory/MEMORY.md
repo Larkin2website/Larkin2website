@@ -1,7 +1,7 @@
 - [Avoid decorative top bars](visual-motifs.md) — Larkin2 panels should not use thick top-edge accent bars; rely on spacing, type, tone, and subtle borders.
 - [Portal responsive contract](portal-responsive-contract.md) — Treat tablet and compact desktop as first-class layouts; reserve full sidebar and dense tables for wide screens.
 - [Access grants stay additive](portal-access-grants.md) — Keep pending grants separate from memberships until identity claim; do not make existing auth identity keys nullable.
-- [Public subscription boundary](public-subscription-boundary.md) — Interest collection is intentionally separate from email delivery; don't promise alerts before a provider is connected.
+- [Public subscription boundary](public-subscription-boundary.md) — New signups use no saved link; keep legacy links available and don't promise email delivery before a sender is approved.
 - [Public visual-change boundaries](public-visual-change-boundaries.md) — Keep functional subscription and unsubscribe behavior outside broad presentation rewrites.
 - [Preview video codecs](preview-video-codecs.md) — A served MP4 can still fail in the preview test browser; check canPlayType before blaming playback logic.
 - [Animated hero layout](animated-hero-layout.md) — Coordinate the video crop with reserved layout space; avoid offsets that depend on which section follows.

@@ -17,6 +17,7 @@ import { OpportunitiesIndexPage } from "./pages/opportunities-index";
 import { PrivacyNoticePage, TermsPage } from "./pages/legal";
 import { UnsubscribePage } from "./pages/unsubscribe";
 import { PreferencesPage } from "./pages/preferences";
+import { SignupJourneyProvider } from "./lib/signup-journey";
 import { TrainingPage, DevelopmentPage } from "./pages/programme-overview";
 
 const queryClient = new QueryClient();
@@ -91,7 +92,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
+          <SignupJourneyProvider><Router /></SignupJourneyProvider>
         </WouterRouter>
         <Toaster />
       </TooltipProvider>

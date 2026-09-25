@@ -116,106 +116,126 @@ function post(base: string, path: string, body: unknown) {
   });
 }
 
-test("signup persists consent while duplicates cannot rotate or alter the existing record", async () => {
+const genericSignupResponse = {
+  message: "Thanks for your interest. Your request has been processed. No email has been sent.",
+};
+
+async function createLegacyRecord(
+  store: MemorySubscriptionStore,
+  email: string,
+  token: string,
+  overrides: Partial<NewSubscriptionRecord> = {},
+) {
+  await store.create({
+    email,
+    managementTokenHash: hashManagementToken(token),
+    consent: true,
+    consentedAt: new Date("2025-12-01T00:00:00.000Z"),
+    name: "Legacy subscriber",
+    interests: ["camera"],
+    contentTypes: ["role"],
+    ...overrides,
+  });
+}
+
+test("signup atomically persists name and optional preferences with a generic response", async () => {
   const store = new MemorySubscriptionStore();
-  let originalToken = "";
-  const generated = await withServer(store, async (base) => {
+  await withServer(store, async (base) => {
     const first = await post(base, "/public/subscriptions", {
       email: " Person@Example.COM ",
       consent: true,
+      name: "  Alex Example  ",
+      interests: ["camera"],
+      contentTypes: ["role"],
+      allOpportunities: true,
     });
     assert.equal(first.status, 200);
-    originalToken = (await first.json() as { managementToken: string }).managementToken;
-    assert.equal(originalToken.length, 43);
+    assert.deepEqual(await first.json(), genericSignupResponse);
+    assert.equal(first.headers.get("cache-control"), "no-store");
 
     const original = store.records.get("person@example.com");
     assert.ok(original);
     assert.equal(original.consent, true);
     assert.equal(original.active, true);
-    assert.equal(original.managementTokenHash, hashManagementToken(originalToken));
-    assert.equal(original.managementTokenHash.includes(originalToken), false);
-    assert.deepEqual(original.contentTypes ?? [], []);
-    assert.equal(original.allOpportunities ?? false, false);
-    assert.equal(original.name ?? null, null);
+    assert.equal(original.managementTokenHash.length, 64);
+    assert.equal(original.name, "Alex Example");
+    assert.deepEqual(original.interests, ["camera"]);
+    assert.deepEqual(original.contentTypes, ["role"]);
+    assert.equal(original.allOpportunities, true);
 
-    const selected = await fetch(`${base}/public/subscriptions/preferences`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ managementToken: originalToken, contentTypes: ["role"] }),
+    const defaults = await post(base, "/public/subscriptions", {
+      email: "defaults@example.com",
+      consent: true,
+      name: "Defaults",
     });
-    assert.equal(selected.status, 200);
+    assert.equal(defaults.status, 200);
+    assert.deepEqual(await defaults.json(), genericSignupResponse);
+    const defaultRecord = store.records.get("defaults@example.com");
+    assert.ok(defaultRecord);
+    assert.equal(defaultRecord.name, "Defaults");
+    assert.deepEqual(defaultRecord.interests ?? [], []);
+    assert.deepEqual(defaultRecord.contentTypes ?? [], []);
+    assert.deepEqual(defaultRecord.careerLevels ?? [], []);
+    assert.deepEqual(defaultRecord.crafts ?? [], []);
+    assert.equal(defaultRecord.allOpportunities ?? false, false);
 
     const duplicate = await post(base, "/public/subscriptions", {
       email: "person@example.com",
       consent: true,
+      name: "Duplicate",
     });
     assert.equal(duplicate.status, 200);
-    const inertToken = (await duplicate.json() as { managementToken: string }).managementToken;
-    assert.equal(inertToken.length, 43);
-    assert.notEqual(inertToken, originalToken);
+    assert.deepEqual(await duplicate.json(), genericSignupResponse);
     assert.equal(store.records.get("person@example.com"), original);
-    assert.equal(original.managementTokenHash, hashManagementToken(originalToken));
-
-    const capableDuplicate = await post(base, "/public/subscriptions", {
-      email: "PERSON@example.com",
-      consent: true,
-      existingManagementToken: originalToken,
-    });
-    assert.equal(capableDuplicate.status, 200);
-    assert.deepEqual(await capableDuplicate.json(), { managementToken: originalToken });
-    assert.equal(store.records.get("person@example.com"), original);
-    assert.deepEqual(original.contentTypes, ["role"], "minimal repeat signup must not clear existing opportunity choices");
+    assert.equal(original.name, "Alex Example");
+    assert.deepEqual(original.contentTypes, ["role"]);
+    assert.equal(original.active, true);
   });
 
-  assert.equal(generated.length, 4);
-  assert.equal(store.records.size, 1);
+  assert.equal(store.records.size, 2);
 });
 
-test("only the corresponding token unsubscribes, repeated requests are safe, and GET never mutates", async () => {
+test("duplicates with a legacy token get the same response and never change active state or preferences", async () => {
   const store = new MemorySubscriptionStore();
+  const activeToken = "a".repeat(43);
+  const inactiveToken = "b".repeat(43);
+  await createLegacyRecord(store, "active@example.com", activeToken);
+  await createLegacyRecord(store, "inactive@example.com", inactiveToken);
+  await store.deactivateByCapability(hashManagementToken(inactiveToken), new Date("2026-01-01T00:00:00Z"));
+
   await withServer(store, async (base) => {
-    const aliceToken = (await (await post(base, "/public/subscriptions", {
-      email: "alice@example.com",
+    const newSignup = await post(base, "/public/subscriptions", {
+      email: "new@example.com",
       consent: true,
-    })).json() as { managementToken: string }).managementToken;
-    const bobToken = (await (await post(base, "/public/subscriptions", {
-      email: "bob@example.com",
+      name: "New subscriber",
+    });
+    assert.deepEqual(await newSignup.json(), genericSignupResponse);
+    const snapshot = structuredClone(store.records.get("active@example.com"));
+    const duplicate = await post(base, "/public/subscriptions", {
+      email: "active@example.com",
       consent: true,
-    })).json() as { managementToken: string }).managementToken;
-
-    const unknownToken = "z".repeat(43);
-    const unknown = await post(base, "/public/subscriptions/unsubscribe", {
-      managementToken: unknownToken,
+      name: "Attempted overwrite",
+      existingManagementToken: activeToken,
+      interests: ["changed"],
+      contentTypes: ["training"],
     });
-    assert.equal(unknown.status, 200);
-    assert.equal(store.records.get("alice@example.com")?.active, true);
-    assert.equal(store.records.get("bob@example.com")?.active, true);
+    assert.equal(duplicate.status, 200);
+    assert.deepEqual(await duplicate.json(), genericSignupResponse);
+    assert.deepEqual(store.records.get("active@example.com"), snapshot);
+    assert.equal(store.records.get("active@example.com")?.active, true);
 
-    assert.equal((await fetch(`${base}/public/subscriptions/unsubscribe`)).status, 404);
-    assert.equal(store.records.get("alice@example.com")?.active, true);
-
-    const first = await post(base, "/public/subscriptions/unsubscribe", {
-      managementToken: aliceToken,
-    });
-    const repeated = await post(base, "/public/subscriptions/unsubscribe", {
-      managementToken: aliceToken,
-    });
-    assert.equal(first.status, 200);
-    assert.equal(repeated.status, 200);
-    assert.deepEqual(await first.json(), await repeated.json());
-    assert.equal(store.records.get("alice@example.com")?.active, false);
-    assert.equal(store.records.get("bob@example.com")?.active, true);
-
+    const inactiveSnapshot = structuredClone(store.records.get("inactive@example.com"));
     const inactiveDuplicate = await post(base, "/public/subscriptions", {
-      email: "alice@example.com",
+      email: "inactive@example.com",
       consent: true,
-      existingManagementToken: aliceToken,
+      name: "Attempted overwrite",
+      existingManagementToken: inactiveToken,
+      interests: ["changed"],
+      contentTypes: ["training"],
     });
-    assert.deepEqual(await inactiveDuplicate.json(), { managementToken: aliceToken });
-    assert.equal(store.records.get("alice@example.com")?.active, false);
-
-    await post(base, "/public/subscriptions/unsubscribe", { managementToken: bobToken });
-    assert.equal(store.records.get("bob@example.com")?.active, false);
+    assert.deepEqual(await inactiveDuplicate.json(), genericSignupResponse);
+    assert.deepEqual(store.records.get("inactive@example.com"), inactiveSnapshot);
+    assert.equal(store.records.get("inactive@example.com")?.active, false);
   });
 });
 
@@ -227,6 +247,8 @@ test("routes require explicit consent and validate email, tokens, and extra fiel
       { email: "person@example.com", consent: false },
       { email: "not-an-email", consent: true },
       { email: "person@example.com", consent: true, extra: "field" },
+      { email: "person@example.com", consent: true, name: "" },
+      { email: "person@example.com", consent: true, name: "   " },
     ];
     for (const body of invalidSignups) {
       const response = await post(base, "/public/subscriptions", body);
@@ -249,10 +271,12 @@ test("signup rate limiting returns the contracted generic 429 response", async (
     const first = await post(base, "/public/subscriptions", {
       email: "one@example.com",
       consent: true,
+      name: "One",
     });
     const limited = await post(base, "/public/subscriptions", {
       email: "two@example.com",
       consent: true,
+      name: "Two",
     });
     assert.equal(first.status, 200);
     assert.equal(limited.status, 429);
@@ -264,18 +288,14 @@ test("signup rate limiting returns the contracted generic 429 response", async (
   });
 });
 
-test("management token protects preference lookup and updates without changing consent or active state", async () => {
+test("previously issued management tokens still protect preference lookup, updates, and unsubscribe", async () => {
   const store = new MemorySubscriptionStore();
+  const token = "c".repeat(43);
+  await createLegacyRecord(store, "audience@example.com", token);
   await withServer(store, async (base) => {
-    const signup = await post(base, "/public/subscriptions", {
-      email: "audience@example.com",
-      consent: true,
-    });
-    const token = (await signup.json() as { managementToken: string }).managementToken;
-
     const lookup = await post(base, "/public/subscriptions/preferences", { managementToken: token });
     assert.equal(lookup.status, 200);
-    assert.deepEqual((await lookup.json() as { interests: string[] }).interests, []);
+    assert.deepEqual((await lookup.json() as { interests: string[] }).interests, ["camera"]);
 
     const updated = await fetch(`${base}/public/subscriptions/preferences`, {
       method: "PUT",
@@ -315,10 +335,14 @@ test("management token protects preference lookup and updates without changing c
     const unauthorized = await post(base, "/public/subscriptions/preferences", { managementToken: "z".repeat(43) });
     assert.equal(unauthorized.status, 401);
     assert.equal(store.records.get("audience@example.com")?.name, null);
+
+    const stopped = await post(base, "/public/subscriptions/unsubscribe", { managementToken: token });
+    assert.equal(stopped.status, 200);
+    assert.equal(store.records.get("audience@example.com")?.active, false);
   });
 });
 
-test("storage failures are sanitized and token responses are never cached", async () => {
+test("storage failures are sanitized and signup responses are never cached", async () => {
   const store = new MemorySubscriptionStore();
   const originalCreate = store.create.bind(store);
   let fail = false;
@@ -331,6 +355,7 @@ test("storage failures are sanitized and token responses are never cached", asyn
     const success = await post(base, "/public/subscriptions", {
       email: "safe@example.com",
       consent: true,
+      name: "Safe",
     });
     assert.equal(success.headers.get("cache-control"), "no-store");
 
@@ -338,6 +363,7 @@ test("storage failures are sanitized and token responses are never cached", asyn
     const unavailable = await post(base, "/public/subscriptions", {
       email: "private@example.com",
       consent: true,
+      name: "Private",
     });
     assert.equal(unavailable.status, 503);
     assert.deepEqual(await unavailable.json(), { error: "Service temporarily unavailable" });

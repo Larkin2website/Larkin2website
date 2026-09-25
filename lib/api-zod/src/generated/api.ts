@@ -74,7 +74,7 @@ export const ListPublicOpportunityOptionsResponse = zod.object({
 
 
 /**
- * Records explicit consent. A new subscription receives its personal management token; callers must save the resulting personal unsubscribe link because no email is sent. Duplicate requests have the same response shape but do not rotate an existing token, reactivate an inactive subscription, or disclose membership. A caller that still has the original token may submit it to preserve that capability for a matching subscription, including an inactive one, without reactivating it. A lost link cannot be recovered through this endpoint; contact support.
+ * Records explicit consent and optional preferences for a new subscription. A nonblank name is required. New and duplicate requests receive the same generic response. Duplicate requests never disclose or modify an existing subscription, even when a previously issued management token is supplied. This endpoint never issues or returns a management token.
  * @summary Subscribe an email address to opportunity updates
  */
 export const createPublicSubscriptionBodyEmailMin = 3;
@@ -87,6 +87,8 @@ export const createPublicSubscriptionBodyExistingManagementTokenMax = 128;
 export const createPublicSubscriptionBodyExistingManagementTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
 export const createPublicSubscriptionBodyNameMax = 160;
 
+
+export const createPublicSubscriptionBodyNameRegExp = new RegExp('.*\\S.*');
 export const createPublicSubscriptionBodyCraftMax = 120;
 
 export const createPublicSubscriptionBodyLocationMax = 160;
@@ -104,8 +106,8 @@ export const createPublicSubscriptionBodyCraftsItemMax = 120;
 export const CreatePublicSubscriptionBody = zod.object({
   "email": zod.string().email().min(createPublicSubscriptionBodyEmailMin).max(createPublicSubscriptionBodyEmailMax),
   "consent": zod.literal(true),
-  "existingManagementToken": zod.string().min(createPublicSubscriptionBodyExistingManagementTokenMin).max(createPublicSubscriptionBodyExistingManagementTokenMax).regex(createPublicSubscriptionBodyExistingManagementTokenRegExp).optional().describe('The caller\'s previously saved personal token. It is returned only when it belongs to the same subscription, including an inactive one; it never reactivates an inactive subscription.'),
-  "name": zod.string().max(createPublicSubscriptionBodyNameMax).optional(),
+  "existingManagementToken": zod.string().min(createPublicSubscriptionBodyExistingManagementTokenMin).max(createPublicSubscriptionBodyExistingManagementTokenMax).regex(createPublicSubscriptionBodyExistingManagementTokenRegExp).optional().describe('Accepted for compatibility with previously issued private links. It is ignored by this endpoint and never changes or reveals a subscription.'),
+  "name": zod.string().min(1).max(createPublicSubscriptionBodyNameMax).regex(createPublicSubscriptionBodyNameRegExp),
   "craft": zod.string().max(createPublicSubscriptionBodyCraftMax).optional(),
   "careerLevel": zod.enum(['new_entrant', 'mid_level', 'senior']).optional(),
   "location": zod.string().max(createPublicSubscriptionBodyLocationMax).optional(),
@@ -118,12 +120,8 @@ export const CreatePublicSubscriptionBody = zod.object({
   "allOpportunities": zod.boolean().optional()
 })
 
-export const createPublicSubscriptionResponseManagementTokenMin = 43;
-
-
-
 export const CreatePublicSubscriptionResponse = zod.object({
-  "managementToken": zod.string().min(createPublicSubscriptionResponseManagementTokenMin)
+  "message": zod.string()
 })
 
 

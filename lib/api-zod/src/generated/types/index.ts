@@ -95,7 +95,6 @@ export * from './publicProgramme';
 export * from './publicSubscriptionInput';
 export * from './publicSubscriptionMessage';
 export * from './publicSubscriptionPreferencesLookup';
-export * from './publicSubscriptionResult';
 export * from './publicSubscriptionUnsubscribeInput';
 export * from './serviceUnavailableResponse';
 export * from './tooManyRequestsResponse';
