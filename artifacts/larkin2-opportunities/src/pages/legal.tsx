@@ -90,7 +90,7 @@ export function PrivacyNoticePage() {
       </Section>
       <Section number={2} title="Summary">
         <p>We will process information about you, such as your application and CV and application, when you apply for a role with Larkin. This processing is necessary to consider you for the role and to communicate with you.</p>
-        <p>We also advertise offer training sessions on the Website and will process personal data of those who register for and attend our training sessions, and if you sign up to receive updates about roles and training, we will process your personal data so that we can send these out to you (and of course you can unsubscribe at any time).</p>
+        <p>We also advertise training sessions on the Website and process personal data of those who register for and attend them. If you sign up, we record your interest in general HETV news and announcements. You can optionally choose preferences for roles, programmes or training. Choosing no opportunity preferences does not opt you into every opportunity. You can unsubscribe at any time.</p>
       </Section>
       <Section number={3} title="How we collect your information">
         <p>When you apply for a role with us, we will collect personal data from you (such as your name, contact details and CV). We may also collect information from third parties, such as referees and former employers.</p>
@@ -121,7 +121,7 @@ export function PrivacyNoticePage() {
           </table>
         </div>
         <h3>Update subscriptions</h3>
-        <p>When you subscribe, we persist your email address, affirmative consent and consent timestamp in our database. We are currently collecting interest only and do not currently send update emails. We also store a hash of the private management token used by your personal unsubscribe link; the private token itself may optionally be saved in your browser&apos;s local storage so that you can retrieve the link on that device.</p>
+        <p>When you subscribe, we persist your email address, affirmative consent and consent timestamp in our database. Additional preferences and profile details are optional. We are currently collecting interest only and do not currently send update emails. We also store a hash of the private management token used by your personal unsubscribe link; the private token itself may optionally be saved in your browser&apos;s local storage so that you can retrieve the link on that device.</p>
         <p>Unsubscribing requires the private token and sends a request to our unsubscribe service; an email address alone cannot remove a subscription or reveal whether somebody is subscribed. When a subscription is deactivated, we retain a suppression record so that the opt-out continues to be respected. If you lose your private link, or wish to make an erasure or other data-rights request, email <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>. We will verify requests before making changes.</p>
       </Section>
       <Section number={5} title="Automated decision-making">

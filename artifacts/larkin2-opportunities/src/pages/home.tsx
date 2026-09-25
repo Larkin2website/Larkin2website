@@ -487,8 +487,8 @@ export function Home() {
         <div className="larkin2-signup-layout larkin2-reveal" data-reveal>
           <div>
             <h2 className="larkin2-title" id="signup-title" style={{ color: 'var(--paper-ink)' }}><span className="larkin2-mask"><span>Sign Up</span></span></h2>
-            <p className="larkin2-copy" style={{ color: 'var(--secondary)' }}>Register your interest in roles, training and development across our productions. We aim to keep applications open for at least five days.</p>
-            <p className="larkin2-small" style={{ color: 'var(--muted)', marginTop: '20px' }}>Sign up to be notified when roles or programmes become available. We are currently collecting interest, so while automated email alerts are not running yet, your preference will be saved securely.</p>
+            <p className="larkin2-copy" style={{ color: 'var(--secondary)' }}>Leave your email to register your interest in general HETV news and announcements. You can optionally add interests in roles, training and development after signing up.</p>
+            <p className="larkin2-small" style={{ color: 'var(--muted)', marginTop: '20px' }}>We are collecting interest, not sending automated email alerts yet. Choosing to hear about opportunities is a separate step; joining for general updates does not include every role or programme.</p>
           </div>
           <div>
             <SubscriptionSignup />

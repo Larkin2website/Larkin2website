@@ -2839,6 +2839,72 @@
   text-underline-offset: 2px;
 }
 
+/* A small first step on the home page; the second step lives on its own page. */
+.hetv-signup-compact {
+  width: min(100%, 590px);
+  max-width: none;
+  gap: 12px;
+  padding: clamp(22px, 3vw, 36px);
+  box-shadow: 0 12px 32px rgba(51, 31, 22, .07);
+}
+.hetv-signup-compact .hetv-signup-kicker,
+.hetv-followup .hetv-followup-kicker {
+  color: #9b452d;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+}
+.hetv-signup-compact h3 {
+  margin: 0 0 6px;
+  color: var(--paper-ink);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 500;
+  letter-spacing: -.055em;
+  line-height: 1.1;
+}
+.hetv-signup-compact .hetv-signup-fields {
+  display: flex;
+  gap: 9px;
+  align-items: stretch;
+}
+.hetv-signup-compact .hetv-signup-fields input { min-width: 0; flex: 1; }
+.hetv-signup-compact .hetv-signup-fields button[type="submit"] {
+  flex: none;
+  align-self: stretch;
+  white-space: nowrap;
+  background: var(--paper-ink);
+  color: var(--paper);
+}
+.hetv-signup-compact .hetv-subscription-consent { margin: 4px 0; }
+.hetv-signup-compact .hetv-signup-footnote { font-size: 12px; }
+.hetv-signup-compact .hetv-subscription-link { gap: 12px; margin-top: 4px; }
+.hetv-signup-compact .hetv-subscription-link input { font-size: 13px; }
+.hetv-signup-compact .hetv-signup-actions { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+.hetv-signup-compact .hetv-signup-actions a { font-size: 14px; font-weight: 600; }
+.hetv-followup { max-width: none; padding: clamp(22px, 4vw, 48px); gap: 20px; }
+.hetv-followup .hetv-followup-intro { max-width: 650px; }
+.hetv-followup h2 { margin: 0; color: var(--paper-ink); font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 4vw, 42px); font-weight: 500; letter-spacing: -.06em; line-height: 1.1; }
+.hetv-followup .hetv-followup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 22px; }
+.hetv-followup .hetv-followup-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.hetv-followup .hetv-followup-field label { color: var(--paper-ink); font-size: 13px; font-weight: 600; }
+.hetv-followup .hetv-followup-full { grid-column: 1 / -1; }
+.hetv-followup .hetv-subscription-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hetv-followup .hetv-followup-actions { display: flex; gap: 12px 20px; flex-wrap: wrap; align-items: center; }
+.hetv-followup .hetv-followup-note { padding: 14px 18px; border-left: 3px solid #a65135; background: rgba(166,81,53,.07); }
+.hetv-followup .hetv-followup-loading { display: grid; gap: 12px; }
+.hetv-followup .hetv-followup-loading span { display: block; height: 18px; max-width: 360px; border-radius: 4px; background: rgba(73,57,45,.12); }
+.hetv-followup .hetv-followup-loading span:nth-child(2) { width: 75%; }
+.hetv-followup .hetv-followup-loading span:nth-child(3) { width: 55%; }
+@media (max-width: 680px) {
+  .hetv-signup-compact .hetv-signup-fields { flex-direction: column; }
+  .hetv-signup-compact .hetv-signup-fields button[type="submit"] { align-self: stretch; }
+  .hetv-followup .hetv-followup-grid { grid-template-columns: 1fr; }
+  .hetv-followup .hetv-followup-full { grid-column: auto; }
+  .hetv-followup .hetv-subscription-options { grid-template-columns: 1fr; }
+}
+
 /* Static Hero for HETV Hub */
 .larkin2-hero-static {
   position: relative;

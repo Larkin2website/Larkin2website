@@ -82,23 +82,31 @@ export async function putMatching(kind: PublicationKind, id: string, input: Matc
   const condition = kind === "role"
     ? eq(audienceMatchingTable.opportunityId, id)
     : eq(audienceMatchingTable.programmeId, id);
-  const [existing] = await db.select({ id: audienceMatchingTable.id })
-    .from(audienceMatchingTable).where(condition).limit(1);
-  const [row] = existing
-    ? await db.update(audienceMatchingTable).set({
+  return db.transaction(async (tx) => {
+    const [existing] = await tx.select({ id: audienceMatchingTable.id })
+      .from(audienceMatchingTable).where(condition).limit(1);
+    const [row] = existing
+      ? await tx.update(audienceMatchingTable).set({
+        contentType: input.contentType,
+        careerLevels: input.careerLevels,
+        crafts: canonicalCrafts as string[],
+        tags,
+      }).where(eq(audienceMatchingTable.id, existing.id)).returning()
+      : await tx.insert(audienceMatchingTable).values({
+        ...target,
+        contentType: input.contentType,
+        careerLevels: input.careerLevels,
+        crafts: canonicalCrafts as string[],
+        tags,
+      }).returning();
+    await reconcilePublicationRecipients(tx, kind, id, {
       contentType: input.contentType,
       careerLevels: input.careerLevels,
-      crafts: canonicalCrafts as string[],
+      crafts: canonicalCrafts,
       tags,
-    }).where(eq(audienceMatchingTable.id, existing.id)).returning()
-    : await db.insert(audienceMatchingTable).values({
-      ...target,
-      contentType: input.contentType,
-      careerLevels: input.careerLevels,
-      crafts: canonicalCrafts as string[],
-      tags,
-    }).returning();
-  return row;
+    });
+    return row;
+  });
 }
 
 export type AudienceRecipientPreferences = Pick<
@@ -112,6 +120,7 @@ export function isEligibleAudienceRecipient(
 ): boolean {
   if (!subscriber.active || !subscriber.consent) return false;
   if (subscriber.allOpportunities) return true;
+  // "content" is the general-only signup segment, not an opportunity preference.
   if (!subscriber.contentTypes.includes(matching.contentType)) return false;
   if (matching.contentType !== "training") {
     if (matching.careerLevels.length && !matching.careerLevels.some((level) => subscriber.careerLevels.includes(level))) return false;
@@ -124,23 +133,108 @@ export function isEligibleAudienceRecipient(
   return true;
 }
 
-/** Pending notifications are provisional: remove recipients who have opted out or no longer match. */
-export async function reconcilePendingDeliveries(tx: any, subscriber: typeof publicSubscriptionsTable.$inferSelect) {
-  const pending = await tx.select().from(crmCommunicationOutboxTable)
-    .where(and(eq(crmCommunicationOutboxTable.subscriberId, subscriber.id), eq(crmCommunicationOutboxTable.status, "pending")));
-  for (const delivery of pending) {
-    const [criteria] = await tx.select().from(audienceMatchingTable)
-      .where(delivery.opportunityId
-        ? eq(audienceMatchingTable.opportunityId, delivery.opportunityId)
-        : eq(audienceMatchingTable.programmeId, delivery.programmeId!))
-      .limit(1);
-    if (isEligibleAudienceRecipient(subscriber, matchingCriteriaFor(delivery.opportunityId ? "role" : "programme", criteria))) continue;
-    await tx.delete(crmCommunicationOutboxTable).where(eq(crmCommunicationOutboxTable.id, delivery.id));
-    const [{ total }] = await tx.select({ total: count() }).from(crmCommunicationOutboxTable)
-      .where(eq(crmCommunicationOutboxTable.communicationId, delivery.communicationId));
-    await tx.update(crmCommunicationsTable).set({ recipientCount: Number(total) })
-      .where(eq(crmCommunicationsTable.id, delivery.communicationId));
+async function refreshCommunicationCount(tx: any, communicationId: string) {
+  const [{ total }] = await tx.select({ total: count() }).from(crmCommunicationOutboxTable)
+    .where(eq(crmCommunicationOutboxTable.communicationId, communicationId));
+  await tx.update(crmCommunicationsTable).set({ recipientCount: Number(total) })
+    .where(eq(crmCommunicationsTable.id, communicationId));
+}
+
+/** Reconcile a publication's pending queue against its current criteria in both directions. */
+export async function reconcilePublicationRecipients(
+  tx: any,
+  kind: PublicationKind,
+  id: string,
+  matching?: MatchingInput,
+) {
+  const publicationCondition = kind === "role"
+    ? eq(crmCommunicationsTable.opportunityId, id)
+    : eq(crmCommunicationsTable.programmeId, id);
+  const [communication] = await tx.select().from(crmCommunicationsTable)
+    .where(and(publicationCondition, eq(crmCommunicationsTable.status, "pending"))).limit(1);
+  if (!communication) return;
+
+  const criteria = matchingCriteriaFor(kind, matching);
+  const subscribers = await tx.select().from(publicSubscriptionsTable);
+  const eligible = subscribers.filter((subscriber: typeof publicSubscriptionsTable.$inferSelect) =>
+    isEligibleAudienceRecipient(subscriber, criteria));
+  const outboxCondition = eq(crmCommunicationOutboxTable.communicationId, communication.id);
+  const outbox = await tx.select().from(crmCommunicationOutboxTable).where(outboxCondition);
+  const existingBySubscriber = new Map(outbox.map((delivery: typeof crmCommunicationOutboxTable.$inferSelect) =>
+    [delivery.subscriberId, delivery]));
+  const eligibleIds = new Set(eligible.map((subscriber: typeof publicSubscriptionsTable.$inferSelect) => subscriber.id));
+
+  for (const delivery of outbox) {
+    if (delivery.status === "pending" && !eligibleIds.has(delivery.subscriberId)) {
+      await tx.delete(crmCommunicationOutboxTable).where(eq(crmCommunicationOutboxTable.id, delivery.id));
+    }
   }
+
+  const missing = eligible.filter((subscriber: typeof publicSubscriptionsTable.$inferSelect) =>
+    !existingBySubscriber.has(subscriber.id));
+  if (missing.length) {
+    const publicationTarget = matchingTarget(kind, id);
+    await tx.insert(crmCommunicationOutboxTable).values(missing.map((subscriber: typeof publicSubscriptionsTable.$inferSelect) => ({
+      communicationId: communication.id,
+      subscriberId: subscriber.id,
+      ...publicationTarget,
+      status: "pending" as const,
+    }))).onConflictDoNothing();
+  }
+  await refreshCommunicationCount(tx, communication.id);
+}
+
+/** Reconcile pending notifications after subscriber preferences change, including newly eligible publications. */
+export async function reconcilePendingDeliveries(tx: any, subscriber: typeof publicSubscriptionsTable.$inferSelect) {
+  const [existingRows, communications] = await Promise.all([
+    tx.select().from(crmCommunicationOutboxTable)
+      .where(eq(crmCommunicationOutboxTable.subscriberId, subscriber.id)),
+    tx.select().from(crmCommunicationsTable)
+      .where(eq(crmCommunicationsTable.status, "pending")),
+  ]);
+  const pendingCommunicationIds = new Set(communications.map((communication: typeof crmCommunicationsTable.$inferSelect) => communication.id));
+  const existingByPublication = new Map(existingRows.map((delivery: typeof crmCommunicationOutboxTable.$inferSelect) => [
+    `${delivery.opportunityId ? "role" : "programme"}:${delivery.opportunityId ?? delivery.programmeId}`,
+    delivery,
+  ]));
+  const changedCommunicationIds = new Set<string>();
+
+  for (const delivery of existingRows) {
+    if (delivery.status !== "pending" || !pendingCommunicationIds.has(delivery.communicationId)) continue;
+    const kind = delivery.opportunityId ? "role" : "programme";
+    const publicationId = delivery.opportunityId ?? delivery.programmeId!;
+    const [criteria] = await tx.select().from(audienceMatchingTable)
+      .where(kind === "role"
+        ? eq(audienceMatchingTable.opportunityId, publicationId)
+        : eq(audienceMatchingTable.programmeId, publicationId))
+      .limit(1);
+    if (isEligibleAudienceRecipient(subscriber, matchingCriteriaFor(kind, criteria))) continue;
+    await tx.delete(crmCommunicationOutboxTable).where(eq(crmCommunicationOutboxTable.id, delivery.id));
+    changedCommunicationIds.add(delivery.communicationId);
+  }
+
+  for (const communication of communications) {
+    const kind = communication.opportunityId ? "role" : "programme";
+    const publicationId = communication.opportunityId ?? communication.programmeId;
+    if (!publicationId) continue;
+    const key = `${kind}:${publicationId}`;
+    const [criteria] = await tx.select().from(audienceMatchingTable)
+      .where(kind === "role"
+        ? eq(audienceMatchingTable.opportunityId, publicationId)
+        : eq(audienceMatchingTable.programmeId, publicationId))
+      .limit(1);
+    if (!isEligibleAudienceRecipient(subscriber, matchingCriteriaFor(kind, criteria))) continue;
+    if (existingByPublication.has(key)) continue;
+    await tx.insert(crmCommunicationOutboxTable).values({
+      communicationId: communication.id,
+      subscriberId: subscriber.id,
+      ...matchingTarget(kind, publicationId),
+      status: "pending",
+    }).onConflictDoNothing();
+    changedCommunicationIds.add(communication.id);
+  }
+
+  for (const communicationId of changedCommunicationIds) await refreshCommunicationCount(tx, communicationId);
 }
 
 /** Transactionally creates a publication batch and idempotent pending recipient outbox rows. */

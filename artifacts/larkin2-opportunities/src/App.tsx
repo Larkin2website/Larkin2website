@@ -16,6 +16,7 @@ import { OpportunityPage } from "./pages/opportunity";
 import { OpportunitiesIndexPage } from "./pages/opportunities-index";
 import { PrivacyNoticePage, TermsPage } from "./pages/legal";
 import { UnsubscribePage } from "./pages/unsubscribe";
+import { PreferencesPage } from "./pages/preferences";
 import { TrainingPage, DevelopmentPage } from "./pages/programme-overview";
 
 const queryClient = new QueryClient();
@@ -73,6 +74,7 @@ function Router() {
         <Route path="/privacy" component={PrivacyNoticePage} />
         <Route path="/terms" component={TermsPage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
+        <Route path="/preferences" component={PreferencesPage} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

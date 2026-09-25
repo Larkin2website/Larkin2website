@@ -134,6 +134,16 @@ test("signup persists consent while duplicates cannot rotate or alter the existi
     assert.equal(original.active, true);
     assert.equal(original.managementTokenHash, hashManagementToken(originalToken));
     assert.equal(original.managementTokenHash.includes(originalToken), false);
+    assert.deepEqual(original.contentTypes ?? [], []);
+    assert.equal(original.allOpportunities ?? false, false);
+    assert.equal(original.name ?? null, null);
+
+    const selected = await fetch(`${base}/public/subscriptions/preferences`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ managementToken: originalToken, contentTypes: ["role"] }),
+    });
+    assert.equal(selected.status, 200);
 
     const duplicate = await post(base, "/public/subscriptions", {
       email: "person@example.com",
@@ -154,6 +164,7 @@ test("signup persists consent while duplicates cannot rotate or alter the existi
     assert.equal(capableDuplicate.status, 200);
     assert.deepEqual(await capableDuplicate.json(), { managementToken: originalToken });
     assert.equal(store.records.get("person@example.com"), original);
+    assert.deepEqual(original.contentTypes, ["role"], "minimal repeat signup must not clear existing opportunity choices");
   });
 
   assert.equal(generated.length, 4);
