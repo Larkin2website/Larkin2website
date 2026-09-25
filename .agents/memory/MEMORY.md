@@ -9,3 +9,4 @@
 - [Browser inspection targets](browser-inspection-targets.md) — Chromium may list an extension before the app tab; select a non-extension page for direct CDP inspection.
 - [Programme seed safety](programme-seed-safety.md) — Treat approved programme seeding as explicit reconciliation, not an automatic startup step that can overwrite portal edits.
 - [Managed database publish](managed-database-publish.md) — Development schema push is not a production migration; Publish handles managed PostgreSQL schema changes.
+- [Signup field responsiveness](signup-field-responsiveness.md) — Check the form’s usable inner width, not its outer width, when choosing when paired fields should stack.

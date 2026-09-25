@@ -2719,7 +2719,6 @@
   text-underline-offset: 2px;
 }
 
-.hetv-subscription label[for="signup-email"],
 .hetv-subscription label[for="subscription-management-link"] {
   display: block;
   font-size: 13px;
@@ -2843,6 +2842,7 @@
 .hetv-signup-compact {
   width: min(100%, 590px);
   max-width: none;
+  container-type: inline-size;
   gap: 12px;
   padding: clamp(22px, 3vw, 36px);
   box-shadow: 0 12px 32px rgba(51, 31, 22, .07);
@@ -2875,6 +2875,16 @@
   gap: 6px;
   min-width: 0;
 }
+.hetv-signup-compact .hetv-signup-field label {
+  display: block;
+  margin: 0;
+  color: var(--paper-ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
 .hetv-signup-compact .hetv-signup-field input { min-width: 0; width: 100%; }
 .hetv-signup-compact .hetv-subscription-consent { margin: 4px 0; }
 .hetv-signup-compact .hetv-signup-footnote { font-size: 12px; }
@@ -2895,8 +2905,13 @@
 .hetv-followup .hetv-followup-loading span { display: block; height: 18px; max-width: 360px; border-radius: 4px; background: rgba(73,57,45,.12); }
 .hetv-followup .hetv-followup-loading span:nth-child(2) { width: 75%; }
 .hetv-followup .hetv-followup-loading span:nth-child(3) { width: 55%; }
-@media (max-width: 680px) {
+@container (max-width: 380px) {
   .hetv-signup-compact .hetv-signup-fields { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .hetv-signup-compact .hetv-signup-fields { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
   .hetv-signup-compact .hetv-signup-actions button { width: 100%; }
   .hetv-followup .hetv-followup-grid { grid-template-columns: 1fr; }
   .hetv-followup .hetv-followup-full { grid-column: auto; }
