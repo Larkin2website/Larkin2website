@@ -2766,6 +2766,9 @@
 .hetv-subscription-options > label:not(.hetv-subscription-check) {
   grid-column: 1 / -1;
 }
+.hetv-subscription-options > input[type="text"] {
+  grid-column: 1 / -1;
+}
 .hetv-subscription-check {
   display: flex;
   align-items: flex-start;

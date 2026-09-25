@@ -45,12 +45,10 @@ export function UnsubscribePage() {
   const [location, setLocation] = useState("");
   const [acquisitionSource, setAcquisitionSource] = useState("");
   const [acquisitionDetail, setAcquisitionDetail] = useState("");
-  const [interests, setInterests] = useState<string[]>([]);
-  const [interestOther, setInterestOther] = useState("");
+  const [interestText, setInterestText] = useState("");
   const [contentTypes, setContentTypes] = useState<string[]>([]);
   const [careerLevels, setCareerLevels] = useState<string[]>([]);
-  const [crafts, setCrafts] = useState<string[]>([]);
-  const [craftsOther, setCraftsOther] = useState("");
+  const [craftText, setCraftText] = useState("");
   const [allOpportunities, setAllOpportunities] = useState(false);
 
   function setLoadedPreferences(value: PublicAudiencePreferences) {
@@ -61,14 +59,10 @@ export function UnsubscribePage() {
     setLocation(value.location ?? "");
     setAcquisitionSource(value.acquisitionSource ?? "");
     setAcquisitionDetail(value.acquisitionDetail ?? "");
-    const currentInterests = value.interests ?? [];
-    setInterests(currentInterests.filter(item => opportunityOptions?.departments.includes(item)));
-    setInterestOther(currentInterests.filter(item => !opportunityOptions?.departments.includes(item)).join(", "));
+    setInterestText((value.interests ?? []).join(", "));
     setContentTypes(value.contentTypes ?? []);
     setCareerLevels(value.careerLevels ?? []);
-    const savedCrafts = value.crafts ?? [];
-    setCrafts(savedCrafts.filter(item => opportunityOptions?.departments.includes(item)));
-    setCraftsOther(savedCrafts.filter(item => !opportunityOptions?.departments.includes(item)).join(", "));
+    setCraftText((value.crafts ?? []).join(", "));
     setAllOpportunities(value.allOpportunities ?? false);
   }
 
@@ -138,10 +132,10 @@ export function UnsubscribePage() {
       location: location.trim() || null,
       acquisitionSource: acquisitionSource.trim() || null,
       acquisitionDetail: acquisitionDetail.trim() || null,
-      interests: [...new Set([...interests, ...splitEntries(interestOther)])],
+      interests: splitEntries(interestText),
       contentTypes: contentTypes as PublicAudiencePreferencesUpdate["contentTypes"],
       careerLevels: careerLevels as PublicAudiencePreferencesUpdate["careerLevels"],
-      crafts: [...new Set([...crafts, ...splitEntries(craftsOther)])],
+      crafts: splitEntries(craftText),
       allOpportunities,
     };
     try {
@@ -219,7 +213,7 @@ export function UnsubscribePage() {
                 <label htmlFor="manage-name">Name</label>
                 <input id="manage-name" type="text" maxLength={160} value={name} disabled={!!busyAction}
                   onChange={event => setName(event.target.value)} />
-                <label htmlFor="manage-craft">Your craft</label>
+                <label htmlFor="manage-craft">Your current or primary craft</label>
                 <input id="manage-craft" type="text" maxLength={120} value={craft} disabled={!!busyAction}
                   onChange={event => setCraft(event.target.value)} />
                 <label htmlFor="manage-career-level">Your career level</label>
@@ -240,18 +234,11 @@ export function UnsubscribePage() {
                     onChange={event => setAcquisitionDetail(event.target.value)} />
                 </>}
                 <fieldset className="hetv-subscription-options">
-                  <legend>Interests</legend>
-                  {opportunityOptions?.departments.map(department => (
-                    <label className="hetv-subscription-check" key={department}>
-                      <input type="checkbox" checked={interests.includes(department)} disabled={!!busyAction}
-                        onChange={event => setInterests(current => event.target.checked
-                          ? [...current, department] : current.filter(item => item !== department))} />
-                      <span>{department}</span>
-                    </label>
-                  ))}
-                  <label htmlFor="manage-other-interests">Other interests, separated by commas</label>
-                  <input id="manage-other-interests" type="text" maxLength={500} value={interestOther} disabled={!!busyAction}
-                    onChange={event => setInterestOther(event.target.value)} />
+                  <legend>Topics or themes you’re interested in (optional)</legend>
+                  <p>Tell us about other topics that matter to you, such as mentoring or sustainability. Separate them with commas. Entering a topic does not guarantee a matching opportunity or an email alert.</p>
+                  <label htmlFor="manage-other-interests">Your topics or themes, separated by commas</label>
+                  <input id="manage-other-interests" type="text" maxLength={500} value={interestText} disabled={!!busyAction}
+                    onChange={event => setInterestText(event.target.value)} />
                 </fieldset>
                 <fieldset className="hetv-subscription-options">
                   <legend>Updates you are interested in</legend>
@@ -276,18 +263,20 @@ export function UnsubscribePage() {
                   ))}
                 </fieldset>
                 <fieldset className="hetv-subscription-options">
-                  <legend>Crafts you are interested in</legend>
+                  <legend>Departments you’d like opportunities in (optional)</legend>
+                  <p>Choose areas you’d consider working in, even if they differ from your current craft. Your current craft may also be considered when identifying relevant opportunities.</p>
                   {opportunityOptions?.departments.map(department => (
                     <label className="hetv-subscription-check" key={department}>
-                      <input type="checkbox" checked={crafts.includes(department)} disabled={!!busyAction}
-                        onChange={event => setCrafts(current => event.target.checked
-                          ? [...current, department] : current.filter(item => item !== department))} />
+                      <input type="checkbox" checked={splitEntries(craftText).includes(department)} disabled={!!busyAction}
+                        onChange={event => setCraftText(current => event.target.checked
+                          ? [...new Set([...splitEntries(current), department])].join(", ")
+                          : splitEntries(current).filter(item => item !== department).join(", "))} />
                       <span>{department}</span>
                     </label>
                   ))}
-                  <label htmlFor="manage-crafts-other">Other crafts, separated by commas</label>
-                  <input id="manage-crafts-other" type="text" maxLength={500} value={craftsOther} disabled={!!busyAction}
-                    onChange={event => setCraftsOther(event.target.value)} />
+                  <label htmlFor="manage-crafts-other">Selected departments or other crafts, separated by commas</label>
+                  <input id="manage-crafts-other" type="text" maxLength={500} value={craftText} disabled={!!busyAction}
+                    onChange={event => setCraftText(event.target.value)} />
                 </fieldset>
                 <label className="hetv-subscription-consent">
                   <input type="checkbox" checked={allOpportunities} disabled={!!busyAction}

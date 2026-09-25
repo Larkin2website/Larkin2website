@@ -117,7 +117,7 @@ export function PreferencesPage() {
                   <div className="hetv-followup-grid">
                     <div className="hetv-followup-field"><label htmlFor="followup-location">Your location (optional)</label>
                       <input id="followup-location" type="text" maxLength={160} value={location} onChange={event => setLocation(event.target.value)} disabled={saving} placeholder="Town, city or region" /></div>
-                    <div className="hetv-followup-field"><label htmlFor="followup-craft">Your craft (optional)</label>
+                    <div className="hetv-followup-field"><label htmlFor="followup-craft">Your current or primary craft (optional)</label>
                       <input id="followup-craft" type="text" maxLength={120} value={craft} onChange={event => setCraft(event.target.value)} disabled={saving} placeholder="e.g. Editing" /></div>
                     <div className="hetv-followup-field"><label htmlFor="followup-career">Your career level (optional)</label>
                       <select id="followup-career" value={careerLevel} onChange={event => setCareerLevel(event.target.value)} disabled={saving}>
@@ -133,17 +133,12 @@ export function PreferencesPage() {
                       </label>)}
                     </fieldset>
                     <fieldset className="hetv-subscription-options hetv-followup-full">
-                      <legend>Departments and interests (optional)</legend>
-                      {options?.departments.map(department => <label className="hetv-subscription-check" key={department}>
-                        <input type="checkbox" checked={splitEntries(interestText).includes(department)} disabled={saving}
-                          onChange={event => setInterestText(current => toggle(splitEntries(current), department, event.target.checked).join(", "))} />
-                        <span>{department}</span>
-                      </label>)}
-                      {optionsError && <p>Department choices could not load. You can still enter interests below. <button type="button" onClick={() => void retryOptions()}>Try again</button></p>}
-                      <label htmlFor="followup-interests">All selected interests, separated by commas</label>
+                      <legend>Topics or themes you’re interested in (optional)</legend>
+                      <p>Tell us about other topics that matter to you, such as mentoring or sustainability. Separate them with commas. Entering a topic does not guarantee a matching opportunity or an email alert.</p>
+                      <label htmlFor="followup-interests">Your topics or themes, separated by commas</label>
                       <input id="followup-interests" type="text" value={interestText}
                         onChange={event => setInterestText(event.target.value)}
-                        disabled={saving} maxLength={500} />
+                        disabled={saving} maxLength={500} placeholder="e.g. Mentoring, sustainability" />
                     </fieldset>
                     <fieldset className="hetv-subscription-options hetv-followup-full">
                       <legend>Career levels of interest (optional)</legend>
@@ -154,14 +149,15 @@ export function PreferencesPage() {
                       </label>)}
                     </fieldset>
                     <fieldset className="hetv-subscription-options hetv-followup-full">
-                      <legend>Crafts of interest (optional)</legend>
+                      <legend>Departments you’d like opportunities in (optional)</legend>
+                      <p>Choose areas you’d consider working in, even if they differ from your current craft. Your current craft may also be considered when identifying relevant opportunities.</p>
                       {options?.departments.map(department => <label className="hetv-subscription-check" key={department}>
                         <input type="checkbox" checked={splitEntries(craftText).includes(department)} disabled={saving}
                           onChange={event => setCraftText(current => toggle(splitEntries(current), department, event.target.checked).join(", "))} />
                         <span>{department}</span>
                       </label>)}
-                      {optionsError && <p>Craft choices could not load. You can enter them below.</p>}
-                      <label htmlFor="followup-crafts">All selected crafts, separated by commas</label>
+                      {optionsError && <p>Department choices could not load. You can enter them below. <button type="button" onClick={() => void retryOptions()}>Try again</button></p>}
+                      <label htmlFor="followup-crafts">Selected departments or other crafts, separated by commas</label>
                       <input id="followup-crafts" type="text" value={craftText}
                         onChange={event => setCraftText(event.target.value)}
                         disabled={saving} maxLength={500} />
