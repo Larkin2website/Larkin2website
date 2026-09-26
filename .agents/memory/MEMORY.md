@@ -10,3 +10,4 @@
 - [Programme seed safety](programme-seed-safety.md) — Treat approved programme seeding as explicit reconciliation, not an automatic startup step that can overwrite portal edits.
 - [Managed database publish](managed-database-publish.md) — Development schema push is not a production migration; Publish handles managed PostgreSQL schema changes.
 - [Signup field responsiveness](signup-field-responsiveness.md) — Check the form’s usable inner width, not its outer width, when choosing when paired fields should stack.
+- [Subscription verification privacy](subscription-verification-privacy.md) — Neutral responses must also avoid provider-timing and storage-failure leaks about subscribed addresses.

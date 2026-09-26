@@ -3,6 +3,11 @@ import { Link } from "wouter";
 import {
   AudienceContentType,
   CareerLevel,
+  requestSubscriptionCode,
+  verifySubscriptionCode,
+  getVerifiedSubscriptionPreferences,
+  updateVerifiedSubscriptionPreferences,
+  unsubscribeVerifiedSubscription,
   getPublicSubscriptionPreferences,
   unsubscribePublicSubscription,
   updatePublicSubscriptionPreferences,
@@ -24,6 +29,8 @@ const contentOptions = [
   [AudienceContentType.training, "Training"],
 ] as const;
 const splitEntries = (value: string) => [...new Set(value.split(",").map(item => item.trim()).filter(Boolean))];
+const accessStorageKey = "hetv_verified_subscription_access";
+const isExpiredAccess = (reason: unknown) => typeof reason === "object" && reason !== null && "status" in reason && reason.status === 401;
 
 export function UnsubscribePage() {
   const { data: opportunityOptions } = useListPublicOpportunityOptions();
@@ -34,10 +41,15 @@ export function UnsubscribePage() {
     new URLSearchParams(window.location.hash.slice(1)).get("token") ?? savedSubscriptionToken());
   const [showLegacyLink, setShowLegacyLink] = useState(() =>
     !!(new URLSearchParams(window.location.hash.slice(1)).get("token") || savedSubscriptionToken()));
+  const [accessToken, setAccessToken] = useState(() => sessionStorage.getItem(accessStorageKey) ?? "");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [codeRequested, setCodeRequested] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState("");
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [preferences, setPreferences] = useState<PublicAudiencePreferences | null>(null);
-  const [busyAction, setBusyAction] = useState<"load" | "save" | "unsubscribe" | "">("");
+  const [busyAction, setBusyAction] = useState<"load" | "save" | "unsubscribe" | "request" | "verify" | "">("");
   const [savedMessage, setSavedMessage] = useState("");
   const [name, setName] = useState("");
   const [craft, setCraft] = useState("");
@@ -66,6 +78,12 @@ export function UnsubscribePage() {
     setAllOpportunities(value.allOpportunities ?? false);
   }
 
+  function clearAccess() {
+    sessionStorage.removeItem(accessStorageKey);
+    setAccessToken("");
+    setPreferences(null);
+  }
+
   useEffect(() => {
     document.title = "Unsubscribe | HETV Opportunities Hub";
     document.querySelector('meta[name="description"]')?.setAttribute("content", "Request changes or unsubscribe from HETV Opportunities Hub news.");
@@ -73,6 +91,8 @@ export function UnsubscribePage() {
     const consume = () => {
       const incomingToken = consumeSubscriptionFragment(window);
       if (incomingToken !== null) {
+        sessionStorage.removeItem(accessStorageKey);
+        setAccessToken("");
         setToken(incomingToken);
         setShowLegacyLink(true);
         setDone(false);
@@ -86,6 +106,51 @@ export function UnsubscribePage() {
     events.forEach(event => window.addEventListener(event, consume));
     return () => events.forEach(event => window.removeEventListener(event, consume));
   }, []);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    let cancelled = false;
+    getVerifiedSubscriptionPreferences({ accessToken }).then(value => {
+      if (!cancelled) setLoadedPreferences(value);
+    }).catch(reason => {
+      if (!cancelled) {
+        if (isExpiredAccess(reason)) clearAccess();
+        else setError("We couldn't load your preferences right now. Please try again shortly.");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [accessToken]);
+
+  async function requestCode(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busyAction) return;
+    setBusyAction("request"); setError(""); setVerificationMessage("");
+    try {
+      await requestSubscriptionCode({ email: email.trim() });
+      setCodeRequested(true);
+      setVerificationMessage("If this address has an active subscription and delivery is available, a code should arrive shortly. Check your inbox and spam folder. If it does not arrive, try again later or contact our team.");
+    } catch {
+      setError("We couldn't send a code right now. Try again later or contact our team.");
+    } finally { setBusyAction(""); }
+  }
+
+  async function verifyCode(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busyAction) return;
+    setBusyAction("verify"); setError("");
+    try {
+      const result = await verifySubscriptionCode({ email: email.trim(), code });
+      setCode("");
+      setPreferences(null);
+      setSavedMessage("");
+      sessionStorage.setItem(accessStorageKey, result.accessToken);
+      setAccessToken(result.accessToken);
+      setShowLegacyLink(false);
+      setVerificationMessage("");
+    } catch {
+      setError("That code is invalid or expired. Check the code or request a new one.");
+    } finally { setBusyAction(""); }
+  }
 
   function normalizedToken() {
     const managementToken = tokenFromLink(token);
@@ -115,8 +180,8 @@ export function UnsubscribePage() {
 
   async function savePreferences() {
     if (busyAction || !preferences) return;
-    const managementToken = normalizedToken();
-    if (!managementToken) {
+    const managementToken = accessToken ? "" : normalizedToken();
+    if (!accessToken && !managementToken) {
       setPreferences(null);
       setError("Please paste the complete personal link you saved when you signed up.");
       return;
@@ -139,28 +204,36 @@ export function UnsubscribePage() {
       allOpportunities,
     };
     try {
-      const result = await updatePublicSubscriptionPreferences(update);
+      const { managementToken: _legacyToken, ...fields } = update;
+      const result = accessToken
+        ? await updateVerifiedSubscriptionPreferences({ ...fields, accessToken })
+        : await updatePublicSubscriptionPreferences(update);
       setLoadedPreferences(result);
       setSavedMessage("Your preferences have been updated.");
-    } catch {
-      setError("We couldn't update preferences. Please check your link and try again.");
+    } catch (reason) {
+      if (accessToken && isExpiredAccess(reason)) clearAccess();
+      setError(accessToken ? "We couldn't update preferences. Your verification may have expired; request a new code." : "We couldn't update preferences. Please check your link and try again.");
     } finally { setBusyAction(""); }
   }
 
   async function unsubscribe() {
     if (busyAction) return;
-    const managementToken = normalizedToken();
-    if (!managementToken) {
+    const managementToken = accessToken ? "" : normalizedToken();
+    if (!accessToken && !managementToken) {
       setError("Please paste the complete personal link you saved when you signed up.");
       return;
     }
     setBusyAction("unsubscribe");
     setError("");
     try {
-      await unsubscribePublicSubscription({ managementToken });
+      if (accessToken) {
+        await unsubscribeVerifiedSubscription({ accessToken });
+        clearAccess();
+      } else await unsubscribePublicSubscription({ managementToken });
       setDone(true);
       setPreferences(null);
-    } catch {
+    } catch (reason) {
+      if (accessToken && isExpiredAccess(reason)) clearAccess();
       setError("We couldn't process that request. Please try again shortly.");
     } finally { setBusyAction(""); }
   }
@@ -180,14 +253,35 @@ export function UnsubscribePage() {
         <div className="legal-content">
           <article className="legal-document">
              <h2>Need to make a change?</h2>
-             <p>To update your preferences, unsubscribe, or make a privacy request, email <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>. HETV staff will verify your request before making changes. Email-only self-service is not available yet; no automated update emails are being sent.</p>
+              <p>Verify your email to manage preferences or unsubscribe. We send a code only for this request, not opportunity alerts. For a privacy request or help, email <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>.</p>
              {done ? <div role="status" data-testid="status-unsubscribed">
               <h2>Request processed</h2>
-              <p>Any subscription associated with this personal link is now stopped. If it was already stopped, it stays stopped.</p>
+               <p>Your subscription has been stopped. If you used an older private link, any subscription associated with it is now stopped.</p>
               <Link href="/">Return to the hub</Link>
              </div> : <>
-             {!showLegacyLink && <button type="button" onClick={() => setShowLegacyLink(true)} data-testid="button-existing-link">I already have a private link</button>}
-             {showLegacyLink && <form className="hetv-subscription" onSubmit={loadPreferences}>
+              {!accessToken && <>
+                <form className="hetv-subscription" onSubmit={requestCode}>
+                  <h2>Verify your email</h2>
+                  <p>Enter the email address you signed up with. If it has an active subscription and delivery is available, we'll send a six-digit code from hetv@gentraxtech.com. The code expires in 10 minutes.</p>
+                  <label htmlFor="verification-email">Email address</label>
+                  <input id="verification-email" type="email" required maxLength={254} autoComplete="email"
+                    value={email} disabled={!!busyAction} onChange={event => {
+                      setEmail(event.target.value); setCodeRequested(false); setPreferences(null); setError("");
+                    }} />
+                  <button type="submit" disabled={!!busyAction}>{busyAction === "request" ? "Sending…" : "Send verification code"}</button>
+                </form>
+                {codeRequested && <form className="hetv-subscription" onSubmit={verifyCode}>
+                  <label htmlFor="verification-code">Six-digit verification code</label>
+                  <input id="verification-code" type="text" inputMode="numeric" autoComplete="one-time-code"
+                    pattern="[0-9]{6}" maxLength={6} required value={code} disabled={!!busyAction}
+                    onChange={event => setCode(event.target.value)} />
+                  <button type="submit" disabled={!!busyAction}>{busyAction === "verify" ? "Verifying…" : "Verify and manage"}</button>
+                </form>}
+                {verificationMessage && <p role="status">{verificationMessage}</p>}
+              </>}
+              {!showLegacyLink && !accessToken && <button type="button" onClick={() => setShowLegacyLink(true)} data-testid="button-existing-link">I already have a private link</button>}
+              {(showLegacyLink || accessToken) && <form className="hetv-subscription" onSubmit={accessToken ? event => event.preventDefault() : loadPreferences}>
+               {!accessToken && <>
                <h2>Using an existing link</h2>
                <p>If you received a private link previously, you can continue to use it here. New signups do not receive a link.</p>
               <label htmlFor="unsubscribe-token">Personal unsubscribe link</label>
@@ -200,16 +294,17 @@ export function UnsubscribePage() {
                 }} required disabled={!!busyAction}
                 placeholder="Paste the link saved at signup" data-testid="input-unsubscribe-link" />
                <p>If an older link was saved in this browser, it is filled in above. Otherwise paste your original link. Keep it private: anyone with it can stop that subscription.</p>
-              <button type="submit" disabled={!!busyAction || !token.trim()} data-testid="button-load-preferences">
+               <button type="submit" disabled={!!busyAction || !token.trim()} data-testid="button-load-preferences">
                 {busyAction === "load" ? "Loading…" : preferences ? "Reload preferences" : "Load preferences"}
               </button>
-              <button type="button" onClick={unsubscribe} disabled={!!busyAction || !token.trim()} data-testid="button-unsubscribe">
+               </>}
+               {accessToken && <h2>Manage your preferences</h2>}
+               <button type="button" onClick={unsubscribe} disabled={!!busyAction || (!accessToken && !token.trim())} data-testid="button-unsubscribe">
                 {busyAction === "unsubscribe" ? "Processing…" : "Unsubscribe"}
               </button>
-              {error && <p role="alert">{error}</p>}
-              {preferences && <>
-                <h2>Manage your preferences</h2>
-                <p>Your details are shown only after your private link has been verified.</p>
+               {preferences && <>
+                 {!accessToken && <h2>Manage your preferences</h2>}
+                 <p>Your details are shown only after your email or private link has been verified.</p>
                 <label htmlFor="manage-name">Name</label>
                 <input id="manage-name" type="text" maxLength={160} value={name} disabled={!!busyAction}
                   onChange={event => setName(event.target.value)} />
@@ -288,7 +383,9 @@ export function UnsubscribePage() {
                   {busyAction === "save" ? "Saving…" : "Update preferences"}
                 </button>
               </>}
-             </form>}</>}
+              </form>}
+              {error && <p role="alert">{error}</p>}
+              </>}
           </article>
         </div>
       </main>

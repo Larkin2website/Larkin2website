@@ -172,10 +172,13 @@ importers:
     dependencies:
       '@clerk/express':
         specifier: latest
-        version: 2.1.70(express@5.2.1)
+        version: 2.1.72(express@5.2.1)
       '@clerk/shared':
         specifier: latest
-        version: 4.34.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 4.36.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@replit/connectors-sdk':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@workspace/api-zod':
         specifier: workspace:*
         version: link:../../lib/api-zod
@@ -230,7 +233,7 @@ importers:
     devDependencies:
       '@clerk/react':
         specifier: latest
-        version: 6.17.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 6.17.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.83.0(react@19.1.0))
@@ -635,7 +638,7 @@ importers:
     devDependencies:
       '@clerk/react':
         specifier: latest
-        version: 6.17.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 6.17.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@clerk/themes':
         specifier: latest
         version: 2.4.57(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1175,18 +1178,18 @@ packages:
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
 
-  '@clerk/backend@3.19.0':
-    resolution: {integrity: sha512-pnT31jTQDOaPjAf5q79lUPsiCcyVfs5iakzHxaD9801ruaUgo6Uc0FxO3L/Htyl45YTlWShbEAcWjf+ZqteZww==}
+  '@clerk/backend@3.20.1':
+    resolution: {integrity: sha512-s07oW5yoFtnMbIzzjX61E+s8p278IBNlbPH2obEqNKNVLVb3SNR+UWERBiT1LgTp2LL3cdJmdNCvIaVTaGKMEA==}
     engines: {node: '>=20.9.0'}
 
-  '@clerk/express@2.1.70':
-    resolution: {integrity: sha512-y61uX+KaXIRzRbWinxUzkkB4kq6blmEg+uCSPsLFIStwEj92Ri1cK0f6RYqPp8PZWsjhtzIfaKmQYPMCp2KB4Q==}
+  '@clerk/express@2.1.72':
+    resolution: {integrity: sha512-rinSEg0EnsOoLepElXe1IrXkoFoONALRo4ILL+WUyzhmmBMSSpJKw6zwvWL+Y8Zk+hhElBYGHpj/9wU8Bq06Lw==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       express: ^4.17.0 || ^5.0.0
 
-  '@clerk/react@6.17.0':
-    resolution: {integrity: sha512-0luuv9yXXfEuXnG15zE9CRLC4DQNe+BvsochIu06uIyEVNW2BZJfux9JI5BCaUCCfCKd4TgWA2Mh5T1ST5z5Yw==}
+  '@clerk/react@6.17.2':
+    resolution: {integrity: sha512-4Uv4fcaHutq5J2v0lgqxcggMDmHCN4lwj5HEKv/2ynIcgBhOQasv/kOROzS58PQlz7r2AeFaFbK7SpH2rzP18w==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -1204,8 +1207,8 @@ packages:
       react-dom:
         optional: true
 
-  '@clerk/shared@4.34.0':
-    resolution: {integrity: sha512-zzpCsm25gJFFg0G5MKcEEaFHRbKCaywlsorbuD70RiC2ySVOaIYoy6tn6cLoBNpV2nXusk4sR9EQpMQYZr6+uA==}
+  '@clerk/shared@4.36.0':
+    resolution: {integrity: sha512-K0RAZxGe2otl5FDl6NkhmwI05deN/lO2KFqaObhCRvtw8L1DJMaXUQVfvsJ8D7eDu+0ORiYeC3FcY8cHgI/2Mg==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -4146,28 +4149,28 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@clerk/backend@3.19.0':
+  '@clerk/backend@3.20.1':
     dependencies:
-      '@clerk/shared': 4.34.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/shared': 4.36.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       standardwebhooks: 1.1.1
       tslib: 2.8.1
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@clerk/express@2.1.70(express@5.2.1)':
+  '@clerk/express@2.1.72(express@5.2.1)':
     dependencies:
-      '@clerk/backend': 3.19.0
-      '@clerk/shared': 4.34.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/backend': 3.20.1
+      '@clerk/shared': 4.36.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       express: 5.2.1
       tslib: 2.8.1
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@clerk/react@6.17.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@clerk/react@6.17.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      '@clerk/shared': 4.34.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@clerk/shared': 4.36.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
       tslib: 2.8.1
@@ -4184,7 +4187,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  '@clerk/shared@4.34.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@clerk/shared@4.36.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@tanstack/query-core': 5.101.4
       dequal: 2.0.3

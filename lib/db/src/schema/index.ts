@@ -21,4 +21,5 @@ export * from "./opportunities";
 export * from "./programmes";
 export * from "./portal";
 export * from "./public-subscriptions";
+export * from "./subscription-verification";
 export * from "./audience-crm";

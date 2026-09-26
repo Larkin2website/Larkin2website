@@ -146,6 +146,179 @@ export const UnsubscribePublicSubscriptionResponse = zod.object({
 
 
 /**
+ * @summary Request a verification-only email code
+ */
+export const requestSubscriptionCodeBodyEmailMax = 254;
+
+
+
+export const RequestSubscriptionCodeBody = zod.object({
+  "email": zod.string().email().max(requestSubscriptionCodeBodyEmailMax)
+})
+
+export const RequestSubscriptionCodeResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
+ * @summary Exchange a one-time email code for short-lived management access
+ */
+export const verifySubscriptionCodeBodyEmailMax = 254;
+
+export const verifySubscriptionCodeBodyCodeRegExp = new RegExp('^[0-9]{6}$');
+
+
+export const VerifySubscriptionCodeBody = zod.object({
+  "email": zod.string().email().max(verifySubscriptionCodeBodyEmailMax),
+  "code": zod.string().regex(verifySubscriptionCodeBodyCodeRegExp)
+})
+
+export const verifySubscriptionCodeResponseAccessTokenMin = 43;
+
+
+
+export const VerifySubscriptionCodeResponse = zod.object({
+  "accessToken": zod.string().min(verifySubscriptionCodeResponseAccessTokenMin),
+  "expiresAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Read preferences with short-lived verified access
+ */
+export const getVerifiedSubscriptionPreferencesBodyAccessTokenMin = 43;
+export const getVerifiedSubscriptionPreferencesBodyAccessTokenMax = 128;
+
+
+export const getVerifiedSubscriptionPreferencesBodyAccessTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+
+
+export const GetVerifiedSubscriptionPreferencesBody = zod.object({
+  "accessToken": zod.string().min(getVerifiedSubscriptionPreferencesBodyAccessTokenMin).max(getVerifiedSubscriptionPreferencesBodyAccessTokenMax).regex(getVerifiedSubscriptionPreferencesBodyAccessTokenRegExp)
+})
+
+export const getVerifiedSubscriptionPreferencesResponseNameMax = 160;
+
+export const getVerifiedSubscriptionPreferencesResponseCraftMax = 120;
+
+export const getVerifiedSubscriptionPreferencesResponseLocationMax = 160;
+
+export const getVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax = 120;
+
+export const getVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
+
+export const getVerifiedSubscriptionPreferencesResponseInterestsItemMax = 120;
+
+export const getVerifiedSubscriptionPreferencesResponseCraftsItemMax = 120;
+
+
+
+export const GetVerifiedSubscriptionPreferencesResponse = zod.object({
+  "name": zod.string().max(getVerifiedSubscriptionPreferencesResponseNameMax).nullish(),
+  "craft": zod.string().max(getVerifiedSubscriptionPreferencesResponseCraftMax).nullish(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]).optional(),
+  "location": zod.string().max(getVerifiedSubscriptionPreferencesResponseLocationMax).nullish(),
+  "acquisitionSource": zod.string().max(getVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
+  "acquisitionDetail": zod.string().max(getVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
+  "interests": zod.array(zod.string().max(getVerifiedSubscriptionPreferencesResponseInterestsItemMax)).optional(),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
+  "crafts": zod.array(zod.string().max(getVerifiedSubscriptionPreferencesResponseCraftsItemMax)).optional(),
+  "allOpportunities": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Update preferences with short-lived verified access
+ */
+export const updateVerifiedSubscriptionPreferencesBodyAccessTokenMin = 43;
+export const updateVerifiedSubscriptionPreferencesBodyAccessTokenMax = 128;
+
+
+export const updateVerifiedSubscriptionPreferencesBodyAccessTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+export const updateVerifiedSubscriptionPreferencesBodyNameMax = 160;
+
+export const updateVerifiedSubscriptionPreferencesBodyCraftMax = 120;
+
+export const updateVerifiedSubscriptionPreferencesBodyLocationMax = 160;
+
+export const updateVerifiedSubscriptionPreferencesBodyAcquisitionSourceMax = 120;
+
+export const updateVerifiedSubscriptionPreferencesBodyAcquisitionDetailMax = 500;
+
+export const updateVerifiedSubscriptionPreferencesBodyInterestsItemMax = 120;
+
+export const updateVerifiedSubscriptionPreferencesBodyCraftsItemMax = 120;
+
+
+
+export const UpdateVerifiedSubscriptionPreferencesBody = zod.object({
+  "accessToken": zod.string().min(updateVerifiedSubscriptionPreferencesBodyAccessTokenMin).max(updateVerifiedSubscriptionPreferencesBodyAccessTokenMax).regex(updateVerifiedSubscriptionPreferencesBodyAccessTokenRegExp),
+  "name": zod.string().max(updateVerifiedSubscriptionPreferencesBodyNameMax).nullish(),
+  "craft": zod.string().max(updateVerifiedSubscriptionPreferencesBodyCraftMax).nullish(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]).optional(),
+  "location": zod.string().max(updateVerifiedSubscriptionPreferencesBodyLocationMax).nullish(),
+  "acquisitionSource": zod.string().max(updateVerifiedSubscriptionPreferencesBodyAcquisitionSourceMax).nullish(),
+  "acquisitionDetail": zod.string().max(updateVerifiedSubscriptionPreferencesBodyAcquisitionDetailMax).nullish(),
+  "interests": zod.array(zod.string().max(updateVerifiedSubscriptionPreferencesBodyInterestsItemMax)).optional(),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
+  "crafts": zod.array(zod.string().max(updateVerifiedSubscriptionPreferencesBodyCraftsItemMax)).optional(),
+  "allOpportunities": zod.boolean().optional()
+})
+
+export const updateVerifiedSubscriptionPreferencesResponseNameMax = 160;
+
+export const updateVerifiedSubscriptionPreferencesResponseCraftMax = 120;
+
+export const updateVerifiedSubscriptionPreferencesResponseLocationMax = 160;
+
+export const updateVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax = 120;
+
+export const updateVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
+
+export const updateVerifiedSubscriptionPreferencesResponseInterestsItemMax = 120;
+
+export const updateVerifiedSubscriptionPreferencesResponseCraftsItemMax = 120;
+
+
+
+export const UpdateVerifiedSubscriptionPreferencesResponse = zod.object({
+  "name": zod.string().max(updateVerifiedSubscriptionPreferencesResponseNameMax).nullish(),
+  "craft": zod.string().max(updateVerifiedSubscriptionPreferencesResponseCraftMax).nullish(),
+  "careerLevel": zod.union([zod.enum(['new_entrant', 'mid_level', 'senior']),zod.null()]).optional(),
+  "location": zod.string().max(updateVerifiedSubscriptionPreferencesResponseLocationMax).nullish(),
+  "acquisitionSource": zod.string().max(updateVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
+  "acquisitionDetail": zod.string().max(updateVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
+  "interests": zod.array(zod.string().max(updateVerifiedSubscriptionPreferencesResponseInterestsItemMax)).optional(),
+  "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
+  "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
+  "crafts": zod.array(zod.string().max(updateVerifiedSubscriptionPreferencesResponseCraftsItemMax)).optional(),
+  "allOpportunities": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Unsubscribe with short-lived verified access
+ */
+export const unsubscribeVerifiedSubscriptionBodyAccessTokenMin = 43;
+export const unsubscribeVerifiedSubscriptionBodyAccessTokenMax = 128;
+
+
+export const unsubscribeVerifiedSubscriptionBodyAccessTokenRegExp = new RegExp('^[A-Za-z0-9_-]+$');
+
+
+export const UnsubscribeVerifiedSubscriptionBody = zod.object({
+  "accessToken": zod.string().min(unsubscribeVerifiedSubscriptionBodyAccessTokenMin).max(unsubscribeVerifiedSubscriptionBodyAccessTokenMax).regex(unsubscribeVerifiedSubscriptionBodyAccessTokenRegExp)
+})
+
+export const UnsubscribeVerifiedSubscriptionResponse = zod.object({
+  "message": zod.string()
+})
+
+
+/**
  * @summary Get one publicly visible opportunity
  */
 export const getPublicOpportunityPathSlugMin = 2;

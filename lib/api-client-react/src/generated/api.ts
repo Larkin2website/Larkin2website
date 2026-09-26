@@ -73,8 +73,13 @@ import type {
   PublicSubscriptionPreferencesLookup,
   PublicSubscriptionUnsubscribeInput,
   ServiceUnavailableResponse,
+  SubscriptionAccess,
+  SubscriptionAccessInput,
+  SubscriptionCodeRequest,
+  SubscriptionCodeVerification,
   TooManyRequestsResponse,
-  UnauthorizedResponse
+  UnauthorizedResponse,
+  VerifiedAudiencePreferencesUpdate
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -484,6 +489,361 @@ export const useUnsubscribePublicSubscription = <TError = ErrorType<BadRequestRe
         TContext
       > => {
       return useMutation(getUnsubscribePublicSubscriptionMutationOptions(options));
+    }
+
+export const getRequestSubscriptionCodeUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/code`
+}
+
+/**
+ * @summary Request a verification-only email code
+ */
+export const requestSubscriptionCode = async (subscriptionCodeRequest: SubscriptionCodeRequest, options?: Parameters<typeof customFetch>[1]): Promise<PublicSubscriptionMessage> => {
+
+  return customFetch<PublicSubscriptionMessage>(getRequestSubscriptionCodeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(subscriptionCodeRequest)
+  }
+);}
+
+
+
+
+
+export const getRequestSubscriptionCodeMutationOptions = <TError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestSubscriptionCode>>, TError,{data: BodyType<SubscriptionCodeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof requestSubscriptionCode>>, TError,{data: BodyType<SubscriptionCodeRequest>}, TContext> => {
+
+const mutationKey = ['requestSubscriptionCode'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestSubscriptionCode>>, {data: BodyType<SubscriptionCodeRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  requestSubscriptionCode(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RequestSubscriptionCodeMutationResult = NonNullable<Awaited<ReturnType<typeof requestSubscriptionCode>>>
+    export type RequestSubscriptionCodeMutationBody = BodyType<SubscriptionCodeRequest>
+    export type RequestSubscriptionCodeMutationError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>
+
+    /**
+ * @summary Request a verification-only email code
+ */
+export const useRequestSubscriptionCode = <TError = ErrorType<BadRequestResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestSubscriptionCode>>, TError,{data: BodyType<SubscriptionCodeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof requestSubscriptionCode>>,
+        TError,
+        {data: BodyType<SubscriptionCodeRequest>},
+        TContext
+      > => {
+      return useMutation(getRequestSubscriptionCodeMutationOptions(options));
+    }
+
+export const getVerifySubscriptionCodeUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/code/verify`
+}
+
+/**
+ * @summary Exchange a one-time email code for short-lived management access
+ */
+export const verifySubscriptionCode = async (subscriptionCodeVerification: SubscriptionCodeVerification, options?: Parameters<typeof customFetch>[1]): Promise<SubscriptionAccess> => {
+
+  return customFetch<SubscriptionAccess>(getVerifySubscriptionCodeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(subscriptionCodeVerification)
+  }
+);}
+
+
+
+
+
+export const getVerifySubscriptionCodeMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifySubscriptionCode>>, TError,{data: BodyType<SubscriptionCodeVerification>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof verifySubscriptionCode>>, TError,{data: BodyType<SubscriptionCodeVerification>}, TContext> => {
+
+const mutationKey = ['verifySubscriptionCode'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifySubscriptionCode>>, {data: BodyType<SubscriptionCodeVerification>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  verifySubscriptionCode(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VerifySubscriptionCodeMutationResult = NonNullable<Awaited<ReturnType<typeof verifySubscriptionCode>>>
+    export type VerifySubscriptionCodeMutationBody = BodyType<SubscriptionCodeVerification>
+    export type VerifySubscriptionCodeMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse>
+
+    /**
+ * @summary Exchange a one-time email code for short-lived management access
+ */
+export const useVerifySubscriptionCode = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifySubscriptionCode>>, TError,{data: BodyType<SubscriptionCodeVerification>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof verifySubscriptionCode>>,
+        TError,
+        {data: BodyType<SubscriptionCodeVerification>},
+        TContext
+      > => {
+      return useMutation(getVerifySubscriptionCodeMutationOptions(options));
+    }
+
+export const getGetVerifiedSubscriptionPreferencesUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/verified/preferences`
+}
+
+/**
+ * @summary Read preferences with short-lived verified access
+ */
+export const getVerifiedSubscriptionPreferences = async (subscriptionAccessInput: SubscriptionAccessInput, options?: Parameters<typeof customFetch>[1]): Promise<PublicAudiencePreferences> => {
+
+  return customFetch<PublicAudiencePreferences>(getGetVerifiedSubscriptionPreferencesUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(subscriptionAccessInput)
+  }
+);}
+
+
+
+
+
+export const getGetVerifiedSubscriptionPreferencesMutationOptions = <TError = ErrorType<UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getVerifiedSubscriptionPreferences>>, TError,{data: BodyType<SubscriptionAccessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getVerifiedSubscriptionPreferences>>, TError,{data: BodyType<SubscriptionAccessInput>}, TContext> => {
+
+const mutationKey = ['getVerifiedSubscriptionPreferences'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getVerifiedSubscriptionPreferences>>, {data: BodyType<SubscriptionAccessInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  getVerifiedSubscriptionPreferences(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetVerifiedSubscriptionPreferencesMutationResult = NonNullable<Awaited<ReturnType<typeof getVerifiedSubscriptionPreferences>>>
+    export type GetVerifiedSubscriptionPreferencesMutationBody = BodyType<SubscriptionAccessInput>
+    export type GetVerifiedSubscriptionPreferencesMutationError = ErrorType<UnauthorizedResponse>
+
+    /**
+ * @summary Read preferences with short-lived verified access
+ */
+export const useGetVerifiedSubscriptionPreferences = <TError = ErrorType<UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getVerifiedSubscriptionPreferences>>, TError,{data: BodyType<SubscriptionAccessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getVerifiedSubscriptionPreferences>>,
+        TError,
+        {data: BodyType<SubscriptionAccessInput>},
+        TContext
+      > => {
+      return useMutation(getGetVerifiedSubscriptionPreferencesMutationOptions(options));
+    }
+
+export const getUpdateVerifiedSubscriptionPreferencesUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/verified/preferences`
+}
+
+/**
+ * @summary Update preferences with short-lived verified access
+ */
+export const updateVerifiedSubscriptionPreferences = async (verifiedAudiencePreferencesUpdate: VerifiedAudiencePreferencesUpdate, options?: Parameters<typeof customFetch>[1]): Promise<PublicAudiencePreferences> => {
+
+  return customFetch<PublicAudiencePreferences>(getUpdateVerifiedSubscriptionPreferencesUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(verifiedAudiencePreferencesUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateVerifiedSubscriptionPreferencesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateVerifiedSubscriptionPreferences>>, TError,{data: BodyType<VerifiedAudiencePreferencesUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateVerifiedSubscriptionPreferences>>, TError,{data: BodyType<VerifiedAudiencePreferencesUpdate>}, TContext> => {
+
+const mutationKey = ['updateVerifiedSubscriptionPreferences'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateVerifiedSubscriptionPreferences>>, {data: BodyType<VerifiedAudiencePreferencesUpdate>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateVerifiedSubscriptionPreferences(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateVerifiedSubscriptionPreferencesMutationResult = NonNullable<Awaited<ReturnType<typeof updateVerifiedSubscriptionPreferences>>>
+    export type UpdateVerifiedSubscriptionPreferencesMutationBody = BodyType<VerifiedAudiencePreferencesUpdate>
+    export type UpdateVerifiedSubscriptionPreferencesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse>
+
+    /**
+ * @summary Update preferences with short-lived verified access
+ */
+export const useUpdateVerifiedSubscriptionPreferences = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateVerifiedSubscriptionPreferences>>, TError,{data: BodyType<VerifiedAudiencePreferencesUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateVerifiedSubscriptionPreferences>>,
+        TError,
+        {data: BodyType<VerifiedAudiencePreferencesUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateVerifiedSubscriptionPreferencesMutationOptions(options));
+    }
+
+export const getUnsubscribeVerifiedSubscriptionUrl = () => {
+
+
+
+
+  return `/api/public/subscriptions/verified/unsubscribe`
+}
+
+/**
+ * @summary Unsubscribe with short-lived verified access
+ */
+export const unsubscribeVerifiedSubscription = async (subscriptionAccessInput: SubscriptionAccessInput, options?: Parameters<typeof customFetch>[1]): Promise<PublicSubscriptionMessage> => {
+
+  return customFetch<PublicSubscriptionMessage>(getUnsubscribeVerifiedSubscriptionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(subscriptionAccessInput)
+  }
+);}
+
+
+
+
+
+export const getUnsubscribeVerifiedSubscriptionMutationOptions = <TError = ErrorType<UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsubscribeVerifiedSubscription>>, TError,{data: BodyType<SubscriptionAccessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof unsubscribeVerifiedSubscription>>, TError,{data: BodyType<SubscriptionAccessInput>}, TContext> => {
+
+const mutationKey = ['unsubscribeVerifiedSubscription'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof unsubscribeVerifiedSubscription>>, {data: BodyType<SubscriptionAccessInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  unsubscribeVerifiedSubscription(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UnsubscribeVerifiedSubscriptionMutationResult = NonNullable<Awaited<ReturnType<typeof unsubscribeVerifiedSubscription>>>
+    export type UnsubscribeVerifiedSubscriptionMutationBody = BodyType<SubscriptionAccessInput>
+    export type UnsubscribeVerifiedSubscriptionMutationError = ErrorType<UnauthorizedResponse>
+
+    /**
+ * @summary Unsubscribe with short-lived verified access
+ */
+export const useUnsubscribeVerifiedSubscription = <TError = ErrorType<UnauthorizedResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsubscribeVerifiedSubscription>>, TError,{data: BodyType<SubscriptionAccessInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof unsubscribeVerifiedSubscription>>,
+        TError,
+        {data: BodyType<SubscriptionAccessInput>},
+        TContext
+      > => {
+      return useMutation(getUnsubscribeVerifiedSubscriptionMutationOptions(options));
     }
 
 export const getGetPublicOpportunityUrl = (slug: string,) => {

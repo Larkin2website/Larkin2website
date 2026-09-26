@@ -121,6 +121,115 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+  /public/subscriptions/code:
+    post:
+      operationId: requestSubscriptionCode
+      tags: [public-subscriptions]
+      summary: Request a verification-only email code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCodeRequest"
+      responses:
+        "200":
+          description: Neutral response regardless of subscriber status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicSubscriptionMessage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /public/subscriptions/code/verify:
+    post:
+      operationId: verifySubscriptionCode
+      tags: [public-subscriptions]
+      summary: Exchange a one-time email code for short-lived management access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCodeVerification"
+      responses:
+        "200":
+          description: Verified access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionAccess"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /public/subscriptions/verified/preferences:
+    post:
+      operationId: getVerifiedSubscriptionPreferences
+      tags: [public-subscriptions]
+      summary: Read preferences with short-lived verified access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionAccessInput"
+      responses:
+        "200":
+          description: Current preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicAudiencePreferences"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    put:
+      operationId: updateVerifiedSubscriptionPreferences
+      tags: [public-subscriptions]
+      summary: Update preferences with short-lived verified access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifiedAudiencePreferencesUpdate"
+      responses:
+        "200":
+          description: Updated preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicAudiencePreferences"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /public/subscriptions/verified/unsubscribe:
+    post:
+      operationId: unsubscribeVerifiedSubscription
+      tags: [public-subscriptions]
+      summary: Unsubscribe with short-lived verified access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionAccessInput"
+      responses:
+        "200":
+          description: Subscription stopped
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicSubscriptionMessage"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /public/opportunities/{slug}:
     get:
       operationId: getPublicOpportunity
@@ -1927,6 +2036,57 @@ components:
       type: object
       additionalProperties: false
       properties:
+        name: { type: ["string", "null"], maxLength: 160 }
+        craft: { type: ["string", "null"], maxLength: 120 }
+        careerLevel: { oneOf: [{ $ref: "#/components/schemas/CareerLevel" }, { type: "null" }] }
+        location: { type: ["string", "null"], maxLength: 160 }
+        acquisitionSource: { type: ["string", "null"], maxLength: 120 }
+        acquisitionDetail: { type: ["string", "null"], maxLength: 500 }
+        interests:
+          type: array
+          items: { type: string, maxLength: 120 }
+        contentTypes:
+          type: array
+          items: { $ref: "#/components/schemas/AudienceContentType" }
+        careerLevels:
+          type: array
+          items: { $ref: "#/components/schemas/CareerLevel" }
+        crafts:
+          type: array
+          items: { type: string, maxLength: 120 }
+        allOpportunities: { type: boolean }
+    SubscriptionCodeRequest:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+    SubscriptionCodeVerification:
+      type: object
+      additionalProperties: false
+      required: [email, code]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+        code: { type: string, pattern: "^[0-9]{6}$" }
+    SubscriptionAccess:
+      type: object
+      additionalProperties: false
+      required: [accessToken, expiresAt]
+      properties:
+        accessToken: { type: string, minLength: 43 }
+        expiresAt: { type: string, format: date-time }
+    SubscriptionAccessInput:
+      type: object
+      additionalProperties: false
+      required: [accessToken]
+      properties:
+        accessToken: { type: string, minLength: 43, maxLength: 128, pattern: "^[A-Za-z0-9_-]+$" }
+    VerifiedAudiencePreferencesUpdate:
+      type: object
+      additionalProperties: false
+      required: [accessToken]
+      properties:
+        accessToken: { type: string, minLength: 43, maxLength: 128, pattern: "^[A-Za-z0-9_-]+$" }
         name: { type: ["string", "null"], maxLength: 160 }
         craft: { type: ["string", "null"], maxLength: 120 }
         careerLevel: { oneOf: [{ $ref: "#/components/schemas/CareerLevel" }, { type: "null" }] }

@@ -757,6 +757,75 @@ export interface PublicAudiencePreferences {
   allOpportunities?: boolean;
 }
 
+export interface SubscriptionCodeRequest {
+  /** @maxLength 254 */
+  email: string;
+}
+
+export interface SubscriptionCodeVerification {
+  /** @maxLength 254 */
+  email: string;
+  /** @pattern ^[0-9]{6}$ */
+  code: string;
+}
+
+export interface SubscriptionAccess {
+  /** @minLength 43 */
+  accessToken: string;
+  expiresAt: string;
+}
+
+export interface SubscriptionAccessInput {
+  /**
+     * @minLength 43
+     * @maxLength 128
+     * @pattern ^[A-Za-z0-9_-]+$
+     */
+  accessToken: string;
+}
+
+export interface VerifiedAudiencePreferencesUpdate {
+  /**
+     * @minLength 43
+     * @maxLength 128
+     * @pattern ^[A-Za-z0-9_-]+$
+     */
+  accessToken: string;
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  name?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  craft?: string | null;
+  careerLevel?: CareerLevel | null;
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  location?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  acquisitionSource?: string | null;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  acquisitionDetail?: string | null;
+  /** @items.maxLength 120 */
+  interests?: string[];
+  contentTypes?: AudienceContentType[];
+  careerLevels?: CareerLevel[];
+  /** @items.maxLength 120 */
+  crafts?: string[];
+  allOpportunities?: boolean;
+}
+
 export interface PublicSubscriptionPreferencesLookup {
   /**
      * @minLength 43

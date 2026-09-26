@@ -109,7 +109,7 @@ export function normalizeSubscriptionEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
-function preferencesFromInput(input: SubscriptionPreferences): SubscriptionPreferences {
+export function preferencesFromInput(input: SubscriptionPreferences): SubscriptionPreferences {
   const result: SubscriptionPreferences = {};
   for (const [key, value] of Object.entries(input)) {
     if (value === undefined) continue;
