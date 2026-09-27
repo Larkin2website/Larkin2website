@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CrmCommunicationStatus } from './crmCommunicationStatus';
+import type { CrmDeliveryCounts } from './crmDeliveryCounts';
 
 export interface CrmCommunication {
   id: string;
@@ -18,4 +19,13 @@ export interface CrmCommunication {
   createdAt: Date;
   /** @nullable */
   sentAt?: Date | null;
+  /** @nullable */
+  testSentAt?: Date | null;
+  /** @nullable */
+  testProviderReference?: string | null;
+  /** @nullable */
+  testLastError?: string | null;
+  deliveryCounts?: CrmDeliveryCounts;
+  /** @nullable */
+  nextRetryAt?: Date | null;
 }

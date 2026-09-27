@@ -26,6 +26,7 @@ import type {
   CrmAudienceItem,
   CrmCommunication,
   CrmDashboard,
+  CrmDeliverySettings,
   CrmEnquiry,
   CrmEnquiryInput,
   CrmEnquiryUpdate,
@@ -3510,7 +3511,7 @@ export const getListCrmCommunicationsUrl = () => {
 }
 
 /**
- * No provider is configured, so communications state may be empty.
+ * Publication notification batches and their delivery state.
  * @summary Get communication delivery records
  */
 export const listCrmCommunications = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmCommunication[]> => {
@@ -3567,6 +3568,154 @@ export function useListCrmCommunications<TData = Awaited<ReturnType<typeof listC
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListCrmCommunicationsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getSendCrmCommunicationTestUrl = (id: string,) => {
+
+
+
+
+  return `/api/crm/communications/${id}/test-send`
+}
+
+/**
+ * @summary Send a publication notification preview to the configured test mailbox
+ */
+export const sendCrmCommunicationTest = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<CrmCommunication> => {
+
+  return customFetch<CrmCommunication>(getSendCrmCommunicationTestUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSendCrmCommunicationTestMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmCommunicationTest>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendCrmCommunicationTest>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['sendCrmCommunicationTest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendCrmCommunicationTest>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  sendCrmCommunicationTest(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendCrmCommunicationTestMutationResult = NonNullable<Awaited<ReturnType<typeof sendCrmCommunicationTest>>>
+
+    export type SendCrmCommunicationTestMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ServiceUnavailableResponse>
+
+    /**
+ * @summary Send a publication notification preview to the configured test mailbox
+ */
+export const useSendCrmCommunicationTest = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmCommunicationTest>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendCrmCommunicationTest>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getSendCrmCommunicationTestMutationOptions(options));
+    }
+
+export const getGetCrmDeliverySettingsUrl = () => {
+
+
+
+
+  return `/api/crm/communications/delivery-settings`
+}
+
+/**
+ * @summary Check whether controlled test and live publication sending are enabled
+ */
+export const getCrmDeliverySettings = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmDeliverySettings> => {
+
+  return customFetch<CrmDeliverySettings>(getGetCrmDeliverySettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCrmDeliverySettingsQueryKey = () => {
+    return [
+    `/api/crm/communications/delivery-settings`
+    ] as const;
+    }
+
+
+export const getGetCrmDeliverySettingsQueryOptions = <TData = Awaited<ReturnType<typeof getCrmDeliverySettings>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmDeliverySettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCrmDeliverySettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCrmDeliverySettings>>> = ({ signal }) => getCrmDeliverySettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCrmDeliverySettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCrmDeliverySettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getCrmDeliverySettings>>>
+export type GetCrmDeliverySettingsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Check whether controlled test and live publication sending are enabled
+ */
+
+export function useGetCrmDeliverySettings<TData = Awaited<ReturnType<typeof getCrmDeliverySettings>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmDeliverySettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCrmDeliverySettingsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

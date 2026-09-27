@@ -9,7 +9,7 @@ import {
   type OpportunityStatus as Status,
 } from "./opportunity-domain";
 import { canonicalizeOpportunityOptions } from "./opportunity-option-service";
-import { enqueuePublication } from "./audience-crm-service";
+import { enqueuePublication, shouldEnqueueFirstPublication } from "./audience-crm-service";
 
 type Input = {
   slug: string; title: string; publicationLabel: string; department: string; roleType: string;
@@ -101,7 +101,7 @@ export async function transitionOpportunity(id: string, status: Status, actor: P
       status, updatedBy: actor.userId, publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt,
       archivedAt: status === "archived" ? now : null,
     }).where(eq(opportunitiesTable.id, id)).returning();
-    if (!actor.demo && !before.publishedAt && status === "published") {
+    if (shouldEnqueueFirstPublication(before.publishedAt, status, !!actor.demo)) {
       await enqueuePublication(tx, "role", id, row.title);
     }
     await tx.insert(auditEventsTable).values({

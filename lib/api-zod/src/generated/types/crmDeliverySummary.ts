@@ -8,6 +8,8 @@
 
 export interface CrmDeliverySummary {
   /** @minimum 0 */
+  processing: number;
+  /** @minimum 0 */
   sent: number;
   /** @minimum 0 */
   delivered: number;

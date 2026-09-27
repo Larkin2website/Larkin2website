@@ -11,6 +11,7 @@ export type CrmCommunicationStatus = typeof CrmCommunicationStatus[keyof typeof 
 
 export const CrmCommunicationStatus = {
   pending: 'pending',
+  processing: 'processing',
   sent: 'sent',
   delivered: 'delivered',
   failed: 'failed',

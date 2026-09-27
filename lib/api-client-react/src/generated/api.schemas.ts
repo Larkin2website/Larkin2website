@@ -956,6 +956,8 @@ export interface CrmEngagementSummary {
 
 export interface CrmDeliverySummary {
   /** @minimum 0 */
+  processing: number;
+  /** @minimum 0 */
   sent: number;
   /** @minimum 0 */
   delivered: number;
@@ -988,10 +990,24 @@ export type CrmCommunicationStatus = typeof CrmCommunicationStatus[keyof typeof 
 
 export const CrmCommunicationStatus = {
   pending: 'pending',
+  processing: 'processing',
   sent: 'sent',
   delivered: 'delivered',
   failed: 'failed',
 } as const;
+
+export interface CrmDeliveryCounts {
+  /** @minimum 0 */
+  pending: number;
+  /** @minimum 0 */
+  processing: number;
+  /** @minimum 0 */
+  sent: number;
+  /** @minimum 0 */
+  delivered: number;
+  /** @minimum 0 */
+  failed: number;
+}
 
 export interface CrmCommunication {
   id: string;
@@ -1004,6 +1020,20 @@ export interface CrmCommunication {
   createdAt: string;
   /** @nullable */
   sentAt?: string | null;
+  /** @nullable */
+  testSentAt?: string | null;
+  /** @nullable */
+  testProviderReference?: string | null;
+  /** @nullable */
+  testLastError?: string | null;
+  deliveryCounts?: CrmDeliveryCounts;
+  /** @nullable */
+  nextRetryAt?: string | null;
+}
+
+export interface CrmDeliverySettings {
+  testReady: boolean;
+  liveEnabled: boolean;
 }
 
 export type CrmEnquiryStatus = typeof CrmEnquiryStatus[keyof typeof CrmEnquiryStatus];

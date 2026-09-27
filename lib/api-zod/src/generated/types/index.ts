@@ -21,6 +21,8 @@ export * from './crmAudienceItem';
 export * from './crmCommunication';
 export * from './crmCommunicationStatus';
 export * from './crmDashboard';
+export * from './crmDeliveryCounts';
+export * from './crmDeliverySettings';
 export * from './crmDeliverySummary';
 export * from './crmEngagementSummary';
 export * from './crmEnquiry';

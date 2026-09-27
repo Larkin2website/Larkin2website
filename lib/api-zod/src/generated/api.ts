@@ -1866,6 +1866,8 @@ export const getCrmDashboardResponseEngagementRoleViewsMin = 0;
 
 export const getCrmDashboardResponseEngagementProgrammeViewsMin = 0;
 
+export const getCrmDashboardResponseDeliveryProcessingMin = 0;
+
 export const getCrmDashboardResponseDeliverySentMin = 0;
 
 export const getCrmDashboardResponseDeliveryDeliveredMin = 0;
@@ -1898,6 +1900,7 @@ export const GetCrmDashboardResponse = zod.object({
   "programmeViews": zod.number().int().min(getCrmDashboardResponseEngagementProgrammeViewsMin)
 }),
   "delivery": zod.object({
+  "processing": zod.number().int().min(getCrmDashboardResponseDeliveryProcessingMin),
   "sent": zod.number().int().min(getCrmDashboardResponseDeliverySentMin),
   "delivered": zod.number().int().min(getCrmDashboardResponseDeliveryDeliveredMin),
   "failed": zod.number().int().min(getCrmDashboardResponseDeliveryFailedMin),
@@ -1990,23 +1993,96 @@ export const GetCrmAudienceMemberResponse = zod.object({
 
 
 /**
- * No provider is configured, so communications state may be empty.
+ * Publication notification batches and their delivery state.
  * @summary Get communication delivery records
  */
 export const listCrmCommunicationsResponseRecipientCountMin = 0;
+
+export const listCrmCommunicationsResponseDeliveryCountsPendingMin = 0;
+
+export const listCrmCommunicationsResponseDeliveryCountsProcessingMin = 0;
+
+export const listCrmCommunicationsResponseDeliveryCountsSentMin = 0;
+
+export const listCrmCommunicationsResponseDeliveryCountsDeliveredMin = 0;
+
+export const listCrmCommunicationsResponseDeliveryCountsFailedMin = 0;
 
 
 
 export const ListCrmCommunicationsResponseItem = zod.object({
   "id": zod.string().uuid(),
   "channel": zod.string(),
-  "status": zod.enum(['pending', 'sent', 'delivered', 'failed']),
+  "status": zod.enum(['pending', 'processing', 'sent', 'delivered', 'failed']),
   "subject": zod.string().nullish(),
   "recipientCount": zod.number().int().min(listCrmCommunicationsResponseRecipientCountMin).optional(),
   "createdAt": zod.coerce.date(),
-  "sentAt": zod.coerce.date().nullish()
+  "sentAt": zod.coerce.date().nullish(),
+  "testSentAt": zod.coerce.date().nullish(),
+  "testProviderReference": zod.string().nullish(),
+  "testLastError": zod.string().nullish(),
+  "deliveryCounts": zod.object({
+  "pending": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsPendingMin),
+  "processing": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsProcessingMin),
+  "sent": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsSentMin),
+  "delivered": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsDeliveredMin),
+  "failed": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsFailedMin)
+}).optional(),
+  "nextRetryAt": zod.coerce.date().nullish()
 })
 export const ListCrmCommunicationsResponse = zod.array(ListCrmCommunicationsResponseItem)
+
+
+/**
+ * @summary Send a publication notification preview to the configured test mailbox
+ */
+export const SendCrmCommunicationTestParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const sendCrmCommunicationTestResponseRecipientCountMin = 0;
+
+export const sendCrmCommunicationTestResponseDeliveryCountsPendingMin = 0;
+
+export const sendCrmCommunicationTestResponseDeliveryCountsProcessingMin = 0;
+
+export const sendCrmCommunicationTestResponseDeliveryCountsSentMin = 0;
+
+export const sendCrmCommunicationTestResponseDeliveryCountsDeliveredMin = 0;
+
+export const sendCrmCommunicationTestResponseDeliveryCountsFailedMin = 0;
+
+
+
+export const SendCrmCommunicationTestResponse = zod.object({
+  "id": zod.string().uuid(),
+  "channel": zod.string(),
+  "status": zod.enum(['pending', 'processing', 'sent', 'delivered', 'failed']),
+  "subject": zod.string().nullish(),
+  "recipientCount": zod.number().int().min(sendCrmCommunicationTestResponseRecipientCountMin).optional(),
+  "createdAt": zod.coerce.date(),
+  "sentAt": zod.coerce.date().nullish(),
+  "testSentAt": zod.coerce.date().nullish(),
+  "testProviderReference": zod.string().nullish(),
+  "testLastError": zod.string().nullish(),
+  "deliveryCounts": zod.object({
+  "pending": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsPendingMin),
+  "processing": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsProcessingMin),
+  "sent": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsSentMin),
+  "delivered": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsDeliveredMin),
+  "failed": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsFailedMin)
+}).optional(),
+  "nextRetryAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Check whether controlled test and live publication sending are enabled
+ */
+export const GetCrmDeliverySettingsResponse = zod.object({
+  "testReady": zod.boolean(),
+  "liveEnabled": zod.boolean()
+})
 
 
 /**

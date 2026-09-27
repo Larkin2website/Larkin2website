@@ -13,6 +13,11 @@ import {
 } from "@workspace/db";
 
 export type PublicationKind = "role" | "programme";
+export function shouldEnqueueFirstPublication(
+  previousPublishedAt: Date | null, newStatus: string, demo: boolean,
+): boolean {
+  return !demo && !previousPublishedAt && newStatus === "published";
+}
 export type MatchingInput = {
   contentType: "role" | "programme" | "training";
   careerLevels: ("new_entrant" | "mid_level" | "senior")[];
@@ -362,6 +367,7 @@ export async function crmDashboard() {
       programmeViews: events.filter((event) => event.event === "view" && event.programmeId).length,
     },
     delivery: {
+      processing: deliveries.filter((delivery) => delivery.status === "processing").length,
       sent: deliveries.filter((delivery) => delivery.status === "sent").length,
       delivered: deliveries.filter((delivery) => delivery.status === "delivered").length,
       failed: deliveries.filter((delivery) => delivery.status === "failed").length,
@@ -378,7 +384,30 @@ export async function crmDashboard() {
 }
 
 export async function listCommunications() {
-  return db.select().from(crmCommunicationsTable).orderBy(desc(crmCommunicationsTable.createdAt));
+  const communications = await db.select().from(crmCommunicationsTable).orderBy(desc(crmCommunicationsTable.createdAt));
+  if (!communications.length) return [];
+  const deliveries = await db.select({
+    communicationId: crmCommunicationOutboxTable.communicationId,
+    status: crmCommunicationOutboxTable.status,
+    nextAttemptAt: crmCommunicationOutboxTable.nextAttemptAt,
+  }).from(crmCommunicationOutboxTable)
+    .where(inArray(crmCommunicationOutboxTable.communicationId, communications.map(row => row.id)));
+  return communications.map(communication => {
+    const rows = deliveries.filter(row => row.communicationId === communication.id);
+    const retryDates = rows.filter(row => row.status === "failed" && row.nextAttemptAt)
+      .map(row => row.nextAttemptAt!);
+    return {
+      ...communication,
+      deliveryCounts: {
+        pending: rows.filter(row => row.status === "pending").length,
+        processing: rows.filter(row => row.status === "processing").length,
+        sent: rows.filter(row => row.status === "sent").length,
+        delivered: rows.filter(row => row.status === "delivered").length,
+        failed: rows.filter(row => row.status === "failed").length,
+      },
+      nextRetryAt: retryDates.length ? new Date(Math.min(...retryDates.map(value => value.getTime()))) : null,
+    };
+  });
 }
 
 export async function listEnquiries() {

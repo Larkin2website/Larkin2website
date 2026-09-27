@@ -1015,18 +1015,65 @@ paths:
       operationId: listCrmCommunications
       tags: [portal-dashboard]
       summary: Get communication delivery records
-      description: No provider is configured, so communications state may be empty.
+      description: Publication notification batches and their delivery state.
       security:
         - cookieAuth: []
       responses:
         "200":
-          description: Communications and delivery state; may be empty when no provider is configured
+          description: Communications and delivery state
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/CrmCommunication"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /crm/communications/{id}/test-send:
+    post:
+      operationId: sendCrmCommunicationTest
+      tags: [portal-dashboard]
+      summary: Send a publication notification preview to the configured test mailbox
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Resend accepted the test message; this does not send to subscribers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrmCommunication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /crm/communications/delivery-settings:
+    get:
+      operationId: getCrmDeliverySettings
+      tags: [portal-dashboard]
+      summary: Check whether controlled test and live publication sending are enabled
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Safe delivery configuration state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrmDeliverySettings"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -2214,8 +2261,9 @@ components:
         programmeViews: { type: integer, minimum: 0 }
     CrmDeliverySummary:
       type: object
-      required: [sent, delivered, failed, pending]
+      required: [sent, delivered, failed, pending, processing]
       properties:
+        processing: { type: integer, minimum: 0 }
         sent: { type: integer, minimum: 0 }
         delivered: { type: integer, minimum: 0 }
         failed: { type: integer, minimum: 0 }
@@ -2249,11 +2297,31 @@ components:
       properties:
         id: { type: string, format: uuid }
         channel: { type: string }
-        status: { type: string, enum: [pending, sent, delivered, failed] }
+        status: { type: string, enum: [pending, processing, sent, delivered, failed] }
         subject: { type: ["string", "null"] }
         recipientCount: { type: integer, minimum: 0 }
         createdAt: { type: string, format: date-time }
         sentAt: { type: ["string", "null"], format: date-time }
+        testSentAt: { type: ["string", "null"], format: date-time }
+        testProviderReference: { type: ["string", "null"] }
+        testLastError: { type: ["string", "null"] }
+        deliveryCounts: { $ref: "#/components/schemas/CrmDeliveryCounts" }
+        nextRetryAt: { type: ["string", "null"], format: date-time }
+    CrmDeliveryCounts:
+      type: object
+      required: [pending, processing, sent, delivered, failed]
+      properties:
+        pending: { type: integer, minimum: 0 }
+        processing: { type: integer, minimum: 0 }
+        sent: { type: integer, minimum: 0 }
+        delivered: { type: integer, minimum: 0 }
+        failed: { type: integer, minimum: 0 }
+    CrmDeliverySettings:
+      type: object
+      required: [testReady, liveEnabled]
+      properties:
+        testReady: { type: boolean }
+        liveEnabled: { type: boolean }
     CrmEnquiryStatus:
       type: string
       enum: [new, open, in_progress, resolved, closed]

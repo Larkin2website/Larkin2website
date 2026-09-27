@@ -31,6 +31,7 @@ export const crmEnquiryStatusEnum = pgEnum("crm_enquiry_status", [
 ]);
 export const crmDeliveryStatusEnum = pgEnum("crm_delivery_status", [
   "pending",
+  "processing",
   "sent",
   "delivered",
   "failed",
@@ -62,6 +63,9 @@ export const crmCommunicationsTable = pgTable("crm_communications", {
   recipientCount: integer("recipient_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   sentAt: timestamp("sent_at", { withTimezone: true }),
+  testSentAt: timestamp("test_sent_at", { withTimezone: true }),
+  testProviderReference: text("test_provider_reference"),
+  testLastError: text("test_last_error"),
 }, (table) => [
   check("crm_communications_exactly_one_publication", sql`num_nonnulls(${table.opportunityId}, ${table.programmeId}) = 1`),
   uniqueIndex("crm_communications_opportunity_unique").on(table.opportunityId),
@@ -80,6 +84,10 @@ export const crmCommunicationOutboxTable = pgTable("crm_communication_outbox", {
   sentAt: timestamp("sent_at", { withTimezone: true }),
   providerReference: text("provider_reference"),
   lastError: text("last_error"),
+  attempts: integer("attempts").notNull().default(0),
+  firstAttemptAt: timestamp("first_attempt_at", { withTimezone: true }),
+  nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true }),
+  leaseUntil: timestamp("lease_until", { withTimezone: true }),
 }, (table) => [
   check("crm_outbox_exactly_one_publication", sql`num_nonnulls(${table.opportunityId}, ${table.programmeId}) = 1`),
   uniqueIndex("crm_outbox_opportunity_subscriber_unique")

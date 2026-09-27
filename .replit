@@ -32,3 +32,6 @@ VITE_PORTAL_DEMO_MODE = "true"
 ALLOW_INSECURE_DEMO_DEPLOYMENT = "true"
 PORTAL_DEMO_MODE = "true"
 VITE_PORTAL_DEMO_MODE = "true"
+
+[userenv.shared]
+PUBLIC_OPPORTUNITIES_URL = "https://larkin2opportunities.gentraxtech.com/larkin2-opportunities/"

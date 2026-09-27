@@ -2,7 +2,7 @@ import { and, asc, count, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { auditEventsTable, db, programmeSectionsTable, programmesTable } from "@workspace/db";
 import type { PortalActor } from "./portal-auth";
 import { canProgrammeTransition, type ProgrammeStatus } from "./programme-lifecycle";
-import { enqueuePublication } from "./audience-crm-service";
+import { enqueuePublication, shouldEnqueueFirstPublication } from "./audience-crm-service";
 
 export type ProgrammeInput = {
   slug: string; num: string; cardTitle: string; cardCopy: string; cardCta: string; image: string;
@@ -97,7 +97,7 @@ export async function transitionProgramme(id: string, status: ProgrammeStatus, a
       publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt,
       archivedAt: status === "archived" ? now : null,
     }).where(eq(programmesTable.id, id)).returning();
-    if (!actor.demo && !before.publishedAt && status === "published") {
+    if (shouldEnqueueFirstPublication(before.publishedAt, status, !!actor.demo)) {
       await enqueuePublication(tx, "programme", id, row.title);
     }
     await tx.insert(auditEventsTable).values({

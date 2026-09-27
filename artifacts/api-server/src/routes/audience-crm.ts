@@ -13,6 +13,9 @@ import {
   ListCrmAudienceQueryParams,
   ListCrmAudienceResponse,
   ListCrmCommunicationsResponse,
+  SendCrmCommunicationTestParams,
+  SendCrmCommunicationTestResponse,
+  GetCrmDeliverySettingsResponse,
   ListCrmEnquiriesResponse,
   RecordPublicEngagementBody,
   RecordPublicEngagementResponse,
@@ -28,9 +31,11 @@ import {
 } from "@workspace/api-zod";
 import { requireCrmAccess, requirePortal } from "../lib/portal-auth";
 import * as audience from "../lib/audience-crm-service";
+import { publicationDeliveryConfig, sendPublicationTest } from "../lib/publication-delivery";
 import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
 
 const publicEngagementLimit = createFixedWindowRateLimit({ limit: 60, windowMs: 15 * 60 * 1000 });
+const controlledTestLimit = createFixedWindowRateLimit({ limit: 3, windowMs: 15 * 60 * 1000 });
 const invalid = (res: any, error: unknown) =>
   res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const matchingResult = (row: any) => ({
@@ -44,6 +49,8 @@ const matchingResult = (row: any) => ({
 export function createAudienceCrmRouter(overrides: {
   listAudience?: typeof audience.listAudience;
   requireCrmAccess?: RequestHandler;
+  sendTest?: typeof sendPublicationTest;
+  deliveryConfig?: typeof publicationDeliveryConfig;
 } = {}) {
 const router = Router();
 
@@ -81,6 +88,37 @@ router.get("/crm/audience/:id", requireCrmAccess, async (req, res): Promise<void
 });
 router.get("/crm/communications", requireCrmAccess, async (_req, res): Promise<void> => {
   res.json(ListCrmCommunicationsResponse.parse(await audience.listCommunications()));
+});
+router.get("/crm/communications/delivery-settings", overrides.requireCrmAccess ?? requireCrmAccess, (_req, res): void => {
+  const config = (overrides.deliveryConfig ?? publicationDeliveryConfig)();
+  res.setHeader("Cache-Control", "no-store");
+  res.json(GetCrmDeliverySettingsResponse.parse({ testReady: !!config.test, liveEnabled: !!config.live }));
+});
+router.post("/crm/communications/:id/test-send", overrides.requireCrmAccess ?? requireCrmAccess, controlledTestLimit, async (req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
+  const params = SendCrmCommunicationTestParams.safeParse(req.params);
+  if (!params.success || (req.body && Object.keys(req.body).length !== 0)) {
+    res.status(400).json({ error: "Invalid test request" }); return;
+  }
+  try {
+    const result = await (overrides.sendTest ?? sendPublicationTest)(params.data.id);
+    if (!result) { res.status(404).json({ error: "Notification batch not found" }); return; }
+    res.json(SendCrmCommunicationTestResponse.parse(result));
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_PUBLISHED") {
+      res.status(400).json({ error: "Publication is not currently public" }); return;
+    }
+    if (error instanceof Error && error.message === "TEST_NOT_CONFIGURED") {
+      res.status(503).json({ error: "An approved test mailbox and sender must be configured before test delivery" }); return;
+    }
+    if (error instanceof Error && error.message === "TEST_RECORDING_FAILED") {
+      req.log?.warn("Test email accepted by provider but CRM recording failed");
+      res.status(503).json({ error: "Resend may have accepted the test email, but CRM recording failed. Check the test inbox before retrying." });
+      return;
+    }
+    req.log?.warn("Controlled publication test delivery failed");
+    res.status(503).json({ error: "Test email could not be confirmed. No subscribers were emailed." });
+  }
 });
 router.get("/crm/enquiries", requireCrmAccess, async (_req, res): Promise<void> => {
   res.json(ListCrmEnquiriesResponse.parse(await audience.listEnquiries()));
