@@ -1036,6 +1036,18 @@ export interface CrmDeliverySettings {
   liveEnabled: boolean;
 }
 
+export type CrmPublicationSampleResultStatus = typeof CrmPublicationSampleResultStatus[keyof typeof CrmPublicationSampleResultStatus];
+
+
+export const CrmPublicationSampleResultStatus = {
+  accepted: 'accepted',
+} as const;
+
+export interface CrmPublicationSampleResult {
+  status: CrmPublicationSampleResultStatus;
+  providerReference: string;
+}
+
 export type CrmEnquiryStatus = typeof CrmEnquiryStatus[keyof typeof CrmEnquiryStatus];
 
 

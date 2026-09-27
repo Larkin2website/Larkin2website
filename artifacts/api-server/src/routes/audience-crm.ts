@@ -15,6 +15,7 @@ import {
   ListCrmCommunicationsResponse,
   SendCrmCommunicationTestParams,
   SendCrmCommunicationTestResponse,
+  SendCrmPublicationSampleResponse,
   GetCrmDeliverySettingsResponse,
   ListCrmEnquiriesResponse,
   RecordPublicEngagementBody,
@@ -31,11 +32,11 @@ import {
 } from "@workspace/api-zod";
 import { requireCrmAccess, requirePortal } from "../lib/portal-auth";
 import * as audience from "../lib/audience-crm-service";
-import { publicationDeliveryConfig, sendPublicationTest } from "../lib/publication-delivery";
+import { publicationDeliveryConfig, sendPublicationSampleTest, sendPublicationTest } from "../lib/publication-delivery";
 import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
 
 const publicEngagementLimit = createFixedWindowRateLimit({ limit: 60, windowMs: 15 * 60 * 1000 });
-const controlledTestLimit = createFixedWindowRateLimit({ limit: 3, windowMs: 15 * 60 * 1000 });
+const controlledTestLimit = createFixedWindowRateLimit({ limit: 5, windowMs: 15 * 60 * 1000 });
 const invalid = (res: any, error: unknown) =>
   res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const matchingResult = (row: any) => ({
@@ -50,6 +51,7 @@ export function createAudienceCrmRouter(overrides: {
   listAudience?: typeof audience.listAudience;
   requireCrmAccess?: RequestHandler;
   sendTest?: typeof sendPublicationTest;
+  sendSampleTest?: typeof sendPublicationSampleTest;
   deliveryConfig?: typeof publicationDeliveryConfig;
 } = {}) {
 const router = Router();
@@ -93,6 +95,21 @@ router.get("/crm/communications/delivery-settings", overrides.requireCrmAccess ?
   const config = (overrides.deliveryConfig ?? publicationDeliveryConfig)();
   res.setHeader("Cache-Control", "no-store");
   res.json(GetCrmDeliverySettingsResponse.parse({ testReady: !!config.test, liveEnabled: !!config.live }));
+});
+router.post("/crm/communications/test-sample", overrides.requireCrmAccess ?? requireCrmAccess, controlledTestLimit, async (req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
+  if (req.body && Object.keys(req.body).length !== 0) {
+    res.status(400).json({ error: "Sample test does not accept a recipient or message body" }); return;
+  }
+  try {
+    res.json(SendCrmPublicationSampleResponse.parse(await (overrides.sendSampleTest ?? sendPublicationSampleTest)()));
+  } catch (error) {
+    if (error instanceof Error && error.message === "TEST_NOT_CONFIGURED") {
+      res.status(503).json({ error: "An approved test mailbox and sender must be configured" }); return;
+    }
+    req.log?.warn("Controlled sample delivery could not be confirmed");
+    res.status(503).json({ error: "Sample delivery could not be confirmed. Check the test inbox before retrying." });
+  }
 });
 router.post("/crm/communications/:id/test-send", overrides.requireCrmAccess ?? requireCrmAccess, controlledTestLimit, async (req, res): Promise<void> => {
   res.setHeader("Cache-Control", "no-store");

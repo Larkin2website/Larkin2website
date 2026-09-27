@@ -30,6 +30,7 @@ import type {
   CrmEnquiry,
   CrmEnquiryInput,
   CrmEnquiryUpdate,
+  CrmPublicationSampleResult,
   CrmTaxonomy,
   ForbiddenResponse,
   HealthStatus,
@@ -3727,6 +3728,77 @@ export function useGetCrmDeliverySettings<TData = Awaited<ReturnType<typeof getC
 
 
 
+
+export const getSendCrmPublicationSampleUrl = () => {
+
+
+
+
+  return `/api/crm/communications/test-sample`
+}
+
+/**
+ * @summary Send a sample alert only to the configured test mailbox
+ */
+export const sendCrmPublicationSample = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmPublicationSampleResult> => {
+
+  return customFetch<CrmPublicationSampleResult>(getSendCrmPublicationSampleUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSendCrmPublicationSampleMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmPublicationSample>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendCrmPublicationSample>>, TError,void, TContext> => {
+
+const mutationKey = ['sendCrmPublicationSample'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendCrmPublicationSample>>, void> = () => {
+
+
+          return  sendCrmPublicationSample(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendCrmPublicationSampleMutationResult = NonNullable<Awaited<ReturnType<typeof sendCrmPublicationSample>>>
+
+    export type SendCrmPublicationSampleMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>
+
+    /**
+ * @summary Send a sample alert only to the configured test mailbox
+ */
+export const useSendCrmPublicationSample = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmPublicationSample>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendCrmPublicationSample>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getSendCrmPublicationSampleMutationOptions(options));
+    }
 
 export const getListCrmEnquiriesUrl = () => {
 

@@ -1,4 +1,5 @@
 import { and, eq, gte, inArray, isNull, lt, lte, or, sql } from "drizzle-orm";
+import { createHash } from "node:crypto";
 import { ReplitConnectors } from "@replit/connectors-sdk";
 import {
   audienceMatchingTable, crmCommunicationOutboxTable, crmCommunicationsTable,
@@ -54,6 +55,15 @@ export function publicationMessage(
   };
 }
 
+export function publicationTestMessage(publication: Publication, config: DeliveryConfig): Message {
+  if (!config.testEmail) throw new Error("TEST_NOT_CONFIGURED");
+  const message = publicationMessage(publication, config, config.testEmail, "", true);
+  const fingerprint = createHash("sha256")
+    .update(JSON.stringify([message.from, message.to, message.subject, message.text]))
+    .digest("hex").slice(0, 24);
+  return { ...message, idempotencyKey: `publication-test-${publication.id}-${fingerprint}` };
+}
+
 export async function sendPublicationEmail(message: Message): Promise<string> {
   const response = await new ReplitConnectors().proxy("resend", "/emails", {
     method: "POST",
@@ -64,6 +74,33 @@ export async function sendPublicationEmail(message: Message): Promise<string> {
   const body = await response.json() as { id?: unknown };
   if (typeof body.id !== "string" || !body.id) throw new Error("Resend returned no message reference");
   return body.id;
+}
+
+export function publicationSampleMessage(config: DeliveryConfig, at = new Date()): Message {
+  if (!config.testEmail) throw new Error("TEST_NOT_CONFIGURED");
+  const root = new URL(config.siteUrl.endsWith("/") ? config.siteUrl : `${config.siteUrl}/`);
+  const mailboxKey = createHash("sha256").update(config.testEmail.toLowerCase()).digest("hex").slice(0, 16);
+  return {
+    from: config.from,
+    to: config.testEmail,
+    subject: "[TEST] HETV publication alerts — configuration check",
+    text: [
+      "TEST PREVIEW — sent only to the approved test mailbox. No role or programme has been published for this test, and no subscribers were emailed.",
+      "",
+      "When a matching role or programme is first published, its alert will contain a link to that publication.",
+      `Browse roles: ${new URL("roles", root)}`,
+      `Manage your preferences or unsubscribe by verifying your email: ${new URL("unsubscribe", root)}`,
+      "",
+      "HETV Opportunities Hub",
+    ].join("\n"),
+    idempotencyKey: `publication-sample-${mailboxKey}-${at.toISOString().slice(0, 10)}`,
+  };
+}
+
+export async function sendPublicationSampleTest(config = publicationDeliveryConfig().test) {
+  if (!config?.testEmail) throw new Error("TEST_NOT_CONFIGURED");
+  const providerReference = await sendPublicationEmail(publicationSampleMessage(config));
+  return { status: "accepted" as const, providerReference };
 }
 
 async function loadPublication(communication: typeof crmCommunicationsTable.$inferSelect): Promise<Publication | undefined> {
@@ -91,9 +128,7 @@ export async function sendPublicationTest(communicationId: string, config = publ
   if (!publication || publication.status !== "published") throw new Error("NOT_PUBLISHED");
   let reference: string;
   try {
-    reference = await sendPublicationEmail(publicationMessage(
-      publication, config, config.testEmail, `publication-test-${communicationId}`, true,
-    ));
+    reference = await sendPublicationEmail(publicationTestMessage(publication, config));
   } catch {
     await db.update(crmCommunicationsTable).set({ testLastError: "Test delivery failed" })
       .where(eq(crmCommunicationsTable.id, communicationId));
@@ -168,18 +203,22 @@ export async function deliverClaimedPublication(input: {
 }
 
 async function refreshBatch(communicationId: string) {
-  const [communication] = await db.select().from(crmCommunicationsTable)
-    .where(eq(crmCommunicationsTable.id, communicationId)).limit(1);
-  if (!communication) return;
-  const deliveries = await db.select({ status: crmCommunicationOutboxTable.status })
-    .from(crmCommunicationOutboxTable).where(eq(crmCommunicationOutboxTable.communicationId, communicationId));
-  const status = deliveries.some(row => row.status === "pending" || row.status === "processing") ? "pending"
-    : deliveries.some(row => row.status === "failed") ? "failed"
-    : deliveries.length ? "sent" : "pending";
-  await db.update(crmCommunicationsTable).set({
-    status, recipientCount: deliveries.length,
-    sentAt: status === "sent" ? (communication.sentAt ?? new Date()) : communication.sentAt,
-  }).where(eq(crmCommunicationsTable.id, communicationId));
+  // Serialize aggregate writes: an older claimant must not write a stale pending state
+  // after a newer claimant has recorded a send.
+  await db.transaction(async tx => {
+    const [communication] = await tx.select().from(crmCommunicationsTable)
+      .where(eq(crmCommunicationsTable.id, communicationId)).limit(1).for("update");
+    if (!communication) return;
+    const deliveries = await tx.select({ status: crmCommunicationOutboxTable.status })
+      .from(crmCommunicationOutboxTable).where(eq(crmCommunicationOutboxTable.communicationId, communicationId));
+    const status = deliveries.some(row => row.status === "pending" || row.status === "processing") ? "pending"
+      : deliveries.some(row => row.status === "failed") ? "failed"
+      : deliveries.length ? "sent" : "pending";
+    await tx.update(crmCommunicationsTable).set({
+      status, recipientCount: deliveries.length,
+      sentAt: status === "sent" ? (communication.sentAt ?? new Date()) : communication.sentAt,
+    }).where(eq(crmCommunicationsTable.id, communicationId));
+  });
 }
 
 export async function processPublicationDeliveries(

@@ -2,11 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import express from "express";
 import type { AddressInfo } from "node:net";
-import { crmCommunicationOutboxTable, db, type audienceMatchingTable, type publicSubscriptionsTable } from "@workspace/db";
+import { crmCommunicationOutboxTable, crmCommunicationsTable, db, type audienceMatchingTable, type publicSubscriptionsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 import { createAudienceCrmRouter } from "../routes/audience-crm";
 import {
   canDeliverToSubscriber, claimedDeliveryWhere, deliverClaimedPublication, publicationDeliveryConfig,
-  publicationMessage, type DeliveryConfig,
+  publicationMessage, publicationSampleMessage, publicationTestMessage, type DeliveryConfig,
 } from "./publication-delivery";
 import { shouldEnqueueFirstPublication } from "./audience-crm-service";
 
@@ -62,6 +63,32 @@ test("role and programme messages have correct links and verification-based unsu
   assert.equal(testMessage.to, config.testEmail);
 });
 
+test("sample test is explicitly not a publication and deduplicates per approved mailbox and day", () => {
+  const sample = publicationSampleMessage(config, new Date("2026-09-27T10:00:00Z"));
+  const repeat = publicationSampleMessage(config, new Date("2026-09-27T17:00:00Z"));
+  assert.equal(sample.to, config.testEmail);
+  assert.equal(sample.idempotencyKey, repeat.idempotencyKey);
+  assert.ok(!sample.idempotencyKey.includes(config.testEmail!));
+  assert.match(sample.subject, /^\[TEST\]/);
+  assert.match(sample.text, /No role or programme has been published for this test/);
+  assert.match(sample.text, /larkin2-opportunities\/roles/);
+  assert.match(sample.text, /larkin2-opportunities\/unsubscribe/);
+});
+
+test("batch preview idempotency follows the approved mailbox and exact message payload", () => {
+  const first = publicationTestMessage(role, config);
+  assert.equal(first.idempotencyKey, publicationTestMessage(role, config).idempotencyKey);
+  assert.notEqual(first.idempotencyKey, publicationTestMessage(role, {
+    ...config, testEmail: "different-approved@example.com",
+  }).idempotencyKey);
+  assert.notEqual(first.idempotencyKey, publicationTestMessage({
+    ...role, title: "Camera Assistant (updated)",
+  }, config).idempotencyKey);
+  assert.notEqual(first.idempotencyKey, publicationTestMessage({
+    ...role, slug: "new-camera-role",
+  }, config).idempotencyKey);
+});
+
 test("dispatch checks matching, opt-out, publication status, retries, and provider deduplication", async () => {
   const sent: string[] = [];
   const send = async (message: ReturnType<typeof publicationMessage>) => {
@@ -109,16 +136,25 @@ test("claim completions are fenced to an exact attempt after lease expiry", () =
   assert.ok(current.params.includes(2));
   assert.ok(!current.params.includes(1));
   assert.ok(current.params.includes(id));
+  const lock = db.select().from(crmCommunicationsTable)
+    .where(eq(crmCommunicationsTable.id, id)).for("update").toSQL();
+  assert.match(lock.sql.toLowerCase(), /for update/);
 });
 
 test("controlled test endpoint cannot choose a recipient or bypass configuration", async () => {
   const calls: string[] = [];
+  let sampleReady = false;
   const app = express();
   app.use(express.json());
   app.use(createAudienceCrmRouter({
     requireCrmAccess: (_req, _res, next) => next(),
     deliveryConfig: () => ({}),
     sendTest: async id => { calls.push(id); throw new Error("TEST_NOT_CONFIGURED"); },
+    sendSampleTest: async () => {
+      calls.push("sample");
+      if (!sampleReady) throw new Error("TEST_NOT_CONFIGURED");
+      return { status: "accepted", providerReference: "provider-test-reference" };
+    },
   }));
   const server = app.listen(0, "127.0.0.1");
   try {
@@ -136,6 +172,20 @@ test("controlled test endpoint cannot choose a recipient or bypass configuration
     const blocked = await fetch(`${base}/crm/communications/${id}/test-send`, { method: "POST" });
     assert.equal(blocked.status, 503);
     assert.deepEqual(calls, [id]);
+    const sampleBad = await fetch(`${base}/crm/communications/test-sample`, {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "attacker@example.com" }),
+    });
+    assert.equal(sampleBad.status, 400);
+    assert.deepEqual(calls, [id]);
+    const sampleBlocked = await fetch(`${base}/crm/communications/test-sample`, { method: "POST" });
+    assert.equal(sampleBlocked.status, 503);
+    assert.deepEqual(calls, [id, "sample"]);
+    sampleReady = true;
+    const accepted = await fetch(`${base}/crm/communications/test-sample`, { method: "POST" });
+    assert.equal(accepted.status, 200);
+    assert.deepEqual(await accepted.json(), { status: "accepted", providerReference: "provider-test-reference" });
+    assert.deepEqual(calls, [id, "sample", "sample"]);
   } finally {
     await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
   }

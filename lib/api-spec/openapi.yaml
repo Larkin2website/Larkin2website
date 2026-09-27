@@ -1078,6 +1078,30 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /crm/communications/test-sample:
+    post:
+      operationId: sendCrmPublicationSample
+      tags: [portal-dashboard]
+      summary: Send a sample alert only to the configured test mailbox
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Resend accepted or deduplicated the sample; inbox receipt is not confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrmPublicationSampleResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
   /crm/enquiries:
     get:
       operationId: listCrmEnquiries
@@ -2322,6 +2346,12 @@ components:
       properties:
         testReady: { type: boolean }
         liveEnabled: { type: boolean }
+    CrmPublicationSampleResult:
+      type: object
+      required: [status, providerReference]
+      properties:
+        status: { type: string, enum: [accepted] }
+        providerReference: { type: string }
     CrmEnquiryStatus:
       type: string
       enum: [new, open, in_progress, resolved, closed]

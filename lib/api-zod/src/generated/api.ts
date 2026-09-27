@@ -2086,6 +2086,15 @@ export const GetCrmDeliverySettingsResponse = zod.object({
 
 
 /**
+ * @summary Send a sample alert only to the configured test mailbox
+ */
+export const SendCrmPublicationSampleResponse = zod.object({
+  "status": zod.enum(['accepted']),
+  "providerReference": zod.string()
+})
+
+
+/**
  * @summary List audience enquiries
  */
 export const ListCrmEnquiriesResponseItem = zod.object({

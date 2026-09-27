@@ -29,6 +29,8 @@ export * from './crmEnquiry';
 export * from './crmEnquiryInput';
 export * from './crmEnquiryStatus';
 export * from './crmEnquiryUpdate';
+export * from './crmPublicationSampleResult';
+export * from './crmPublicationSampleResultStatus';
 export * from './crmTaxonomy';
 export * from './dashboardCounts';
 export * from './forbiddenResponse';

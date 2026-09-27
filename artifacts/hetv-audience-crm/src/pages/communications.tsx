@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MailCheck } from 'lucide-react';
 import {
-  getCrmDeliverySettings, sendCrmCommunicationTest, useListCrmCommunications,
+  getCrmDeliverySettings, sendCrmCommunicationTest, sendCrmPublicationSample, useListCrmCommunications,
 } from '@workspace/api-client-react';
 import { PageHeading, State, Status, date, label, number } from '@/components/crm-ui';
 
@@ -10,6 +10,7 @@ export default function Communications() {
   const [settings, setSettings] = useState<{ testReady: boolean; liveEnabled: boolean } | null>(null);
   const [settingsError, setSettingsError] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [sampleSending, setSampleSending] = useState(false);
   const [feedback, setFeedback] = useState('');
 
   useEffect(() => {
@@ -36,6 +37,20 @@ export default function Communications() {
     }
   }
 
+  async function sendSample() {
+    if (sampleSending || !settings?.testReady) return;
+    setSampleSending(true);
+    setFeedback('');
+    try {
+      await sendCrmPublicationSample();
+      setFeedback('Resend accepted or deduplicated the sample test. Only the configured mailbox was targeted. Confirm inbox receipt separately.');
+    } catch {
+      setFeedback('Sample delivery could not be confirmed. Check the test inbox before retrying; no subscribers were targeted.');
+    } finally {
+      setSampleSending(false);
+    }
+  }
+
   return <>
     <PageHeading eyebrow="03 / Delivery" title="Communications."
       description="First publications create matched notification batches. Sent means Resend accepted the message, not inbox receipt. Tests go only to the approved mailbox; audience sending requires separate live approval." />
@@ -44,6 +59,12 @@ export default function Communications() {
       <p>{settings?.testReady
         ? 'Controlled test delivery is available. A test never marks subscriber messages as sent.'
         : 'Controlled test delivery is unavailable until an approved test mailbox and verified sender are configured.'}</p>
+      <button type="button" disabled={!settings?.testReady || sampleSending}
+        onClick={() => void sendSample()}
+        className="quiet-button disabled:opacity-50">
+        {sampleSending ? 'Sending sample…' : 'Send sample test'}
+      </button>
+      <p className="text-xs text-[#625d58]">The sample works even with no publication batches. It contains no real role or programme and never uses the subscriber queue.</p>
       {settingsError && <p role="alert">Delivery settings could not be loaded. Test sending is unavailable.</p>}
     </div>
     {feedback && <p role="status" className="surface p-4 mb-5">{feedback}</p>}

@@ -10,7 +10,7 @@ Configure these settings for the API server in the intended environment:
 - `PUBLICATION_EMAIL_FROM`: a sender/address verified for publication notifications in Resend. This is separate from the address used for subscription verification; obtain approval before reusing it.
 - `PUBLICATION_TEST_EMAIL`: the approved, single test mailbox. The CRM cannot accept a recipient from the browser.
 
-The super-admin CRM Communications page then enables **Send controlled test** for a currently published batch. This sends a `[TEST]` message to only that mailbox. It never consumes, changes, or sends the subscriber outbox. A repeated test for the same batch uses the same Resend idempotency key (deduplicated for 24 hours). “Test accepted” means Resend returned a message ID, **not** that the mailbox received it; check inbox/spam separately. Confirm the configured mailbox and sender with the project owner before setting either value.
+The super-admin CRM Communications page offers **Send sample test** even when there are no published batches. The sample says explicitly that no real publication took place and includes working browse and unsubscribe links. For a currently published batch, **Send controlled test** previews its actual title and link. Both send only to the configured mailbox; neither consumes, changes, or sends the subscriber outbox. Repeated tests use stable Resend idempotency keys (deduplicated for 24 hours, per batch or per daily sample). “Test accepted” means Resend returned a message ID, **not** that the mailbox received it; check inbox/spam separately. Confirm the configured mailbox and sender with the project owner before setting either value.
 
 ## Live delivery (not enabled)
 
