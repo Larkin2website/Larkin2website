@@ -13,7 +13,8 @@ export default function Profile() {
   return <>
     <Link href="/audience" data-testid="link-back-audience" className="inline-flex items-center gap-2 micro text-[#625d58] mb-8 hover:text-[#b45024]"><ArrowLeft size={15}/> BACK TO AUDIENCE</Link>
     {query.isLoading ? <State kind="loading"/> : query.isError ? <State kind="error" title="Profile unavailable" detail="This subscriber may no longer be available, or your access may have changed." retry={()=>query.refetch()}/> : !p ? <State kind="empty" title="Profile not found"/> : <>
-      <PageHeading eyebrow="02 / Private subscriber profile" title={p.name || 'Subscriber profile'} description="The preferences and registration details shared by this audience member." action={<Status value={p.active?'active':'inactive'}/>}/>
+       <PageHeading eyebrow="02 / Private subscriber profile" title={p.name || 'Subscriber profile'} description="The preferences and registration details shared by this audience member." action={<Status value={p.deliverySuppression || (p.active?'active':'inactive')}/>}/>
+       {p.deliverySuppression && <p role="status" className="surface p-4 mb-5 text-sm text-[#874b39]">Future alerts stopped: provider reported a {p.deliverySuppression === 'bounce' ? 'bounce' : 'spam complaint'} for this address.</p>}
       <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_.8fr] gap-5">
         <div className="space-y-5">
           <section className="surface p-6 lg:p-8"><p className="micro text-[#b45024] mb-4">PERSONAL DETAILS</p><h2 className="display text-2xl font-semibold mb-4">At a glance</h2><dl><Detail title="EMAIL" value={p.email}/><Detail title="NAME" value={p.name}/><Detail title="CRAFT" value={p.craft}/><Detail title="CAREER LEVEL" value={p.careerLevel ? label(p.careerLevel):null}/><Detail title="LOCATION" value={p.location}/></dl></section>

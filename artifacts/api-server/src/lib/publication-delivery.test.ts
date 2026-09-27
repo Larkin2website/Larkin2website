@@ -161,7 +161,10 @@ test("controlled test endpoint cannot choose a recipient or bypass configuration
     await new Promise<void>(resolve => server.once("listening", resolve));
     const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
     const settings = await fetch(`${base}/crm/communications/delivery-settings`);
-    assert.deepEqual(await settings.json(), { testReady: false, liveEnabled: false });
+    assert.deepEqual(await settings.json(), {
+      testReady: false, liveEnabled: false,
+      trackingReady: !!process.env.RESEND_WEBHOOK_SECRET?.startsWith("whsec_"),
+    });
     const id = "fca8e537-0c7d-4b2f-b693-9f1895e8d070";
     const bad = await fetch(`${base}/crm/communications/${id}/test-send`, {
       method: "POST", headers: { "content-type": "application/json" },

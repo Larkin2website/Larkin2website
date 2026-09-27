@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { MailCheck } from 'lucide-react';
 import {
   getCrmDeliverySettings, sendCrmCommunicationTest, sendCrmPublicationSample, useListCrmCommunications,
+  getListCrmCommunicationsQueryKey,
 } from '@workspace/api-client-react';
 import { PageHeading, State, Status, date, label, number } from '@/components/crm-ui';
 
 export default function Communications() {
-  const query = useListCrmCommunications();
-  const [settings, setSettings] = useState<{ testReady: boolean; liveEnabled: boolean } | null>(null);
+  const query = useListCrmCommunications({ query: { queryKey: getListCrmCommunicationsQueryKey(), refetchInterval: 30_000 } });
+  const [settings, setSettings] = useState<{ testReady: boolean; liveEnabled: boolean; trackingReady: boolean } | null>(null);
   const [settingsError, setSettingsError] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [sampleSending, setSampleSending] = useState(false);
@@ -53,12 +54,13 @@ export default function Communications() {
 
   return <>
     <PageHeading eyebrow="03 / Delivery" title="Communications."
-      description="First publications create matched notification batches. Sent means Resend accepted the message, not inbox receipt. Tests go only to the approved mailbox; audience sending requires separate live approval." />
+      description="First publications create matched notification batches. Accepted means Resend accepted the message; delivered is confirmed by a provider event, not guaranteed inbox placement. Bounces and complaints stop future alerts. Tests go only to the approved mailbox." />
     <div className="surface p-5 mb-5 text-sm space-y-2">
       <p className="font-semibold">{settings?.liveEnabled ? 'Live audience delivery enabled' : 'Live audience delivery disabled'}</p>
       <p>{settings?.testReady
         ? 'Controlled test delivery is available. A test never marks subscriber messages as sent.'
         : 'Controlled test delivery is unavailable until an approved test mailbox and verified sender are configured.'}</p>
+      {settings && !settings.trackingReady && <p role="status" className="text-[#874b39]">Provider event tracking is not configured. Accepted messages cannot yet be confirmed as delivered or bounced in this CRM.</p>}
       <button type="button" disabled={!settings?.testReady || sampleSending}
         onClick={() => void sendSample()}
         className="quiet-button disabled:opacity-50">
@@ -101,7 +103,7 @@ export default function Communications() {
                 <span className="text-xs text-[#625d58]">
                   {item.recipientCount === undefined ? 'Not recorded' : `${number(item.recipientCount)} matched`}
                   {item.deliveryCounts && <span className="block mt-1">
-                    {item.deliveryCounts.sent + item.deliveryCounts.delivered} accepted · {item.deliveryCounts.failed} failed · {item.deliveryCounts.pending + item.deliveryCounts.processing} waiting
+                    {item.deliveryCounts.delivered} delivered · {item.deliveryCounts.sent} accepted, unconfirmed · {item.deliveryCounts.bounced} bounced · {item.deliveryCounts.complained} complaints · {item.deliveryCounts.failed - item.deliveryCounts.bounced - item.deliveryCounts.complained} other failures · {item.deliveryCounts.pending + item.deliveryCounts.processing} waiting
                   </span>}
                 </span>
                 <span className="text-xs text-[#625d58]">{date(item.createdAt)}</span>

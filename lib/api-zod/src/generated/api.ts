@@ -1874,6 +1874,10 @@ export const getCrmDashboardResponseDeliveryDeliveredMin = 0;
 
 export const getCrmDashboardResponseDeliveryFailedMin = 0;
 
+export const getCrmDashboardResponseDeliveryBouncedMin = 0;
+
+export const getCrmDashboardResponseDeliveryComplainedMin = 0;
+
 export const getCrmDashboardResponseDeliveryPendingMin = 0;
 
 
@@ -1904,6 +1908,8 @@ export const GetCrmDashboardResponse = zod.object({
   "sent": zod.number().int().min(getCrmDashboardResponseDeliverySentMin),
   "delivered": zod.number().int().min(getCrmDashboardResponseDeliveryDeliveredMin),
   "failed": zod.number().int().min(getCrmDashboardResponseDeliveryFailedMin),
+  "bounced": zod.number().int().min(getCrmDashboardResponseDeliveryBouncedMin),
+  "complained": zod.number().int().min(getCrmDashboardResponseDeliveryComplainedMin),
   "pending": zod.number().int().min(getCrmDashboardResponseDeliveryPendingMin)
 }),
   "recentRegistrations": zod.array(zod.object({
@@ -1911,6 +1917,7 @@ export const GetCrmDashboardResponse = zod.object({
   "email": zod.string().email(),
   "name": zod.string().nullable(),
   "active": zod.boolean(),
+  "deliverySuppression": zod.union([zod.literal('bounce'),zod.literal('complaint'),zod.literal(null)]).nullable(),
   "consentedAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "craft": zod.string().nullable(),
@@ -1949,6 +1956,7 @@ export const ListCrmAudienceResponseItem = zod.object({
   "email": zod.string().email(),
   "name": zod.string().nullable(),
   "active": zod.boolean(),
+  "deliverySuppression": zod.union([zod.literal('bounce'),zod.literal('complaint'),zod.literal(null)]).nullable(),
   "consentedAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "craft": zod.string().nullable(),
@@ -1977,6 +1985,7 @@ export const GetCrmAudienceMemberResponse = zod.object({
   "email": zod.string().email(),
   "name": zod.string().nullable(),
   "active": zod.boolean(),
+  "deliverySuppression": zod.union([zod.literal('bounce'),zod.literal('complaint'),zod.literal(null)]).nullable(),
   "consentedAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "craft": zod.string().nullable(),
@@ -2008,6 +2017,10 @@ export const listCrmCommunicationsResponseDeliveryCountsDeliveredMin = 0;
 
 export const listCrmCommunicationsResponseDeliveryCountsFailedMin = 0;
 
+export const listCrmCommunicationsResponseDeliveryCountsBouncedMin = 0;
+
+export const listCrmCommunicationsResponseDeliveryCountsComplainedMin = 0;
+
 
 
 export const ListCrmCommunicationsResponseItem = zod.object({
@@ -2026,7 +2039,9 @@ export const ListCrmCommunicationsResponseItem = zod.object({
   "processing": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsProcessingMin),
   "sent": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsSentMin),
   "delivered": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsDeliveredMin),
-  "failed": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsFailedMin)
+  "failed": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsFailedMin),
+  "bounced": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsBouncedMin),
+  "complained": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsComplainedMin)
 }).optional(),
   "nextRetryAt": zod.coerce.date().nullish()
 })
@@ -2052,6 +2067,10 @@ export const sendCrmCommunicationTestResponseDeliveryCountsDeliveredMin = 0;
 
 export const sendCrmCommunicationTestResponseDeliveryCountsFailedMin = 0;
 
+export const sendCrmCommunicationTestResponseDeliveryCountsBouncedMin = 0;
+
+export const sendCrmCommunicationTestResponseDeliveryCountsComplainedMin = 0;
+
 
 
 export const SendCrmCommunicationTestResponse = zod.object({
@@ -2070,7 +2089,9 @@ export const SendCrmCommunicationTestResponse = zod.object({
   "processing": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsProcessingMin),
   "sent": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsSentMin),
   "delivered": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsDeliveredMin),
-  "failed": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsFailedMin)
+  "failed": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsFailedMin),
+  "bounced": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsBouncedMin),
+  "complained": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsComplainedMin)
 }).optional(),
   "nextRetryAt": zod.coerce.date().nullish()
 })
@@ -2081,7 +2102,8 @@ export const SendCrmCommunicationTestResponse = zod.object({
  */
 export const GetCrmDeliverySettingsResponse = zod.object({
   "testReady": zod.boolean(),
-  "liveEnabled": zod.boolean()
+  "liveEnabled": zod.boolean(),
+  "trackingReady": zod.boolean()
 })
 
 

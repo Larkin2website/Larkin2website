@@ -7,6 +7,7 @@
  */
 import type { AudienceContentType } from './audienceContentType';
 import type { CareerLevel } from './careerLevel';
+import type { CrmAudienceItemDeliverySuppression } from './crmAudienceItemDeliverySuppression';
 
 export interface CrmAudienceItem {
   subscriberId: string;
@@ -14,6 +15,8 @@ export interface CrmAudienceItem {
   /** @nullable */
   name: string | null;
   active: boolean;
+  /** @nullable */
+  deliverySuppression: CrmAudienceItemDeliverySuppression;
   /** @nullable */
   consentedAt: Date | null;
   createdAt: Date;

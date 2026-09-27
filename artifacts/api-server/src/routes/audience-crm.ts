@@ -94,7 +94,10 @@ router.get("/crm/communications", requireCrmAccess, async (_req, res): Promise<v
 router.get("/crm/communications/delivery-settings", overrides.requireCrmAccess ?? requireCrmAccess, (_req, res): void => {
   const config = (overrides.deliveryConfig ?? publicationDeliveryConfig)();
   res.setHeader("Cache-Control", "no-store");
-  res.json(GetCrmDeliverySettingsResponse.parse({ testReady: !!config.test, liveEnabled: !!config.live }));
+  res.json(GetCrmDeliverySettingsResponse.parse({
+    testReady: !!config.test, liveEnabled: !!config.live,
+    trackingReady: !!process.env.RESEND_WEBHOOK_SECRET?.startsWith("whsec_"),
+  }));
 });
 router.post("/crm/communications/test-sample", overrides.requireCrmAccess ?? requireCrmAccess, controlledTestLimit, async (req, res): Promise<void> => {
   res.setHeader("Cache-Control", "no-store");

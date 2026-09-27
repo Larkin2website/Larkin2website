@@ -903,12 +903,25 @@ export interface PublicEngagementResult {
   recorded: boolean;
 }
 
+/**
+ * @nullable
+ */
+export type CrmAudienceItemDeliverySuppression = typeof CrmAudienceItemDeliverySuppression[keyof typeof CrmAudienceItemDeliverySuppression] | null;
+
+
+export const CrmAudienceItemDeliverySuppression = {
+  bounce: 'bounce',
+  complaint: 'complaint',
+} as const;
+
 export interface CrmAudienceItem {
   subscriberId: string;
   email: string;
   /** @nullable */
   name: string | null;
   active: boolean;
+  /** @nullable */
+  deliverySuppression: CrmAudienceItemDeliverySuppression;
   /** @nullable */
   consentedAt: string | null;
   createdAt: string;
@@ -964,6 +977,10 @@ export interface CrmDeliverySummary {
   /** @minimum 0 */
   failed: number;
   /** @minimum 0 */
+  bounced: number;
+  /** @minimum 0 */
+  complained: number;
+  /** @minimum 0 */
   pending: number;
 }
 
@@ -1007,6 +1024,10 @@ export interface CrmDeliveryCounts {
   delivered: number;
   /** @minimum 0 */
   failed: number;
+  /** @minimum 0 */
+  bounced: number;
+  /** @minimum 0 */
+  complained: number;
 }
 
 export interface CrmCommunication {
@@ -1034,6 +1055,7 @@ export interface CrmCommunication {
 export interface CrmDeliverySettings {
   testReady: boolean;
   liveEnabled: boolean;
+  trackingReady: boolean;
 }
 
 export type CrmPublicationSampleResultStatus = typeof CrmPublicationSampleResultStatus[keyof typeof CrmPublicationSampleResultStatus];

@@ -34,6 +34,8 @@ app.use(
   }),
 );
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+// Webhook verification requires the exact bytes Resend signed, before JSON parsing.
+app.use("/api/webhooks/resend", express.raw({ type: "application/json", limit: "64kb" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

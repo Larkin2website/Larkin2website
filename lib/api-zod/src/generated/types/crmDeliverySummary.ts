@@ -16,5 +16,9 @@ export interface CrmDeliverySummary {
   /** @minimum 0 */
   failed: number;
   /** @minimum 0 */
+  bounced: number;
+  /** @minimum 0 */
+  complained: number;
+  /** @minimum 0 */
   pending: number;
 }

@@ -18,6 +18,7 @@ export * from './crmAcquisitionBreakdown';
 export * from './crmAcquisitionDetailBreakdown';
 export * from './crmAudienceCounts';
 export * from './crmAudienceItem';
+export * from './crmAudienceItemDeliverySuppression';
 export * from './crmCommunication';
 export * from './crmCommunicationStatus';
 export * from './crmDashboard';

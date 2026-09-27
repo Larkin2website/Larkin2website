@@ -117,13 +117,13 @@ export async function putMatching(kind: PublicationKind, id: string, input: Matc
 export type AudienceRecipientPreferences = Pick<
   typeof publicSubscriptionsTable.$inferSelect,
   "active" | "consent" | "allOpportunities" | "contentTypes" | "careerLevels" | "craft" | "crafts" | "interests"
->;
+> & { deliverySuppression?: string | null };
 
 export function isEligibleAudienceRecipient(
   subscriber: AudienceRecipientPreferences,
   matching: MatchingInput,
 ): boolean {
-  if (!subscriber.active || !subscriber.consent) return false;
+  if (!subscriber.active || !subscriber.consent || subscriber.deliverySuppression) return false;
   if (subscriber.allOpportunities) return true;
   // "content" is the general-only signup segment, not an opportunity preference.
   if (!subscriber.contentTypes.includes(matching.contentType)) return false;
@@ -286,6 +286,29 @@ export async function enqueuePublication(
     .where(eq(crmCommunicationsTable.id, communication.id));
 }
 
+export function publicationBatchStatus(statuses: string[]): "pending" | "failed" | "delivered" | "sent" {
+  if (statuses.some(status => status === "pending" || status === "processing")) return "pending";
+  if (statuses.includes("failed")) return "failed";
+  if (statuses.length && statuses.every(status => status === "delivered")) return "delivered";
+  return statuses.length ? "sent" : "pending";
+}
+
+/** Serialize batch totals with concurrent worker completions and provider callbacks. */
+export async function refreshPublicationBatch(communicationId: string) {
+  await db.transaction(async tx => {
+    const [communication] = await tx.select().from(crmCommunicationsTable)
+      .where(eq(crmCommunicationsTable.id, communicationId)).limit(1).for("update");
+    if (!communication) return;
+    const deliveries = await tx.select({ status: crmCommunicationOutboxTable.status })
+      .from(crmCommunicationOutboxTable).where(eq(crmCommunicationOutboxTable.communicationId, communicationId));
+    const status = publicationBatchStatus(deliveries.map(row => row.status));
+    await tx.update(crmCommunicationsTable).set({
+      status, recipientCount: deliveries.length,
+      sentAt: ["sent", "delivered"].includes(status) ? (communication.sentAt ?? new Date()) : communication.sentAt,
+    }).where(eq(crmCommunicationsTable.id, communicationId));
+  });
+}
+
 export async function listAudience(filters: {
   search?: string;
   active?: boolean;
@@ -307,6 +330,7 @@ export async function listAudience(filters: {
       email: row.email,
       name: row.name,
       active: row.active,
+      deliverySuppression: row.deliverySuppression,
       consentedAt: row.consentedAt,
       createdAt: row.createdAt,
       craft: row.craft,
@@ -371,10 +395,13 @@ export async function crmDashboard() {
       sent: deliveries.filter((delivery) => delivery.status === "sent").length,
       delivered: deliveries.filter((delivery) => delivery.status === "delivered").length,
       failed: deliveries.filter((delivery) => delivery.status === "failed").length,
+      bounced: deliveries.filter((delivery) => delivery.providerFailure === "bounce").length,
+      complained: deliveries.filter((delivery) => delivery.providerFailure === "complaint").length,
       pending: deliveries.filter((delivery) => delivery.status === "pending").length,
     },
     recentRegistrations: recent.map((row) => ({
       subscriberId: row.id, email: row.email, name: row.name, active: row.active,
+      deliverySuppression: row.deliverySuppression,
       consentedAt: row.consentedAt, createdAt: row.createdAt, craft: row.craft,
       careerLevel: row.careerLevel, location: row.location, acquisitionSource: row.acquisitionSource,
       acquisitionDetail: row.acquisitionDetail, interests: row.interests, contentTypes: row.contentTypes,
@@ -389,6 +416,7 @@ export async function listCommunications() {
   const deliveries = await db.select({
     communicationId: crmCommunicationOutboxTable.communicationId,
     status: crmCommunicationOutboxTable.status,
+    providerFailure: crmCommunicationOutboxTable.providerFailure,
     nextAttemptAt: crmCommunicationOutboxTable.nextAttemptAt,
   }).from(crmCommunicationOutboxTable)
     .where(inArray(crmCommunicationOutboxTable.communicationId, communications.map(row => row.id)));
@@ -404,6 +432,8 @@ export async function listCommunications() {
         sent: rows.filter(row => row.status === "sent").length,
         delivered: rows.filter(row => row.status === "delivered").length,
         failed: rows.filter(row => row.status === "failed").length,
+        bounced: rows.filter(row => row.providerFailure === "bounce").length,
+        complained: rows.filter(row => row.providerFailure === "complaint").length,
       },
       nextRetryAt: retryDates.length ? new Date(Math.min(...retryDates.map(value => value.getTime()))) : null,
     };

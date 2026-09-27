@@ -9,4 +9,5 @@
 export interface CrmDeliverySettings {
   testReady: boolean;
   liveEnabled: boolean;
+  trackingReady: boolean;
 }

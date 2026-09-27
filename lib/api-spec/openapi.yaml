@@ -2236,12 +2236,13 @@ components:
         recorded: { type: boolean }
     CrmAudienceItem:
       type: object
-      required: [subscriberId, email, name, active, consentedAt, createdAt, craft, careerLevel, location, acquisitionSource, acquisitionDetail, interests, contentTypes, careerLevels, crafts, allOpportunities]
+      required: [subscriberId, email, name, active, deliverySuppression, consentedAt, createdAt, craft, careerLevel, location, acquisitionSource, acquisitionDetail, interests, contentTypes, careerLevels, crafts, allOpportunities]
       properties:
         subscriberId: { type: string, format: uuid }
         email: { type: string, format: email }
         name: { type: ["string", "null"] }
         active: { type: boolean }
+        deliverySuppression: { type: ["string", "null"], enum: [bounce, complaint, null] }
         consentedAt: { type: ["string", "null"], format: date-time }
         createdAt: { type: string, format: date-time }
         craft: { type: ["string", "null"] }
@@ -2285,12 +2286,14 @@ components:
         programmeViews: { type: integer, minimum: 0 }
     CrmDeliverySummary:
       type: object
-      required: [sent, delivered, failed, pending, processing]
+      required: [sent, delivered, failed, bounced, complained, pending, processing]
       properties:
         processing: { type: integer, minimum: 0 }
         sent: { type: integer, minimum: 0 }
         delivered: { type: integer, minimum: 0 }
         failed: { type: integer, minimum: 0 }
+        bounced: { type: integer, minimum: 0 }
+        complained: { type: integer, minimum: 0 }
         pending: { type: integer, minimum: 0 }
     CrmAudienceCounts:
       type: object
@@ -2333,19 +2336,22 @@ components:
         nextRetryAt: { type: ["string", "null"], format: date-time }
     CrmDeliveryCounts:
       type: object
-      required: [pending, processing, sent, delivered, failed]
+      required: [pending, processing, sent, delivered, failed, bounced, complained]
       properties:
         pending: { type: integer, minimum: 0 }
         processing: { type: integer, minimum: 0 }
         sent: { type: integer, minimum: 0 }
         delivered: { type: integer, minimum: 0 }
         failed: { type: integer, minimum: 0 }
+        bounced: { type: integer, minimum: 0 }
+        complained: { type: integer, minimum: 0 }
     CrmDeliverySettings:
       type: object
-      required: [testReady, liveEnabled]
+      required: [testReady, liveEnabled, trackingReady]
       properties:
         testReady: { type: boolean }
         liveEnabled: { type: boolean }
+        trackingReady: { type: boolean }
     CrmPublicationSampleResult:
       type: object
       required: [status, providerReference]

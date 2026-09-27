@@ -17,4 +17,8 @@ export interface CrmDeliveryCounts {
   delivered: number;
   /** @minimum 0 */
   failed: number;
+  /** @minimum 0 */
+  bounced: number;
+  /** @minimum 0 */
+  complained: number;
 }

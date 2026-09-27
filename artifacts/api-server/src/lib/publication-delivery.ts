@@ -5,7 +5,8 @@ import {
   audienceMatchingTable, crmCommunicationOutboxTable, crmCommunicationsTable,
   db, opportunitiesTable, programmesTable, publicSubscriptionsTable,
 } from "@workspace/db";
-import { isEligibleAudienceRecipient, matchingCriteriaFor } from "./audience-crm-service";
+import { isEligibleAudienceRecipient, matchingCriteriaFor, refreshPublicationBatch } from "./audience-crm-service";
+import { applyProviderEvents } from "./provider-delivery-events";
 import type { MatchingInput } from "./audience-crm-service";
 import { logger } from "./logger";
 
@@ -202,25 +203,6 @@ export async function deliverClaimedPublication(input: {
   }
 }
 
-async function refreshBatch(communicationId: string) {
-  // Serialize aggregate writes: an older claimant must not write a stale pending state
-  // after a newer claimant has recorded a send.
-  await db.transaction(async tx => {
-    const [communication] = await tx.select().from(crmCommunicationsTable)
-      .where(eq(crmCommunicationsTable.id, communicationId)).limit(1).for("update");
-    if (!communication) return;
-    const deliveries = await tx.select({ status: crmCommunicationOutboxTable.status })
-      .from(crmCommunicationOutboxTable).where(eq(crmCommunicationOutboxTable.communicationId, communicationId));
-    const status = deliveries.some(row => row.status === "pending" || row.status === "processing") ? "pending"
-      : deliveries.some(row => row.status === "failed") ? "failed"
-      : deliveries.length ? "sent" : "pending";
-    await tx.update(crmCommunicationsTable).set({
-      status, recipientCount: deliveries.length,
-      sentAt: status === "sent" ? (communication.sentAt ?? new Date()) : communication.sentAt,
-    }).where(eq(crmCommunicationsTable.id, communicationId));
-  });
-}
-
 export async function processPublicationDeliveries(
   config = publicationDeliveryConfig().live,
   send = sendPublicationEmail,
@@ -282,10 +264,11 @@ export async function processPublicationDeliveries(
           leaseUntil: null, lastError: result.reason, nextAttemptAt: result.nextAttemptAt,
         }).where(claimedDeliveryWhere(delivery.id, delivery.attempts));
       } else {
-        await db.update(crmCommunicationOutboxTable).set({
+        const [accepted] = await db.update(crmCommunicationOutboxTable).set({
           status: "sent", sentAt: new Date(), providerReference: result.reference,
           leaseUntil: null, nextAttemptAt: null, lastError: null,
-        }).where(claimedDeliveryWhere(delivery.id, delivery.attempts));
+        }).where(claimedDeliveryWhere(delivery.id, delivery.attempts)).returning();
+        if (accepted) await applyProviderEvents(result.reference);
       }
     } catch {
       logger.warn({ deliveryId: delivery.id }, "Publication delivery attempt failed");
@@ -295,7 +278,7 @@ export async function processPublicationDeliveries(
           ? new Date(at.getTime() + Math.min(60 * 60_000, 60_000 * 2 ** delivery.attempts)) : null,
       }).where(claimedDeliveryWhere(delivery.id, delivery.attempts));
     }
-    await refreshBatch(delivery.communicationId);
+    await refreshPublicationBatch(delivery.communicationId);
   }
   return candidates.length;
 }

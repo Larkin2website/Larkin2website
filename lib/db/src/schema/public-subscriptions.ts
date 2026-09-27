@@ -21,6 +21,8 @@ export const publicSubscriptionsTable = pgTable("public_subscriptions", {
   consentedAt: timestamp("consented_at", { withTimezone: true }).notNull(),
   managementTokenHash: char("management_token_hash", { length: 64 }).notNull(),
   active: boolean("active").notNull().default(true),
+  deliverySuppression: text("delivery_suppression"),
+  deliverySuppressedAt: timestamp("delivery_suppressed_at", { withTimezone: true }),
   unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
@@ -35,6 +37,8 @@ export const publicSubscriptionsTable = pgTable("public_subscriptions", {
 export const insertPublicSubscriptionSchema = createInsertSchema(publicSubscriptionsTable).omit({
   id: true,
   active: true,
+  deliverySuppression: true,
+  deliverySuppressedAt: true,
   unsubscribedAt: true,
   createdAt: true,
   updatedAt: true,

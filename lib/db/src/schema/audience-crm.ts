@@ -82,7 +82,9 @@ export const crmCommunicationOutboxTable = pgTable("crm_communication_outbox", {
   status: crmDeliveryStatusEnum("status").notNull().default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   sentAt: timestamp("sent_at", { withTimezone: true }),
+  deliveredAt: timestamp("delivered_at", { withTimezone: true }),
   providerReference: text("provider_reference"),
+  providerFailure: text("provider_failure"),
   lastError: text("last_error"),
   attempts: integer("attempts").notNull().default(0),
   firstAttemptAt: timestamp("first_attempt_at", { withTimezone: true }),
@@ -97,6 +99,18 @@ export const crmCommunicationOutboxTable = pgTable("crm_communication_outbox", {
     .on(table.programmeId, table.subscriberId)
     .where(sql`${table.programmeId} is not null`),
   index("crm_outbox_status_created_idx").on(table.status, table.createdAt),
+  index("crm_outbox_provider_reference_idx").on(table.providerReference),
+]);
+
+export const crmProviderEventsTable = pgTable("crm_provider_events", {
+  id: text("id").primaryKey(),
+  providerReference: text("provider_reference").notNull(),
+  event: text("event").notNull(),
+  occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+  receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  check("crm_provider_event_valid", sql`${table.event} in ('email.delivered', 'email.bounced', 'email.complained')`),
+  index("crm_provider_events_reference_idx").on(table.providerReference),
 ]);
 
 export const publicEngagementEventsTable = pgTable("public_engagement_events", {
