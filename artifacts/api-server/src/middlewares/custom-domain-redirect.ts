@@ -3,6 +3,7 @@ import type { RequestHandler } from "express";
 const CUSTOM_DOMAIN_DESTINATIONS: Readonly<Record<string, string>> = {
   "larkin2opportunities.gentraxtech.com": "/larkin2-opportunities/",
   "larkin2portal.gentraxtech.com": "/larkin2-opportunities-portal/",
+  "hetvcrm.gentraxtech.com": "/hetv-audience-crm/",
 };
 
 export function getCustomDomainDestination(

@@ -17,11 +17,25 @@ describe("custom domain routing", () => {
     );
   });
 
+  it("routes the CRM hostname to the CRM artifact", () => {
+    assert.equal(
+      getCustomDomainDestination("HETVCRM.GENTRAXTECH.COM:443", "/"),
+      "/hetv-audience-crm/",
+    );
+  });
+
   it("does not intercept artifact paths or unrelated hostnames", () => {
     assert.equal(
       getCustomDomainDestination(
         "larkin2portal.gentraxtech.com",
         "/larkin2-opportunities-portal/",
+      ),
+      undefined,
+    );
+    assert.equal(
+      getCustomDomainDestination(
+        "hetvcrm.gentraxtech.com",
+        "/hetv-audience-crm/audience",
       ),
       undefined,
     );
