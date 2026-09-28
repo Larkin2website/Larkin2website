@@ -23,3 +23,4 @@ export * from "./portal";
 export * from "./public-subscriptions";
 export * from "./subscription-verification";
 export * from "./audience-crm";
+export * from "./temporary-test-sessions";

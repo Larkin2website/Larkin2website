@@ -33,6 +33,8 @@ DEV_DEMO_LOGIN_ENABLED = "true"
 VITE_DEV_DEMO_LOGIN_ENABLED = "true"
 
 [userenv.production]
+PUBLIC_TEST_LOGIN_ENABLED = "true"
+VITE_PUBLIC_TEST_LOGIN_ENABLED = "true"
 
 [userenv.shared]
 PUBLIC_OPPORTUNITIES_URL = "https://larkin2opportunities.gentraxtech.com/larkin2-opportunities/"

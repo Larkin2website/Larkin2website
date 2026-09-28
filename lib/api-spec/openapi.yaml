@@ -268,7 +268,12 @@ paths:
     post:
       operationId: createPortalDemoSession
       tags: [portal-session]
-      summary: Start a development-only portal session
+      summary: Start a temporary portal testing session
+      description: |
+        Available only when temporary test sign-in is explicitly enabled for the
+        current environment. Any valid email and non-empty password are accepted;
+        these credentials do not verify identity. The session grants full portal
+        testing access and must not be used for secure staff authentication.
       requestBody:
         required: true
         content:
@@ -291,7 +296,12 @@ paths:
     post:
       operationId: createCrmDemoSession
       tags: [crm]
-      summary: Start a development-only CRM session
+      summary: Start a temporary CRM testing session
+      description: |
+        Available only when temporary test sign-in is explicitly enabled for the
+        current environment. Any valid email and non-empty password are accepted;
+        these credentials do not verify identity. The session grants full CRM
+        testing access and must not be used for secure staff authentication.
       requestBody:
         required: true
         content:
@@ -300,16 +310,16 @@ paths:
               $ref: "#/components/schemas/DevelopmentSignInInput"
       responses:
         "204":
-          description: CRM development session started
+          description: CRM testing session started
         "404":
           $ref: "#/components/responses/NotFound"
     delete:
       operationId: deleteCrmDemoSession
       tags: [crm]
-      summary: End a development-only CRM session
+      summary: End a temporary CRM testing session
       responses:
         "204":
-          description: CRM development session ended
+          description: CRM testing session ended
   /portal/access-grants:
     post:
       operationId: createPortalAccessGrant

@@ -2,7 +2,7 @@ import { SignIn } from "@clerk/react";
 import { clerkBasePath } from "@/lib/clerk";
 import { Larkin2Wordmark } from "@/components/brand";
 import productionImage from "@/assets/sign-in-production.webp";
-import { portalDemoMode } from "@/lib/demo-mode";
+import { portalDemoMode, portalTestAccessLabel } from "@/lib/demo-mode";
 import { useCreatePortalDemoSession, getGetPortalSessionQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -115,7 +115,7 @@ export default function SignInPage() {
 
         <div className="relative z-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-[#f4f1ed]/65 font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300">
           <span>© {new Date().getFullYear()} Larkin2</span>
-          <span>{portalDemoMode ? "Development access only" : "Authorized Personnel Only"}</span>
+          <span>{portalDemoMode ? portalTestAccessLabel : "Authorized Personnel Only"}</span>
         </div>
       </div>
 
@@ -125,7 +125,7 @@ export default function SignInPage() {
             <div className="space-y-8">
               <div>
                 <h2 className="font-mono text-3xl tracking-tight text-[#1d2020]">Sign in to Larkin2</h2>
-                <p className="mt-3 text-base text-[#625d58]">Temporary sign-in for testing current development records. Any valid email and non-empty password will work here; this is not secure authentication.</p>
+                <p className="mt-3 text-base text-[#625d58]">{import.meta.env.PROD ? "Temporary public testing access. Any valid email and non-empty password grants full access to production records. This is not secure authentication." : "Temporary sign-in for testing current development records. Any valid email and non-empty password will work here; this is not secure authentication."}</p>
               </div>
               <form className="space-y-5" onSubmit={handleDemoSignIn}>
                 <div className="space-y-3">
@@ -151,11 +151,11 @@ export default function SignInPage() {
                 disabled={startDemoSession.isPending}
                 className="h-14 w-full rounded-none bg-[#f4773f] font-mono text-xs font-bold uppercase tracking-wider text-[#080a0c] hover:bg-[#ff8d57]"
               >
-                {startDemoSession.isPending ? "Signing in..." : "Sign in for development"}
+                {startDemoSession.isPending ? "Signing in..." : "Sign in for testing"}
               </Button>
               {startDemoSession.isError && (
                 <p role="alert" className="border border-[#ef625f] bg-[#ef625f]/10 p-3 text-sm text-[#9f2d2a]">
-                  The development session could not be started. Please try again.
+                  The testing session could not be started. Please try again.
                 </p>
               )}
               </form>

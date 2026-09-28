@@ -34,7 +34,13 @@ import { requireCrmAccess, requirePortal } from "../lib/portal-auth";
 import * as audience from "../lib/audience-crm-service";
 import { publicationDeliveryConfig, sendPublicationSampleTest, sendPublicationTest } from "../lib/publication-delivery";
 import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
-import { clearDevelopmentSession, DevelopmentCredentials, isDevelopmentDemoEnabled, startDevelopmentSession } from "../lib/development-session";
+import {
+  clearDevelopmentSession,
+  DevelopmentCredentials,
+  isTemporaryTestLoginEnabled,
+  startDevelopmentSession,
+} from "../lib/development-session";
+import { isPortalDemoMode } from "../lib/portal-demo";
 
 const publicEngagementLimit = createFixedWindowRateLimit({ limit: 60, windowMs: 15 * 60 * 1000 });
 const controlledTestLimit = createFixedWindowRateLimit({ limit: 5, windowMs: 15 * 60 * 1000 });
@@ -58,14 +64,14 @@ export function createAudienceCrmRouter(overrides: {
 } = {}) {
 const router = Router();
 
-router.post("/crm/demo-session", developmentSignInLimit, (req, res): void => {
-  if (!isDevelopmentDemoEnabled()) { res.status(404).json({ error: "Not found" }); return; }
+router.post("/crm/demo-session", developmentSignInLimit, async (req, res): Promise<void> => {
+  if (!isPortalDemoMode()) { res.status(404).json({ error: "Not found" }); return; }
   if (!DevelopmentCredentials.safeParse(req.body).success) { res.status(400).json({ error: "Enter a valid email address and a password" }); return; }
-  startDevelopmentSession(res, "crm");
+  await startDevelopmentSession(res, "crm");
   res.status(204).send();
 });
-router.delete("/crm/demo-session", (req, res): void => {
-  clearDevelopmentSession(req, res, "crm");
+router.delete("/crm/demo-session", async (req, res): Promise<void> => {
+  await clearDevelopmentSession(req, res, "crm");
   res.status(204).send();
 });
 
@@ -108,7 +114,7 @@ router.get("/crm/communications/delivery-settings", overrides.requireCrmAccess ?
   const config = (overrides.deliveryConfig ?? publicationDeliveryConfig)();
   res.setHeader("Cache-Control", "no-store");
   res.json(GetCrmDeliverySettingsResponse.parse({
-    testReady: !req.portalActor?.demo && !!config.test, liveEnabled: !isDevelopmentDemoEnabled() && !!config.live,
+    testReady: !req.portalActor?.demo && !!config.test, liveEnabled: !isTemporaryTestLoginEnabled() && !!config.live,
     trackingReady: !!process.env.RESEND_WEBHOOK_SECRET?.startsWith("whsec_"),
   }));
 });

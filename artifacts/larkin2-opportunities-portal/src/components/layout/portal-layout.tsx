@@ -28,7 +28,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { clerkBasePath } from "@/lib/clerk";
 import { Larkin2Wordmark } from "@/components/brand";
-import { portalDemoMode } from "@/lib/demo-mode";
+import { portalDemoMode, portalTestAccessLabel } from "@/lib/demo-mode";
 import { clearDemoSessionCache } from "@/lib/demo-session-cache";
 
 interface PortalLayoutProps {
@@ -203,7 +203,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               {portalDemoMode ? (
                 <>
                   <DropdownMenuItem disabled className="text-primary text-[10px] uppercase tracking-wider">
-                    Development access only
+                     {portalTestAccessLabel}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-border" />
                   <DropdownMenuItem
@@ -277,7 +277,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         </header>
         {portalDemoMode && (
           <div className="shrink-0 border-b border-primary/30 bg-primary/10 px-4 py-2 text-center font-mono text-[10px] uppercase tracking-widest text-primary">
-            Development access only · not secure authentication
+            {portalTestAccessLabel} · not secure authentication
           </div>
         )}
         

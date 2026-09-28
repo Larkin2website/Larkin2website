@@ -1,6 +1,8 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import type { Request, Response } from "express";
 import { CreatePortalDemoSessionBody as DevelopmentCredentials } from "@workspace/api-zod";
+import { and, eq, lte } from "drizzle-orm";
+import { db, temporaryTestSessionsTable } from "@workspace/db";
 
 export { DevelopmentCredentials };
 
@@ -17,47 +19,95 @@ export function isDevelopmentDemoEnabled(env: NodeJS.ProcessEnv = process.env): 
   return env.NODE_ENV !== "production" && env.DEV_DEMO_LOGIN_ENABLED === "true";
 }
 
-export function hasDevelopmentSession(req: Request, scope: DevelopmentScope): boolean {
-  if (!isDevelopmentDemoEnabled()) return false;
+export function isTemporaryTestLoginEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.NODE_ENV === "production"
+    ? env.PUBLIC_TEST_LOGIN_ENABLED === "true"
+    : env.DEV_DEMO_LOGIN_ENABLED === "true";
+}
+
+export function sessionCookieOptions(
+  scope: DevelopmentScope,
+  env: NodeJS.ProcessEnv = process.env,
+) {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: env.NODE_ENV === "production",
+    path: `/api/${scope}`,
+    maxAge: lifetimeMs,
+  };
+}
+
+function tokenHash(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+export async function hasDevelopmentSession(req: Request, scope: DevelopmentScope): Promise<boolean> {
+  if (!isTemporaryTestLoginEnabled()) return false;
   const token = req.cookies?.[cookies[scope]];
   if (typeof token !== "string") return false;
-  const session = sessions.get(token);
+  const hash = tokenHash(token);
+  if (process.env.NODE_ENV === "production") {
+    const [session] = await db.select({ expiresAt: temporaryTestSessionsTable.expiresAt })
+      .from(temporaryTestSessionsTable)
+      .where(and(
+        eq(temporaryTestSessionsTable.tokenHash, hash),
+        eq(temporaryTestSessionsTable.scope, scope),
+      )).limit(1);
+    if (!session) return false;
+    if (session.expiresAt.getTime() <= Date.now()) {
+      await db.delete(temporaryTestSessionsTable)
+        .where(eq(temporaryTestSessionsTable.tokenHash, hash));
+      return false;
+    }
+    return true;
+  }
+  const session = sessions.get(hash);
   if (!session || session.scope !== scope) return false;
   if (session.expiresAt <= Date.now()) {
-    sessions.delete(token);
+    sessions.delete(hash);
     return false;
   }
   return true;
 }
 
-export function startDevelopmentSession(res: Response, scope: DevelopmentScope): void {
-  if (!isDevelopmentDemoEnabled()) throw new Error("Development sign-in is disabled");
+export async function startDevelopmentSession(res: Response, scope: DevelopmentScope): Promise<void> {
+  if (!isTemporaryTestLoginEnabled()) throw new Error("Temporary test sign-in is disabled");
   const now = Date.now();
-  for (const [key, session] of sessions) {
-    if (session.expiresAt <= now) sessions.delete(key);
-  }
-  if (sessions.size >= maxSessions) {
-    const oldest = sessions.keys().next().value;
-    if (oldest) sessions.delete(oldest);
-  }
   const token = randomBytes(32).toString("base64url");
-  sessions.set(token, { scope, expiresAt: now + lifetimeMs });
-  res.cookie(cookies[scope], token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    path: `/api/${scope}`,
-    maxAge: lifetimeMs,
-  });
+  const hash = tokenHash(token);
+  const expiresAt = new Date(now + lifetimeMs);
+  if (process.env.NODE_ENV === "production") {
+    await db.delete(temporaryTestSessionsTable)
+      .where(lte(temporaryTestSessionsTable.expiresAt, new Date(now)));
+    await db.insert(temporaryTestSessionsTable).values({ tokenHash: hash, scope, expiresAt });
+  } else {
+    for (const [key, session] of sessions) {
+      if (session.expiresAt <= now) sessions.delete(key);
+    }
+    if (sessions.size >= maxSessions) {
+      const oldest = sessions.keys().next().value;
+      if (oldest) sessions.delete(oldest);
+    }
+    sessions.set(hash, { scope, expiresAt: expiresAt.getTime() });
+  }
+  res.cookie(cookies[scope], token, sessionCookieOptions(scope));
 }
 
-export function clearDevelopmentSession(req: Request, res: Response, scope: DevelopmentScope): void {
+export async function clearDevelopmentSession(req: Request, res: Response, scope: DevelopmentScope): Promise<void> {
   const token = req.cookies?.[cookies[scope]];
-  if (typeof token === "string") sessions.delete(token);
-  res.clearCookie(cookies[scope], {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    path: `/api/${scope}`,
-  });
+  if (typeof token === "string") {
+    const hash = tokenHash(token);
+    if (process.env.NODE_ENV === "production") {
+      await db.delete(temporaryTestSessionsTable)
+        .where(and(
+          eq(temporaryTestSessionsTable.tokenHash, hash),
+          eq(temporaryTestSessionsTable.scope, scope),
+        ));
+    } else {
+      sessions.delete(hash);
+    }
+  }
+  const { maxAge: _maxAge, ...clearOptions } = sessionCookieOptions(scope);
+  res.clearCookie(cookies[scope], clearOptions);
 }

@@ -12,3 +12,4 @@
 - [Signup field responsiveness](signup-field-responsiveness.md) — Check the form’s usable inner width, not its outer width, when choosing when paired fields should stack.
 - [Subscription verification privacy](subscription-verification-privacy.md) — Neutral responses must also avoid provider-timing and storage-failure leaks about subscribed addresses.
 - [Private preview verification](private-preview-verification.md) — In-workspace requests can return 200 for private previews; do not treat shell curl as an outside visitor.
+- [Public testing access](public-testing-access.md) — The owner explicitly chose arbitrary-credential full access on the public production site for testing; treat it as temporary.

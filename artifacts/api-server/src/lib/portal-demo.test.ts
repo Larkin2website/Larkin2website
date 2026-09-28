@@ -19,6 +19,7 @@ test("demo mode requires an explicit development opt-in and is off in production
   assert.equal(isPortalDemoMode({ NODE_ENV: "development" }), false);
   assert.equal(isPortalDemoMode({ NODE_ENV: "test", DEV_DEMO_LOGIN_ENABLED: "true" }), true);
   assert.equal(isPortalDemoMode({ NODE_ENV: "production", DEV_DEMO_LOGIN_ENABLED: "true", PORTAL_DEMO_MODE: "true" }), false);
+  assert.equal(isPortalDemoMode({ NODE_ENV: "production", PUBLIC_TEST_LOGIN_ENABLED: "true" }), true);
 });
 
 test("demo cookie starts, protects, and ends a browser session", async () => {
@@ -30,15 +31,15 @@ test("demo cookie starts, protects, and ends a browser session", async () => {
     demoMode: () => true,
     hasDemoSession: (req) => hasDemoPortalSession(req),
   });
-  app.post("/session", (_req, res) => {
-    startDemoPortalSession(res);
+  app.post("/session", async (_req, res) => {
+    await startDemoPortalSession(res);
     res.status(204).send();
   });
   app.get("/protected", protectedRoute(), (_req, res) => {
     res.status(204).send();
   });
-  app.delete("/session", (req, res) => {
-    clearDemoPortalSession(req, res);
+  app.delete("/session", async (req, res) => {
+    await clearDemoPortalSession(req, res);
     res.status(204).send();
   });
   const server = app.listen(0);
@@ -90,27 +91,24 @@ test("demo actor is an active super admin with every permission", () => {
   assert.equal(member.userId, actor.userId);
 });
 
-test("production rejects development login even with the old insecure override", () => {
-  assert.throws(
-    () => validatePortalDemoMode({
-      NODE_ENV: "production",
-      PORTAL_DEMO_MODE: "true",
-    }),
-    /cannot be enabled in production/,
-  );
-  assert.throws(() => validatePortalDemoMode({
+test("production mode ignores all legacy switches and only honors public test opt-in", () => {
+  assert.doesNotThrow(() => validatePortalDemoMode({
     NODE_ENV: "production",
     PORTAL_DEMO_MODE: "true",
     ALLOW_INSECURE_DEMO_DEPLOYMENT: "true",
-  }), /cannot be enabled in production/);
-  assert.throws(() => validatePortalDemoMode({
+    DEV_DEMO_LOGIN_ENABLED: "true",
+  }));
+  assert.equal(isPortalDemoMode({
     NODE_ENV: "production",
     DEV_DEMO_LOGIN_ENABLED: "true",
-  }), /cannot be enabled in production/);
-  assert.doesNotThrow(() => validatePortalDemoMode({
+    ALLOW_INSECURE_DEMO_DEPLOYMENT: "true",
+  }), false);
+  assert.equal(isPortalDemoMode({
     NODE_ENV: "production",
-    PORTAL_DEMO_MODE: "false",
-  }));
+    PUBLIC_TEST_LOGIN_ENABLED: "true",
+    DEV_DEMO_LOGIN_ENABLED: "false",
+    ALLOW_INSECURE_DEMO_DEPLOYMENT: "false",
+  }), true);
 });
 
 test("demo requests require an explicit browser session", async () => {

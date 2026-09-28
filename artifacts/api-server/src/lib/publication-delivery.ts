@@ -9,7 +9,7 @@ import { isEligibleAudienceRecipient, matchingCriteriaFor, refreshPublicationBat
 import { applyProviderEvents } from "./provider-delivery-events";
 import type { MatchingInput } from "./audience-crm-service";
 import { logger } from "./logger";
-import { isDevelopmentDemoEnabled } from "./development-session";
+import { isTemporaryTestLoginEnabled } from "./development-session";
 
 const MAX_ATTEMPTS = 5;
 const LEASE_MS = 90_000;
@@ -210,6 +210,7 @@ export async function processPublicationDeliveries(
   at = new Date(),
 ): Promise<number> {
   // The default configuration performs no reads or sends, including in published deployments.
+  if (isTemporaryTestLoginEnabled()) return 0;
   if (!config?.activatedAt) return 0;
   const candidates = await db.select({ id: crmCommunicationOutboxTable.id })
     .from(crmCommunicationOutboxTable)
@@ -286,7 +287,7 @@ export async function processPublicationDeliveries(
 
 let busy = false;
 export function startPublicationDeliveryWorker() {
-  if (isDevelopmentDemoEnabled()) return;
+  if (isTemporaryTestLoginEnabled()) return;
   if (!publicationDeliveryConfig().live) return;
   const tick = async () => {
     if (busy) return;

@@ -1,7 +1,7 @@
 import { permissionsForRole } from "./permissions";
 import type { PortalActor } from "./portal-auth";
 import type { Request, Response } from "express";
-import { clearDevelopmentSession, hasDevelopmentSession, isDevelopmentDemoEnabled, startDevelopmentSession } from "./development-session";
+import { clearDevelopmentSession, hasDevelopmentSession, isDevelopmentDemoEnabled, isTemporaryTestLoginEnabled, startDevelopmentSession } from "./development-session";
 
 const enabledValues = new Set(["1", "true", "yes", "on"]);
 const disabledValues = new Set(["0", "false", "no", "off"]);
@@ -23,21 +23,15 @@ function parseBoolean(value: string | undefined, fallback: boolean): boolean {
 export function isPortalDemoMode(
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
+  if (env.NODE_ENV === "production") return isTemporaryTestLoginEnabled(env);
   return isDevelopmentDemoEnabled(env) && parseBoolean(env.PORTAL_DEMO_MODE, true);
 }
 
 export function validatePortalDemoMode(
   env: NodeJS.ProcessEnv = process.env,
 ): void {
-  if (env.NODE_ENV === "production" && (
-    parseBoolean(env.PORTAL_DEMO_MODE, false) ||
-    parseBoolean(env.DEV_DEMO_LOGIN_ENABLED, false) ||
-    parseBoolean(env.ALLOW_INSECURE_DEMO_DEPLOYMENT, false)
-  )) {
-    throw new Error(
-      "Development demo sign-in cannot be enabled in production.",
-    );
-  }
+  // Production access is controlled only by PUBLIC_TEST_LOGIN_ENABLED. Legacy
+  // development and insecure-deployment flags intentionally have no effect.
 }
 
 export function demoPortalActor(): PortalActor {
@@ -66,15 +60,15 @@ export function demoPortalMember() {
   };
 }
 
-export function hasDemoPortalSession(req: Request): boolean {
-  return isPortalDemoMode() && hasDevelopmentSession(req, "portal");
+export async function hasDemoPortalSession(req: Request): Promise<boolean> {
+  return isPortalDemoMode() && await hasDevelopmentSession(req, "portal");
 }
 
-export function startDemoPortalSession(res: Response): void {
+export async function startDemoPortalSession(res: Response): Promise<void> {
   if (!isPortalDemoMode()) throw new Error("Portal demo sign-in is disabled");
-  startDevelopmentSession(res, "portal");
+  await startDevelopmentSession(res, "portal");
 }
 
-export function clearDemoPortalSession(req: Request, res: Response): void {
-  clearDevelopmentSession(req, res, "portal");
+export async function clearDemoPortalSession(req: Request, res: Response): Promise<void> {
+  await clearDevelopmentSession(req, res, "portal");
 }

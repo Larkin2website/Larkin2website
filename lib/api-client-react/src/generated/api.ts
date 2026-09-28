@@ -1012,7 +1012,11 @@ export const getCreatePortalDemoSessionUrl = () => {
 }
 
 /**
- * @summary Start a development-only portal session
+ * Available only when temporary test sign-in is explicitly enabled for the
+ * current environment. Any valid email and non-empty password are accepted;
+ * these credentials do not verify identity. The session grants full portal
+ * testing access and must not be used for secure staff authentication.
+ * @summary Start a temporary portal testing session
  */
 export const createPortalDemoSession = async (developmentSignInInput: DevelopmentSignInInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
 
@@ -1061,7 +1065,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreatePortalDemoSessionMutationError = ErrorType<NotFoundResponse>
 
     /**
- * @summary Start a development-only portal session
+ * @summary Start a temporary portal testing session
  */
 export const useCreatePortalDemoSession = <TError = ErrorType<NotFoundResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -1154,7 +1158,11 @@ export const getCreateCrmDemoSessionUrl = () => {
 }
 
 /**
- * @summary Start a development-only CRM session
+ * Available only when temporary test sign-in is explicitly enabled for the
+ * current environment. Any valid email and non-empty password are accepted;
+ * these credentials do not verify identity. The session grants full CRM
+ * testing access and must not be used for secure staff authentication.
+ * @summary Start a temporary CRM testing session
  */
 export const createCrmDemoSession = async (developmentSignInInput: DevelopmentSignInInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
 
@@ -1203,7 +1211,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateCrmDemoSessionMutationError = ErrorType<NotFoundResponse>
 
     /**
- * @summary Start a development-only CRM session
+ * @summary Start a temporary CRM testing session
  */
 export const useCreateCrmDemoSession = <TError = ErrorType<NotFoundResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCrmDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -1225,7 +1233,7 @@ export const getDeleteCrmDemoSessionUrl = () => {
 }
 
 /**
- * @summary End a development-only CRM session
+ * @summary End a temporary CRM testing session
  */
 export const deleteCrmDemoSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
 
@@ -1274,7 +1282,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DeleteCrmDemoSessionMutationError = ErrorType<unknown>
 
     /**
- * @summary End a development-only CRM session
+ * @summary End a temporary CRM testing session
  */
 export const useDeleteCrmDemoSession = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCrmDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}

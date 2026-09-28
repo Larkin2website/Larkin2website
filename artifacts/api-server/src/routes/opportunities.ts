@@ -58,14 +58,14 @@ const dependencies: OpportunityRouteDependencies = {
   ...overrides,
 };
 const router: IRouter = Router();
-router.post("/portal/demo-session", developmentSignInLimit, (req, res): void => {
+router.post("/portal/demo-session", developmentSignInLimit, async (req, res): Promise<void> => {
   if (!isPortalDemoMode()) { res.status(404).json({ error: "Not found" }); return; }
   if (!DevelopmentCredentials.safeParse(req.body).success) { res.status(400).json({ error: "Enter a valid email address and a password" }); return; }
-  startDemoPortalSession(res);
+  await startDemoPortalSession(res);
   res.status(204).send();
 });
-router.delete("/portal/demo-session", (req, res): void => {
-  clearDemoPortalSession(req, res);
+router.delete("/portal/demo-session", async (req, res): Promise<void> => {
+  await clearDemoPortalSession(req, res);
   res.status(204).send();
 });
 

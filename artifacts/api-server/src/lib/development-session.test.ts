@@ -5,7 +5,12 @@ import cookieParser from "cookie-parser";
 import type { AddressInfo } from "node:net";
 import { createOpportunitiesRouter } from "../routes/opportunities";
 import { createAudienceCrmRouter } from "../routes/audience-crm";
-import { hasDevelopmentSession, isDevelopmentDemoEnabled } from "./development-session";
+import {
+  hasDevelopmentSession,
+  isDevelopmentDemoEnabled,
+  isTemporaryTestLoginEnabled,
+  sessionCookieOptions,
+} from "./development-session";
 
 test("both sign-in forms require credentials and create separate revocable sessions", async () => {
   const previous = process.env.DEV_DEMO_LOGIN_ENABLED;
@@ -15,10 +20,10 @@ test("both sign-in forms require credentials and create separate revocable sessi
   const app = express();
   app.use(express.json());
   app.use(cookieParser());
-  app.get("/api/portal/protected-test", (req, res) =>
-    res.status(hasDevelopmentSession(req, "portal") ? 204 : 401).end());
-  app.get("/api/crm/protected-test", (req, res) =>
-    res.status(hasDevelopmentSession(req, "crm") ? 204 : 401).end());
+  app.get("/api/portal/protected-test", async (req, res) =>
+    res.status(await hasDevelopmentSession(req, "portal") ? 204 : 401).end());
+  app.get("/api/crm/protected-test", async (req, res) =>
+    res.status(await hasDevelopmentSession(req, "crm") ? 204 : 401).end());
   app.use("/api", createOpportunitiesRouter());
   app.use("/api", createAudienceCrmRouter());
   const server = app.listen(0);
@@ -53,6 +58,7 @@ test("both sign-in forms require credentials and create separate revocable sessi
     assert.equal((await fetch(`${base}/portal/protected-test`, { headers: { cookie: portalCookie } })).status, 401);
     process.env.NODE_ENV = "production";
     assert.equal(isDevelopmentDemoEnabled(), false);
+    assert.equal(isTemporaryTestLoginEnabled(), false);
     assert.equal((await fetch(`${base}/crm/demo-session`, json({ email: "tester@example.com", password: "anything" }))).status, 404);
     assert.equal((await fetch(`${base}/portal/demo-session`, json({ email: "tester@example.com", password: "anything" }))).status, 404);
   } finally {
@@ -62,4 +68,24 @@ test("both sign-in forms require credentials and create separate revocable sessi
     if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
     else process.env.NODE_ENV = previousNodeEnv;
   }
+});
+
+test("production test access requires its explicit switch and production cookies are secure", () => {
+  assert.equal(isTemporaryTestLoginEnabled({
+    NODE_ENV: "production",
+    DEV_DEMO_LOGIN_ENABLED: "true",
+    ALLOW_INSECURE_DEMO_DEPLOYMENT: "true",
+  }), false);
+  assert.equal(isTemporaryTestLoginEnabled({
+    NODE_ENV: "production",
+    PUBLIC_TEST_LOGIN_ENABLED: "true",
+    DEV_DEMO_LOGIN_ENABLED: "false",
+  }), true);
+  assert.equal(isTemporaryTestLoginEnabled({
+    NODE_ENV: "development",
+    PUBLIC_TEST_LOGIN_ENABLED: "true",
+  }), false);
+  assert.equal(sessionCookieOptions("portal", { NODE_ENV: "production" }).secure, true);
+  assert.equal(sessionCookieOptions("crm", { NODE_ENV: "development" }).secure, false);
+  assert.equal(sessionCookieOptions("crm").maxAge, 8 * 60 * 60 * 1000);
 });

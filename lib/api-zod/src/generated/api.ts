@@ -388,7 +388,11 @@ export const GetPortalSessionResponse = zod.object({
 
 
 /**
- * @summary Start a development-only portal session
+ * Available only when temporary test sign-in is explicitly enabled for the
+ * current environment. Any valid email and non-empty password are accepted;
+ * these credentials do not verify identity. The session grants full portal
+ * testing access and must not be used for secure staff authentication.
+ * @summary Start a temporary portal testing session
  */
 
 
@@ -408,7 +412,11 @@ export const DeletePortalDemoSessionResponse = zod.void()
 
 
 /**
- * @summary Start a development-only CRM session
+ * Available only when temporary test sign-in is explicitly enabled for the
+ * current environment. Any valid email and non-empty password are accepted;
+ * these credentials do not verify identity. The session grants full CRM
+ * testing access and must not be used for secure staff authentication.
+ * @summary Start a temporary CRM testing session
  */
 
 
@@ -422,7 +430,7 @@ export const CreateCrmDemoSessionResponse = zod.void()
 
 
 /**
- * @summary End a development-only CRM session
+ * @summary End a temporary CRM testing session
  */
 export const DeleteCrmDemoSessionResponse = zod.void()
 
