@@ -15,29 +15,30 @@ import {
 import { permissionsForRole } from "./permissions";
 import { createRequirePortal } from "./portal-auth";
 
-test("demo mode defaults on outside production and off in production", () => {
-  assert.equal(isPortalDemoMode({ NODE_ENV: "development" }), true);
-  assert.equal(isPortalDemoMode({ NODE_ENV: "test" }), true);
-  assert.equal(isPortalDemoMode({ NODE_ENV: "production" }), false);
+test("demo mode requires an explicit development opt-in and is off in production", () => {
+  assert.equal(isPortalDemoMode({ NODE_ENV: "development" }), false);
+  assert.equal(isPortalDemoMode({ NODE_ENV: "test", DEV_DEMO_LOGIN_ENABLED: "true" }), true);
+  assert.equal(isPortalDemoMode({ NODE_ENV: "production", DEV_DEMO_LOGIN_ENABLED: "true", PORTAL_DEMO_MODE: "true" }), false);
 });
 
 test("demo cookie starts, protects, and ends a browser session", async () => {
   const app = express();
   app.use(cookieParser());
-  const secret = "test-only-demo-session-secret";
+  const previous = process.env.DEV_DEMO_LOGIN_ENABLED;
+  process.env.DEV_DEMO_LOGIN_ENABLED = "true";
   const protectedRoute = createRequirePortal({
     demoMode: () => true,
-    hasDemoSession: (req) => hasDemoPortalSession(req, secret),
+    hasDemoSession: (req) => hasDemoPortalSession(req),
   });
   app.post("/session", (_req, res) => {
-    startDemoPortalSession(res, secret);
+    startDemoPortalSession(res);
     res.status(204).send();
   });
   app.get("/protected", protectedRoute(), (_req, res) => {
     res.status(204).send();
   });
-  app.delete("/session", (_req, res) => {
-    clearDemoPortalSession(res);
+  app.delete("/session", (req, res) => {
+    clearDemoPortalSession(req, res);
     res.status(204).send();
   });
   const server = app.listen(0);
@@ -64,14 +65,19 @@ test("demo cookie starts, protects, and ends a browser session", async () => {
     });
     assert.equal(signOut.status, 204);
     assert.match(signOut.headers.get("set-cookie") ?? "", /Expires=Thu, 01 Jan 1970/i);
+    assert.equal((await fetch(`${baseUrl}/protected`, {
+      headers: { cookie: cookie!.split(";", 1)[0] },
+    })).status, 401);
   } finally {
     await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+    if (previous === undefined) delete process.env.DEV_DEMO_LOGIN_ENABLED;
+    else process.env.DEV_DEMO_LOGIN_ENABLED = previous;
   }
 });
 
 test("demo mode accepts explicit on and off values", () => {
-  assert.equal(isPortalDemoMode({ NODE_ENV: "production", PORTAL_DEMO_MODE: "true" }), true);
-  assert.equal(isPortalDemoMode({ NODE_ENV: "development", PORTAL_DEMO_MODE: "false" }), false);
+  assert.equal(isPortalDemoMode({ NODE_ENV: "production", PORTAL_DEMO_MODE: "true", DEV_DEMO_LOGIN_ENABLED:"true" }), false);
+  assert.equal(isPortalDemoMode({ NODE_ENV: "development", PORTAL_DEMO_MODE: "false", DEV_DEMO_LOGIN_ENABLED:"true" }), false);
 });
 
 test("demo actor is an active super admin with every permission", () => {
@@ -84,19 +90,23 @@ test("demo actor is an active super admin with every permission", () => {
   assert.equal(member.userId, actor.userId);
 });
 
-test("production requires an explicit insecure demo deployment acknowledgement", () => {
+test("production rejects development login even with the old insecure override", () => {
   assert.throws(
     () => validatePortalDemoMode({
       NODE_ENV: "production",
       PORTAL_DEMO_MODE: "true",
     }),
-    /ALLOW_INSECURE_DEMO_DEPLOYMENT=true/,
+    /cannot be enabled in production/,
   );
-  assert.doesNotThrow(() => validatePortalDemoMode({
+  assert.throws(() => validatePortalDemoMode({
     NODE_ENV: "production",
     PORTAL_DEMO_MODE: "true",
     ALLOW_INSECURE_DEMO_DEPLOYMENT: "true",
-  }));
+  }), /cannot be enabled in production/);
+  assert.throws(() => validatePortalDemoMode({
+    NODE_ENV: "production",
+    DEV_DEMO_LOGIN_ENABLED: "true",
+  }), /cannot be enabled in production/);
   assert.doesNotThrow(() => validatePortalDemoMode({
     NODE_ENV: "production",
     PORTAL_DEMO_MODE: "false",

@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DEMO_PORTAL_EMAIL } from "@/lib/demo-session";
+import { useState, type FormEvent } from "react";
 
 const paperAppearance = {
   theme: "simple" as const,
@@ -66,11 +66,19 @@ export default function SignInPage() {
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const startDemoSession = useCreatePortalDemoSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleDemoSignIn = async () => {
-    await startDemoSession.mutateAsync();
-    await queryClient.invalidateQueries({ queryKey: getGetPortalSessionQueryKey() });
-    navigate("/dashboard", { replace: true });
+  const handleDemoSignIn = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      await startDemoSession.mutateAsync({ data: { email, password } });
+      setPassword("");
+      await queryClient.invalidateQueries({ queryKey: getGetPortalSessionQueryKey() });
+      navigate("/dashboard", { replace: true });
+    } catch {
+      setPassword("");
+    }
   };
 
   return (
@@ -107,7 +115,7 @@ export default function SignInPage() {
 
         <div className="relative z-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-[#f4f1ed]/65 font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300">
           <span>© {new Date().getFullYear()} Larkin2</span>
-          <span>Authorized Personnel Only</span>
+          <span>{portalDemoMode ? "Development access only" : "Authorized Personnel Only"}</span>
         </div>
       </div>
 
@@ -117,33 +125,40 @@ export default function SignInPage() {
             <div className="space-y-8">
               <div>
                 <h2 className="font-mono text-3xl tracking-tight text-[#1d2020]">Sign in to Larkin2</h2>
-                <p className="mt-3 text-base text-[#625d58]">Enter the demonstration portal without real credentials.</p>
+                <p className="mt-3 text-base text-[#625d58]">Temporary sign-in for testing current development records. Any valid email and non-empty password will work here; this is not secure authentication.</p>
               </div>
-              <div className="space-y-3">
+              <form className="space-y-5" onSubmit={handleDemoSignIn}>
+                <div className="space-y-3">
                 <label htmlFor="demo-email" className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#625d58]">
                   Email address
                 </label>
                 <Input
                   id="demo-email"
                   type="email"
-                  value={DEMO_PORTAL_EMAIL}
-                  readOnly
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  autoComplete="email"
+                  required
                   className="h-14 rounded-none border-[#c7c2bc] bg-[#e9e5df] px-4 font-mono text-sm text-[#1d2020]"
                 />
-              </div>
+                </div>
+                <div className="space-y-3">
+                  <label htmlFor="demo-password" className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#625d58]">Password</label>
+                  <Input id="demo-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="off" required className="h-14 rounded-none border-[#c7c2bc] bg-[#e9e5df] px-4 font-mono text-sm text-[#1d2020]" />
+                </div>
               <Button
-                type="button"
+                type="submit"
                 disabled={startDemoSession.isPending}
-                onClick={handleDemoSignIn}
                 className="h-14 w-full rounded-none bg-[#f4773f] font-mono text-xs font-bold uppercase tracking-wider text-[#080a0c] hover:bg-[#ff8d57]"
               >
-                {startDemoSession.isPending ? "Entering portal..." : "Enter Demo Portal"}
+                {startDemoSession.isPending ? "Signing in..." : "Sign in for development"}
               </Button>
               {startDemoSession.isError && (
                 <p role="alert" className="border border-[#ef625f] bg-[#ef625f]/10 p-3 text-sm text-[#9f2d2a]">
-                  The demo session could not be started. Please try again.
+                  The development session could not be started. Please try again.
                 </p>
               )}
+              </form>
             </div>
           ) : (
             <SignIn

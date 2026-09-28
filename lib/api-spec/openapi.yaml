@@ -268,7 +268,13 @@ paths:
     post:
       operationId: createPortalDemoSession
       tags: [portal-session]
-      summary: Start a browser-scoped demo portal session
+      summary: Start a development-only portal session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DevelopmentSignInInput"
       responses:
         "204":
           description: Demo session started
@@ -281,6 +287,29 @@ paths:
       responses:
         "204":
           description: Demo session ended
+  /crm/demo-session:
+    post:
+      operationId: createCrmDemoSession
+      tags: [crm]
+      summary: Start a development-only CRM session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DevelopmentSignInInput"
+      responses:
+        "204":
+          description: CRM development session started
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteCrmDemoSession
+      tags: [crm]
+      summary: End a development-only CRM session
+      responses:
+        "204":
+          description: CRM development session ended
   /portal/access-grants:
     post:
       operationId: createPortalAccessGrant
@@ -1369,6 +1398,12 @@ components:
           schema:
             $ref: "#/components/schemas/ApiError"
   schemas:
+    DevelopmentSignInInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 1 }
     HealthStatus:
       type: object
       required: [status]

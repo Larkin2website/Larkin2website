@@ -5,6 +5,12 @@
  * Shared contract for Larkin2 public opportunities and the internal management portal.
  * OpenAPI spec version: 1.0.0
  */
+export interface DevelopmentSignInInput {
+  email: string;
+  /** @minLength 1 */
+  password: string;
+}
+
 export interface HealthStatus {
   status: string;
 }

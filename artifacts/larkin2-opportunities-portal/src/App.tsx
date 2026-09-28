@@ -239,7 +239,7 @@ function DemoRouter() {
           {session ? <Redirect to="/dashboard" /> : <LandingPage />}
         </Route>
         <Route path="/*">
-          {session ? <AuthenticatedRoutes /> : <Redirect to="/" />}
+          {session ? <AuthenticatedRoutes /> : <Redirect to="/sign-in" />}
         </Route>
       </Switch>
     </RoutedErrorBoundary>

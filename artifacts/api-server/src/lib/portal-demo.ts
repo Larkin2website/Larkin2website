@@ -1,7 +1,7 @@
 import { permissionsForRole } from "./permissions";
 import type { PortalActor } from "./portal-auth";
-import { createHmac, timingSafeEqual } from "node:crypto";
 import type { Request, Response } from "express";
+import { clearDevelopmentSession, hasDevelopmentSession, isDevelopmentDemoEnabled, startDevelopmentSession } from "./development-session";
 
 const enabledValues = new Set(["1", "true", "yes", "on"]);
 const disabledValues = new Set(["0", "false", "no", "off"]);
@@ -23,22 +23,19 @@ function parseBoolean(value: string | undefined, fallback: boolean): boolean {
 export function isPortalDemoMode(
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
-  return parseBoolean(
-    env.PORTAL_DEMO_MODE,
-    env.NODE_ENV !== "production",
-  );
+  return isDevelopmentDemoEnabled(env) && parseBoolean(env.PORTAL_DEMO_MODE, true);
 }
 
 export function validatePortalDemoMode(
   env: NodeJS.ProcessEnv = process.env,
 ): void {
-  if (
-    env.NODE_ENV === "production" &&
-    isPortalDemoMode(env) &&
-    !parseBoolean(env.ALLOW_INSECURE_DEMO_DEPLOYMENT, false)
-  ) {
+  if (env.NODE_ENV === "production" && (
+    parseBoolean(env.PORTAL_DEMO_MODE, false) ||
+    parseBoolean(env.DEV_DEMO_LOGIN_ENABLED, false) ||
+    parseBoolean(env.ALLOW_INSECURE_DEMO_DEPLOYMENT, false)
+  )) {
     throw new Error(
-      "PORTAL_DEMO_MODE cannot run in production unless ALLOW_INSECURE_DEMO_DEPLOYMENT=true is explicitly set.",
+      "Development demo sign-in cannot be enabled in production.",
     );
   }
 }
@@ -69,39 +66,15 @@ export function demoPortalMember() {
   };
 }
 
-function demoSessionSignature(secret: string): string {
-  return createHmac("sha256", secret).update("larkin2:portal-demo:v1").digest("base64url");
+export function hasDemoPortalSession(req: Request): boolean {
+  return isPortalDemoMode() && hasDevelopmentSession(req, "portal");
 }
 
-function sessionSecret(): string {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret) throw new Error("SESSION_SECRET is required for portal demo sessions");
-  return secret;
+export function startDemoPortalSession(res: Response): void {
+  if (!isPortalDemoMode()) throw new Error("Portal demo sign-in is disabled");
+  startDevelopmentSession(res, "portal");
 }
 
-export function hasDemoPortalSession(req: Request, secret = sessionSecret()): boolean {
-  const supplied = req.cookies?.[DEMO_SESSION_COOKIE];
-  if (typeof supplied !== "string") return false;
-  const expected = demoSessionSignature(secret);
-  const suppliedBuffer = Buffer.from(supplied);
-  const expectedBuffer = Buffer.from(expected);
-  return suppliedBuffer.length === expectedBuffer.length && timingSafeEqual(suppliedBuffer, expectedBuffer);
-}
-
-export function startDemoPortalSession(res: Response, secret = sessionSecret()): void {
-  res.cookie(DEMO_SESSION_COOKIE, demoSessionSignature(secret), {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/api/portal",
-  });
-}
-
-export function clearDemoPortalSession(res: Response): void {
-  res.clearCookie(DEMO_SESSION_COOKIE, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/api/portal",
-  });
+export function clearDemoPortalSession(req: Request, res: Response): void {
+  clearDevelopmentSession(req, res, "portal");
 }

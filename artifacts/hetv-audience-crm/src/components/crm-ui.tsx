@@ -1,8 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import { useClerk } from '@clerk/react';
 import { ArrowUpRight, ChartNoAxesCombined, ChevronRight, Inbox, LayoutDashboard, LogOut, MailCheck, PanelLeftClose, PanelLeftOpen, UsersRound } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
-import { basePath } from '@/lib/clerk';
 
 export function Brand({ light = false }: { light?: boolean }) {
   return <div className={`flex items-center gap-2 display font-bold text-xl tracking-[-.07em] ${light ? 'text-[#f4f1ed]' : 'text-[#1d2020]'}`}><span className="border border-[#f4773f] px-1.5 py-0.5 leading-none">HE<span className="text-[#f4773f]">TV</span></span><span className="text-[11px] tracking-[.15em] font-medium ml-2 uppercase">Hub</span></div>;
@@ -14,9 +12,8 @@ const navigation = [
   { href:'/enquiries', label:'Enquiries', icon:Inbox, sub:'04' },
 ];
 const sidebarStorageKey = 'hetv-crm-sidebar-collapsed';
-export function Shell({ children, name }: { children:ReactNode; name?:string }) {
+export function Shell({ children, name, onSignOut, development = false }: { children:ReactNode; name?:string; onSignOut:()=>void; development?:boolean }) {
   const [location] = useLocation();
-  const { signOut } = useClerk();
   const [collapsed, setCollapsed] = useState(() => {
     try { return window.localStorage.getItem(sidebarStorageKey) === 'true'; }
     catch { return false; }
@@ -60,14 +57,14 @@ export function Shell({ children, name }: { children:ReactNode; name?:string }) 
         <div className={`flex gap-3 items-center ${collapsed ? 'flex-col' : ''}`}>
           <div className="h-9 w-9 shrink-0 bg-[#363c3d] grid place-items-center display text-sm" title={name || 'Staff member'}>{name?.slice(0,2).toUpperCase() || 'ST'}</div>
           {!collapsed && <div className="min-w-0 flex-1"><div className="truncate text-xs font-semibold">{name || 'Staff member'}</div><div className="micro text-[#85898a] !text-[9px] mt-1">Staff access</div></div>}
-          <button data-testid="button-sign-out" aria-label="Sign out" title="Sign out" onClick={() => signOut({ redirectUrl:`${window.location.origin}${basePath}/sign-in` })} className="grid h-9 w-9 shrink-0 place-items-center text-[#9ba2a2] hover:text-[#f4773f]"><LogOut size={16}/></button>
+          <button data-testid="button-sign-out" aria-label="Sign out" title="Sign out" onClick={onSignOut} className="grid h-9 w-9 shrink-0 place-items-center text-[#9ba2a2] hover:text-[#f4773f]"><LogOut size={16}/></button>
         </div>
       </div>
     </aside>
     <main className="min-w-0 flex-1">
       <header className="h-[68px] border-b rule flex items-center justify-between px-5 sm:px-9 lg:px-12">
         <div className="flex items-center gap-3 micro text-[#625d58]"><span>HETV HUB</span><ChevronRight size={12}/><span className="text-[#1d2020]">{location.startsWith('/audience/') ? 'AUDIENCE PROFILE' : navigation.find(n=>n.href===location)?.label.toUpperCase() || 'WORKSPACE'}</span></div>
-        <div className="flex items-center gap-4"><span className="hidden sm:block micro text-[#625d58]">PRIVATE · STAFF ONLY</span><button data-testid="button-mobile-sign-out" title="Sign out" aria-label="Sign out" onClick={() => signOut({ redirectUrl:`${window.location.origin}${basePath}/sign-in` })} className="md:hidden"><LogOut size={17}/></button><div className="h-2 w-2 rounded-full bg-[#f4773f]" /></div>
+        <div className="flex items-center gap-4"><span className={`micro ${development ? 'text-[#b45024]' : 'hidden sm:block text-[#625d58]'}`}>{development ? 'DEVELOPMENT ACCESS ONLY' : 'PRIVATE · STAFF ONLY'}</span><button data-testid="button-mobile-sign-out" title="Sign out" aria-label="Sign out" onClick={onSignOut} className="md:hidden"><LogOut size={17}/></button><div className="h-2 w-2 rounded-full bg-[#f4773f]" /></div>
       </header>
       <div className="max-w-[1520px] mx-auto px-5 sm:px-9 lg:px-12 py-9 lg:py-12">{children}</div>
     </main>

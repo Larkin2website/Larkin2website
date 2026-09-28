@@ -32,6 +32,7 @@ import type {
   CrmEnquiryUpdate,
   CrmPublicationSampleResult,
   CrmTaxonomy,
+  DevelopmentSignInInput,
   ForbiddenResponse,
   HealthStatus,
   ListCrmAudienceParams,
@@ -1011,16 +1012,16 @@ export const getCreatePortalDemoSessionUrl = () => {
 }
 
 /**
- * @summary Start a browser-scoped demo portal session
+ * @summary Start a development-only portal session
  */
-export const createPortalDemoSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const createPortalDemoSession = async (developmentSignInInput: DevelopmentSignInInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
 
   return customFetch<void>(getCreatePortalDemoSessionUrl(),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(developmentSignInInput)
   }
 );}
 
@@ -1029,8 +1030,8 @@ export const createPortalDemoSession = async ( options?: Parameters<typeof custo
 
 
 export const getCreatePortalDemoSessionMutationOptions = <TError = ErrorType<NotFoundResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,void, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext> => {
 
 const mutationKey = ['createPortalDemoSession'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1042,10 +1043,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPortalDemoSession>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPortalDemoSession>>, {data: BodyType<DevelopmentSignInInput>}> = (props) => {
+          const {data} = props ?? {};
 
-
-          return  createPortalDemoSession(requestOptions)
+          return  createPortalDemoSession(data,requestOptions)
         }
 
 
@@ -1056,18 +1057,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type CreatePortalDemoSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createPortalDemoSession>>>
-
+    export type CreatePortalDemoSessionMutationBody = BodyType<DevelopmentSignInInput>
     export type CreatePortalDemoSessionMutationError = ErrorType<NotFoundResponse>
 
     /**
- * @summary Start a browser-scoped demo portal session
+ * @summary Start a development-only portal session
  */
 export const useCreatePortalDemoSession = <TError = ErrorType<NotFoundResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPortalDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof createPortalDemoSession>>,
         TError,
-        void,
+        {data: BodyType<DevelopmentSignInInput>},
         TContext
       > => {
       return useMutation(getCreatePortalDemoSessionMutationOptions(options));
@@ -1142,6 +1143,148 @@ export const useDeletePortalDemoSession = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeletePortalDemoSessionMutationOptions(options));
+    }
+
+export const getCreateCrmDemoSessionUrl = () => {
+
+
+
+
+  return `/api/crm/demo-session`
+}
+
+/**
+ * @summary Start a development-only CRM session
+ */
+export const createCrmDemoSession = async (developmentSignInInput: DevelopmentSignInInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getCreateCrmDemoSessionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(developmentSignInInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCrmDemoSessionMutationOptions = <TError = ErrorType<NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCrmDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCrmDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext> => {
+
+const mutationKey = ['createCrmDemoSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCrmDemoSession>>, {data: BodyType<DevelopmentSignInInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCrmDemoSession(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCrmDemoSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createCrmDemoSession>>>
+    export type CreateCrmDemoSessionMutationBody = BodyType<DevelopmentSignInInput>
+    export type CreateCrmDemoSessionMutationError = ErrorType<NotFoundResponse>
+
+    /**
+ * @summary Start a development-only CRM session
+ */
+export const useCreateCrmDemoSession = <TError = ErrorType<NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCrmDemoSession>>, TError,{data: BodyType<DevelopmentSignInInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCrmDemoSession>>,
+        TError,
+        {data: BodyType<DevelopmentSignInInput>},
+        TContext
+      > => {
+      return useMutation(getCreateCrmDemoSessionMutationOptions(options));
+    }
+
+export const getDeleteCrmDemoSessionUrl = () => {
+
+
+
+
+  return `/api/crm/demo-session`
+}
+
+/**
+ * @summary End a development-only CRM session
+ */
+export const deleteCrmDemoSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteCrmDemoSessionUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteCrmDemoSessionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCrmDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCrmDemoSession>>, TError,void, TContext> => {
+
+const mutationKey = ['deleteCrmDemoSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCrmDemoSession>>, void> = () => {
+
+
+          return  deleteCrmDemoSession(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteCrmDemoSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCrmDemoSession>>>
+
+    export type DeleteCrmDemoSessionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary End a development-only CRM session
+ */
+export const useDeleteCrmDemoSession = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCrmDemoSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteCrmDemoSession>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getDeleteCrmDemoSessionMutationOptions(options));
     }
 
 export const getCreatePortalAccessGrantUrl = () => {

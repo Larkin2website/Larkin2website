@@ -9,6 +9,7 @@ import { isEligibleAudienceRecipient, matchingCriteriaFor, refreshPublicationBat
 import { applyProviderEvents } from "./provider-delivery-events";
 import type { MatchingInput } from "./audience-crm-service";
 import { logger } from "./logger";
+import { isDevelopmentDemoEnabled } from "./development-session";
 
 const MAX_ATTEMPTS = 5;
 const LEASE_MS = 90_000;
@@ -285,6 +286,7 @@ export async function processPublicationDeliveries(
 
 let busy = false;
 export function startPublicationDeliveryWorker() {
+  if (isDevelopmentDemoEnabled()) return;
   if (!publicationDeliveryConfig().live) return;
   const tick = async () => {
     if (busy) return;

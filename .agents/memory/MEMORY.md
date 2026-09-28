@@ -11,3 +11,4 @@
 - [Managed database publish](managed-database-publish.md) — Development schema push is not a production migration; Publish handles managed PostgreSQL schema changes.
 - [Signup field responsiveness](signup-field-responsiveness.md) — Check the form’s usable inner width, not its outer width, when choosing when paired fields should stack.
 - [Subscription verification privacy](subscription-verification-privacy.md) — Neutral responses must also avoid provider-timing and storage-failure leaks about subscribed addresses.
+- [Private preview verification](private-preview-verification.md) — In-workspace requests can return 200 for private previews; do not treat shell curl as an outside visitor.

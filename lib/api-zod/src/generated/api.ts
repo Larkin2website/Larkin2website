@@ -388,8 +388,16 @@ export const GetPortalSessionResponse = zod.object({
 
 
 /**
- * @summary Start a browser-scoped demo portal session
+ * @summary Start a development-only portal session
  */
+
+
+
+export const CreatePortalDemoSessionBody = zod.object({
+  "email": zod.string().email(),
+  "password": zod.string().min(1)
+})
+
 export const CreatePortalDemoSessionResponse = zod.void()
 
 
@@ -397,6 +405,26 @@ export const CreatePortalDemoSessionResponse = zod.void()
  * @summary End the browser-scoped demo portal session
  */
 export const DeletePortalDemoSessionResponse = zod.void()
+
+
+/**
+ * @summary Start a development-only CRM session
+ */
+
+
+
+export const CreateCrmDemoSessionBody = zod.object({
+  "email": zod.string().email(),
+  "password": zod.string().min(1)
+})
+
+export const CreateCrmDemoSessionResponse = zod.void()
+
+
+/**
+ * @summary End a development-only CRM session
+ */
+export const DeleteCrmDemoSessionResponse = zod.void()
 
 
 /**

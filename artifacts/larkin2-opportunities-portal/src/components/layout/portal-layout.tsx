@@ -75,6 +75,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const signOutDemo = async () => {
     await endDemoSession.mutateAsync();
     await clearDemoSessionCache(queryClient, getGetPortalSessionQueryKey());
+    queryClient.clear();
     setMobileMenuOpen(false);
     navigate("/", { replace: true });
   };
@@ -202,7 +203,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               {portalDemoMode ? (
                 <>
                   <DropdownMenuItem disabled className="text-primary text-[10px] uppercase tracking-wider">
-                    Demo mode
+                    Development access only
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-border" />
                   <DropdownMenuItem
@@ -274,6 +275,11 @@ export function PortalLayout({ children }: PortalLayoutProps) {
             </SheetContent>
           </Sheet>
         </header>
+        {portalDemoMode && (
+          <div className="shrink-0 border-b border-primary/30 bg-primary/10 px-4 py-2 text-center font-mono text-[10px] uppercase tracking-widest text-primary">
+            Development access only · not secure authentication
+          </div>
+        )}
         
         <div className="portal-workspace flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <div className="max-w-[1400px] mx-auto w-full p-4 sm:p-6 lg:p-8 xl:p-10 min-w-0">

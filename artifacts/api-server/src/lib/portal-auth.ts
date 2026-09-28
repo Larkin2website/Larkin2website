@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db, portalMembershipsTable, type PortalMembership } from "@workspace/db";
 import { can, permissionsForRole, type Permission, type PortalRole } from "./permissions";
 import { demoPortalActor, hasDemoPortalSession, isPortalDemoMode } from "./portal-demo";
+import { hasDevelopmentSession, isDevelopmentDemoEnabled } from "./development-session";
 import { resolvePortalMembershipFromDatabase } from "./portal-members";
 import type { PortalProfile } from "./portal-members";
 
@@ -115,6 +116,11 @@ export const requirePortal = createRequirePortal();
 /** CRM data is restricted to a verified, active real super-admin membership. */
 export const requireCrmAccess: RequestHandler = async (req, res, next) => {
   try {
+    if (isDevelopmentDemoEnabled() && hasDevelopmentSession(req, "crm")) {
+      req.portalActor = demoPortalActor();
+      next();
+      return;
+    }
     const userId = getAuth(req).userId;
     if (!userId) {
       res.status(401).json({ error: "Authentication required" });
@@ -131,8 +137,7 @@ export const requireCrmAccess: RequestHandler = async (req, res, next) => {
       res.status(403).json({ error: "A verified Clerk email address is required for CRM access" });
       return;
     }
-    // This middleware authenticates from Clerk + the active membership table directly;
-    // demo cookies and the portal demo actor are intentionally never considered.
+    // Without a CRM-scoped development session, only a verified real super admin is admitted.
     req.portalActor = {
       userId,
       displayName: member.displayName,

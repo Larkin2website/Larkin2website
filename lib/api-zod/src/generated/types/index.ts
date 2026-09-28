@@ -34,6 +34,7 @@ export * from './crmPublicationSampleResult';
 export * from './crmPublicationSampleResultStatus';
 export * from './crmTaxonomy';
 export * from './dashboardCounts';
+export * from './developmentSignInInput';
 export * from './forbiddenResponse';
 export * from './healthStatus';
 export * from './listCrmAudienceParams';

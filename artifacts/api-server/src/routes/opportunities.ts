@@ -18,6 +18,8 @@ import { db, portalAccessGrantsTable, portalMembershipsTable } from "@workspace/
 import { desc, eq, isNull } from "drizzle-orm";
 import { requirePortal } from "../lib/portal-auth";
 import { clearDemoPortalSession, demoPortalMember, isPortalDemoMode, startDemoPortalSession } from "../lib/portal-demo";
+import { DevelopmentCredentials } from "../lib/development-session";
+import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
 import { canTransition } from "../lib/permissions";
 import { toPublicStatus } from "../lib/opportunity-domain";
 import * as opportunities from "../lib/opportunity-service";
@@ -25,6 +27,7 @@ import * as opportunityOptions from "../lib/opportunity-option-service";
 import { grantPortalAccess, portalGrantResponse, portalMemberResponse, updatePortalPerson } from "../lib/portal-members";
 
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
+const developmentSignInLimit = createFixedWindowRateLimit({ limit: 120, windowMs: 15 * 60_000 });
 const publicMap = (row: any) => ({
   id: row.id, slug: row.slug, title: row.title,
   status: toPublicStatus(row.status),
@@ -55,13 +58,14 @@ const dependencies: OpportunityRouteDependencies = {
   ...overrides,
 };
 const router: IRouter = Router();
-router.post("/portal/demo-session", (_req, res): void => {
+router.post("/portal/demo-session", developmentSignInLimit, (req, res): void => {
   if (!isPortalDemoMode()) { res.status(404).json({ error: "Not found" }); return; }
+  if (!DevelopmentCredentials.safeParse(req.body).success) { res.status(400).json({ error: "Enter a valid email address and a password" }); return; }
   startDemoPortalSession(res);
   res.status(204).send();
 });
-router.delete("/portal/demo-session", (_req, res): void => {
-  clearDemoPortalSession(res);
+router.delete("/portal/demo-session", (req, res): void => {
+  clearDemoPortalSession(req, res);
   res.status(204).send();
 });
 
