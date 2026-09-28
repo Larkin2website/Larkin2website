@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useClerk } from '@clerk/react';
-import { ArrowUpRight, ChartNoAxesCombined, ChevronRight, Inbox, LayoutDashboard, LogOut, MailCheck, PanelLeftClose, UsersRound } from 'lucide-react';
+import { ArrowUpRight, ChartNoAxesCombined, ChevronRight, Inbox, LayoutDashboard, LogOut, MailCheck, PanelLeftClose, PanelLeftOpen, UsersRound } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { basePath } from '@/lib/clerk';
 
@@ -13,21 +13,60 @@ const navigation = [
   { href:'/communications', label:'Communications', icon:MailCheck, sub:'03' },
   { href:'/enquiries', label:'Enquiries', icon:Inbox, sub:'04' },
 ];
+const sidebarStorageKey = 'hetv-crm-sidebar-collapsed';
 export function Shell({ children, name }: { children:ReactNode; name?:string }) {
   const [location] = useLocation();
   const { signOut } = useClerk();
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return window.localStorage.getItem(sidebarStorageKey) === 'true'; }
+    catch { return false; }
+  });
+  const toggleSidebar = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    try { window.localStorage.setItem(sidebarStorageKey, String(next)); }
+    catch { /* Browsing without storage still supports the current session. */ }
+  };
   return <div className="min-h-[100dvh] md:flex">
-    <aside className="ink md:w-[250px] lg:w-[270px] md:shrink-0 md:min-h-[100dvh] flex flex-col">
-      <div className="px-6 pt-7 pb-7 border-b border-[#34393a]"><Brand light /><div className="micro text-[#85898a] mt-8">Audience / Engagement</div><div className="text-xs text-[#a4a7a6] mt-1">Internal workspace</div></div>
-      <div className="flex md:flex-col overflow-x-auto md:overflow-visible px-2 md:pt-7 md:flex-1" aria-label="Main navigation">
-        <div className="hidden md:block micro text-[#777e7e] px-4 pb-3">Workspace</div>
-        {navigation.map(({ href,label,icon:Icon,sub }) => <Link key={href} href={href} data-testid={`link-${label.toLowerCase()}`} className={`nav-link shrink-0 ${location===href || (href==='/audience' && location.startsWith('/audience/')) ? 'active' : ''}`}><Icon size={16} strokeWidth={1.7} /><span>{label}</span><span className="hidden lg:block ml-auto text-[10px] text-[#747c7d]">{sub}</span></Link>)}
+    <aside className={`ink flex flex-col md:sticky md:top-0 md:h-dvh md:self-start md:shrink-0 ${collapsed ? 'md:w-[72px]' : 'md:w-[250px] lg:w-[270px]'}`}>
+      <div className={`border-b border-[#34393a] px-6 pt-7 pb-7 md:shrink-0 ${collapsed ? 'md:px-3 md:pt-5 md:pb-4' : ''}`}>
+        <div className={collapsed ? 'md:hidden' : ''}><Brand light /></div>
+        {collapsed && <div className="hidden md:flex h-9 items-center justify-center border border-[#f4773f] text-sm font-bold display" aria-label="HETV Hub" title="HETV Hub">HE<span className="text-[#f4773f]">TV</span></div>}
+        <div className={collapsed ? 'md:hidden' : ''}>
+          <div className="micro text-[#85898a] mt-8">Audience / Engagement</div>
+          <div className="text-xs text-[#a4a7a6] mt-1">Internal workspace</div>
+        </div>
+        <button type="button" data-testid="button-toggle-sidebar" onClick={toggleSidebar}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-expanded={!collapsed} aria-controls="crm-navigation"
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className={`hidden md:flex items-center justify-center gap-2 mt-5 min-h-9 text-xs text-[#a4a7a6] hover:text-[#f4f1ed] ${collapsed ? 'w-full' : ''}`}>
+          {collapsed ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
+          {!collapsed && <span>Collapse sidebar</span>}
+        </button>
       </div>
-      <div className="hidden md:block border-t border-[#34393a] p-5"><div className="flex gap-3 items-center"><div className="h-9 w-9 bg-[#363c3d] grid place-items-center display text-sm">{name?.slice(0,2).toUpperCase() || 'ST'}</div><div className="min-w-0 flex-1"><div className="truncate text-xs font-semibold">{name || 'Staff member'}</div><div className="micro text-[#85898a] !text-[9px] mt-1">Staff access</div></div><button data-testid="button-sign-out" aria-label="Sign out" title="Sign out" onClick={() => signOut({ redirectUrl:`${window.location.origin}${basePath}/sign-in` })} className="text-[#9ba2a2] hover:text-[#f4773f]"><LogOut size={16}/></button></div></div>
+      <nav id="crm-navigation" className={`flex overflow-x-auto px-2 md:min-h-0 md:flex-1 md:flex-col md:overflow-x-hidden md:overflow-y-auto md:pt-7 ${collapsed ? 'md:px-2 md:pt-5' : ''}`} aria-label="Main navigation">
+        {!collapsed && <div className="hidden md:block micro text-[#777e7e] px-4 pb-3">Workspace</div>}
+        {navigation.map(({ href,label,icon:Icon,sub }) => <Link key={href} href={href}
+          aria-label={collapsed ? label : undefined} title={collapsed ? label : undefined}
+          aria-current={location===href || (href==='/audience' && location.startsWith('/audience/')) ? 'page' : undefined}
+          data-testid={`link-${label.toLowerCase()}`}
+          className={`nav-link shrink-0 ${collapsed ? 'md:justify-center md:gap-0 md:px-0' : ''} ${location===href || (href==='/audience' && location.startsWith('/audience/')) ? 'active' : ''}`}>
+          <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
+          <span className={collapsed ? 'md:sr-only' : ''}>{label}</span>
+          {!collapsed && <span className="hidden lg:block ml-auto text-[10px] text-[#747c7d]">{sub}</span>}
+        </Link>)}
+      </nav>
+      <div className={`hidden md:block border-t border-[#34393a] md:shrink-0 ${collapsed ? 'p-3' : 'p-5'}`}>
+        <div className={`flex gap-3 items-center ${collapsed ? 'flex-col' : ''}`}>
+          <div className="h-9 w-9 shrink-0 bg-[#363c3d] grid place-items-center display text-sm" title={name || 'Staff member'}>{name?.slice(0,2).toUpperCase() || 'ST'}</div>
+          {!collapsed && <div className="min-w-0 flex-1"><div className="truncate text-xs font-semibold">{name || 'Staff member'}</div><div className="micro text-[#85898a] !text-[9px] mt-1">Staff access</div></div>}
+          <button data-testid="button-sign-out" aria-label="Sign out" title="Sign out" onClick={() => signOut({ redirectUrl:`${window.location.origin}${basePath}/sign-in` })} className="grid h-9 w-9 shrink-0 place-items-center text-[#9ba2a2] hover:text-[#f4773f]"><LogOut size={16}/></button>
+        </div>
+      </div>
     </aside>
     <main className="min-w-0 flex-1">
       <header className="h-[68px] border-b rule flex items-center justify-between px-5 sm:px-9 lg:px-12">
-        <div className="flex items-center gap-3 micro text-[#625d58]"><PanelLeftClose size={16} className="hidden md:block" /><span>HETV HUB</span><ChevronRight size={12}/><span className="text-[#1d2020]">{location.startsWith('/audience/') ? 'AUDIENCE PROFILE' : navigation.find(n=>n.href===location)?.label.toUpperCase() || 'WORKSPACE'}</span></div>
+        <div className="flex items-center gap-3 micro text-[#625d58]"><span>HETV HUB</span><ChevronRight size={12}/><span className="text-[#1d2020]">{location.startsWith('/audience/') ? 'AUDIENCE PROFILE' : navigation.find(n=>n.href===location)?.label.toUpperCase() || 'WORKSPACE'}</span></div>
         <div className="flex items-center gap-4"><span className="hidden sm:block micro text-[#625d58]">PRIVATE · STAFF ONLY</span><button data-testid="button-mobile-sign-out" title="Sign out" aria-label="Sign out" onClick={() => signOut({ redirectUrl:`${window.location.origin}${basePath}/sign-in` })} className="md:hidden"><LogOut size={17}/></button><div className="h-2 w-2 rounded-full bg-[#f4773f]" /></div>
       </header>
       <div className="max-w-[1520px] mx-auto px-5 sm:px-9 lg:px-12 py-9 lg:py-12">{children}</div>
