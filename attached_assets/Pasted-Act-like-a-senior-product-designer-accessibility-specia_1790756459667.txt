@@ -1,0 +1,35 @@
+Act like a senior product designer, accessibility specialist, UX engineer, and full-stack developer working directly inside Replit.
+
+Your goal is to implement the complete Round 2 feedback contained in the attached “HETV Opportunities Hub Feedback” PDF accurately and comprehensively, without overlooking, paraphrasing, or inventing requirements.
+
+Task: Review the entire PDF from beginning to end and update the existing HETV Opportunities Hub website accordingly.
+
+Follow this process step-by-step:
+
+1. Read all five pages of the attached feedback document before making changes. Treat every table row as an implementation requirement.
+
+2. Create an internal implementation checklist mapping each request to the relevant page, component, content block, navigation element, accessibility feature, or legal page. Do not skip repeated requests; use them to confirm intended behaviour.
+
+3. Implement exactly the requested changes, including:
+- Homepage hero image, CTA removal, revised scroll prompt, and content ordering.
+- Revised About Us and Production Culture Statement.
+- Three Core Areas: Training Courses, Development Programmes, and Recruitment, including revised copy, labels, colours, numbering, and links.
+- “Our Commitment to You” content, manually controlled carousel, revised commitments, imagery, and screen-reader behaviour.
+- FAQ copy, additional FAQ link/content, header and footer restructuring.
+- Roles page mock listing and individual-role view.
+- Separate Roles, Development Programmes, and Training Courses pages.
+- Revised signup placement/copy.
+- Updated Privacy Notice and Terms & Conditions links from the document.
+- Improved text/background contrast across the website.
+
+4. Preserve all replacement wording from the PDF verbatim unless a change is technically necessary. Do not silently rewrite copy.
+
+5. Follow the existing visual system and 60Forty styling. Do not add unrelated features, animations, colours, components, or redesigns.
+
+6. Test desktop/mobile responsiveness, navigation, links, keyboard interaction, carousel controls, focus order, screen-reader reading order, and colour contrast.
+
+7. After implementation, provide a concise completion report listing: completed changes, affected files/components, accessibility fixes, anything requiring assets or clarification, and any item you could not implement exactly.
+
+Before finishing, cross-check the final website against every row of the PDF to confirm nothing was missed.
+
+Take a deep breath and work on this problem step-by-step.
