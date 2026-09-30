@@ -14,6 +14,7 @@ export type NewSubscriptionRecord = {
   location?: string | null;
   acquisitionSource?: string | null;
   acquisitionDetail?: string | null;
+  acquisitionDetailDeclined?: boolean;
   interests?: string[];
   contentTypes?: string[];
   careerLevels?: string[];
@@ -85,6 +86,7 @@ export const drizzlePublicSubscriptionStore: PublicSubscriptionStore = {
       location: publicSubscriptionsTable.location,
       acquisitionSource: publicSubscriptionsTable.acquisitionSource,
       acquisitionDetail: publicSubscriptionsTable.acquisitionDetail,
+      acquisitionDetailDeclined: publicSubscriptionsTable.acquisitionDetailDeclined,
       interests: publicSubscriptionsTable.interests,
       contentTypes: publicSubscriptionsTable.contentTypes,
       careerLevels: publicSubscriptionsTable.careerLevels,
@@ -109,11 +111,49 @@ export function normalizeSubscriptionEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+const referralRoutes = new Set([
+  "instagram", "linkedin", "whatsapp_group", "facebook_group",
+  "industry_network", "recommendation", "other",
+]);
+
+export class InvalidReferralPreferencesError extends Error {}
+
+export function normalizeReferralPreferences(
+  input: SubscriptionPreferences,
+  previous?: SubscriptionPreferences,
+): Pick<SubscriptionPreferences, "acquisitionSource" | "acquisitionDetail" | "acquisitionDetailDeclined"> {
+  if (!["acquisitionSource", "acquisitionDetail", "acquisitionDetailDeclined"]
+    .some(key => Object.hasOwn(input, key))) return {};
+
+  const source = input.acquisitionSource === undefined
+    ? previous?.acquisitionSource ?? null
+    : input.acquisitionSource?.trim() || null;
+  const sourceChanged = input.acquisitionSource !== undefined && source !== (previous?.acquisitionSource ?? null);
+  const detail = input.acquisitionDetail === undefined && !sourceChanged
+    ? previous?.acquisitionDetail ?? null
+    : input.acquisitionDetail?.trim() || null;
+  const declined = input.acquisitionDetailDeclined === undefined && !sourceChanged
+    ? previous?.acquisitionDetailDeclined ?? false
+    : input.acquisitionDetailDeclined ?? false;
+
+  if ((source && !referralRoutes.has(source) && source !== previous?.acquisitionSource)
+    || (detail && (detail.length > 500 || /[\u0000-\u001f\u007f]/.test(detail)))
+    || (!source && (detail || declined))
+    || (declined && detail)) {
+    throw new InvalidReferralPreferencesError("Invalid referral preferences");
+  }
+  return {
+    acquisitionSource: source,
+    acquisitionDetail: detail,
+    acquisitionDetailDeclined: declined,
+  };
+}
+
 export function preferencesFromInput(input: SubscriptionPreferences): SubscriptionPreferences {
   const result: SubscriptionPreferences = {};
   for (const [key, value] of Object.entries(input)) {
     if (value === undefined) continue;
-    if (key === "craft" && typeof value === "string") {
+    if ((key === "craft" || key === "acquisitionSource" || key === "acquisitionDetail") && typeof value === "string") {
       (result as Record<string, unknown>)[key] = value.trim() || null;
     } else if ((key === "crafts" || key === "interests") && Array.isArray(value)) {
       const normalized = new Map<string, string>();
@@ -153,6 +193,7 @@ export function createPublicSubscriptionService(
       location?: string;
       acquisitionSource?: string;
       acquisitionDetail?: string;
+      acquisitionDetailDeclined?: boolean;
       interests?: string[];
       contentTypes?: string[];
       careerLevels?: string[];
@@ -174,6 +215,7 @@ export function createPublicSubscriptionService(
         managementTokenHash: hashManagementToken(candidateToken),
         ...preferencesFromInput({
           ...preferences,
+          ...normalizeReferralPreferences(preferences),
           name: input.name.trim(),
         }),
       });
@@ -190,7 +232,10 @@ export function createPublicSubscriptionService(
       if (!store.getPreferencesByCapability || !store.updatePreferencesByCapability) return undefined;
       const existing = await store.getPreferencesByCapability(tokenHash);
       if (!existing) return undefined;
-      await store.updatePreferencesByCapability(tokenHash, preferencesFromInput(preferences), now());
+      await store.updatePreferencesByCapability(tokenHash, preferencesFromInput({
+        ...preferences,
+        ...normalizeReferralPreferences(preferences, existing),
+      }), now());
       return await store.getPreferencesByCapability(tokenHash);
     },
 

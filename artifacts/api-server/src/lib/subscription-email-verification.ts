@@ -3,7 +3,7 @@ import { and, eq, gt, sql } from "drizzle-orm";
 import { ReplitConnectors } from "@replit/connectors-sdk";
 import { db, publicSubscriptionsTable, subscriptionChallengesTable, subscriptionSessionsTable } from "@workspace/db";
 import { reconcilePendingDeliveries } from "./audience-crm-service";
-import { normalizeSubscriptionEmail, preferencesFromInput, type SubscriptionPreferences } from "./public-subscription-service";
+import { normalizeReferralPreferences, normalizeSubscriptionEmail, preferencesFromInput, type SubscriptionPreferences } from "./public-subscription-service";
 import { logger } from "./logger";
 
 const CODE_LIFETIME = 10 * 60_000;
@@ -83,6 +83,7 @@ export const drizzleVerificationStore: SubscriptionVerificationStore = {
       name: publicSubscriptionsTable.name, craft: publicSubscriptionsTable.craft,
       careerLevel: publicSubscriptionsTable.careerLevel, location: publicSubscriptionsTable.location,
       acquisitionSource: publicSubscriptionsTable.acquisitionSource, acquisitionDetail: publicSubscriptionsTable.acquisitionDetail,
+      acquisitionDetailDeclined: publicSubscriptionsTable.acquisitionDetailDeclined,
       interests: publicSubscriptionsTable.interests, contentTypes: publicSubscriptionsTable.contentTypes,
       careerLevels: publicSubscriptionsTable.careerLevels, crafts: publicSubscriptionsTable.crafts,
       allOpportunities: publicSubscriptionsTable.allOpportunities,
@@ -163,7 +164,13 @@ export function createSubscriptionVerificationService(
     },
     async updatePreferences(token: string, preferences: SubscriptionPreferences) {
       const id = await store.resolveSession(hashToken(token), now());
-      return id ? store.updatePreferences(id, preferences, now()) : undefined;
+      if (!id) return undefined;
+      const existing = await store.getPreferences(id);
+      if (!existing) return undefined;
+      return store.updatePreferences(id, {
+        ...preferences,
+        ...normalizeReferralPreferences(preferences, existing),
+      }, now());
     },
     async unsubscribe(token: string) {
       const id = await store.resolveSession(hashToken(token), now());

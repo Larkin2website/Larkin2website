@@ -10,6 +10,7 @@ const api = vi.hoisted(() => ({
   updateVerifiedSubscriptionPreferences: vi.fn(),
   unsubscribeVerifiedSubscription: vi.fn(),
   getPublicSubscriptionPreferences: vi.fn(),
+  updatePublicSubscriptionPreferences: vi.fn(),
 }));
 const preferences = {
   name: "Alex", craft: "Editing", interests: ["Mentoring"], contentTypes: ["role"],
@@ -40,8 +41,32 @@ beforeEach(() => {
   api.updateVerifiedSubscriptionPreferences.mockResolvedValue({ ...preferences, craft: "Camera" });
   api.unsubscribeVerifiedSubscription.mockResolvedValue({ message: "Stopped" });
   api.getPublicSubscriptionPreferences.mockResolvedValue({ ...preferences, name: "Old subscriber", craft: "Old craft" });
+  api.updatePublicSubscriptionPreferences.mockResolvedValue(preferences);
 });
 afterEach(cleanup);
+
+it("preserves an arbitrary legacy referral response when other preferences are edited", async () => {
+  sessionStorage.setItem("legacy-link", "l".repeat(43));
+  api.getPublicSubscriptionPreferences.mockResolvedValue({
+    ...preferences, acquisitionSource: "Local crew newsletter", acquisitionDetail: "A note from Jamie",
+    acquisitionDetailDeclined: false,
+  });
+  const user = userEvent.setup();
+  render(<UnsubscribePage />);
+  await user.click(screen.getByRole("button", { name: "Load preferences" }));
+  expect(await screen.findByLabelText("How did you hear about us?")).toHaveValue("__legacy__");
+  expect(screen.getByLabelText("Add any detail you would like to share. (optional)")).toHaveValue("A note from Jamie");
+  await user.clear(screen.getByLabelText("Your current or primary craft"));
+  await user.type(screen.getByLabelText("Your current or primary craft"), "Camera");
+  await user.click(screen.getByRole("button", { name: "Update preferences" }));
+  await waitFor(() => expect(api.updatePublicSubscriptionPreferences).toHaveBeenCalled());
+  expect(api.updatePublicSubscriptionPreferences.mock.calls[0]![0]).toMatchObject({
+    acquisitionSource: "Local crew newsletter",
+    acquisitionDetail: "A note from Jamie",
+    acquisitionDetailDeclined: false,
+    craft: "Camera",
+  });
+});
 
 it("hides another link's details while loading the newly verified account", async () => {
   sessionStorage.setItem("legacy-link", "l".repeat(43));

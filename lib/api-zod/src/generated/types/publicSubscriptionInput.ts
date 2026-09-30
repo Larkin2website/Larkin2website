@@ -7,6 +7,7 @@
  */
 import type { AudienceContentType } from './audienceContentType';
 import type { CareerLevel } from './careerLevel';
+import type { PublicSubscriptionInputAcquisitionSource } from './publicSubscriptionInputAcquisitionSource';
 
 export interface PublicSubscriptionInput {
   /**
@@ -34,9 +35,10 @@ export interface PublicSubscriptionInput {
   /** @maxLength 160 */
   location?: string;
   /** @maxLength 120 */
-  acquisitionSource?: string;
+  acquisitionSource?: PublicSubscriptionInputAcquisitionSource;
   /** @maxLength 500 */
   acquisitionDetail?: string;
+  acquisitionDetailDeclined?: boolean;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];

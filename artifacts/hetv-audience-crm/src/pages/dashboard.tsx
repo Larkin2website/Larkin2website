@@ -1,7 +1,7 @@
 import { ArrowUpRight, MoveDownRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { useGetCrmDashboard, useGetCrmDeliverySettings, getGetCrmDashboardQueryKey } from '@workspace/api-client-react';
-import { PageHeading, State, Status, date, number, label } from '@/components/crm-ui';
+import { PageHeading, State, Status, acquisitionSourceLabel, date, label, number } from '@/components/crm-ui';
 
 export default function Dashboard() {
   const query = useGetCrmDashboard({ query: { queryKey: getGetCrmDashboardQueryKey(), refetchInterval: 30_000 } });
@@ -17,9 +17,9 @@ export default function Dashboard() {
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_.9fr] gap-5 mt-6">
         <section className="surface p-6 lg:p-8"><div className="flex justify-between items-start border-b rule pb-5"><div><p className="micro text-[#b45024]">DISCOVERY</p><h2 className="display text-2xl font-semibold mt-2">Where they found us</h2></div><MoveDownRight size={21} strokeWidth={1.5}/></div>
-          {data.acquisitionBreakdown.length ? <div className="mt-6 space-y-5">{data.acquisitionBreakdown.map((item,i) => <div key={`${item.source}-${i}`}><div className="flex justify-between text-sm mb-2"><span>{label(item.source) === 'Not specified' ? 'Unattributed' : label(item.source)}</span><span className="display font-semibold">{number(item.count)}</span></div><div className="h-[6px] bg-[#ded9d1]"><div className="h-full bg-[#f4773f]" style={{width:`${Math.min(100,data.counts.total ? item.count/data.counts.total*100 : 0)}%`}}/></div></div>)}</div> : <p className="text-sm text-[#625d58] py-8">Acquisition sources have not been recorded yet.</p>}
+          {data.acquisitionBreakdown.length ? <div className="mt-6 space-y-5">{data.acquisitionBreakdown.map((item,i) => <div key={`${item.source}-${i}`}><div className="flex justify-between text-sm mb-2"><span>{acquisitionSourceLabel(item.source) === 'Not specified' ? 'Unattributed' : acquisitionSourceLabel(item.source)}</span><span className="display font-semibold">{number(item.count)}</span></div><div className="h-[6px] bg-[#ded9d1]"><div className="h-full bg-[#f4773f]" style={{width:`${Math.min(100,data.counts.total ? item.count/data.counts.total*100 : 0)}%`}}/></div></div>)}</div> : <p className="text-sm text-[#625d58] py-8">Acquisition sources have not been recorded yet.</p>}
           <div className="border-t rule mt-7 pt-5"><h3 className="micro text-[#625d58]">SPECIFIC GROUPS & ACCOUNTS</h3>
-            {data.acquisitionDetailBreakdown.length ? <div className="mt-4 divide-y divide-[#ded9d1]">{data.acquisitionDetailBreakdown.map((item, index) => <div data-testid="row-acquisition-detail" key={`${item.source}-${item.detail}-${index}`} className="flex justify-between items-start gap-4 py-3 text-sm"><div className="min-w-0"><div className="font-medium break-words">{item.detail}</div><div className="text-xs text-[#625d58] mt-1">{label(item.source)}</div></div><strong className="display shrink-0">{number(item.count)}</strong></div>)}</div> : <p className="text-sm text-[#625d58] mt-4">No specific sources have been recorded yet.</p>}
+            {data.acquisitionDetailBreakdown.length ? <div className="mt-4 divide-y divide-[#ded9d1]">{data.acquisitionDetailBreakdown.map((item, index) => <div data-testid="row-acquisition-detail" key={`${item.source}-${item.detail}-${index}`} className="flex justify-between items-start gap-4 py-3 text-sm"><div className="min-w-0"><div className="font-medium break-words">{item.detail}</div><div className="text-xs text-[#625d58] mt-1">{acquisitionSourceLabel(item.source)}</div></div><strong className="display shrink-0">{number(item.count)}</strong></div>)}</div> : <p className="text-sm text-[#625d58] mt-4">No specific sources have been recorded yet.</p>}
           </div>
         </section>
         <section className="ink p-6 lg:p-8"><p className="micro text-[#f4773f]">ENGAGEMENT</p><h2 className="display text-2xl font-semibold mt-2 mb-8">What people are exploring</h2><div className="grid grid-cols-2 gap-x-6 gap-y-8">

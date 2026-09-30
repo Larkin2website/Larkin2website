@@ -59,6 +59,7 @@ class MemorySubscriptionStore implements PublicSubscriptionStore {
       location: record.location ?? null,
       acquisitionSource: record.acquisitionSource ?? null,
       acquisitionDetail: record.acquisitionDetail ?? null,
+      acquisitionDetailDeclined: record.acquisitionDetailDeclined ?? false,
       interests: record.interests ?? [],
       contentTypes: record.contentTypes ?? [],
       careerLevels: record.careerLevels ?? [],
@@ -195,6 +196,85 @@ test("signup atomically persists name and optional preferences with a generic re
   assert.equal(store.records.size, 2);
 });
 
+test("signup stores canonical referral details or an explicit decline without changing duplicates", async () => {
+  const store = new MemorySubscriptionStore();
+  await withServer(store, async base => {
+    const routes = ["instagram", "linkedin", "whatsapp_group", "facebook_group", "industry_network", "recommendation", "other"];
+    for (const [index, route] of routes.entries()) {
+      const response = await post(base, "/public/subscriptions", {
+        email: `source${index}@example.com`, consent: true, name: "Tester",
+        acquisitionSource: route, acquisitionDetail: "  Specific source  ",
+      });
+      assert.equal(response.status, 200, route);
+      assert.equal(store.records.get(`source${index}@example.com`)?.acquisitionDetail, "Specific source");
+    }
+    const declined = await post(base, "/public/subscriptions", {
+      email: "declined@example.com", consent: true, name: "Tester",
+      acquisitionSource: "instagram", acquisitionDetailDeclined: true,
+    });
+    assert.equal(declined.status, 200);
+    const original = structuredClone(store.records.get("declined@example.com"));
+    assert.equal(original?.acquisitionDetailDeclined, true);
+    assert.equal(original?.acquisitionDetail, null);
+    const duplicate = await post(base, "/public/subscriptions", {
+      email: "declined@example.com", consent: true, name: "Changed",
+      acquisitionSource: "other", acquisitionDetail: "Different",
+    });
+    assert.equal(duplicate.status, 200);
+    assert.deepEqual(store.records.get("declined@example.com"), original);
+  });
+});
+
+test("signup rejects unknown routes and contradictory or unsafe referral details", async () => {
+  const store = new MemorySubscriptionStore();
+  await withServer(store, async base => {
+    const cases = [
+      { acquisitionSource: "unapproved" },
+      { acquisitionDetail: "Orphan detail" },
+      { acquisitionDetailDeclined: true },
+      { acquisitionSource: "linkedin", acquisitionDetail: "Name", acquisitionDetailDeclined: true },
+      { acquisitionSource: "linkedin", acquisitionDetail: "Unsafe\nname" },
+      { acquisitionSource: "linkedin", acquisitionDetail: "x".repeat(501) },
+    ];
+    for (const fields of cases) {
+      const response = await post(base, "/public/subscriptions", {
+        email: "invalid@example.com", consent: true, name: "Tester", ...fields,
+      });
+      assert.equal(response.status, 400, JSON.stringify(fields).slice(0, 100));
+    }
+    assert.equal(store.records.size, 0);
+  });
+});
+
+test("legacy-token preference updates preserve old free text and clear stale detail on a route change", async () => {
+  const store = new MemorySubscriptionStore();
+  const token = "m".repeat(43);
+  await createLegacyRecord(store, "legacy-referral@example.com", token, {
+    acquisitionSource: "At a screening", acquisitionDetail: "An old free-text answer",
+  });
+  await withServer(store, async base => {
+    const put = (body: unknown) => fetch(`${base}/public/subscriptions/preferences`, {
+      method: "PUT", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ managementToken: token, ...body as object }),
+    });
+    const loaded = await post(base, "/public/subscriptions/preferences", { managementToken: token });
+    assert.equal((await loaded.json() as { acquisitionSource: string }).acquisitionSource, "At a screening");
+    assert.equal((await put({ interests: ["lighting"] })).status, 200);
+    assert.equal(store.records.get("legacy-referral@example.com")?.acquisitionSource, "At a screening");
+    assert.equal((await put({ acquisitionSource: "At a screening" })).status, 200);
+    assert.equal((await put({ acquisitionSource: "New unapproved source" })).status, 400);
+    assert.equal((await put({ acquisitionSource: "instagram" })).status, 200);
+    assert.equal(store.records.get("legacy-referral@example.com")?.acquisitionDetail, null);
+    assert.equal((await put({ acquisitionDetail: "A person", acquisitionDetailDeclined: true })).status, 400);
+    assert.equal((await put({ acquisitionDetailDeclined: true })).status, 200);
+    assert.equal(store.records.get("legacy-referral@example.com")?.acquisitionDetailDeclined, true);
+    assert.equal((await put({ acquisitionSource: "linkedin" })).status, 200);
+    assert.equal(store.records.get("legacy-referral@example.com")?.acquisitionDetailDeclined, false);
+    assert.equal((await put({ acquisitionSource: null })).status, 200);
+    assert.equal(store.records.get("legacy-referral@example.com")?.acquisitionSource, null);
+  });
+});
+
 test("duplicates with a legacy token get the same response and never change active state or preferences", async () => {
   const store = new MemorySubscriptionStore();
   const activeToken = "a".repeat(43);
@@ -323,6 +403,7 @@ test("previously issued management tokens still protect preference lookup, updat
     });
     assert.equal(cleared.status, 200);
     assert.deepEqual(await cleared.json(), {
+      acquisitionDetailDeclined: false,
       interests: [],
       contentTypes: ["role"],
       careerLevels: [],

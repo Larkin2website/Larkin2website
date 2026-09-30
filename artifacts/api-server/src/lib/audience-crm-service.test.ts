@@ -293,14 +293,14 @@ test("subscriber preference reconciliation skips outbox rows for completed commu
   }
 });
 
-test("dashboard attributes specific sources separately under their primary source", () => {
+test("dashboard attributes specific sources separately for canonical and legacy source values", () => {
   assert.deepEqual(summarizeAcquisitionDetails([
-    { acquisitionSource: "Instagram", acquisitionDetail: "Film Crew Group" },
-    { acquisitionSource: "Instagram", acquisitionDetail: " film crew group " },
-    { acquisitionSource: "Facebook", acquisitionDetail: "Film Crew Group" },
-    { acquisitionSource: "Instagram", acquisitionDetail: null },
+    { acquisitionSource: "instagram", acquisitionDetail: "Film Crew Group" },
+    { acquisitionSource: "instagram", acquisitionDetail: " film crew group " },
+    { acquisitionSource: "Facebook film network", acquisitionDetail: "Film Crew Group" },
+    { acquisitionSource: "instagram", acquisitionDetail: null },
   ]), [
-    { source: "Instagram", detail: "Film Crew Group", count: 2 },
-    { source: "Facebook", detail: "Film Crew Group", count: 1 },
+    { source: "instagram", detail: "Film Crew Group", count: 2 },
+    { source: "Facebook film network", detail: "Film Crew Group", count: 1 },
   ]);
 });

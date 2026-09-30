@@ -7,6 +7,7 @@ import {
 import { MobileMenu, SiteFooter, SiteHeader } from "../components/layout";
 import { consumeSubscriptionFragment } from "../lib/subscription-link";
 import { useSignupJourney } from "../lib/signup-journey";
+import { isReferralSource, referralPrompt, referralSources, type ReferralSource } from "../lib/referral-source";
 
 const contentOptions = [
   [AudienceContentType.role, "Roles"], [AudienceContentType.programme, "Programmes"],
@@ -33,8 +34,9 @@ export function PreferencesPage() {
   const [craft, setCraft] = useState("");
   const [careerLevel, setCareerLevel] = useState("");
   const [location, setLocation] = useState("");
-  const [source, setSource] = useState("");
+  const [source, setSource] = useState<ReferralSource | "">("");
   const [sourceDetail, setSourceDetail] = useState("");
+  const [sourceDetailDeclined, setSourceDetailDeclined] = useState(false);
   const [interestText, setInterestText] = useState("");
   const [contentTypes, setContentTypes] = useState<string[]>([]);
   const [careerLevels, setCareerLevels] = useState<string[]>([]);
@@ -55,14 +57,15 @@ export function PreferencesPage() {
     if (!draft || saving) return;
     setSaving(true);
     setError("");
-    const input: PublicSubscriptionInput = {
+    const input: PublicSubscriptionInput & { acquisitionDetailDeclined?: boolean } = {
       ...draft, consent: true,
       ...(!skip && {
         craft: craft.trim() || undefined,
         careerLevel: careerLevel ? careerLevel as PublicSubscriptionInput["careerLevel"] : undefined,
         location: location.trim() || undefined,
-        acquisitionSource: source.trim() || undefined,
-        acquisitionDetail: sourceDetail.trim() || undefined,
+        acquisitionSource: source || undefined,
+        acquisitionDetail: sourceDetailDeclined ? undefined : sourceDetail.trim() || undefined,
+        acquisitionDetailDeclined: source ? sourceDetailDeclined : undefined,
         interests: splitEntries(interestText),
         contentTypes: contentTypes as PublicSubscriptionInput["contentTypes"],
         careerLevels: careerLevels as PublicSubscriptionInput["careerLevels"],
@@ -162,10 +165,37 @@ export function PreferencesPage() {
                         onChange={event => setCraftText(event.target.value)}
                         disabled={saving} maxLength={500} />
                     </fieldset>
-                    <div className="hetv-followup-field"><label htmlFor="followup-source">How did you hear about us? (optional)</label>
-                      <input id="followup-source" type="text" maxLength={120} value={source} onChange={event => setSource(event.target.value)} disabled={saving} /></div>
-                    <div className="hetv-followup-field"><label htmlFor="followup-source-detail">Any more detail? (optional)</label>
-                      <input id="followup-source-detail" type="text" maxLength={500} value={sourceDetail} onChange={event => setSourceDetail(event.target.value)} disabled={saving} /></div>
+                     <div className="hetv-followup-field hetv-followup-full">
+                       <label htmlFor="followup-source">How did you hear about us? (optional)</label>
+                       <select id="followup-source" value={source} disabled={saving}
+                         aria-describedby="followup-source-hint"
+                         onChange={event => {
+                           const selectedSource = event.target.value;
+                           setSource(isReferralSource(selectedSource) ? selectedSource : "");
+                           setSourceDetail("");
+                           setSourceDetailDeclined(false);
+                         }}>
+                         <option value="">Prefer not to answer</option>
+                         {referralSources.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                       </select>
+                       <p id="followup-source-hint">This optional answer helps us understand how people find HETV opportunities.</p>
+                     </div>
+                     {!!source && <fieldset className="hetv-subscription-options hetv-followup-full">
+                       <legend>{referralPrompt(source)} (optional)</legend>
+                       <label htmlFor="followup-source-detail">More about this route (optional)</label>
+                       <input id="followup-source-detail" type="text" maxLength={500} value={sourceDetail}
+                         onChange={event => setSourceDetail(event.target.value)} disabled={saving || sourceDetailDeclined}
+                         aria-describedby="followup-source-detail-hint" />
+                       <p id="followup-source-detail-hint">You can include a person’s name if they referred you. Please do not include private group content.</p>
+                       <label className="hetv-subscription-check">
+                         <input type="checkbox" checked={sourceDetailDeclined} disabled={saving}
+                           onChange={event => {
+                             setSourceDetailDeclined(event.target.checked);
+                             if (event.target.checked) setSourceDetail("");
+                           }} />
+                         <span>Prefer not to say more</span>
+                       </label>
+                     </fieldset>}
                   </div>
                   <label className="hetv-subscription-consent"><input type="checkbox" checked={allOpportunities} disabled={saving}
                     onChange={event => setAllOpportunities(event.target.checked)} />

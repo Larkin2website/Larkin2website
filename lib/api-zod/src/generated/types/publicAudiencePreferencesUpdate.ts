@@ -41,6 +41,7 @@ export interface PublicAudiencePreferencesUpdate {
      * @nullable
      */
   acquisitionDetail?: string | null;
+  acquisitionDetailDeclined?: boolean;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];

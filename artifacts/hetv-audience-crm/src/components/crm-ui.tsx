@@ -81,4 +81,14 @@ export function State({ kind, title, detail, retry }: { kind:'loading'|'error'|'
 export const number = (n:number) => new Intl.NumberFormat('en-GB').format(n);
 export const date = (v:string|null|undefined) => v ? new Intl.DateTimeFormat('en-GB',{ day:'numeric', month:'short', year:'numeric' }).format(new Date(v)) : 'Not recorded';
 export const label = (v:string|null|undefined) => v ? v.replaceAll('_',' ').replace(/\b\w/g,s=>s.toUpperCase()) : 'Not specified';
+const acquisitionSourceLabels: Record<string,string> = {
+  instagram:'Instagram',
+  linkedin:'LinkedIn',
+  whatsapp_group:'WhatsApp group',
+  facebook_group:'Facebook group',
+  industry_network:'Industry organisation/network',
+  recommendation:'Recommendation / word of mouth',
+  other:'Other',
+};
+export const acquisitionSourceLabel = (v:string|null|undefined) => v ? acquisitionSourceLabels[v] || label(v) : 'Not specified';
 export function Status({ value }: { value:string }) { const tone = ['active','delivered','resolved'].includes(value) ? 'bg-[#dbe5dc] text-[#365443]' : ['failed','closed','inactive','bounce','complaint'].includes(value) ? 'bg-[#eddcd6] text-[#874b39]' : 'bg-[#e8dfd2] text-[#775b3e]'; return <span data-testid={`status-${value}`} className={`inline-flex px-2.5 py-1 micro !tracking-[.08em] !text-[10px] ${tone}`}>{label(value)}</span>; }

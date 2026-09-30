@@ -99,6 +99,7 @@ export * from './publicOpportunityOptions';
 export * from './publicOpportunityStatus';
 export * from './publicProgramme';
 export * from './publicSubscriptionInput';
+export * from './publicSubscriptionInputAcquisitionSource';
 export * from './publicSubscriptionMessage';
 export * from './publicSubscriptionPreferencesLookup';
 export * from './publicSubscriptionUnsubscribeInput';

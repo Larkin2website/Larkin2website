@@ -120,6 +120,40 @@ test("verified subscriber updates preferences, unsubscribes, and loses access", 
   });
 });
 
+test("verified preference changes preserve legacy referral answers and validate new choices", async () => {
+  const store = new MemoryVerificationStore();
+  store.add("referral@example.com");
+  const subscriber = store.subscribers.get("referral@example.com")!;
+  Object.assign(subscriber.preferences, {
+    acquisitionSource: "A previous free-text answer",
+    acquisitionDetail: "Old detail",
+    acquisitionDetailDeclined: false,
+  });
+  await withServer(store, async (base, sent) => {
+    await post(base, "code", { email: "referral@example.com" });
+    const verified = await post(base, "code/verify", { email: "referral@example.com", code: sent[0]!.code });
+    const { accessToken } = await verified.json() as { accessToken: string };
+    assert.equal((await post(base, "verified/preferences", { accessToken, interests: ["camera"] }, "PUT")).status, 200);
+    assert.equal(subscriber.preferences.acquisitionSource, "A previous free-text answer");
+    assert.equal((await post(base, "verified/preferences", {
+      accessToken, acquisitionSource: "unapproved",
+    }, "PUT")).status, 400);
+    const changed = await post(base, "verified/preferences", {
+      accessToken, acquisitionSource: "facebook_group", acquisitionDetailDeclined: true,
+    }, "PUT");
+    assert.equal(changed.status, 200);
+    assert.equal((await changed.json() as { acquisitionDetailDeclined: boolean }).acquisitionDetailDeclined, true);
+    assert.equal(subscriber.preferences.acquisitionDetail, null);
+    assert.equal((await post(base, "verified/preferences", {
+      accessToken, acquisitionDetail: "Person", acquisitionDetailDeclined: true,
+    }, "PUT")).status, 400);
+    assert.equal((await post(base, "verified/preferences", {
+      accessToken, acquisitionSource: null,
+    }, "PUT")).status, 200);
+    assert.equal(subscriber.preferences.acquisitionDetailDeclined, false);
+  });
+});
+
 test("expired and guessed codes never grant access; resending invalidates the old code", async () => {
   const store = new MemoryVerificationStore();
   store.add("member@example.com");

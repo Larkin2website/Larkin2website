@@ -21,6 +21,22 @@ export interface ApiError {
   details?: string | null;
 }
 
+/**
+ * @maxLength 120
+ */
+export type PublicSubscriptionInputAcquisitionSource = typeof PublicSubscriptionInputAcquisitionSource[keyof typeof PublicSubscriptionInputAcquisitionSource];
+
+
+export const PublicSubscriptionInputAcquisitionSource = {
+  instagram: 'instagram',
+  linkedin: 'linkedin',
+  whatsapp_group: 'whatsapp_group',
+  facebook_group: 'facebook_group',
+  industry_network: 'industry_network',
+  recommendation: 'recommendation',
+  other: 'other',
+} as const;
+
 export type CareerLevel = typeof CareerLevel[keyof typeof CareerLevel];
 
 
@@ -66,9 +82,10 @@ export interface PublicSubscriptionInput {
   /** @maxLength 160 */
   location?: string;
   /** @maxLength 120 */
-  acquisitionSource?: string;
+  acquisitionSource?: PublicSubscriptionInputAcquisitionSource;
   /** @maxLength 500 */
   acquisitionDetail?: string;
+  acquisitionDetailDeclined?: boolean;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -754,6 +771,7 @@ export interface PublicAudiencePreferences {
      * @nullable
      */
   acquisitionDetail?: string | null;
+  acquisitionDetailDeclined?: boolean;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -823,6 +841,7 @@ export interface VerifiedAudiencePreferencesUpdate {
      * @nullable
      */
   acquisitionDetail?: string | null;
+  acquisitionDetailDeclined?: boolean;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -874,6 +893,7 @@ export interface PublicAudiencePreferencesUpdate {
      * @nullable
      */
   acquisitionDetail?: string | null;
+  acquisitionDetailDeclined?: boolean;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -940,6 +960,7 @@ export interface CrmAudienceItem {
   acquisitionSource: string | null;
   /** @nullable */
   acquisitionDetail: string | null;
+  acquisitionDetailDeclined: boolean;
   interests: string[];
   contentTypes: AudienceContentType[];
   careerLevels: CareerLevel[];

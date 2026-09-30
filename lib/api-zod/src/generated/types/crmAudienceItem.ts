@@ -29,6 +29,7 @@ export interface CrmAudienceItem {
   acquisitionSource: string | null;
   /** @nullable */
   acquisitionDetail: string | null;
+  acquisitionDetailDeclined: boolean;
   interests: string[];
   contentTypes: AudienceContentType[];
   careerLevels: CareerLevel[];

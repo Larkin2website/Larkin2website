@@ -1465,9 +1465,12 @@ components:
         acquisitionSource:
           type: string
           maxLength: 120
+          enum: [instagram, linkedin, whatsapp_group, facebook_group, industry_network, recommendation, other]
         acquisitionDetail:
           type: string
           maxLength: 500
+        acquisitionDetailDeclined:
+          type: boolean
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2158,6 +2161,7 @@ components:
         location: { type: ["string", "null"], maxLength: 160 }
         acquisitionSource: { type: ["string", "null"], maxLength: 120 }
         acquisitionDetail: { type: ["string", "null"], maxLength: 500 }
+        acquisitionDetailDeclined: { type: boolean }
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2209,6 +2213,7 @@ components:
         location: { type: ["string", "null"], maxLength: 160 }
         acquisitionSource: { type: ["string", "null"], maxLength: 120 }
         acquisitionDetail: { type: ["string", "null"], maxLength: 500 }
+        acquisitionDetailDeclined: { type: boolean }
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2248,6 +2253,7 @@ components:
         location: { type: ["string", "null"], maxLength: 160 }
         acquisitionSource: { type: ["string", "null"], maxLength: 120 }
         acquisitionDetail: { type: ["string", "null"], maxLength: 500 }
+        acquisitionDetailDeclined: { type: boolean }
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2281,7 +2287,7 @@ components:
         recorded: { type: boolean }
     CrmAudienceItem:
       type: object
-      required: [subscriberId, email, name, active, deliverySuppression, consentedAt, createdAt, craft, careerLevel, location, acquisitionSource, acquisitionDetail, interests, contentTypes, careerLevels, crafts, allOpportunities]
+      required: [subscriberId, email, name, active, deliverySuppression, consentedAt, createdAt, craft, careerLevel, location, acquisitionSource, acquisitionDetail, acquisitionDetailDeclined, interests, contentTypes, careerLevels, crafts, allOpportunities]
       properties:
         subscriberId: { type: string, format: uuid }
         email: { type: string, format: email }
@@ -2295,6 +2301,7 @@ components:
         location: { type: ["string", "null"] }
         acquisitionSource: { type: ["string", "null"] }
         acquisitionDetail: { type: ["string", "null"] }
+        acquisitionDetailDeclined: { type: boolean }
         interests:
           type: array
           items: { type: string }

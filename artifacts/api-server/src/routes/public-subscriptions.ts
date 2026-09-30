@@ -20,6 +20,7 @@ import {
   UnsubscribeVerifiedSubscriptionResponse,
 } from "@workspace/api-zod";
 import {
+  InvalidReferralPreferencesError,
   publicSubscriptionService,
   type PublicSubscriptionService,
 } from "../lib/public-subscription-service";
@@ -49,6 +50,7 @@ function normalizeSignupBody(body: unknown): unknown {
     ...input,
     email: typeof input.email === "string" ? input.email.trim() : input.email,
     name: typeof input.name === "string" ? input.name.trim() : input.name,
+    acquisitionSource: typeof input.acquisitionSource === "string" ? input.acquisitionSource.trim() : input.acquisitionSource,
   };
 }
 
@@ -95,7 +97,7 @@ export function createPublicSubscriptionsRouter(
     if (
       !hasOnlyKeys(req.body, [
         "email", "consent", "existingManagementToken", "name", "craft", "careerLevel",
-        "location", "acquisitionSource", "acquisitionDetail", "interests", "contentTypes",
+        "location", "acquisitionSource", "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes",
         "careerLevels", "crafts", "allOpportunities",
       ])
       || !parsed.success
@@ -112,7 +114,10 @@ export function createPublicSubscriptionsRouter(
       const result = await dependencies.service.subscribe(parsed.data);
       res.setHeader("Cache-Control", "no-store");
       res.json(CreatePublicSubscriptionResponse.parse(result));
-    } catch {
+    } catch (error) {
+      if (error instanceof InvalidReferralPreferencesError) {
+        res.status(400).json({ error: error.message }); return;
+      }
       req.log?.warn("Subscription storage unavailable");
       res.status(503).json({ error: "Service temporarily unavailable" });
     }
@@ -158,7 +163,7 @@ export function createPublicSubscriptionsRouter(
     const parsed = UpdatePublicSubscriptionPreferencesBody.safeParse(req.body);
     if (!parsed.success || !hasOnlyKeys(req.body, [
       "managementToken", "name", "craft", "careerLevel", "location", "acquisitionSource",
-      "acquisitionDetail", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities",
+      "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities",
     ])) {
       res.status(400).json({ error: "Invalid request" });
       return;
@@ -168,7 +173,15 @@ export function createPublicSubscriptionsRouter(
       return;
     }
     const { managementToken, ...requested } = parsed.data;
-    const preferences = await dependencies.service.updatePreferences(managementToken, requested);
+    let preferences;
+    try {
+      preferences = await dependencies.service.updatePreferences(managementToken, requested);
+    } catch (error) {
+      if (error instanceof InvalidReferralPreferencesError) {
+        res.status(400).json({ error: error.message }); return;
+      }
+      throw error;
+    }
     if (!preferences) {
       res.status(401).json({ error: "Invalid management token" });
       return;
@@ -228,7 +241,7 @@ export function createPublicSubscriptionsRouter(
     const parsed = UpdateVerifiedSubscriptionPreferencesBody.safeParse(req.body);
     if (!parsed.success || !hasOnlyKeys(req.body, [
       "accessToken", "name", "craft", "careerLevel", "location", "acquisitionSource",
-      "acquisitionDetail", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities",
+      "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities",
     ]) || parsed.data.contentTypes?.includes("content")) {
       res.status(400).json({ error: "Invalid request" }); return;
     }
@@ -237,7 +250,10 @@ export function createPublicSubscriptionsRouter(
       const result = await dependencies.verification.updatePreferences(accessToken, preferences);
       if (!result) { res.status(401).json({ error: "Verification expired" }); return; }
       res.json(UpdateVerifiedSubscriptionPreferencesResponse.parse(publicPreferences(result as Record<string, unknown>)));
-    } catch {
+    } catch (error) {
+      if (error instanceof InvalidReferralPreferencesError) {
+        res.status(400).json({ error: error.message }); return;
+      }
       req.log?.warn("Subscription preference update unavailable");
       res.status(503).json({ error: "Service temporarily unavailable" });
     }

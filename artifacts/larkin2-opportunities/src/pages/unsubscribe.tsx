@@ -17,6 +17,7 @@ import {
 } from "@workspace/api-client-react";
 import { MobileMenu, SiteFooter, SiteHeader } from "../components/layout";
 import { consumeSubscriptionFragment, savedSubscriptionToken, tokenFromLink } from "../lib/subscription-link";
+import { isReferralSource, referralPrompt, referralSources, type ReferralSource } from "../lib/referral-source";
 
 const careerOptions = [
   [CareerLevel.new_entrant, "New entrant"],
@@ -57,6 +58,7 @@ export function UnsubscribePage() {
   const [location, setLocation] = useState("");
   const [acquisitionSource, setAcquisitionSource] = useState("");
   const [acquisitionDetail, setAcquisitionDetail] = useState("");
+  const [acquisitionDetailDeclined, setAcquisitionDetailDeclined] = useState(false);
   const [interestText, setInterestText] = useState("");
   const [contentTypes, setContentTypes] = useState<string[]>([]);
   const [careerLevels, setCareerLevels] = useState<string[]>([]);
@@ -71,6 +73,7 @@ export function UnsubscribePage() {
     setLocation(value.location ?? "");
     setAcquisitionSource(value.acquisitionSource ?? "");
     setAcquisitionDetail(value.acquisitionDetail ?? "");
+    setAcquisitionDetailDeclined(!!(value as PublicAudiencePreferences & { acquisitionDetailDeclined?: boolean }).acquisitionDetailDeclined);
     setInterestText((value.interests ?? []).join(", "));
     setContentTypes(value.contentTypes ?? []);
     setCareerLevels(value.careerLevels ?? []);
@@ -189,14 +192,15 @@ export function UnsubscribePage() {
     setBusyAction("save");
     setError("");
     setSavedMessage("");
-    const update: PublicAudiencePreferencesUpdate = {
+    const update: PublicAudiencePreferencesUpdate & { acquisitionDetailDeclined?: boolean } = {
       managementToken,
       name: name.trim() || null,
       craft: craft.trim() || null,
       careerLevel: careerLevel ? careerLevel as PublicAudiencePreferencesUpdate["careerLevel"] : null,
       location: location.trim() || null,
-      acquisitionSource: acquisitionSource.trim() || null,
-      acquisitionDetail: acquisitionDetail.trim() || null,
+      acquisitionSource: acquisitionSource || null,
+      acquisitionDetail: acquisitionDetailDeclined ? null : acquisitionDetail.trim() || null,
+      acquisitionDetailDeclined,
       interests: splitEntries(interestText),
       contentTypes: contentTypes as PublicAudiencePreferencesUpdate["contentTypes"],
       careerLevels: careerLevels as PublicAudiencePreferencesUpdate["careerLevels"],
@@ -320,14 +324,35 @@ export function UnsubscribePage() {
                 <label htmlFor="manage-location">Location</label>
                 <input id="manage-location" type="text" maxLength={160} value={location} disabled={!!busyAction}
                   onChange={event => setLocation(event.target.value)} />
-                <label htmlFor="manage-source">How did you hear about us?</label>
-                <input id="manage-source" type="text" maxLength={120} value={acquisitionSource} disabled={!!busyAction}
-                  onChange={event => setAcquisitionSource(event.target.value)} />
-                {acquisitionSource.trim() && <>
-                  <label htmlFor="manage-source-detail">More detail</label>
-                  <input id="manage-source-detail" type="text" maxLength={500} value={acquisitionDetail} disabled={!!busyAction}
-                    onChange={event => setAcquisitionDetail(event.target.value)} />
-                </>}
+                 <label htmlFor="manage-source">How did you hear about us?</label>
+                 <select id="manage-source" value={isReferralSource(acquisitionSource) ? acquisitionSource : acquisitionSource ? "__legacy__" : ""}
+                   disabled={!!busyAction} aria-describedby="manage-source-hint"
+                   onChange={event => {
+                     setAcquisitionSource(event.target.value === "__legacy__" ? acquisitionSource : event.target.value as ReferralSource | "");
+                     setAcquisitionDetail("");
+                     setAcquisitionDetailDeclined(false);
+                   }}>
+                   <option value="">Not specified</option>
+                   {acquisitionSource && !isReferralSource(acquisitionSource) &&
+                     <option value="__legacy__">Existing response: {acquisitionSource}</option>}
+                   {referralSources.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                 </select>
+                 <p id="manage-source-hint">This optional answer helps us understand how people find HETV opportunities.</p>
+                 {!!acquisitionSource && <>
+                   <label htmlFor="manage-source-detail">{referralPrompt(acquisitionSource)} (optional)</label>
+                   <input id="manage-source-detail" type="text" maxLength={500} value={acquisitionDetail}
+                     disabled={!!busyAction || acquisitionDetailDeclined} aria-describedby="manage-source-detail-hint"
+                     onChange={event => setAcquisitionDetail(event.target.value)} />
+                   <p id="manage-source-detail-hint">You can include a person’s name if they referred you. Please do not include private group content.</p>
+                   <label className="hetv-subscription-check">
+                     <input type="checkbox" checked={acquisitionDetailDeclined} disabled={!!busyAction}
+                       onChange={event => {
+                         setAcquisitionDetailDeclined(event.target.checked);
+                         if (event.target.checked) setAcquisitionDetail("");
+                       }} />
+                     <span>Prefer not to say more</span>
+                   </label>
+                 </>}
                 <fieldset className="hetv-subscription-options">
                   <legend>Topics or themes you’re interested in (optional)</legend>
                   <p>Tell us about other topics that matter to you, such as mentoring or sustainability. Separate them with commas. Entering a topic does not guarantee a matching opportunity or an email alert.</p>

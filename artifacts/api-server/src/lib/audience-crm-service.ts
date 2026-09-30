@@ -338,6 +338,7 @@ export async function listAudience(filters: {
       location: row.location,
       acquisitionSource: row.acquisitionSource,
       acquisitionDetail: row.acquisitionDetail,
+      acquisitionDetailDeclined: row.acquisitionDetailDeclined,
       interests: row.interests,
       contentTypes: row.contentTypes,
       careerLevels: row.careerLevels,
@@ -347,7 +348,30 @@ export async function listAudience(filters: {
 }
 
 export async function getAudienceMember(id: string) {
-  return (await listAudience({})).find((row) => row.subscriberId === id);
+  const [row] = await db.select().from(publicSubscriptionsTable)
+    .where(eq(publicSubscriptionsTable.id, id)).limit(1);
+  if (!row) return undefined;
+  return {
+    subscriberId: row.id,
+    email: row.email,
+    name: row.name,
+    active: row.active,
+    deliverySuppression: row.deliverySuppression,
+    consentedAt: row.consentedAt,
+    createdAt: row.createdAt,
+    craft: row.craft,
+    careerLevel: row.careerLevel,
+    location: row.location,
+    acquisitionSource: row.acquisitionSource,
+    acquisitionDetail: row.acquisitionDetail,
+    // The explicit opt-out signal is returned with the individual private profile.
+    acquisitionDetailDeclined: row.acquisitionDetailDeclined ?? false,
+    interests: row.interests,
+    contentTypes: row.contentTypes,
+    careerLevels: row.careerLevels,
+    crafts: row.crafts,
+    allOpportunities: row.allOpportunities,
+  };
 }
 
 export function summarizeAcquisitionDetails(
@@ -404,7 +428,8 @@ export async function crmDashboard() {
       deliverySuppression: row.deliverySuppression,
       consentedAt: row.consentedAt, createdAt: row.createdAt, craft: row.craft,
       careerLevel: row.careerLevel, location: row.location, acquisitionSource: row.acquisitionSource,
-      acquisitionDetail: row.acquisitionDetail, interests: row.interests, contentTypes: row.contentTypes,
+      acquisitionDetail: row.acquisitionDetail, acquisitionDetailDeclined: row.acquisitionDetailDeclined,
+      interests: row.interests, contentTypes: row.contentTypes,
       careerLevels: row.careerLevels, crafts: row.crafts, allOpportunities: row.allOpportunities,
     })),
   };

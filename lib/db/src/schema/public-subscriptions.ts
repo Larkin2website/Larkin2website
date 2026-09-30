@@ -12,6 +12,7 @@ export const publicSubscriptionsTable = pgTable("public_subscriptions", {
   location: text("location"),
   acquisitionSource: text("acquisition_source"),
   acquisitionDetail: text("acquisition_detail"),
+  acquisitionDetailDeclined: boolean("acquisition_detail_declined").notNull().default(false),
   interests: text("interests").array().notNull().default([]),
   contentTypes: text("content_types").array().notNull().default([]),
   careerLevels: text("career_levels").array().notNull().default([]),
@@ -29,6 +30,7 @@ export const publicSubscriptionsTable = pgTable("public_subscriptions", {
 }, (table) => [
   check("public_subscriptions_consent_true", sql`${table.consent} = true`),
   check("public_subscriptions_career_level_valid", sql`${table.careerLevel} is null or ${table.careerLevel} in ('new_entrant', 'mid_level', 'senior')`),
+  check("public_subscriptions_acquisition_declined_valid", sql`not ${table.acquisitionDetailDeclined} or (${table.acquisitionSource} is not null and ${table.acquisitionDetail} is null)`),
   uniqueIndex("public_subscriptions_email_unique").on(table.email),
   uniqueIndex("public_subscriptions_token_hash_unique").on(table.managementTokenHash),
   index("public_subscriptions_active_idx").on(table.active),
