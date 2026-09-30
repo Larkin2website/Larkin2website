@@ -75,7 +75,7 @@ export function TrainingPage() {
   return (
     <div className="larkin2-page programme-overview-page" id="top">
       <PageMeta 
-        title="Training Courses & Work Experience" 
+        title="Training Courses"
         description="Work experience and traineeships focus on learning and supported placements. Free participation means no fees; it does not mean every course is paid."
       />
       <a className="larkin2-skip" href="#content" data-testid="link-skip-content">Skip to content</a>
@@ -97,8 +97,9 @@ export function TrainingPage() {
       <main id="content">
         <section className="larkin2-section larkin2-commit programme-overview-section" aria-labelledby="training-title">
           <div className="programme-overview-intro">
-            <h1 className="larkin2-title" id="training-title">Training Courses &amp; Work Experience</h1>
-            <p className="larkin2-copy">Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment. Check each listing for eligibility, support and pay. Free participation means no fees; it does not mean every course is paid.</p>
+            <h1 className="larkin2-title" id="training-title">Training Courses</h1>
+            <p className="larkin2-copy">Helping you build the skills and knowledge you need to work confidently and effectively on production and beyond.</p>
+            <p className="larkin2-small">Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment. Check each listing for eligibility, support and pay. Free participation means no fees; it does not mean every course is paid.</p>
           </div>
           <div className="hetv-programme-list">
             <div className="hetv-programme-item">
@@ -153,7 +154,8 @@ export function DevelopmentPage() {
         <section className="larkin2-section larkin2-commit programme-overview-section" aria-labelledby="development-title" style={{ background: 'var(--stage)' }}>
           <div className="programme-overview-intro">
             <h1 className="larkin2-title" id="development-title">Development Programmes</h1>
-            <p className="larkin2-copy">Designed for industry professionals looking to step up or transition into High-End Television drama.</p>
+            <p className="larkin2-copy">Providing structured opportunities that support development at different career stages.</p>
+            <p className="larkin2-small">Designed for industry professionals looking to step up or transition into High-End Television drama.</p>
           </div>
           <div className="hetv-programme-list">
             <div className="hetv-programme-item">

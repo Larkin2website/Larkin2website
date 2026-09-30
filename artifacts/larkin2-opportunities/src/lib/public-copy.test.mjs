@@ -15,36 +15,41 @@ test("homepage retains the original hero introduction", () => {
   for (const paragraph of paragraphs) assert.ok(home.includes(paragraph), paragraph);
 });
 
-test("Production & Culture preserves its copy over the full-width image", () => {
+test("About Us precedes the culture statement over the full-width image", () => {
   const section = home.match(/<section[^>]+id="about"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section);
   assert.equal((section.match(/<h2\b/g) ?? []).length, 1);
   assert.equal((section.match(/className="larkin2-split-content"/g) ?? []).length, 1);
   assert.equal((section.match(/className="larkin2-split-image"/g) ?? []).length, 1);
   assert.ok(section.indexOf("larkin2-split-image") < section.indexOf("larkin2-split-content"));
-  assert.ok(section.includes('src="/larkin2-opportunities/images/bailey-crew.jpg"'));
+  assert.ok(section.includes('src="/larkin2-opportunities/images/production-culture.webp"'));
   assert.ok(section.includes('id="about-title"'));
-  assert.ok(section.includes("Production &amp; Culture"));
-  assert.ok(!section.includes("About Us"));
+  assert.ok(section.includes("About Us"));
+  assert.ok(section.includes("Production Culture Statement"));
   const body = section.match(/<p>(.*?)<\/p>/g) ?? [];
-  assert.equal(body.length, 1);
-  assert.ok(body[0].includes("Explore roles, work experience, training and development on Larkin 2"));
-  assert.ok(body[0].includes("fair, inclusive recruitment"));
-  assert.ok(body[0].split(/\s+/).length <= 55);
+  assert.equal(body.length, 3);
+  assert.ok(body[0].includes("Through this platform we provide opportunities to apply for full-time crew roles"));
+  assert.ok(body[1].includes("Please sign up to HETV Opportunities Hub to keep updated"));
+  assert.ok(body[2].includes("Explore roles, work experience, training and development opportunities on Larkin 2"));
+  assert.ok(body[2].includes("fair, inclusive recruitment"));
   assert.ok(!section.includes("HETV Opportunities Hub is operated by Larkin AV Limited."));
   assert.ok(!section.includes("AI-generated illustrations of television production"));
-  assert.ok(section.includes('href="/roles"'));
-  assert.ok(section.includes('testId="link-about-roles"'));
-  assert.ok(section.includes("View Live Roles"));
+  assert.ok(!section.includes('href="/roles"'));
 });
 
-test("HETV naming, existing sections and source CTA wording are retained", () => {
-  for (const text of ["HETV Opportunities Hub", "View Live Roles", "Explore Opportunities", "Sign Up For Updates"]) {
+test("HETV naming, core-area ordering and exact calls to action are retained", () => {
+  for (const text of ["HETV Opportunities Hub", "VIEW LIVE ROLES", "VIEW PROGRAMMES", "VIEW COURSES"]) {
     assert.ok(home.includes(text), text);
+  }
+  const cards = ["Training Courses", "Development Programmes", "Recruitment"];
+  for (const [index, title] of cards.entries()) {
+    assert.ok(home.indexOf(`<h3 className="larkin2-core-title">${title}</h3>`) > (index ? home.indexOf(`<h3 className="larkin2-core-title">${cards[index - 1]}</h3>`) : 0));
   }
   for (const id of ["signup", "about", "paths", "commitments", "faqs"]) {
     assert.ok(home.includes(`id="${id}"`), id);
   }
+  assert.ok(home.indexOf('id="signup"') > home.indexOf('id="faqs"'));
+  assert.ok(!home.includes("<video"));
   const metadata = read("../../index.html");
   assert.ok(metadata.includes("<title>HETV Opportunities Hub</title>"));
   assert.ok(metadata.includes("Your central hub for jobs, training and development on Larkin 2"));
@@ -52,17 +57,16 @@ test("HETV naming, existing sections and source CTA wording are retained", () =>
 
 test("signup copy preserves consent and the no-email disclosure", () => {
   const signup = read("../components/subscription-signup.tsx");
-  assert.ok(signup.includes("I want to receive updates."));
-  assert.ok(signup.includes("I agree to my email being stored"));
-  assert.ok(signup.includes("automated email alerts are not running yet"));
-  assert.ok(signup.includes("No email has been sent."));
-  assert.ok(signup.includes("existingManagementToken: savedSubscriptionToken()"));
+  assert.ok(home.includes("Sign up to be notified when new roles and opportunities become available through the Hub. You can update your preferences at any time."));
+  assert.ok(signup.includes("I agree to HETV Opportunities Hub storing my name and email"));
+  assert.ok(signup.includes("not sending automated marketing emails or opportunity alerts"));
+  assert.ok(signup.includes("Signing up does not send an email."));
 });
 
-test("roles use source wording without replacing live data or filters", () => {
+test("roles use approved wording without replacing live data or filters", () => {
   const roles = read("../pages/roles.tsx");
   assert.ok(roles.includes("Search Available roles here"));
-  assert.ok(roles.includes("Find Jobs, Employment &amp; Career Opportunities"));
+  assert.ok(roles.includes("Find jobs and career opportunities"));
   for (const text of ["useListPublicOpportunities", "filter-status", "filter-department", "filter-role-type"]) {
     assert.ok(roles.includes(text), text);
   }

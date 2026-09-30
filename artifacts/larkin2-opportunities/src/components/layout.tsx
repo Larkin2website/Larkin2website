@@ -93,67 +93,16 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
     return <Link href="/" className="larkin2-mark" aria-label="HETV Opportunities Hub home" data-testid="link-home">HETV Opportunities Hub<span aria-hidden="true">.</span></Link>;
   };
 
-  const OpportunitiesSubmenu = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const timeoutRef = useRef<any>(null);
-  
-    const onEnter = () => {
-      clearTimeout(timeoutRef.current);
-      setIsOpen(true);
-    };
-    
-    const onLeave = () => {
-      timeoutRef.current = setTimeout(() => setIsOpen(false), 150);
-    };
-  
-    return (
-      <div 
-        className="larkin2-nav-group" 
-        onMouseEnter={onEnter} 
-        onMouseLeave={onLeave}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            setIsOpen(false);
-            event.currentTarget.querySelector("button")?.focus();
-          }
-        }}
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false);
-        }}
-      >
-        <div className="larkin2-nav-trigger">
-          <NavLink href="/opportunities" testId="link-nav-opportunities">Opportunities</NavLink>
-          <button
-            type="button"
-            className="larkin2-nav-sub-toggle"
-            aria-label="Toggle opportunities menu"
-            aria-expanded={isOpen}
-            onClick={() => setIsOpen(!isOpen)}
-            data-testid="button-nav-opportunities"
-          >
-            <span aria-hidden="true" className="larkin2-chevron">↓</span>
-          </button>
-        </div>
-        
-        <div className={`larkin2-nav-sub ${isOpen ? "is-open" : ""}`}>
-          <NavLink href="/opportunities" testId="link-nav-opportunities-index">All Opportunities</NavLink>
-          <NavLink href="/training" testId="link-nav-training">Training Courses</NavLink>
-          <NavLink href="/development" testId="link-nav-development">Development</NavLink>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <header ref={headerRef} className={`larkin2-top ${scrolled ? "is-scrolled" : ""} ${headerHidden ? "is-hidden" : ""}`}>
       <LogoLink />
       <nav className="larkin2-nav" aria-label="Main navigation">
+        <NavLink href="#about" testId="link-nav-about">About</NavLink>
         <NavLink href="/roles" testId="link-nav-roles">Roles</NavLink>
-        <OpportunitiesSubmenu />
-        <NavLink href="#commitments" testId="link-commitments">Commitments</NavLink>
-        <NavLink href="#about" testId="link-about">About</NavLink>
+        <NavLink href="/development" testId="link-nav-development">Development Programmes</NavLink>
+        <NavLink href="/training" testId="link-nav-training">Training Courses</NavLink>
       </nav>
-      <MaskedLink href="#signup" className="larkin2-header-cta" testId="link-signup-nav">Sign up</MaskedLink>
+      <MaskedLink href="mailto:opportunities@baileyopportunities.com" className="larkin2-header-cta" testId="link-nav-contact">Contact Us</MaskedLink>
       <button
         ref={menuButtonRef}
         type="button"
@@ -188,38 +137,37 @@ export function SiteFooter() {
       <div className="larkin2-foot-brand"><span className="larkin2-mark">HETV Opportunities Hub<span aria-hidden="true">.</span></span><p>Roles, training and development across high-end television.</p></div>
       <div className="larkin2-foot-col">
         <span>Explore</span>
+        <FooterLink href="#production-culture" testId="link-footer-production-culture">Production Culture Statement</FooterLink>
         <FooterLink href="/roles" testId="link-footer-roles">Roles</FooterLink>
         <FooterLink href="/opportunities" testId="link-footer-opportunities">Opportunities</FooterLink>
-        <FooterLink href="/training" testId="link-footer-training">Training Courses</FooterLink>
-        <FooterLink href="/development" testId="link-footer-development">Development Programmes</FooterLink>
         <FooterLink href="#commitments" testId="link-footer-commitments">Commitments</FooterLink>
-        <FooterLink href="#about" testId="link-footer-about">About HETV Opportunities Hub</FooterLink>
+        <FooterLink href="/faqs" testId="link-footer-faqs">FAQs</FooterLink>
       </div>
       <div className="larkin2-foot-col">
-        <span>Contact</span>
-        <FooterLink href="#signup" testId="link-footer-signup">Sign up for updates</FooterLink>
+        <span>Manage Hub Updates</span>
+        <FooterLink href="#signup" testId="link-footer-signup">Sign Up for Updates</FooterLink>
         <FooterLink href="/unsubscribe" testId="link-footer-unsubscribe">Unsubscribe</FooterLink>
-        <a href="mailto:opportunities@baileyopportunities.com" data-testid="link-footer-contact">Contact us ↗</a>
+        <a href="mailto:opportunities@baileyopportunities.com" data-testid="link-footer-contact">Contact Us</a>
       </div>
       <div className="larkin2-foot-col">
         <span>Legal</span>
         <FooterLink href="/privacy" testId="link-footer-privacy">Privacy Notice</FooterLink>
         <FooterLink href="/terms" testId="link-footer-terms">Terms &amp; Conditions</FooterLink>
       </div>
-      <div className="larkin2-foot-bottom"><span>London / UK</span><span>© Larkin AV Limited</span><span>HETV Opportunities Hub</span></div>
+      <div className="larkin2-foot-bottom"><span>London / UK</span><span>HETV Opportunities Hub</span></div>
     </footer>
   );
 }
 
 export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
   const [location] = useLocation();
-  const [opportunitiesOpen, setOpportunitiesOpen] = useState(false);
   const menuPanelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const lockedScrollY = useRef(0);
+  const restoreFocusRef = useRef(true);
   
-  const closeMenu = () => {
-    setOpportunitiesOpen(false);
+  const closeMenu = (restoreFocus = false) => {
+    restoreFocusRef.current = restoreFocus;
     setMenuOpen(false);
   };
 
@@ -238,10 +186,10 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
     };
 
     if (href.startsWith("#") && location !== "/") {
-      return <Link href={`/${href}`} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
+      return <Link href={`/${href}`} onClick={() => closeMenu()} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
     }
     if (href.startsWith("/")) {
-      return <Link href={href} onClick={closeMenu} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
+      return <Link href={href} onClick={() => closeMenu()} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
     }
     return <a href={href} onClick={handleClick} data-testid={testId}>{children} {num && <span>{num}</span>}</a>;
   };
@@ -249,6 +197,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
   useEffect(() => {
     if (!menuOpen) return;
 
+    restoreFocusRef.current = true;
     lockedScrollY.current = window.scrollY;
     document.body.style.position = "fixed";
     document.body.style.top = `-${lockedScrollY.current}px`;
@@ -259,8 +208,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
     
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setOpportunitiesOpen(false);
-        setMenuOpen(false);
+        closeMenu(true);
         return;
       }
       if (event.key !== "Tab" || !menuPanelRef.current) return;
@@ -285,7 +233,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
       document.body.style.overflow = "";
       window.scrollTo(0, lockedScrollY.current);
       document.removeEventListener("keydown", onKeyDown);
-      if (menuButtonRef?.current?.isConnected) menuButtonRef.current.focus();
+      if (restoreFocusRef.current && menuButtonRef?.current?.isConnected) menuButtonRef.current.focus();
     };
   }, [menuOpen, setMenuOpen, menuButtonRef]);
 
@@ -299,40 +247,20 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
     >
       <div className="larkin2-mobile-menu-head">
         <span className="larkin2-mobile-label">HETV Opportunities Hub / navigation</span>
-        <button ref={closeButtonRef} type="button" className="larkin2-menu-close" onClick={closeMenu} aria-label="Close menu" data-testid="button-menu-close">
+        <button ref={closeButtonRef} type="button" className="larkin2-menu-close" onClick={() => closeMenu(true)} aria-label="Close menu" data-testid="button-menu-close">
           Close <span aria-hidden="true">×</span>
         </button>
       </div>
       <nav className="larkin2-mobile-nav" aria-label="Mobile main navigation">
-        <MobileLink href="/" testId="link-mobile-home" num="01">Home</MobileLink>
-        <MobileLink href="/roles" testId="link-mobile-roles">Roles</MobileLink>
-        <div className="larkin2-mobile-group">
-          <button
-            type="button"
-            className="larkin2-mobile-group-title"
-            aria-expanded={opportunitiesOpen}
-            aria-controls="mobile-opportunities-submenu"
-            onClick={() => setOpportunitiesOpen((open) => !open)}
-            data-testid="button-mobile-opportunities"
-          >
-            <span>Opportunities</span>
-            <span className="larkin2-mobile-group-icon" aria-hidden="true">+</span>
-          </button>
-          {opportunitiesOpen && (
-            <div className="larkin2-mobile-sub" id="mobile-opportunities-submenu">
-              <MobileLink href="/opportunities" testId="link-mobile-opportunities-index">All Opportunities</MobileLink>
-              <MobileLink href="/training" testId="link-mobile-training">Training Courses</MobileLink>
-              <MobileLink href="/development" testId="link-mobile-development">Development Programmes</MobileLink>
-            </div>
-          )}
-        </div>
-        <MobileLink href="#commitments" testId="link-mobile-commitments" num="03">Our commitments</MobileLink>
-        <MobileLink href="#about" testId="link-mobile-about" num="04">About</MobileLink>
-        <MobileLink href="#signup" testId="link-mobile-signup" num="05">Sign up</MobileLink>
+        <MobileLink href="#about" testId="link-mobile-about" num="01">About</MobileLink>
+        <MobileLink href="/roles" testId="link-mobile-roles" num="02">Roles</MobileLink>
+        <MobileLink href="/development" testId="link-mobile-development" num="03">Development Programmes</MobileLink>
+        <MobileLink href="/training" testId="link-mobile-training" num="04">Training Courses</MobileLink>
+        <MobileLink href="mailto:opportunities@baileyopportunities.com" testId="link-mobile-contact" num="05">Contact Us</MobileLink>
       </nav>
       <div className="larkin2-mobile-contact">
         <span>Questions about an opportunity?</span>
-        <a href="mailto:opportunities@baileyopportunities.com" onClick={closeMenu} data-testid="link-mobile-contact">Contact us ↗</a>
+        <Link href="/faqs" onClick={() => closeMenu()} data-testid="link-mobile-faqs">Read the FAQs ↗</Link>
       </div>
     </aside>
   );

@@ -1,0 +1,35 @@
+.hetv-faq-page .legal-hero h1 {
+  max-width: 920px;
+}
+
+.hetv-faq-page .legal-content {
+  padding-top: clamp(30px, 6vw, 84px);
+  padding-bottom: clamp(90px, 12vw, 180px);
+}
+
+.hetv-faq-list {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hetv-faq-list section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .75fr);
+  gap: clamp(28px, 6vw, 100px);
+  align-items: start;
+}
+
+.hetv-faq-list h2 {
+  margin: 0;
+  font-size: clamp(27px, 3.5vw, 42px);
+}
+
+.hetv-faq-list p {
+  padding-top: .35em;
+  color: #4f5351;
+}
+
+@media (max-width: 700px) {
+  .hetv-faq-list section { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .hetv-faq-list p { padding: 0 0 0 44px; }
+}

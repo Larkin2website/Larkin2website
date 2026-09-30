@@ -6,10 +6,10 @@ import { SubscriptionSignup } from "../components/subscription-signup";
 let hasVisitedHomeThisPageLoad = false;
 
 const commitments = [
-  ["01", "Free to participate.", "Work experience, shadowing, and training courses are completely free to attend. We do not charge fees for any development programme.", "commitment-paid-camera-crew.webp"],
-  ["02", "We publish everything openly.", "Every opportunity is advertised here and assessed through the published process. You do not need industry contacts.", "commitment-open-camera.webp"],
-  ["03", "Time to apply.", "We aim to keep all applications open for at least five days so you have a fair chance to put yourself forward.", "commitment-alerts-slate.webp"],
-  ["04", "We will always give you a date.", "Every programme tells you when applications close, when you will hear back, and by when you should assume it was not this time.", "commitment-dates-calendar.webp"],
+  ["01", "Paid Opportunities", "All advertised roles, work experience placements and shadowing programmes are paid.", "commitment-paid-camera-crew.webp"],
+  ["02", "Opportunities are Open for All", "We want everyone to feel welcome and supported when applying for opportunities on our productions. We are committed to making information available in alternative formats (such as Easy Read guides, which are available for all advertised roles) and providing additional support where needed.", "commitment-inclusive-crew.webp"],
+  ["03", "Every application matters", "We aim to keep applications open for a minimum of five working days, allowing every applicant to put themselves forward. Every application received within the advertised application window will be shared with the relevant department for consideration.", "commitment-alerts-slate.webp"],
+  ["04", "Clear Timelines", "Every role listing will tell you when applications close, when you can expect to hear back and when to assume your application has progressed", "commitment-dates-calendar.webp"],
 ] as const;
 
 function IntroOverlay({ onComplete }: { onComplete: () => void }) {
@@ -64,7 +64,7 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
           ))}
           <img
             className="larkin2-intro-final-frame"
-            src="/larkin2-opportunities/videos/hero-poster.webp"
+            src="/larkin2-opportunities/images/hero-set-1440.webp"
             alt=""
           />
         </div>
@@ -82,9 +82,6 @@ function IntroOverlay({ onComplete }: { onComplete: () => void }) {
 
 function CommitmentsCarousel() {
   const [active, setActive] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [hasFocus, setHasFocus] = useState(false);
-  const [isInteracting, setIsInteracting] = useState(false);
   const pointerStartX = useRef<number | null>(null);
   const pointerStartY = useRef<number | null>(null);
   const pointerEndX = useRef<number | null>(null);
@@ -105,22 +102,11 @@ function CommitmentsCarousel() {
     return undefined;
   }, []);
 
-  useEffect(() => {
-    if (reducedMotion || isHovered || hasFocus || isInteracting) return;
-
-    const timer = window.setTimeout(() => {
-      setActive((current) => (current + 1) % commitments.length);
-    }, 5000);
-
-    return () => window.clearTimeout(timer);
-  }, [active, reducedMotion, isHovered, hasFocus, isInteracting]);
-
   const resetPointer = () => {
     pointerStartX.current = null;
     pointerStartY.current = null;
     pointerEndX.current = null;
     pointerEndY.current = null;
-    setIsInteracting(false);
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -129,7 +115,6 @@ function CommitmentsCarousel() {
     pointerStartY.current = e.clientY;
     pointerEndX.current = e.clientX;
     pointerEndY.current = e.clientY;
-    setIsInteracting(true);
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
@@ -175,19 +160,14 @@ function CommitmentsCarousel() {
       className="larkin2-carousel larkin2-reveal" 
       data-reveal
       onKeyDown={handleKeyDown}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onFocusCapture={() => setHasFocus(true)}
-      onBlurCapture={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-          setHasFocus(false);
-        }
-      }}
       tabIndex={0}
-      aria-label="Commitments carousel"
+      aria-label="Our commitments. Use the arrow keys or buttons to view each commitment."
       role="region"
     >
-      <div className="larkin2-carousel-viewport">
+      <ol className="sr-only" aria-label="All commitments">
+        {commitments.map(([num, title, copy]) => <li key={num}><h3>{title}</h3><p>{copy}</p></li>)}
+      </ol>
+      <div className="larkin2-carousel-viewport" aria-hidden="true">
         <div 
           className="larkin2-carousel-track" 
           style={{ 
@@ -202,7 +182,7 @@ function CommitmentsCarousel() {
           {commitments.map(([num, title, copy, img], index) => (
             <div 
               className="larkin2-carousel-slide" 
-              aria-hidden={active !== index} 
+              data-active={active === index}
               key={num}
               data-testid={`item-commitment-${num}`}
             >
@@ -244,7 +224,7 @@ function CommitmentsCarousel() {
               />
             ))}
           </div>
-          <div className="larkin2-carousel-indicator">
+          <div className="larkin2-carousel-indicator" role="status" aria-live="polite" aria-atomic="true">
             0{active + 1} / 0{commitments.length}
           </div>
         </div>
@@ -277,15 +257,9 @@ export function Home() {
     if (typeof window === "undefined") return false;
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   });
-  const [videoPaused, setVideoPaused] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  });
-
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const heroTrackRef = useRef<HTMLElement>(null);
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const lastScrollY = useRef(0);
 
   const finishIntro = useCallback(() => {
@@ -304,41 +278,11 @@ export function Home() {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const handleMotionChange = (event: MediaQueryListEvent) => {
       setReducedMotion(event.matches);
-      if (event.matches) {
-        setVideoPaused(true);
-        setIntroVisible(false);
-      }
+      if (event.matches) setIntroVisible(false);
     };
     motionQuery.addEventListener("change", handleMotionChange);
     return () => motionQuery.removeEventListener("change", handleMotionChange);
   }, []);
-
-  useEffect(() => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-
-    const syncPlayback = () => {
-      if (introVisible || videoPaused || document.hidden) {
-        video.pause();
-        if (reducedMotion) video.currentTime = 0;
-        return;
-      }
-
-      const playback = video.play();
-      if (playback) {
-        playback.catch(() => {
-          setVideoPaused(true);
-        });
-      }
-    };
-
-    syncPlayback();
-    document.addEventListener("visibilitychange", syncPlayback);
-    return () => {
-      document.removeEventListener("visibilitychange", syncPlayback);
-      video.pause();
-    };
-  }, [introVisible, reducedMotion, videoPaused]);
 
   useEffect(() => {
     let frame = 0;
@@ -426,29 +370,18 @@ export function Home() {
           <div className="larkin2-hero-bg" />
           <div className="larkin2-hero-stage">
             <div className="larkin2-hero-media-wrap">
-              <video
-                ref={heroVideoRef}
+              <img
                 className="larkin2-hero-media"
-                loop
-                muted
-                playsInline
-                preload={reducedMotion ? "none" : "metadata"}
-                poster="/larkin2-opportunities/videos/hero-poster.webp"
-                aria-hidden="true"
-                data-testid="video-hero-background"
-              >
-                <source src="/larkin2-opportunities/videos/hero-loop.mp4" type={'video/mp4; codecs="avc1.64001f"'} />
-                <source src="/larkin2-opportunities/videos/hero-loop.webm" type={'video/webm; codecs="vp9"'} />
-              </video>
+                src="/larkin2-opportunities/images/hero-set-1440.webp"
+                srcSet="/larkin2-opportunities/images/hero-set-720.webp 720w, /larkin2-opportunities/images/hero-set-1440.webp 1440w, /larkin2-opportunities/images/hero-set-2400.webp 2400w"
+                sizes="100vw"
+                alt="Film crew working with a clapperboard on a set"
+                fetchPriority="high"
+                data-testid="image-hero-background"
+              />
             </div>
             <div className="larkin2-hero-shade" />
-            <div className="larkin2-hero-content-wrap" onFocusCapture={() => {
-              // Bring fading hero links back into view when reached by keyboard.
-              const track = heroTrackRef.current;
-              if (track && track.getBoundingClientRect().top < 0) {
-                window.scrollTo({ top: window.scrollY + track.getBoundingClientRect().top, behavior: "instant" });
-              }
-            }}>
+            <div className="larkin2-hero-content-wrap">
               <div className="larkin2-hero-content larkin2-reveal">
                 <div className="larkin2-hero-split">
                   <div className="larkin2-hero-left">
@@ -466,32 +399,13 @@ export function Home() {
                     <p className="larkin2-intro larkin2-mask"><span>Your central hub for jobs, training and development on Larkin 2 a high-end TV drama production</span></p>
                   </div>
                 </div>
-                <div className="larkin2-hero-actions-wrap">
-                  <div className="larkin2-actions">
-                    <MaskedLink href="/roles" className="larkin2-btn" testId="link-hero-roles">View Live Roles</MaskedLink>
-                    <MaskedLink href="/opportunities" className="larkin2-btn secondary" testId="link-hero-opportunities">Explore Opportunities</MaskedLink>
-                    <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-hero-signup">Sign Up For Updates</MaskedLink>
-                  </div>
-                </div>
               </div>
             </div>
             <div className="larkin2-hero-meta-wrap">
               <div className="larkin2-hero-meta">
-                <span>Scroll to enter the production</span><span className="larkin2-scroll-line" aria-hidden="true" /><span>01 — 06</span>
+                <span>Scroll to enter the hub</span><span className="larkin2-scroll-line" aria-hidden="true" />
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-      <section className="larkin2-section larkin2-signup" id="signup" aria-labelledby="signup-title" style={{ borderTop: 'none', borderBottom: '1px solid var(--line)' }}>
-        <div className="larkin2-signup-layout larkin2-reveal" data-reveal>
-          <div>
-            <h2 className="larkin2-title" id="signup-title" style={{ color: 'var(--paper-ink)' }}><span className="larkin2-mask"><span>Sign Up</span></span></h2>
-             <p className="larkin2-copy" style={{ color: 'var(--secondary)' }}>Start with your name and email to register interest in general HETV news and announcements. You can optionally add interests in roles, training and development in the next step.</p>
-            <p className="larkin2-small" style={{ color: 'var(--muted)', marginTop: '20px' }}>We are collecting interest, not sending automated email alerts yet. Choosing to hear about opportunities is a separate step; joining for general updates does not include every role or programme.</p>
-          </div>
-          <div>
-            <SubscriptionSignup />
           </div>
         </div>
       </section>
@@ -502,14 +416,14 @@ export function Home() {
           </div>
           <div className="larkin2-split-content">
             <div className="larkin2-reveal" data-reveal>
-              <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>Production &amp; Culture</span></span></h2>
+              <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>About Us</span></span></h2>
             </div>
 
             <div className="larkin2-copy larkin2-reveal" data-reveal>
-              <p>Explore roles, work experience, training and development on Larkin 2, whether you’re new to television or an experienced crew member. We’re committed to fair, inclusive recruitment and a respectful, supportive production culture—creating opportunities for people from every background.</p>
-            </div>
-            <div className="larkin2-split-action larkin2-reveal" data-reveal>
-              <MaskedLink href="/roles" className="larkin2-btn" testId="link-about-roles">View Live Roles</MaskedLink>
+              <p>Through this platform we provide opportunities to apply for full-time crew roles, HETV work experience, specific skills training, bespoke shadowing programs or simply to join our talent pool. All of these possibilities are advertised on this platform.</p>
+              <p>Please sign up to HETV Opportunities Hub to keep updated</p>
+              <h3 className="larkin2-culture-heading" id="production-culture">Production Culture Statement</h3>
+              <p>Explore roles, work experience, training and development opportunities on Larkin 2, whether you’re new to HETV or an experienced crew member. We’re committed to increasing the awareness and opportunities on our productions through fair, inclusive recruitment and a respectful, supportive production culture, in the process creating opportunities for people at every level from every background.</p>
             </div>
           </div>
         </section>
@@ -517,64 +431,64 @@ export function Home() {
         <section className="larkin2-section larkin2-paths" id="paths" aria-labelledby="paths-title">
           <div className="larkin2-paths-header larkin2-reveal" data-reveal>
             <div className="larkin2-paths-intro">
-              <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Roles &amp; Opportunities</span></span></h2>
-              <p className="larkin2-small">Whether you are looking for your first set experience, specific skills training, or a standard crew role, we have clear entry points.</p>
+              <h2 className="larkin2-title" id="paths-title"><span className="larkin2-mask"><span>Three Core Areas</span></span></h2>
+              <p className="larkin2-small">Whether you’re looking for a mid-level role, specific skills training or your first on-set experience, we provide three core areas of support: Training Courses, Development Programmes and Recruitment.</p>
             </div>
           </div>
           <div className="larkin2-path-grid">
             <article className="larkin2-path larkin2-reveal" data-reveal style={{ "--reveal-delay": "0ms" } as CSSProperties}>
               <div className="larkin2-path-bg">
-                 <img src="/larkin2-opportunities/images/path-roles-set.webp" alt="" role="presentation" loading="lazy" />
+                  <img src="/larkin2-opportunities/images/path-training-studio.webp" alt="" role="presentation" loading="lazy" />
                 <div className="larkin2-path-gradient" />
               </div>
               <div className="larkin2-path-top">
-                <span className="larkin2-path-label">Entry Point / 01</span>
+                <span className="larkin2-path-label">Core Area / 01</span>
               </div>
               <div className="larkin2-path-bottom">
                 <div className="larkin2-path-bottom-main">
-                  <h3>Crew Roles</h3>
-                  <p>Find Jobs, Employment &amp; Career Opportunities</p>
+                  <h3 className="larkin2-core-title">Training Courses</h3>
+                  <p>Helping you build the skills and knowledge you need to work confidently and effectively on production and beyond.</p>
                 </div>
                 <div className="larkin2-path-cta">
-                  <MaskedLink href="/roles" testId="link-path-roles">View Live Roles</MaskedLink>
+                  <MaskedLink href="/training" testId="link-path-training">VIEW COURSES</MaskedLink>
                 </div>
               </div>
             </article>
 
             <article className="larkin2-path larkin2-reveal" data-reveal style={{ "--reveal-delay": "90ms" } as CSSProperties}>
               <div className="larkin2-path-bg">
-                 <img src="/larkin2-opportunities/images/path-training-studio.webp" alt="" role="presentation" loading="lazy" />
+                  <img src="/larkin2-opportunities/images/path-development-clapper.webp" alt="" role="presentation" loading="lazy" />
                 <div className="larkin2-path-gradient" />
               </div>
               <div className="larkin2-path-top">
-                <span className="larkin2-path-label">Entry Point / 02</span>
+                <span className="larkin2-path-label">Core Area / 02</span>
               </div>
               <div className="larkin2-path-bottom">
                 <div className="larkin2-path-bottom-main">
-                  <h3>Training Courses</h3>
-                  <p>Build practical skills and explore supported learning opportunities. Check each listing for the experience level it is designed for.</p>
+                  <h3 className="larkin2-core-title">Development Programmes</h3>
+                  <p>Providing structured opportunities that support development at different career stages.</p>
                 </div>
                 <div className="larkin2-path-cta">
-                  <MaskedLink href="/training" testId="link-path-training">View courses</MaskedLink>
+                  <MaskedLink href="/development" testId="link-path-development">VIEW PROGRAMMES</MaskedLink>
                 </div>
               </div>
             </article>
 
             <article className="larkin2-path larkin2-reveal" data-reveal style={{ "--reveal-delay": "180ms" } as CSSProperties}>
               <div className="larkin2-path-bg">
-                 <img src="/larkin2-opportunities/images/path-development-clapper.webp" alt="" role="presentation" loading="lazy" />
+                  <img src="/larkin2-opportunities/images/path-roles-set.webp" alt="" role="presentation" loading="lazy" />
                 <div className="larkin2-path-gradient" />
               </div>
               <div className="larkin2-path-top">
-                <span className="larkin2-path-label">Entry Point / 03</span>
+                <span className="larkin2-path-label">Core Area / 03</span>
               </div>
               <div className="larkin2-path-bottom">
                 <div className="larkin2-path-bottom-main">
-                  <h3>Development Programmes</h3>
-                  <p>Shadowing and progression placements for experienced professionals moving into High-End Television.</p>
+                  <h3 className="larkin2-core-title">Recruitment</h3>
+                  <p>Helping you find paid roles across our productions that match your career level, skills and experience.</p>
                 </div>
                 <div className="larkin2-path-cta">
-                  <MaskedLink href="/development" testId="link-path-development">View programmes</MaskedLink>
+                  <MaskedLink href="/roles" testId="link-path-roles">VIEW LIVE ROLES</MaskedLink>
                 </div>
               </div>
             </article>
@@ -584,9 +498,8 @@ export function Home() {
         <section className="larkin2-section larkin2-commit" id="commitments" aria-labelledby="commit-title">
           <div className="larkin2-commit-header">
             <div className="larkin2-commit-header-text">
-              <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>Our Commitments</span></span></h2>
-              <p className="larkin2-small larkin2-reveal text-[20px]" data-reveal>Uncertainty is a major barrier in this industry.
-              Here are the principles we uphold for every applicant.</p>
+              <h2 className="larkin2-title larkin2-reveal" data-reveal id="commit-title"><span className="larkin2-mask"><span>Our Commitment to You</span></span></h2>
+              <p className="larkin2-small larkin2-reveal text-[20px]" data-reveal>We believe in being open and transparent about how we work. Here are the commitments we make to everyone who engages with our Hub.</p>
             </div>
           </div>
           <CommitmentsCarousel />
@@ -600,13 +513,20 @@ export function Home() {
             <div className="larkin2-copy larkin2-reveal" data-reveal style={{ paddingBlock: 0 }}>
               <div className="hetv-faq-item">
                 <h3>Do you offer individual feedback on applications?</h3>
-                <p>We cannot give individual feedback. Application volumes are incredibly high, and personal responses to everyone are simply not realistic. Not being selected is not a reflection of your worth or ability.</p>
+                <p>Due to the volume of applications we receive, we’re unable to provide individual feedback</p>
               </div>
-              <div className="hetv-faq-item mt-8">
-                <h3>Can I send a speculative CV?</h3>
-                <p>We do not accept speculative CVs. We only recruit through the active listings published on this hub. Please sign up for updates so we can let you know when roles and programmes open.</p>
-              </div>
+              <MaskedLink href="/faqs" className="larkin2-btn" testId="link-more-faqs">View more FAQs</MaskedLink>
             </div>
+          </div>
+        </section>
+        <section className="larkin2-section larkin2-signup" id="signup" aria-labelledby="signup-title" style={{ borderBottom: '1px solid var(--line)' }}>
+          <div className="larkin2-signup-layout larkin2-reveal" data-reveal>
+            <div>
+              <h2 className="larkin2-title" id="signup-title" style={{ color: 'var(--paper-ink)' }}><span className="larkin2-mask"><span>Sign Up</span></span></h2>
+              <p className="larkin2-copy">Sign up to be notified when new roles and opportunities become available through the Hub. You can update your preferences at any time.</p>
+              <p className="larkin2-small" style={{ marginTop: '20px' }}>We are collecting interest, not sending automated email alerts yet. Choosing to hear about opportunities is a separate step; joining for general updates does not include every role or programme.</p>
+            </div>
+            <SubscriptionSignup />
           </div>
         </section>
       </div>

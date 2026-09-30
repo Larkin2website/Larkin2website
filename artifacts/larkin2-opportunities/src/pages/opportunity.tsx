@@ -5,6 +5,7 @@ import {
   useGetPublicProgramme,
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
+import { SAMPLE_PROGRAMME, SAMPLE_PROGRAMME_SLUG } from "../data/sample-listings";
 import NotFound from "./not-found";
 
 function ProgrammeContent({ content }: { content: string }) {
@@ -28,6 +29,7 @@ function ProgrammeContent({ content }: { content: string }) {
 }
 
 export function OpportunityPage({ id }: { id: string }) {
+  const isSample = import.meta.env.DEV && id === SAMPLE_PROGRAMME_SLUG;
   const {
     data: opp,
     isLoading: programmeLoading,
@@ -38,8 +40,10 @@ export function OpportunityPage({ id }: { id: string }) {
       queryKey: getGetPublicProgrammeQueryKey(id),
       staleTime: 60_000,
       retry: 2,
+      enabled: !isSample,
     },
   });
+  const displayedProgramme = isSample ? SAMPLE_PROGRAMME : opp;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -49,23 +53,23 @@ export function OpportunityPage({ id }: { id: string }) {
   const trackedViewId = useRef("");
 
   useEffect(() => {
-    if (opp) {
-      document.title = `${opp.title} | HETV Opportunities Hub`;
+    if (displayedProgramme) {
+      document.title = `${displayedProgramme.title} | HETV Opportunities Hub`;
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
-        metaDesc.setAttribute("content", opp.shortDescription);
+        metaDesc.setAttribute("content", displayedProgramme.shortDescription);
       }
     }
-  }, [opp]);
+  }, [displayedProgramme]);
 
   useEffect(() => {
-    if (!opp || trackedViewId.current === opp.slug) return;
+    if (isSample || !opp || trackedViewId.current === opp.slug) return;
     trackedViewId.current = opp.slug;
     void recordPublicEngagement({ kind: "programme", id: opp.id, event: "view" }).catch(() => undefined);
-  }, [opp]);
+  }, [isSample, opp]);
 
   function trackApply() {
-    if (opp) void recordPublicEngagement({ kind: "programme", id: opp.id, event: "apply" }).catch(() => undefined);
+    if (!isSample && opp) void recordPublicEngagement({ kind: "programme", id: opp.id, event: "apply" }).catch(() => undefined);
   }
 
   useEffect(() => {
@@ -91,23 +95,25 @@ export function OpportunityPage({ id }: { id: string }) {
     && "status" in programmeError
     && programmeError.status === 404;
 
-  if (isNotFound) return <NotFound />;
-  if (programmeLoading) {
+  if (!isSample && isNotFound) return <NotFound />;
+  if (!isSample && programmeLoading) {
     return <div className="larkin2-page opp-page"><main id="content"><div className="opp-list-state" role="status" aria-live="polite">Loading opportunity…</div></main></div>;
   }
-  if (programmeFailed || !opp) {
+  if (!isSample && (programmeFailed || !opp)) {
     return <div className="larkin2-page opp-page"><main id="content"><div className="opp-list-state" role="alert">We couldn’t load this opportunity right now. Please refresh the page and try again.</div></main></div>;
   }
 
+  if (!displayedProgramme) return <NotFound />;
+  const displayOpp = displayedProgramme;
   const sectionGroups = [
-    ["About the Programme", opp.about],
-    ["Work Experience Placement", opp.placement],
-    ["Training & Development", opp.training],
-    ["Who Can Apply?", opp.eligibility],
-    ["Programme Timeline & Structure", opp.timeline],
-    ["How to Apply", opp.applicationGuidance],
+    ["About the Programme", displayOpp.about],
+    ["Work Experience Placement", displayOpp.placement],
+    ["Training & Development", displayOpp.training],
+    ["Who Can Apply?", displayOpp.eligibility],
+    ["Programme Timeline & Structure", displayOpp.timeline],
+    ["How to Apply", displayOpp.applicationGuidance],
   ] as const;
-  const isOpen = opp.status === "published";
+  const isOpen = !isSample && displayOpp.status === "published";
 
   return (
     <div className="larkin2-page opp-page" id="top">
@@ -129,22 +135,23 @@ export function OpportunityPage({ id }: { id: string }) {
         <section className="opp-hero larkin2-section">
           <div className="opp-hero-grid">
              <div className="opp-hero-content">
-                <div className="larkin2-eyebrow">Pathway / {opp.num}</div>
-                <h1 className="opp-title">{opp.title}</h1>
-                <p className="larkin2-intro">{opp.shortDescription}</p>
+                 <div className="larkin2-eyebrow">{isSample ? "EXAMPLE ONLY" : `Pathway / ${displayOpp.num}`}</div>
+                 {isSample && <p className="roles-badge is-featured" role="note">EXAMPLE ONLY</p>}
+                 <h1 className="opp-title">{displayOpp.title}</h1>
+                 <p className="larkin2-intro">{displayOpp.shortDescription}</p>
                 <div className="opp-meta">
                    <div className="opp-meta-item">
                      <span>Status</span>
-                     <strong>{opp.applicationStatus}</strong>
+                      <strong>{displayOpp.applicationStatus}</strong>
                    </div>
                    <div className="opp-meta-item">
                      <span>Location</span>
-                     <strong>{opp.location}</strong>
+                      <strong>{displayOpp.location}</strong>
                    </div>
                 </div>
              </div>
              <div className="opp-hero-media">
-                <img src={`/larkin2-opportunities/images/${opp.image}`} alt="" role="presentation" />
+                 <img src={`/larkin2-opportunities/images/${displayOpp.image}`} alt="" role="presentation" />
              </div>
           </div>
         </section>
@@ -154,11 +161,11 @@ export function OpportunityPage({ id }: { id: string }) {
             <aside className="opp-sidebar">
               <div className="opp-status-card">
                   <h3>{isOpen ? "Applications Open" : "Applications Closed"}</h3>
-                  <p>You can register your interest in future opportunities. Email alerts are not currently enabled.</p>
-                  {isOpen && opp.applicationUrl && (
-                    <a href={opp.applicationUrl} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>Apply now</a>
+                   <p>{isSample ? "Example only — this sample programme is not accepting applications." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
+                   {!isSample && isOpen && displayOpp.applicationUrl && (
+                     <a href={displayOpp.applicationUrl} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>Apply now</a>
                  )}
-                  <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>
+                   {!isSample && <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>}
               </div>
             </aside>
             

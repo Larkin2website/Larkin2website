@@ -14,3 +14,4 @@
 - [Private preview verification](private-preview-verification.md) — In-workspace requests can return 200 for private previews; do not treat shell curl as an outside visitor.
 - [Public testing access](public-testing-access.md) — The owner explicitly chose arbitrary-credential full access on the public production site for testing; treat it as temporary.
 - [Publish-time code synchronization](publish-time-code-synchronization.md) — Recheck changed files and typecheck after a user publishes during an assigned task; concurrent synchronization can alter previously verified code.
+- [Manual artifact builds](manual-artifact-builds.md) — A shell build may lack the route and port settings injected into managed artifact workflows; provide both for local build checks.

@@ -4,6 +4,7 @@ import {
   useListPublicProgrammes,
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
+import { SAMPLE_PROGRAMME } from "../data/sample-listings";
 
 export function OpportunitiesIndexPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -105,6 +106,27 @@ export function OpportunitiesIndexPage() {
 
         <section className="larkin2-section" style={{ borderTop: "none", paddingTop: 0 }}>
           <div className="opp-list">
+            {import.meta.env.DEV && (
+              <article className="opp-card">
+                <div className="opp-card-media">
+                  <img src={`/larkin2-opportunities/images/${SAMPLE_PROGRAMME.image}`} alt="" loading="lazy" />
+                </div>
+                <div className="opp-card-content">
+                  <div className="larkin2-eyebrow">EXAMPLE ONLY</div>
+                  <h2 className="opp-card-title">{SAMPLE_PROGRAMME.cardTitle}</h2>
+                  <p className="opp-card-desc">{SAMPLE_PROGRAMME.cardCopy}</p>
+                  <div className="opp-card-meta">
+                    <div className="opp-card-meta-item"><span>Status</span><strong>{SAMPLE_PROGRAMME.applicationStatus}</strong></div>
+                    <div className="opp-card-meta-item"><span>Location</span><strong>{SAMPLE_PROGRAMME.location}</strong></div>
+                  </div>
+                  <div className="opp-card-action">
+                    <MaskedLink href={`/opportunities/${SAMPLE_PROGRAMME.slug}`} className="larkin2-btn" testId={`link-opp-${SAMPLE_PROGRAMME.slug}`}>
+                      View example programme
+                    </MaskedLink>
+                  </div>
+                </div>
+              </article>
+            )}
             {programmesLoading ? (
               <div className="opp-list-state" role="status" aria-live="polite">
                 Loading opportunities…

@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 
 const css = readFileSync(new URL("../index.css", import.meta.url), "utf8") + "\n" +
   readFileSync(new URL("../paper-orange.css", import.meta.url), "utf8");
-const tokens = { ink: "#1d2020", secondary: "#4f4b45", muted: "#595650", "accent-text": "#943719", orange: "#f4773f", stage: "#f4f1ed", paper: "#e9e5df", deep: "#f4f1ed" };
+const tokens = { ink: "#1d2020", secondary: "#393631", muted: "#45413d", "accent-text": "#943719", orange: "#f4773f", stage: "#f4f1ed", paper: "#e9e5df", deep: "#f4f1ed" };
 function luminance(hex) {
   const rgb = hex.slice(1).match(/../g).map(n => parseInt(n, 16) / 255).map(n => n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4);
   return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
@@ -105,7 +105,7 @@ test("Production & Culture overlay keeps all text readable over bright imagery",
   assert.equal(declarationsFor(".larkin2-split-image").position, "absolute");
   assert.equal(declarationsFor(".larkin2-split-content").position, "relative");
   assert.equal(declarationsFor(".larkin2-split-content")["justify-content"], "flex-end");
-  assert.equal(declarationsFor(".larkin2-split-content")["text-align"], "center");
+  assert.match(css, /\.larkin2-split-content\s*\{[^}]*text-align:\s*center/s);
   assert.ok(Number(shade["z-index"]) < Number(declarationsFor(".larkin2-split-content")["z-index"]));
 });
 

@@ -30,7 +30,8 @@ test("all approved application destinations are recorded but closed programmes c
   }
 
   assert.equal((data.match(/applicationStatus: "Closed"/g) ?? []).length, 3);
-  assert.match(page, /opp\.applicationStatus === "Open" && opp\.applicationLink/);
+  assert.match(page, /!isSample && displayOpp\.status === "published"/);
+  assert.match(page, /isOpen && displayOpp\.applicationUrl/);
 });
 
 test("department resources and truthful interest caveat remain available", () => {

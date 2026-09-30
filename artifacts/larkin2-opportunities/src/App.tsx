@@ -19,6 +19,7 @@ import { UnsubscribePage } from "./pages/unsubscribe";
 import { PreferencesPage } from "./pages/preferences";
 import { SignupJourneyProvider } from "./lib/signup-journey";
 import { TrainingPage, DevelopmentPage } from "./pages/programme-overview";
+import { FAQsPage } from "./pages/faqs";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ function Router() {
           {(params) => <RoleDetailPage id={params.id} />}
         </Route>
         <Route path="/opportunities" component={OpportunitiesIndexPage} />
+        <Route path="/faqs" component={FAQsPage} />
         <Route path="/opportunities/:id">
           {(params) => <OpportunityPage id={params.id} />}
         </Route>

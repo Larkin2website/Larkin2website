@@ -7,9 +7,11 @@ import {
 import { Link } from "wouter";
 import { MobileMenu, SiteFooter, SiteHeader, MaskedLink } from "../components/layout";
 import { publicOpportunityToRole } from "../data/role-api";
+import { SAMPLE_ROLE, SAMPLE_ROLE_ID } from "../data/sample-listings";
 import NotFound from "./not-found";
 
 export function RoleDetailPage({ id }: { id: string }) {
+  const isSample = import.meta.env.DEV && id === SAMPLE_ROLE_ID;
   const {
     data: publicOpportunity,
     isLoading: roleLoading,
@@ -19,9 +21,12 @@ export function RoleDetailPage({ id }: { id: string }) {
       queryKey: getGetPublicOpportunityQueryKey(id),
       retry: 1,
       staleTime: 60_000,
+      enabled: !isSample,
     },
   });
-  const role = publicOpportunity
+  const role = isSample
+    ? SAMPLE_ROLE
+    : publicOpportunity
     ? publicOpportunityToRole(publicOpportunity)
     : undefined;
   const [menuOpen, setMenuOpen] = useState(false);
@@ -40,13 +45,13 @@ export function RoleDetailPage({ id }: { id: string }) {
   }, [role]);
 
   useEffect(() => {
-    if (!publicOpportunity || trackedViewId.current === publicOpportunity.id) return;
+    if (isSample || !publicOpportunity || trackedViewId.current === publicOpportunity.id) return;
     trackedViewId.current = publicOpportunity.id;
     void recordPublicEngagement({ kind: "role", id: publicOpportunity.id, event: "view" }).catch(() => undefined);
-  }, [publicOpportunity]);
+  }, [isSample, publicOpportunity]);
 
   function trackApply() {
-    if (publicOpportunity) {
+    if (!isSample && publicOpportunity) {
       void recordPublicEngagement({ kind: "role", id: publicOpportunity.id, event: "apply" }).catch(() => undefined);
     }
   }
@@ -68,7 +73,7 @@ export function RoleDetailPage({ id }: { id: string }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [menuOpen]);
 
-  if (roleLoading) {
+  if (!isSample && roleLoading) {
     return (
       <div className="larkin2-page roles-detail-page">
         <main id="content">
@@ -82,9 +87,10 @@ export function RoleDetailPage({ id }: { id: string }) {
     );
   }
 
-  if (roleFailed || !role) return <NotFound />;
+  if (!isSample && (roleFailed || !role)) return <NotFound />;
+  if (!role) return <NotFound />;
 
-  const acceptingApplications = role.status === "Open";
+  const acceptingApplications = !isSample && role.status === "Open";
 
   return (
     <div className="larkin2-page roles-detail-page" id="top">
@@ -104,6 +110,7 @@ export function RoleDetailPage({ id }: { id: string }) {
           <div className="roles-detail-hero-grid">
             <div>
               <div className="larkin2-eyebrow">Role / {role.department}</div>
+              {isSample && <p className="roles-badge is-featured" role="note">SAMPLE — NOT A REAL OPENING</p>}
               <div className="roles-card-badges roles-detail-badges">
                 {role.deadlineExtended && <span className="roles-badge is-urgent">Deadline extended</span>}
                 {role.urgent && <span className="roles-badge is-urgent">Urgent</span>}
@@ -112,7 +119,7 @@ export function RoleDetailPage({ id }: { id: string }) {
               <h1 className="roles-detail-title">{role.title}</h1>
               <p className="roles-detail-summary">{role.summary}</p>
               <div className="roles-card-action roles-detail-apply">
-                {role.applicationUrl ? (
+                {!isSample && role.applicationUrl ? (
                   <MaskedLink
                     href={role.applicationUrl}
                     testId="link-role-apply-now"
@@ -134,7 +141,7 @@ export function RoleDetailPage({ id }: { id: string }) {
                       Apply now
                     </button>
                     <p id="role-application-unavailable" className="roles-detail-apply-note">
-                      Application link unavailable.
+                      {isSample ? "Example only — no application link is available." : "Application link unavailable."}
                     </p>
                   </>
                 )}
@@ -154,9 +161,9 @@ export function RoleDetailPage({ id }: { id: string }) {
             <div className={`roles-detail-status ${acceptingApplications ? "is-open" : ""}`}>
               <span className="larkin2-eyebrow">{acceptingApplications ? "Applications open" : "Applications unavailable"}</span>
               <h2>{acceptingApplications ? "This role is accepting applications." : `This role is ${role.status.toLowerCase()}.`}</h2>
-              <p>{role.applicationDeadline}</p>
+                <p>{role.applicationDeadline}</p>
               {role.responseDate && <p>{role.responseDate}</p>}
-              {acceptingApplications && role.applicationUrl ? (
+              {!isSample && acceptingApplications && role.applicationUrl ? (
                 <MaskedLink
                   href={role.applicationUrl}
                   className="roles-detail-alert-link"
@@ -167,6 +174,8 @@ export function RoleDetailPage({ id }: { id: string }) {
                 >
                   Apply for this role
                 </MaskedLink>
+              ) : isSample ? (
+                <p>Example only — this sample has no application link.</p>
               ) : (
                 <MaskedLink href="/#signup" className="roles-detail-alert-link" testId="link-role-alerts">Sign up for updates</MaskedLink>
               )}

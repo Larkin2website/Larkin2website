@@ -105,9 +105,10 @@ html { background: #f4f1ed; }
 .larkin2-production { background: var(--paper); }
 .larkin2-path { background: #0f1112; }
 .larkin2-path-gradient {
-  background: linear-gradient(to bottom, rgba(15,17,18,.08) 0%, rgba(15,17,18,.16) 30%, rgba(15,17,18,.64) 55%, rgba(15,17,18,.84) 100%);
+  background: linear-gradient(to bottom, rgba(15,17,18,.08) 0%, rgba(15,17,18,.16) 30%, rgba(15,17,18,.84) 55%, rgba(15,17,18,.96) 100%);
 }
 .larkin2-path h3 { color: var(--stage); }
+.larkin2-path .larkin2-core-title { color: var(--orange); }
 .larkin2-path-bottom-main p { color: var(--paper); }
 .larkin2-page .larkin2-path :focus-visible { outline-color: var(--stage); }
 .larkin2-culture .larkin2-image-caption { background: var(--paper); color: var(--ink); }

@@ -86,8 +86,8 @@
   --stage: #f4f1ed;
   --deep: #f4f1ed;
   --ink: #1d2020;
-  --muted: #595650;
-  --secondary: #4f4b45;
+  --muted: #45413d;
+  --secondary: #393631;
   --line: #cbc5bc;
   --orange: #f4773f;
   --accent-text: #943719;
@@ -312,7 +312,7 @@
 .larkin2-hero-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(8,10,12,.54), rgba(8,10,12,.19) 52%, rgba(8,10,12,.06)), linear-gradient(0deg, rgba(8,10,12,.64), rgba(8,10,12,.07) 45%, rgba(8,10,12,.12));
+  background: linear-gradient(90deg, rgba(8,10,12,.78), rgba(8,10,12,.69) 52%, rgba(8,10,12,.58)), linear-gradient(0deg, rgba(8,10,12,.72), rgba(8,10,12,.12) 45%, rgba(8,10,12,.20));
 }
 .larkin2-hero-shade::after {
   position: absolute;
@@ -420,7 +420,7 @@
   inset: 0;
   content: "";
   pointer-events: none;
-  background: linear-gradient(0deg, rgba(8,10,12,.76) 0%, rgba(8,10,12,.56) 48%, rgba(8,10,12,.46) 100%);
+  background: linear-gradient(0deg, rgba(8,10,12,.82) 0%, rgba(8,10,12,.75) 48%, rgba(8,10,12,.72) 100%);
 }
 .larkin2-split-content {
   position: relative;
@@ -459,8 +459,20 @@
 }
 .larkin2-split-section .larkin2-copy {
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   color: #e9e5df;
+}
+.larkin2-split-section .larkin2-copy p + p { margin-top: 24px; }
+.larkin2-culture-heading {
+  display: inline-block;
+  margin: 36px 0 16px;
+  padding: 8px 16px;
+  background: rgba(8,10,12,.94);
+  color: var(--orange);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(22px, 3vw, 38px);
+  font-weight: 500;
+  line-height: 1.15;
 }
 .larkin2-split-action {
   display: flex;
@@ -511,9 +523,10 @@
   display: flex;
   align-items: center;
   gap: 13px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .15em;
+  color: #f4f1ed;
+  font-size: clamp(13px, 1.25vw, 17px);
+  font-weight: 600;
+  letter-spacing: .08em;
   text-transform: uppercase;
 }
 .larkin2-scroll-line { width: 60px; height: 1px; background: var(--sage); }
@@ -742,7 +755,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to bottom, rgba(15,17,18,0.1) 0%, rgba(15,17,18,0.05) 30%, rgba(15,17,18,0.85) 75%, rgba(15,17,18,0.98) 100%);
+  background: linear-gradient(to bottom, rgba(15,17,18,0.1) 0%, rgba(15,17,18,0.05) 30%, rgba(15,17,18,0.84) 55%, rgba(15,17,18,0.98) 100%);
 }
 
 .larkin2-path-top {
@@ -821,7 +834,7 @@
 }
 .larkin2-commit-header-text .larkin2-small {
   max-width: 580px;
-  color: rgba(29,32,32,.68);
+  color: var(--secondary);
   font-size: 20px;
   margin: 0;
 }
@@ -863,11 +876,11 @@
   /* Visibility hidden when inactive is managed via aria-hidden selector below if needed, 
      but keeping it block ensures height calculation works */
 }
-.larkin2-carousel-slide[aria-hidden="true"] {
+.larkin2-carousel-slide[data-active="false"] {
   /* Prevent focus on inactive slides */
   visibility: hidden;
 }
-.larkin2-carousel-slide[aria-hidden="false"] {
+.larkin2-carousel-slide[data-active="true"] {
   visibility: visible;
 }
 
@@ -2334,7 +2347,7 @@
   .larkin2-hero-actions-wrap .larkin2-link { margin-top: 0; }
   .larkin2-hero-actions-wrap .larkin2-btn { width: auto; min-height: 38px; padding: 8px 14px; font-size: 11px; font-weight: 500; }
   .larkin2-hero-meta-wrap { right: 20px; bottom: 24px; left: 20px; width: auto; transform: translate(0, calc(var(--hero-progress) * 8vh)); }
-  .larkin2-hero-meta { justify-content: space-between; width: 100%; font-size: 9px; }
+  .larkin2-hero-meta { justify-content: space-between; width: 100%; font-size: 13px; }
   .larkin2-hero-meta > span:first-child { flex: 0 1 auto; }
   .larkin2-scroll-line { flex: 1 1 auto; width: auto; margin: 0 12px; }
   .larkin2-section { padding: 48px 20px; }

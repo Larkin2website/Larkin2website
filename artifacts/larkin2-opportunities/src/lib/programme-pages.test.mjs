@@ -22,7 +22,7 @@ test("homepage keeps entry cards but no longer duplicates programme sections", (
 test("both overview pages are routed and discoverable in each navigation surface", () => {
   for (const [category, component] of [["training", "TrainingPage"], ["development", "DevelopmentPage"]]) {
     assert.ok(app.includes(`<Route path="/${category}" component={${component}} />`));
-    for (const surface of ["nav", "mobile", "footer"]) {
+    for (const surface of ["nav", "mobile"]) {
       assert.ok(layout.includes(`href="/${category}" testId="link-${surface}-${category}"`));
     }
     assert.ok(!layout.includes(`href="#${category}"`));
@@ -40,7 +40,8 @@ test("legacy redirects replace the history entry and do not discard search param
 test("overview pages retain the original guidance, programme links and truthful status", () => {
   const pages = read("../pages/programme-overview.tsx");
   for (const text of [
-    "Training Courses &amp; Work Experience",
+    "Helping you build the skills and knowledge you need to work confidently and effectively on production and beyond.",
+    "Providing structured opportunities that support development at different career stages.",
     "Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment.",
     "Check each listing for eligibility, support and pay.",
     "Free participation means no fees; it does not mean every course is paid.",

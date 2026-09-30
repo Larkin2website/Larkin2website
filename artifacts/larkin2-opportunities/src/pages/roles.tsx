@@ -7,6 +7,7 @@ import {
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { publicOpportunityToRole } from "../data/role-api";
+import { SAMPLE_ROLE } from "../data/sample-listings";
 
 export function RolesPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,7 +40,10 @@ export function RolesPage() {
     },
   });
   const roles = useMemo(
-    () => publicOpportunities.map(publicOpportunityToRole),
+    () => [
+      ...publicOpportunities.map(publicOpportunityToRole),
+      ...(import.meta.env.DEV ? [SAMPLE_ROLE] : []),
+    ],
     [publicOpportunities],
   );
   const filterOptions = useMemo(() => ({
@@ -99,6 +103,31 @@ export function RolesPage() {
     setRoleTypeFilter("");
   };
 
+  const sampleRoleCard = import.meta.env.DEV && filteredRoles.some(role => role.id === SAMPLE_ROLE.id) ? (
+    <article key={SAMPLE_ROLE.id} className="roles-card" data-testid={`card-role-${SAMPLE_ROLE.id}`}>
+      <div className="roles-card-main">
+        <div className="roles-card-badges">
+          <span className="roles-badge is-featured">SAMPLE — NOT A REAL OPENING</span>
+        </div>
+        <h2 className="roles-card-title">{SAMPLE_ROLE.title}</h2>
+        <div className="roles-card-meta">
+          <span>{SAMPLE_ROLE.department}</span>
+          <span>{SAMPLE_ROLE.roleType}</span>
+          <span>{SAMPLE_ROLE.date}</span>
+        </div>
+      </div>
+      <div className="roles-card-status">
+        <span className={`roles-status-indicator is-${SAMPLE_ROLE.status.toLowerCase()}`}></span>
+        {SAMPLE_ROLE.status}
+      </div>
+      <div className="roles-card-action">
+        <MaskedLink href={`/roles/${SAMPLE_ROLE.id}`} testId={`link-role-${SAMPLE_ROLE.id}`}>
+          View details
+        </MaskedLink>
+      </div>
+    </article>
+  ) : null;
+
   return (
     <div className="larkin2-page roles-page" id="top">
       <SiteHeader 
@@ -119,7 +148,7 @@ export function RolesPage() {
         <section className="roles-hero larkin2-section">
           <div className="larkin2-eyebrow" style={{ marginBottom: "20px" }}>Opportunities</div>
           <h1 className="roles-title">Search Available roles here</h1>
-          <p className="roles-intro">Find Jobs, Employment &amp; Career Opportunities</p>
+          <p className="roles-intro">Find jobs and career opportunities</p>
         </section>
 
         <section className="roles-filters larkin2-section">
@@ -180,7 +209,7 @@ export function RolesPage() {
             </div>
           ) : (
             <div className="roles-grid">
-              {filteredRoles.map(role => (
+              {(import.meta.env.DEV ? filteredRoles.filter(role => role.id !== SAMPLE_ROLE.id) : filteredRoles).map(role => (
                 <article key={role.id} className="roles-card" data-testid={`card-role-${role.id}`}>
                   <div className="roles-card-main">
                     <div className="roles-card-badges">
@@ -208,7 +237,11 @@ export function RolesPage() {
                   </div>
                 </article>
               ))}
+              {sampleRoleCard}
             </div>
+          )}
+          {(rolesLoading || rolesFailed) && sampleRoleCard && (
+            <div className="roles-grid">{sampleRoleCard}</div>
           )}
         </section>
         <section className="roles-page-footer larkin2-section" aria-label="Return to homepage">
