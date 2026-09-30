@@ -430,6 +430,10 @@
   background: var(--paper);
   color: var(--ink);
 }
+.larkin2-split-culture {
+  background: var(--orange);
+  color: var(--ink);
+}
 .larkin2-split-image {
   position: sticky;
   top: 0;
@@ -457,6 +461,7 @@
 }
 .larkin2-split-about .larkin2-title { color: var(--ink); }
 .larkin2-split-about .larkin2-copy { color: var(--secondary); }
+.larkin2-split-culture .larkin2-copy { color: var(--ink); }
 .larkin2-split-section .larkin2-copy p + p { margin-top: 24px; }
 .larkin2-culture-heading {
   margin: 0 0 22px;
@@ -467,6 +472,7 @@
   line-height: 1.15;
   scroll-margin-top: 100px;
 }
+.larkin2-split-culture .larkin2-culture-heading { color: var(--ink); }
 .larkin2-split-action {
   display: flex;
   justify-content: center;

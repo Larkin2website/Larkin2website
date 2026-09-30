@@ -21,9 +21,10 @@ test("About Us and the culture statement stay in separate ordered reveal groups 
   assert.equal((section.match(/<h2\b/g) ?? []).length, 1);
   assert.equal((section.match(/className="larkin2-split-content"/g) ?? []).length, 1);
   assert.equal((section.match(/className="larkin2-split-image"/g) ?? []).length, 1);
-  assert.equal((section.match(/className="larkin2-split-panel(?: larkin2-split-about)?"/g) ?? []).length, 2);
+  assert.equal((section.match(/className="larkin2-split-panel larkin2-split-(?:about|culture)"/g) ?? []).length, 2);
   assert.equal((section.match(/className="larkin2-reveal" data-reveal/g) ?? []).length, 2);
   assert.ok(section.includes('className="larkin2-split-panel larkin2-split-about"'));
+  assert.ok(section.includes('className="larkin2-split-panel larkin2-split-culture"'));
   assert.ok(section.indexOf("larkin2-split-image") < section.indexOf("larkin2-split-content"));
   assert.ok(section.includes('src="/larkin2-opportunities/images/production-culture.webp"'));
   assert.ok(section.includes('id="about-title"'));

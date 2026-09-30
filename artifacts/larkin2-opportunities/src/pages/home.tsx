@@ -424,7 +424,7 @@ export function Home() {
                 </div>
               </div>
             </div>
-            <div className="larkin2-split-panel">
+            <div className="larkin2-split-panel larkin2-split-culture">
               <div className="larkin2-reveal" data-reveal>
                 <h3 className="larkin2-culture-heading" id="production-culture">Production Culture Statement</h3>
                 <div className="larkin2-copy">

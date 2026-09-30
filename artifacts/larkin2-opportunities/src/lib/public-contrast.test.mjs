@@ -86,17 +86,18 @@ test("entry cards use dark gradients with readable text and keyboard focus", () 
 
 test("Production & Culture text stays readable beside the section-bound sticky image", () => {
   const section = declarationsFor(".larkin2-split-section");
-  const cultureSurface = section.background;
+  const cultureSurface = resolveColor(declarationsFor(".larkin2-split-culture").background);
   const aboutSurface = resolveColor(declarationsFor(".larkin2-split-about").background);
   assert.equal(section.display, "grid");
   const sectionBase = css.match(/\.larkin2-split-section\s*\{([^}]+)\}/)?.[1];
   assert.match(sectionBase, /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/);
   assert.equal(aboutSurface, tokens.paper);
+  assert.equal(cultureSurface, tokens.orange);
   for (const selector of [".larkin2-split-about .larkin2-title", ".larkin2-split-about .larkin2-copy"]) {
     assert.ok(ratio(resolveColor(declarationsFor(selector).color), aboutSurface) >= 4.5, `${selector} on paper`);
   }
-  for (const selector of [".larkin2-culture-heading", ".larkin2-split-section .larkin2-copy"]) {
-    assert.ok(ratio(resolveColor(declarationsFor(selector).color), cultureSurface) >= 4.5, `${selector} on dark panel`);
+  for (const selector of [".larkin2-split-culture .larkin2-culture-heading", ".larkin2-split-culture .larkin2-copy"]) {
+    assert.ok(ratio(resolveColor(declarationsFor(selector).color), cultureSurface) >= 4.5, `${selector} on orange panel`);
   }
   const imageBase = css.match(/\.larkin2-split-image\s*\{([^}]+)\}/)?.[1];
   assert.match(imageBase, /position:\s*sticky/);
