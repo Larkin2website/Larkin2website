@@ -17,3 +17,4 @@
 - [Manual artifact builds](manual-artifact-builds.md) — A shell build may lack the route and port settings injected into managed artifact workflows; provide both for local build checks.
 - [Responsive CSS assertions](responsive-css-assertions.md) — Static CSS tests must distinguish base rules from media overrides and resolve color tokens before contrast calculations.
 - [Workspace package installs](workspace-package-installs.md) — Package helper installs at the monorepo root; use a filtered pnpm command when adding a dependency to one artifact.
+- [Cookie notice is not consent](cookie-notice-consent.md) — Dismissing the public site's notice is informational only; optional tracking needs a separate opt-in.

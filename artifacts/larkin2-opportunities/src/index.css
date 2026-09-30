@@ -128,6 +128,61 @@
 }
 .larkin2-skip:focus { transform: translateY(0); }
 
+.larkin2-cookie-notice {
+  position: fixed;
+  z-index: 32;
+  left: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  width: min(430px, calc(100vw - 40px));
+  max-height: min(45svh, 350px);
+  overflow-y: auto;
+  padding: 22px 24px;
+  border: 1px solid #cbc5bc;
+  border-radius: 8px;
+  background: #f4f1ed;
+  box-shadow: 0 12px 36px rgba(8, 10, 12, .17);
+  color: #1d2020;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.larkin2-cookie-notice p { margin: 0; }
+.larkin2-cookie-notice .larkin2-cookie-notice-title {
+  margin-bottom: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.larkin2-cookie-notice a {
+  color: #943719;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.larkin2-cookie-notice button {
+  min-height: 38px;
+  margin-top: 16px;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #f4773f;
+  color: #1d2020;
+  cursor: pointer;
+  font-weight: 600;
+}
+.larkin2-cookie-notice :is(a, button):focus-visible {
+  outline: 2px solid #1d2020;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .larkin2-cookie-notice {
+    left: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: calc(100vw - 32px);
+    padding: 18px 20px;
+  }
+}
+
 .larkin2-top {
   position: fixed;
   z-index: 30;

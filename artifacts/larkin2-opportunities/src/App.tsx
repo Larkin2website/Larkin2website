@@ -21,6 +21,7 @@ import { PreferencesPage } from "./pages/preferences";
 import { SignupJourneyProvider } from "./lib/signup-journey";
 import { TrainingPage, DevelopmentPage } from "./pages/programme-overview";
 import { FAQsPage } from "./pages/faqs";
+import { CookieNotice } from "./components/cookie-notice";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,7 @@ function Router() {
         <Route path="/preferences" component={PreferencesPage} />
         <Route component={NotFound} />
       </Switch>
+      <CookieNotice />
     </RoutedErrorBoundary>
   );
 }
