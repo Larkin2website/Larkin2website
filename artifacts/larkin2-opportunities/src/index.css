@@ -601,6 +601,11 @@
 }
 .larkin2-scroll-line { width: 60px; height: 1px; background: var(--sage); }
 
+/* The stacked tablet headline needs the bottom label below, not across, its intro. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .larkin2-hero-meta-wrap { bottom: 16px; }
+}
+
 #content {
   position: relative;
   z-index: 10;
@@ -2403,10 +2408,11 @@
     inset: 0;
     background-position: 57% center;
   }
-  .larkin2-hero-shade { background: linear-gradient(0deg, rgba(8,10,12,.72) 0%, rgba(8,10,12,.34) 25%, rgba(8,10,12,0) 60%); }
+  /* Keep the mobile headline and intro legible even over the brightest part of the photograph. */
+  .larkin2-hero-shade { background: linear-gradient(0deg, rgba(8,10,12,.84) 0%, rgba(8,10,12,.72) 25%, rgba(8,10,12,.62) 60%, rgba(8,10,12,.12) 100%); }
   .larkin2-hero-content-wrap {
     position: absolute;
-    inset: auto 20px 84px;
+    inset: auto 20px 128px;
     width: auto;
     transform: translateY(calc(var(--hero-progress) * -12vh));
   }
