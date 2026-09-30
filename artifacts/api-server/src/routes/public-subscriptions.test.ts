@@ -60,6 +60,8 @@ class MemorySubscriptionStore implements PublicSubscriptionStore {
       acquisitionSource: record.acquisitionSource ?? null,
       acquisitionDetail: record.acquisitionDetail ?? null,
       acquisitionDetailDeclined: record.acquisitionDetailDeclined ?? false,
+      websitePurposes: record.websitePurposes ?? [],
+      websitePurposeOther: record.websitePurposeOther ?? null,
       interests: record.interests ?? [],
       contentTypes: record.contentTypes ?? [],
       careerLevels: record.careerLevels ?? [],
@@ -222,6 +224,68 @@ test("signup stores canonical referral details or an explicit decline without ch
     });
     assert.equal(duplicate.status, 200);
     assert.deepEqual(store.records.get("declined@example.com"), original);
+  });
+});
+
+test("signup records optional website purposes and keeps duplicates unchanged", async () => {
+  const store = new MemorySubscriptionStore();
+  await withServer(store, async base => {
+    assert.equal((await post(base, "/public/subscriptions", {
+      email: "visitor@example.com", consent: true, name: "Visitor",
+      websitePurposes: ["roles_self", "share_network", "other"],
+      websitePurposeOther: "  Something else  ",
+    })).status, 200);
+    const original = structuredClone(store.records.get("visitor@example.com"));
+    assert.deepEqual(original?.websitePurposes, ["roles_self", "share_network", "other"]);
+    assert.equal(original?.websitePurposeOther, "Something else");
+    assert.equal((await post(base, "/public/subscriptions", {
+      email: "visitor@example.com", consent: true, name: "Different",
+      websitePurposes: ["training_self"],
+    })).status, 200);
+    assert.deepEqual(store.records.get("visitor@example.com"), original);
+    assert.equal((await post(base, "/public/subscriptions", {
+      email: "skipped@example.com", consent: true, name: "Skipped",
+    })).status, 200);
+    assert.equal(store.records.get("skipped@example.com")?.websitePurposes, undefined);
+  });
+});
+
+test("website purpose validation rejects unknown, duplicate, unsafe and orphan answers", async () => {
+  const store = new MemorySubscriptionStore();
+  await withServer(store, async base => {
+    const invalid = [
+      { websitePurposes: ["invented"] },
+      { websitePurposes: ["roles_self", "roles_self"] },
+      { websitePurposes: ["industry_interest"], websitePurposeOther: "Orphan" },
+      { websitePurposeOther: "Orphan" },
+      { websitePurposes: ["other"], websitePurposeOther: "Unsafe\nvalue" },
+      { websitePurposes: ["other"], websitePurposeOther: "x".repeat(161) },
+    ];
+    for (const fields of invalid) {
+      assert.equal((await post(base, "/public/subscriptions", {
+        email: "invalid-purpose@example.com", consent: true, name: "Visitor", ...fields,
+      })).status, 400, JSON.stringify(fields).slice(0, 100));
+    }
+    assert.equal(store.records.size, 0);
+  });
+});
+
+test("legacy-link preferences allow purpose edits and clear Other when deselected", async () => {
+  const store = new MemorySubscriptionStore();
+  const token = "p".repeat(43);
+  await createLegacyRecord(store, "purpose@example.com", token);
+  await withServer(store, async base => {
+    const put = (fields: object) => fetch(`${base}/public/subscriptions/preferences`, {
+      method: "PUT", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ managementToken: token, ...fields }),
+    });
+    const loaded = await post(base, "/public/subscriptions/preferences", { managementToken: token });
+    assert.deepEqual((await loaded.json() as { websitePurposes: string[] }).websitePurposes, []);
+    assert.equal((await put({ websitePurposes: ["other", "on_behalf"], websitePurposeOther: "Support" })).status, 200);
+    assert.equal((await put({ websitePurposeOther: "Changed" })).status, 200);
+    assert.equal((await put({ websitePurposes: ["on_behalf"] })).status, 200);
+    assert.equal(store.records.get("purpose@example.com")?.websitePurposeOther, null);
+    assert.equal((await put({ websitePurposeOther: "Orphan" })).status, 400);
   });
 });
 
@@ -404,6 +468,7 @@ test("previously issued management tokens still protect preference lookup, updat
     assert.equal(cleared.status, 200);
     assert.deepEqual(await cleared.json(), {
       acquisitionDetailDeclined: false,
+      websitePurposes: [],
       interests: [],
       contentTypes: ["role"],
       careerLevels: [],

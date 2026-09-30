@@ -16,6 +16,7 @@ import {
   reconcilePendingDeliveries,
   reconcilePublicationRecipients,
   summarizeAcquisitionDetails,
+  summarizeWebsitePurposes,
 } from "./audience-crm-service";
 
 const matching = {
@@ -302,5 +303,20 @@ test("dashboard attributes specific sources separately for canonical and legacy 
   ]), [
     { source: "instagram", detail: "Film Crew Group", count: 2 },
     { source: "Facebook film network", detail: "Film Crew Group", count: 1 },
+  ]);
+});
+
+test("website purpose breakdown counts unique subscribers per option and retains zero-count choices", () => {
+  assert.deepEqual(summarizeWebsitePurposes([
+    { websitePurposes: ["roles_self", "other", "roles_self"] },
+    { websitePurposes: ["roles_self", "training_self"] },
+    { websitePurposes: [] },
+  ]), [
+    { purpose: "roles_self", count: 2 },
+    { purpose: "training_self", count: 1 },
+    { purpose: "share_network", count: 0 },
+    { purpose: "on_behalf", count: 0 },
+    { purpose: "industry_interest", count: 0 },
+    { purpose: "other", count: 1 },
   ]);
 });

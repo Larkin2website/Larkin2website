@@ -68,6 +68,27 @@ it("preserves an arbitrary legacy referral response when other preferences are e
   });
 });
 
+it("loads and saves website purpose answers with a legacy link, clearing Other when deselected", async () => {
+  sessionStorage.setItem("legacy-link", "l".repeat(43));
+  api.getPublicSubscriptionPreferences.mockResolvedValue({
+    ...preferences, websitePurposes: ["on_behalf", "other"], websitePurposeOther: "For a colleague",
+  });
+  const user = userEvent.setup();
+  render(<UnsubscribePage />);
+  await user.click(screen.getByRole("button", { name: "Load preferences" }));
+  expect(await screen.findByLabelText("Opportunities on behalf of someone else")).toBeChecked();
+  expect(screen.getByLabelText("Other")).toBeChecked();
+  expect(screen.getByLabelText("Other (optional)")).toHaveValue("For a colleague");
+  await user.click(screen.getByLabelText("Other"));
+  expect(screen.queryByLabelText("Other (optional)")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Update preferences" }));
+  await waitFor(() => expect(api.updatePublicSubscriptionPreferences).toHaveBeenCalled());
+  expect(api.updatePublicSubscriptionPreferences.mock.calls[0]![0]).toMatchObject({
+    websitePurposes: ["on_behalf"],
+    websitePurposeOther: null,
+  });
+});
+
 it("hides another link's details while loading the newly verified account", async () => {
   sessionStorage.setItem("legacy-link", "l".repeat(43));
   let finishLoad: ((value: typeof preferences) => void) | undefined;
@@ -111,4 +132,25 @@ it("uses email code access to update preferences and unsubscribe without a legac
   await waitFor(() => expect(api.unsubscribeVerifiedSubscription).toHaveBeenCalledWith({ accessToken: "s".repeat(43) }));
   expect(screen.getByTestId("status-unsubscribed")).toBeInTheDocument();
   expect(sessionStorage.getItem("hetv_verified_subscription_access")).toBeNull();
+});
+
+it("loads and saves website purpose answers through verified email access", async () => {
+  api.getVerifiedSubscriptionPreferences.mockResolvedValue({
+    ...preferences, websitePurposes: ["share_network"], websitePurposeOther: null,
+  });
+  const user = userEvent.setup();
+  render(<UnsubscribePage />);
+  await user.type(screen.getByLabelText("Email address"), "alex@example.com");
+  await user.click(screen.getByRole("button", { name: "Send verification code" }));
+  await user.type(screen.getByLabelText("Six-digit verification code"), "123456");
+  await user.click(screen.getByRole("button", { name: "Verify and manage" }));
+  expect(await screen.findByLabelText("Opportunities to share with my network/community")).toBeChecked();
+  await user.click(screen.getByLabelText("General industry interest"));
+  await user.click(screen.getByRole("button", { name: "Update preferences" }));
+  await waitFor(() => expect(api.updateVerifiedSubscriptionPreferences).toHaveBeenCalled());
+  expect(api.updateVerifiedSubscriptionPreferences.mock.calls[0]![0]).toMatchObject({
+    websitePurposes: ["share_network", "industry_interest"],
+    websitePurposeOther: null,
+    accessToken: "s".repeat(43),
+  });
 });

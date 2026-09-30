@@ -154,6 +154,32 @@ test("verified preference changes preserve legacy referral answers and validate 
   });
 });
 
+test("verified subscriber can revise website purposes and remove Other detail", async () => {
+  const store = new MemoryVerificationStore();
+  store.add("purpose@example.com");
+  await withServer(store, async (base, sent) => {
+    await post(base, "code", { email: "purpose@example.com" });
+    const verified = await post(base, "code/verify", { email: "purpose@example.com", code: sent[0]!.code });
+    const { accessToken } = await verified.json() as { accessToken: string };
+    const updated = await post(base, "verified/preferences", {
+      accessToken, websitePurposes: ["training_self", "other"], websitePurposeOther: "  Something specific ",
+    }, "PUT");
+    assert.equal(updated.status, 200);
+    assert.equal((await updated.json() as { websitePurposeOther: string }).websitePurposeOther, "Something specific");
+    assert.equal((await post(base, "verified/preferences", {
+      accessToken, websitePurposes: ["training_self", "other"],
+      websitePurposeOther: "Unsafe\u0007detail",
+    }, "PUT")).status, 400);
+    assert.equal((await post(base, "verified/preferences", {
+      accessToken, websitePurposes: ["training_self"],
+    }, "PUT")).status, 200);
+    const loaded = await post(base, "verified/preferences", { accessToken });
+    const result = await loaded.json() as { websitePurposes: string[]; websitePurposeOther?: string };
+    assert.deepEqual(result.websitePurposes, ["training_self"]);
+    assert.equal(result.websitePurposeOther, undefined);
+  });
+});
+
 test("expired and guessed codes never grant access; resending invalidates the old code", async () => {
   const store = new MemoryVerificationStore();
   store.add("member@example.com");

@@ -91,4 +91,13 @@ const acquisitionSourceLabels: Record<string,string> = {
   other:'Other',
 };
 export const acquisitionSourceLabel = (v:string|null|undefined) => v ? acquisitionSourceLabels[v] || label(v) : 'Not specified';
+const websitePurposeLabels: Record<string,string> = {
+  roles_self:'Find roles for myself',
+  training_self:'Find training for myself',
+  share_network:'Share opportunities with my network',
+  on_behalf:'Find opportunities on someone else’s behalf',
+  industry_interest:'Keep up with industry opportunities',
+  other:'Other',
+};
+export const websitePurposeLabel = (v:string|null|undefined) => v ? websitePurposeLabels[v] || label(v) : 'Not specified';
 export function Status({ value }: { value:string }) { const tone = ['active','delivered','resolved'].includes(value) ? 'bg-[#dbe5dc] text-[#365443]' : ['failed','closed','inactive','bounce','complaint'].includes(value) ? 'bg-[#eddcd6] text-[#874b39]' : 'bg-[#e8dfd2] text-[#775b3e]'; return <span data-testid={`status-${value}`} className={`inline-flex px-2.5 py-1 micro !tracking-[.08em] !text-[10px] ${tone}`}>{label(value)}</span>; }

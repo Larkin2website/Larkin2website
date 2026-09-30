@@ -2866,6 +2866,29 @@
 .hetv-subscription-options p {
   grid-column: 1 / -1;
 }
+.hetv-website-purpose {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding: 12px 14px;
+  border-color: rgba(73, 57, 45, .2);
+  background: rgba(73, 57, 45, .025);
+}
+.hetv-website-purpose legend {
+  font-size: 14px;
+}
+.hetv-website-purpose > label:not(.hetv-subscription-check),
+.hetv-website-purpose > input[type="text"],
+.hetv-website-purpose > p {
+  grid-column: 1;
+}
+.hetv-website-purpose > input[type="text"] {
+  width: 100%;
+}
+.hetv-followup .hetv-subscription-options.hetv-website-purpose {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr);
+}
 
 .hetv-subscription button[type="submit"],
 .hetv-subscription button[type="button"] {

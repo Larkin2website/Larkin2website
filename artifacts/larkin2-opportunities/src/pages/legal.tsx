@@ -90,12 +90,13 @@ export function PrivacyNoticePage() {
       </Section>
       <Section number={2} title="Summary">
         <p>We will process information about you, such as your application and CV and application, when you apply for a role with Larkin. This processing is necessary to consider you for the role and to communicate with you.</p>
-        <p>We also advertise training sessions on the Website and process personal data of those who register for and attend them. If you sign up, we record your interest in general HETV news and announcements. You can optionally choose preferences for roles, programmes or training. Choosing no opportunity preferences does not opt you into every opportunity. You can unsubscribe at any time.</p>
+        <p>We also advertise training sessions on the Website and process personal data of those who register for and attend them. If you sign up, we record your interest in general HETV news and announcements. You can optionally choose preferences for roles, programmes or training, and tell us what you are looking for in HETV opportunities. We use these optional answers to understand audience needs. Choosing no opportunity preferences does not opt you into every opportunity. You can unsubscribe at any time.</p>
       </Section>
       <Section number={3} title="How we collect your information">
         <p>When you apply for a role with us, we will collect personal data from you (such as your name, contact details and CV). We may also collect information from third parties, such as referees and former employers.</p>
         <p>If you sign up for one of our training sessions, we will collect information about your name and contact details.</p>
         <p>If you sign up for HETV news, we collect your name and email address. You may also choose interests in roles, programmes and training.</p>
+        <p>You may also optionally tell us what you are looking for, such as opportunities for yourself, to share with a network, on behalf of someone else, or a general industry interest. You can optionally add a short answer under “Other”. We use these answers to understand the needs of our audience. Please do not include personally identifying details about anyone you represent. You can change or remove these preferences through the subscription management page.</p>
         <p>You may optionally tell us how you heard about HETV news and share further detail, including the name of someone who recommended us. We use this voluntary information only to understand how people learn about our opportunities and to inform our outreach. You can decline to provide detail, and can change or remove these preferences through the subscription management page. Please do not include private content from groups.</p>
       </Section>
       <Section number={4} title="How do we use your personal data">

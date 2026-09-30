@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { render } from "@testing-library/react";
 import { expect, test } from "vitest";
-import { TermsPage } from "./legal";
+import { PrivacyNoticePage, TermsPage } from "./legal";
 
 const source = readFileSync(
   resolve(process.cwd(), "../../attached_assets/Jobs_and_Opportunities_Website_TCs.docx_1790761674771.md"),
@@ -57,4 +57,13 @@ test("website terms match every section and list item of the supplied document",
     expect(text.split(placeholder).length - 1).toBe(count);
   }
   expect(text).not.toContain("[Larkin 2]");
+});
+
+test("privacy notice describes optional website-purpose answers accurately", () => {
+  const { container } = render(<PrivacyNoticePage />);
+  const text = container.querySelector(".legal-document")?.textContent ?? "";
+  expect(text).toContain("You may also optionally tell us what you are looking for");
+  expect(text).toContain("We use these answers to understand the needs of our audience.");
+  expect(text).toContain("Please do not include personally identifying details about anyone you represent.");
+  expect(text).not.toContain("lawful basis for website-purpose answers");
 });

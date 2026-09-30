@@ -1471,6 +1471,14 @@ components:
           maxLength: 500
         acquisitionDetailDeclined:
           type: boolean
+        websitePurposes:
+          type: array
+          maxItems: 6
+          uniqueItems: true
+          items: { $ref: "#/components/schemas/WebsitePurpose" }
+        websitePurposeOther:
+          type: string
+          maxLength: 160
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2151,6 +2159,9 @@ components:
     CareerLevel:
       type: string
       enum: [new_entrant, mid_level, senior]
+    WebsitePurpose:
+      type: string
+      enum: [roles_self, training_self, share_network, on_behalf, industry_interest, other]
     PublicAudiencePreferences:
       type: object
       additionalProperties: false
@@ -2162,6 +2173,12 @@ components:
         acquisitionSource: { type: ["string", "null"], maxLength: 120 }
         acquisitionDetail: { type: ["string", "null"], maxLength: 500 }
         acquisitionDetailDeclined: { type: boolean }
+        websitePurposes:
+          type: array
+          maxItems: 6
+          uniqueItems: true
+          items: { $ref: "#/components/schemas/WebsitePurpose" }
+        websitePurposeOther: { type: ["string", "null"], maxLength: 160 }
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2214,6 +2231,12 @@ components:
         acquisitionSource: { type: ["string", "null"], maxLength: 120 }
         acquisitionDetail: { type: ["string", "null"], maxLength: 500 }
         acquisitionDetailDeclined: { type: boolean }
+        websitePurposes:
+          type: array
+          maxItems: 6
+          uniqueItems: true
+          items: { $ref: "#/components/schemas/WebsitePurpose" }
+        websitePurposeOther: { type: ["string", "null"], maxLength: 160 }
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2254,6 +2277,12 @@ components:
         acquisitionSource: { type: ["string", "null"], maxLength: 120 }
         acquisitionDetail: { type: ["string", "null"], maxLength: 500 }
         acquisitionDetailDeclined: { type: boolean }
+        websitePurposes:
+          type: array
+          maxItems: 6
+          uniqueItems: true
+          items: { $ref: "#/components/schemas/WebsitePurpose" }
+        websitePurposeOther: { type: ["string", "null"], maxLength: 160 }
         interests:
           type: array
           items: { type: string, maxLength: 120 }
@@ -2287,7 +2316,7 @@ components:
         recorded: { type: boolean }
     CrmAudienceItem:
       type: object
-      required: [subscriberId, email, name, active, deliverySuppression, consentedAt, createdAt, craft, careerLevel, location, acquisitionSource, acquisitionDetail, acquisitionDetailDeclined, interests, contentTypes, careerLevels, crafts, allOpportunities]
+      required: [subscriberId, email, name, active, deliverySuppression, consentedAt, createdAt, craft, careerLevel, location, acquisitionSource, acquisitionDetail, acquisitionDetailDeclined, websitePurposes, websitePurposeOther, interests, contentTypes, careerLevels, crafts, allOpportunities]
       properties:
         subscriberId: { type: string, format: uuid }
         email: { type: string, format: email }
@@ -2302,6 +2331,10 @@ components:
         acquisitionSource: { type: ["string", "null"] }
         acquisitionDetail: { type: ["string", "null"] }
         acquisitionDetailDeclined: { type: boolean }
+        websitePurposes:
+          type: array
+          items: { $ref: "#/components/schemas/WebsitePurpose" }
+        websitePurposeOther: { type: ["string", "null"] }
         interests:
           type: array
           items: { type: string }
@@ -2356,7 +2389,7 @@ components:
         inactive: { type: integer, minimum: 0 }
     CrmDashboard:
       type: object
-      required: [counts, acquisitionBreakdown, acquisitionDetailBreakdown, engagement, delivery, recentRegistrations]
+      required: [counts, acquisitionBreakdown, acquisitionDetailBreakdown, purposeBreakdown, engagement, delivery, recentRegistrations]
       properties:
         counts: { $ref: "#/components/schemas/CrmAudienceCounts" }
         acquisitionBreakdown:
@@ -2365,11 +2398,20 @@ components:
         acquisitionDetailBreakdown:
           type: array
           items: { $ref: "#/components/schemas/CrmAcquisitionDetailBreakdown" }
+        purposeBreakdown:
+          type: array
+          items: { $ref: "#/components/schemas/CrmWebsitePurposeBreakdown" }
         engagement: { $ref: "#/components/schemas/CrmEngagementSummary" }
         delivery: { $ref: "#/components/schemas/CrmDeliverySummary" }
         recentRegistrations:
           type: array
           items: { $ref: "#/components/schemas/CrmAudienceItem" }
+    CrmWebsitePurposeBreakdown:
+      type: object
+      required: [purpose, count]
+      properties:
+        purpose: { $ref: "#/components/schemas/WebsitePurpose" }
+        count: { type: integer, minimum: 0 }
     CrmCommunication:
       type: object
       required: [id, channel, status, createdAt]

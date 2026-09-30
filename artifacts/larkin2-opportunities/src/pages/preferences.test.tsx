@@ -49,3 +49,38 @@ it("clears route details on source changes and submits an explicit detail declin
   });
   expect(api.createPublicSubscription.mock.calls[0]![0].acquisitionDetail).toBeUndefined();
 });
+
+it("collects optional website purpose answers on the preferences step", async () => {
+  const user = userEvent.setup();
+  render(<SignupJourneyProvider><FollowupPage /></SignupJourneyProvider>);
+  for (const label of [
+    "Roles for myself",
+    "Training/development opportunities for myself",
+    "Opportunities to share with my network/community",
+    "Opportunities on behalf of someone else",
+    "General industry interest",
+    "Other",
+  ]) {
+    expect(await screen.findByLabelText(label)).toBeInTheDocument();
+  }
+  expect(screen.queryByLabelText("Other (optional)")).not.toBeInTheDocument();
+  await user.click(screen.getByLabelText("Roles for myself"));
+  await user.click(screen.getByLabelText("Other"));
+  await user.type(screen.getByLabelText("Other (optional)"), "Something else");
+  await user.click(screen.getByRole("button", { name: "Sign up with these preferences" }));
+  await waitFor(() => expect(api.createPublicSubscription).toHaveBeenCalled());
+  expect(api.createPublicSubscription.mock.calls[0]![0]).toMatchObject({
+    websitePurposes: ["roles_self", "other"],
+    websitePurposeOther: "Something else",
+  });
+});
+
+it("omits website purpose fields when the optional preferences step is skipped", async () => {
+  const user = userEvent.setup();
+  render(<SignupJourneyProvider><FollowupPage /></SignupJourneyProvider>);
+  expect(await screen.findByLabelText("Roles for myself")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Skip preferences and sign up" }));
+  await waitFor(() => expect(api.createPublicSubscription).toHaveBeenCalled());
+  expect(api.createPublicSubscription.mock.calls[0]![0]).not.toHaveProperty("websitePurposes");
+  expect(api.createPublicSubscription.mock.calls[0]![0]).not.toHaveProperty("websitePurposeOther");
+});

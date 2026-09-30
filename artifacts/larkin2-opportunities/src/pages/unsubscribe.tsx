@@ -16,6 +16,7 @@ import {
   type PublicAudiencePreferencesUpdate,
 } from "@workspace/api-client-react";
 import { MobileMenu, SiteFooter, SiteHeader } from "../components/layout";
+import { WebsitePurposeChoices, type WebsitePurpose } from "../components/website-purpose-choices";
 import { consumeSubscriptionFragment, savedSubscriptionToken, tokenFromLink } from "../lib/subscription-link";
 import { isReferralSource, referralPrompt, referralSources, type ReferralSource } from "../lib/referral-source";
 
@@ -64,6 +65,8 @@ export function UnsubscribePage() {
   const [careerLevels, setCareerLevels] = useState<string[]>([]);
   const [craftText, setCraftText] = useState("");
   const [allOpportunities, setAllOpportunities] = useState(false);
+  const [websitePurposes, setWebsitePurposes] = useState<WebsitePurpose[]>([]);
+  const [websitePurposeOther, setWebsitePurposeOther] = useState("");
 
   function setLoadedPreferences(value: PublicAudiencePreferences) {
     setPreferences(value);
@@ -79,6 +82,12 @@ export function UnsubscribePage() {
     setCareerLevels(value.careerLevels ?? []);
     setCraftText((value.crafts ?? []).join(", "));
     setAllOpportunities(value.allOpportunities ?? false);
+    const withWebsitePurposes = value as PublicAudiencePreferences & {
+      websitePurposes?: WebsitePurpose[];
+      websitePurposeOther?: string | null;
+    };
+    setWebsitePurposes(withWebsitePurposes.websitePurposes ?? []);
+    setWebsitePurposeOther(withWebsitePurposes.websitePurposeOther ?? "");
   }
 
   function clearAccess() {
@@ -192,7 +201,11 @@ export function UnsubscribePage() {
     setBusyAction("save");
     setError("");
     setSavedMessage("");
-    const update: PublicAudiencePreferencesUpdate & { acquisitionDetailDeclined?: boolean } = {
+    const update: PublicAudiencePreferencesUpdate & {
+      acquisitionDetailDeclined?: boolean;
+      websitePurposes: WebsitePurpose[];
+      websitePurposeOther: string | null;
+    } = {
       managementToken,
       name: name.trim() || null,
       craft: craft.trim() || null,
@@ -206,6 +219,8 @@ export function UnsubscribePage() {
       careerLevels: careerLevels as PublicAudiencePreferencesUpdate["careerLevels"],
       crafts: splitEntries(craftText),
       allOpportunities,
+      websitePurposes,
+      websitePurposeOther: websitePurposes.includes("other") ? websitePurposeOther.trim() || null : null,
     };
     try {
       const { managementToken: _legacyToken, ...fields } = update;
@@ -371,6 +386,14 @@ export function UnsubscribePage() {
                     </label>
                   ))}
                 </fieldset>
+                <WebsitePurposeChoices
+                  idPrefix="manage-website-purpose"
+                  purposes={websitePurposes}
+                  other={websitePurposeOther}
+                  disabled={!!busyAction}
+                  onPurposesChange={setWebsitePurposes}
+                  onOtherChange={setWebsitePurposeOther}
+                />
                 <fieldset className="hetv-subscription-options">
                   <legend>Career levels you are interested in</legend>
                   {careerOptions.map(([value, label]) => (

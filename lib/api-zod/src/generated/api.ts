@@ -95,6 +95,10 @@ export const createPublicSubscriptionBodyLocationMax = 160;
 
 export const createPublicSubscriptionBodyAcquisitionDetailMax = 500;
 
+export const createPublicSubscriptionBodyWebsitePurposesMax = 6;
+
+export const createPublicSubscriptionBodyWebsitePurposeOtherMax = 160;
+
 export const createPublicSubscriptionBodyInterestsItemMax = 120;
 
 export const createPublicSubscriptionBodyCraftsItemMax = 120;
@@ -112,6 +116,8 @@ export const CreatePublicSubscriptionBody = zod.object({
   "acquisitionSource": zod.enum(['instagram', 'linkedin', 'whatsapp_group', 'facebook_group', 'industry_network', 'recommendation', 'other']).optional(),
   "acquisitionDetail": zod.string().max(createPublicSubscriptionBodyAcquisitionDetailMax).optional(),
   "acquisitionDetailDeclined": zod.boolean().optional(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])).max(createPublicSubscriptionBodyWebsitePurposesMax).optional(),
+  "websitePurposeOther": zod.string().max(createPublicSubscriptionBodyWebsitePurposeOtherMax).optional(),
   "interests": zod.array(zod.string().max(createPublicSubscriptionBodyInterestsItemMax)).optional(),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
@@ -207,6 +213,10 @@ export const getVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax = 12
 
 export const getVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
 
+export const getVerifiedSubscriptionPreferencesResponseWebsitePurposesMax = 6;
+
+export const getVerifiedSubscriptionPreferencesResponseWebsitePurposeOtherMax = 160;
+
 export const getVerifiedSubscriptionPreferencesResponseInterestsItemMax = 120;
 
 export const getVerifiedSubscriptionPreferencesResponseCraftsItemMax = 120;
@@ -221,6 +231,8 @@ export const GetVerifiedSubscriptionPreferencesResponse = zod.object({
   "acquisitionSource": zod.string().max(getVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
   "acquisitionDetail": zod.string().max(getVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
   "acquisitionDetailDeclined": zod.boolean().optional(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])).max(getVerifiedSubscriptionPreferencesResponseWebsitePurposesMax).optional(),
+  "websitePurposeOther": zod.string().max(getVerifiedSubscriptionPreferencesResponseWebsitePurposeOtherMax).nullish(),
   "interests": zod.array(zod.string().max(getVerifiedSubscriptionPreferencesResponseInterestsItemMax)).optional(),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
@@ -247,6 +259,10 @@ export const updateVerifiedSubscriptionPreferencesBodyAcquisitionSourceMax = 120
 
 export const updateVerifiedSubscriptionPreferencesBodyAcquisitionDetailMax = 500;
 
+export const updateVerifiedSubscriptionPreferencesBodyWebsitePurposesMax = 6;
+
+export const updateVerifiedSubscriptionPreferencesBodyWebsitePurposeOtherMax = 160;
+
 export const updateVerifiedSubscriptionPreferencesBodyInterestsItemMax = 120;
 
 export const updateVerifiedSubscriptionPreferencesBodyCraftsItemMax = 120;
@@ -262,6 +278,8 @@ export const UpdateVerifiedSubscriptionPreferencesBody = zod.object({
   "acquisitionSource": zod.string().max(updateVerifiedSubscriptionPreferencesBodyAcquisitionSourceMax).nullish(),
   "acquisitionDetail": zod.string().max(updateVerifiedSubscriptionPreferencesBodyAcquisitionDetailMax).nullish(),
   "acquisitionDetailDeclined": zod.boolean().optional(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])).max(updateVerifiedSubscriptionPreferencesBodyWebsitePurposesMax).optional(),
+  "websitePurposeOther": zod.string().max(updateVerifiedSubscriptionPreferencesBodyWebsitePurposeOtherMax).nullish(),
   "interests": zod.array(zod.string().max(updateVerifiedSubscriptionPreferencesBodyInterestsItemMax)).optional(),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
@@ -279,6 +297,10 @@ export const updateVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax =
 
 export const updateVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
 
+export const updateVerifiedSubscriptionPreferencesResponseWebsitePurposesMax = 6;
+
+export const updateVerifiedSubscriptionPreferencesResponseWebsitePurposeOtherMax = 160;
+
 export const updateVerifiedSubscriptionPreferencesResponseInterestsItemMax = 120;
 
 export const updateVerifiedSubscriptionPreferencesResponseCraftsItemMax = 120;
@@ -293,6 +315,8 @@ export const UpdateVerifiedSubscriptionPreferencesResponse = zod.object({
   "acquisitionSource": zod.string().max(updateVerifiedSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
   "acquisitionDetail": zod.string().max(updateVerifiedSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
   "acquisitionDetailDeclined": zod.boolean().optional(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])).max(updateVerifiedSubscriptionPreferencesResponseWebsitePurposesMax).optional(),
+  "websitePurposeOther": zod.string().max(updateVerifiedSubscriptionPreferencesResponseWebsitePurposeOtherMax).nullish(),
   "interests": zod.array(zod.string().max(updateVerifiedSubscriptionPreferencesResponseInterestsItemMax)).optional(),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
@@ -1778,6 +1802,10 @@ export const getPublicSubscriptionPreferencesResponseAcquisitionSourceMax = 120;
 
 export const getPublicSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
 
+export const getPublicSubscriptionPreferencesResponseWebsitePurposesMax = 6;
+
+export const getPublicSubscriptionPreferencesResponseWebsitePurposeOtherMax = 160;
+
 export const getPublicSubscriptionPreferencesResponseInterestsItemMax = 120;
 
 export const getPublicSubscriptionPreferencesResponseCraftsItemMax = 120;
@@ -1792,6 +1820,8 @@ export const GetPublicSubscriptionPreferencesResponse = zod.object({
   "acquisitionSource": zod.string().max(getPublicSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
   "acquisitionDetail": zod.string().max(getPublicSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
   "acquisitionDetailDeclined": zod.boolean().optional(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])).max(getPublicSubscriptionPreferencesResponseWebsitePurposesMax).optional(),
+  "websitePurposeOther": zod.string().max(getPublicSubscriptionPreferencesResponseWebsitePurposeOtherMax).nullish(),
   "interests": zod.array(zod.string().max(getPublicSubscriptionPreferencesResponseInterestsItemMax)).optional(),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
@@ -1818,6 +1848,10 @@ export const updatePublicSubscriptionPreferencesBodyAcquisitionSourceMax = 120;
 
 export const updatePublicSubscriptionPreferencesBodyAcquisitionDetailMax = 500;
 
+export const updatePublicSubscriptionPreferencesBodyWebsitePurposesMax = 6;
+
+export const updatePublicSubscriptionPreferencesBodyWebsitePurposeOtherMax = 160;
+
 export const updatePublicSubscriptionPreferencesBodyInterestsItemMax = 120;
 
 export const updatePublicSubscriptionPreferencesBodyCraftsItemMax = 120;
@@ -1833,6 +1867,8 @@ export const UpdatePublicSubscriptionPreferencesBody = zod.object({
   "acquisitionSource": zod.string().max(updatePublicSubscriptionPreferencesBodyAcquisitionSourceMax).nullish(),
   "acquisitionDetail": zod.string().max(updatePublicSubscriptionPreferencesBodyAcquisitionDetailMax).nullish(),
   "acquisitionDetailDeclined": zod.boolean().optional(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])).max(updatePublicSubscriptionPreferencesBodyWebsitePurposesMax).optional(),
+  "websitePurposeOther": zod.string().max(updatePublicSubscriptionPreferencesBodyWebsitePurposeOtherMax).nullish(),
   "interests": zod.array(zod.string().max(updatePublicSubscriptionPreferencesBodyInterestsItemMax)).optional(),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
@@ -1850,6 +1886,10 @@ export const updatePublicSubscriptionPreferencesResponseAcquisitionSourceMax = 1
 
 export const updatePublicSubscriptionPreferencesResponseAcquisitionDetailMax = 500;
 
+export const updatePublicSubscriptionPreferencesResponseWebsitePurposesMax = 6;
+
+export const updatePublicSubscriptionPreferencesResponseWebsitePurposeOtherMax = 160;
+
 export const updatePublicSubscriptionPreferencesResponseInterestsItemMax = 120;
 
 export const updatePublicSubscriptionPreferencesResponseCraftsItemMax = 120;
@@ -1864,6 +1904,8 @@ export const UpdatePublicSubscriptionPreferencesResponse = zod.object({
   "acquisitionSource": zod.string().max(updatePublicSubscriptionPreferencesResponseAcquisitionSourceMax).nullish(),
   "acquisitionDetail": zod.string().max(updatePublicSubscriptionPreferencesResponseAcquisitionDetailMax).nullish(),
   "acquisitionDetailDeclined": zod.boolean().optional(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])).max(updatePublicSubscriptionPreferencesResponseWebsitePurposesMax).optional(),
+  "websitePurposeOther": zod.string().max(updatePublicSubscriptionPreferencesResponseWebsitePurposeOtherMax).nullish(),
   "interests": zod.array(zod.string().max(updatePublicSubscriptionPreferencesResponseInterestsItemMax)).optional(),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])).optional(),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])).optional(),
@@ -1898,6 +1940,8 @@ export const getCrmDashboardResponseCountsInactiveMin = 0;
 export const getCrmDashboardResponseAcquisitionBreakdownItemCountMin = 0;
 
 export const getCrmDashboardResponseAcquisitionDetailBreakdownItemCountMin = 0;
+
+export const getCrmDashboardResponsePurposeBreakdownItemCountMin = 0;
 
 export const getCrmDashboardResponseEngagementViewsMin = 0;
 
@@ -1938,6 +1982,10 @@ export const GetCrmDashboardResponse = zod.object({
   "detail": zod.string(),
   "count": zod.number().int().min(getCrmDashboardResponseAcquisitionDetailBreakdownItemCountMin)
 })),
+  "purposeBreakdown": zod.array(zod.object({
+  "purpose": zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other']),
+  "count": zod.number().int().min(getCrmDashboardResponsePurposeBreakdownItemCountMin)
+})),
   "engagement": zod.object({
   "views": zod.number().int().min(getCrmDashboardResponseEngagementViewsMin),
   "applications": zod.number().int().min(getCrmDashboardResponseEngagementApplicationsMin),
@@ -1967,6 +2015,8 @@ export const GetCrmDashboardResponse = zod.object({
   "acquisitionSource": zod.string().nullable(),
   "acquisitionDetail": zod.string().nullable(),
   "acquisitionDetailDeclined": zod.boolean(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])),
+  "websitePurposeOther": zod.string().nullable(),
   "interests": zod.array(zod.string()),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
@@ -2007,6 +2057,8 @@ export const ListCrmAudienceResponseItem = zod.object({
   "acquisitionSource": zod.string().nullable(),
   "acquisitionDetail": zod.string().nullable(),
   "acquisitionDetailDeclined": zod.boolean(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])),
+  "websitePurposeOther": zod.string().nullable(),
   "interests": zod.array(zod.string()),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),
@@ -2037,6 +2089,8 @@ export const GetCrmAudienceMemberResponse = zod.object({
   "acquisitionSource": zod.string().nullable(),
   "acquisitionDetail": zod.string().nullable(),
   "acquisitionDetailDeclined": zod.boolean(),
+  "websitePurposes": zod.array(zod.enum(['roles_self', 'training_self', 'share_network', 'on_behalf', 'industry_interest', 'other'])),
+  "websitePurposeOther": zod.string().nullable(),
   "interests": zod.array(zod.string()),
   "contentTypes": zod.array(zod.enum(['content', 'role', 'programme', 'training'])),
   "careerLevels": zod.array(zod.enum(['new_entrant', 'mid_level', 'senior'])),

@@ -8,6 +8,7 @@
 import type { AudienceContentType } from './audienceContentType';
 import type { CareerLevel } from './careerLevel';
 import type { PublicSubscriptionInputAcquisitionSource } from './publicSubscriptionInputAcquisitionSource';
+import type { WebsitePurpose } from './websitePurpose';
 
 export interface PublicSubscriptionInput {
   /**
@@ -39,6 +40,10 @@ export interface PublicSubscriptionInput {
   /** @maxLength 500 */
   acquisitionDetail?: string;
   acquisitionDetailDeclined?: boolean;
+  /** @maxItems 6 */
+  websitePurposes?: WebsitePurpose[];
+  /** @maxLength 160 */
+  websitePurposeOther?: string;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];

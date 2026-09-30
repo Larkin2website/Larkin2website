@@ -8,6 +8,7 @@
 import type { AudienceContentType } from './audienceContentType';
 import type { CareerLevel } from './careerLevel';
 import type { CrmAudienceItemDeliverySuppression } from './crmAudienceItemDeliverySuppression';
+import type { WebsitePurpose } from './websitePurpose';
 
 export interface CrmAudienceItem {
   subscriberId: string;
@@ -30,6 +31,9 @@ export interface CrmAudienceItem {
   /** @nullable */
   acquisitionDetail: string | null;
   acquisitionDetailDeclined: boolean;
+  websitePurposes: WebsitePurpose[];
+  /** @nullable */
+  websitePurposeOther: string | null;
   interests: string[];
   contentTypes: AudienceContentType[];
   careerLevels: CareerLevel[];

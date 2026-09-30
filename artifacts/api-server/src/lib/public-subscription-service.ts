@@ -15,6 +15,8 @@ export type NewSubscriptionRecord = {
   acquisitionSource?: string | null;
   acquisitionDetail?: string | null;
   acquisitionDetailDeclined?: boolean;
+  websitePurposes?: string[];
+  websitePurposeOther?: string | null;
   interests?: string[];
   contentTypes?: string[];
   careerLevels?: string[];
@@ -87,6 +89,8 @@ export const drizzlePublicSubscriptionStore: PublicSubscriptionStore = {
       acquisitionSource: publicSubscriptionsTable.acquisitionSource,
       acquisitionDetail: publicSubscriptionsTable.acquisitionDetail,
       acquisitionDetailDeclined: publicSubscriptionsTable.acquisitionDetailDeclined,
+      websitePurposes: publicSubscriptionsTable.websitePurposes,
+      websitePurposeOther: publicSubscriptionsTable.websitePurposeOther,
       interests: publicSubscriptionsTable.interests,
       contentTypes: publicSubscriptionsTable.contentTypes,
       careerLevels: publicSubscriptionsTable.careerLevels,
@@ -117,6 +121,36 @@ const referralRoutes = new Set([
 ]);
 
 export class InvalidReferralPreferencesError extends Error {}
+export class InvalidWebsitePurposesError extends Error {}
+
+const allowedWebsitePurposes = new Set([
+  "roles_self", "training_self", "share_network", "on_behalf", "industry_interest", "other",
+]);
+
+export function normalizeWebsitePurposes(
+  input: SubscriptionPreferences,
+  previous?: SubscriptionPreferences,
+): Pick<SubscriptionPreferences, "websitePurposes" | "websitePurposeOther"> {
+  if (!Object.hasOwn(input, "websitePurposes") && !Object.hasOwn(input, "websitePurposeOther")) return {};
+  const purposes = input.websitePurposes ?? previous?.websitePurposes ?? [];
+  const detail = input.websitePurposeOther === undefined
+    ? previous?.websitePurposeOther?.trim() || null
+    : input.websitePurposeOther?.trim() || null;
+  if (!Array.isArray(purposes) || purposes.length > 6
+    || purposes.some(purpose => typeof purpose !== "string" || !allowedWebsitePurposes.has(purpose))
+    || new Set(purposes).size !== purposes.length
+    || (detail && (detail.length > 160 || /[\u0000-\u001f\u007f]/.test(detail)))) {
+    throw new InvalidWebsitePurposesError("Invalid website purposes");
+  }
+  if (detail && !purposes.includes("other")
+    && (input.websitePurposes === undefined || input.websitePurposeOther !== undefined)) {
+    throw new InvalidWebsitePurposesError("Choose Other to provide a description");
+  }
+  return {
+    websitePurposes: purposes,
+    websitePurposeOther: purposes.includes("other") ? detail : null,
+  };
+}
 
 export function normalizeReferralPreferences(
   input: SubscriptionPreferences,
@@ -194,6 +228,8 @@ export function createPublicSubscriptionService(
       acquisitionSource?: string;
       acquisitionDetail?: string;
       acquisitionDetailDeclined?: boolean;
+      websitePurposes?: string[];
+      websitePurposeOther?: string;
       interests?: string[];
       contentTypes?: string[];
       careerLevels?: string[];
@@ -216,6 +252,7 @@ export function createPublicSubscriptionService(
         ...preferencesFromInput({
           ...preferences,
           ...normalizeReferralPreferences(preferences),
+           ...normalizeWebsitePurposes(preferences),
           name: input.name.trim(),
         }),
       });
@@ -235,6 +272,7 @@ export function createPublicSubscriptionService(
       await store.updatePreferencesByCapability(tokenHash, preferencesFromInput({
         ...preferences,
         ...normalizeReferralPreferences(preferences, existing),
+         ...normalizeWebsitePurposes(preferences, existing),
       }), now());
       return await store.getPreferencesByCapability(tokenHash);
     },

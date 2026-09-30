@@ -5,6 +5,7 @@ import {
   useListPublicOpportunityOptions, type PublicSubscriptionInput,
 } from "@workspace/api-client-react";
 import { MobileMenu, SiteFooter, SiteHeader } from "../components/layout";
+import { WebsitePurposeChoices, type WebsitePurpose } from "../components/website-purpose-choices";
 import { consumeSubscriptionFragment } from "../lib/subscription-link";
 import { useSignupJourney } from "../lib/signup-journey";
 import { isReferralSource, referralPrompt, referralSources, type ReferralSource } from "../lib/referral-source";
@@ -42,6 +43,8 @@ export function PreferencesPage() {
   const [careerLevels, setCareerLevels] = useState<string[]>([]);
   const [craftText, setCraftText] = useState("");
   const [allOpportunities, setAllOpportunities] = useState(false);
+  const [websitePurposes, setWebsitePurposes] = useState<WebsitePurpose[]>([]);
+  const [websitePurposeOther, setWebsitePurposeOther] = useState("");
 
   useEffect(() => {
     document.title = "Your preferences | HETV Opportunities Hub";
@@ -57,7 +60,11 @@ export function PreferencesPage() {
     if (!draft || saving) return;
     setSaving(true);
     setError("");
-    const input: PublicSubscriptionInput & { acquisitionDetailDeclined?: boolean } = {
+    const input: PublicSubscriptionInput & {
+      acquisitionDetailDeclined?: boolean;
+      websitePurposes?: WebsitePurpose[];
+      websitePurposeOther?: string;
+    } = {
       ...draft, consent: true,
       ...(!skip && {
         craft: craft.trim() || undefined,
@@ -71,6 +78,10 @@ export function PreferencesPage() {
         careerLevels: careerLevels as PublicSubscriptionInput["careerLevels"],
         crafts: splitEntries(craftText),
         allOpportunities,
+        websitePurposes,
+        ...(websitePurposes.includes("other") && websitePurposeOther.trim()
+          ? { websitePurposeOther: websitePurposeOther.trim() }
+          : {}),
       }),
     };
     try {
@@ -151,6 +162,14 @@ export function PreferencesPage() {
                         <span>{label}</span>
                       </label>)}
                     </fieldset>
+                    <WebsitePurposeChoices
+                      idPrefix="followup-website-purpose"
+                      purposes={websitePurposes}
+                      other={websitePurposeOther}
+                      disabled={saving}
+                      onPurposesChange={setWebsitePurposes}
+                      onOtherChange={setWebsitePurposeOther}
+                    />
                     <fieldset className="hetv-subscription-options hetv-followup-full">
                       <legend>Departments you’d like opportunities in (optional)</legend>
                       <p>Choose areas you’d consider working in, even if they differ from your current craft. Your current craft may also be considered when identifying relevant opportunities.</p>

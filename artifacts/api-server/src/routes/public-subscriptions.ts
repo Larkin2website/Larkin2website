@@ -21,6 +21,7 @@ import {
 } from "@workspace/api-zod";
 import {
   InvalidReferralPreferencesError,
+  InvalidWebsitePurposesError,
   publicSubscriptionService,
   type PublicSubscriptionService,
 } from "../lib/public-subscription-service";
@@ -98,7 +99,7 @@ export function createPublicSubscriptionsRouter(
       !hasOnlyKeys(req.body, [
         "email", "consent", "existingManagementToken", "name", "craft", "careerLevel",
         "location", "acquisitionSource", "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes",
-        "careerLevels", "crafts", "allOpportunities",
+        "careerLevels", "crafts", "allOpportunities", "websitePurposes", "websitePurposeOther",
       ])
       || !parsed.success
     ) {
@@ -115,7 +116,7 @@ export function createPublicSubscriptionsRouter(
       res.setHeader("Cache-Control", "no-store");
       res.json(CreatePublicSubscriptionResponse.parse(result));
     } catch (error) {
-      if (error instanceof InvalidReferralPreferencesError) {
+      if (error instanceof InvalidReferralPreferencesError || error instanceof InvalidWebsitePurposesError) {
         res.status(400).json({ error: error.message }); return;
       }
       req.log?.warn("Subscription storage unavailable");
@@ -163,7 +164,7 @@ export function createPublicSubscriptionsRouter(
     const parsed = UpdatePublicSubscriptionPreferencesBody.safeParse(req.body);
     if (!parsed.success || !hasOnlyKeys(req.body, [
       "managementToken", "name", "craft", "careerLevel", "location", "acquisitionSource",
-      "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities",
+      "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities", "websitePurposes", "websitePurposeOther",
     ])) {
       res.status(400).json({ error: "Invalid request" });
       return;
@@ -177,7 +178,7 @@ export function createPublicSubscriptionsRouter(
     try {
       preferences = await dependencies.service.updatePreferences(managementToken, requested);
     } catch (error) {
-      if (error instanceof InvalidReferralPreferencesError) {
+      if (error instanceof InvalidReferralPreferencesError || error instanceof InvalidWebsitePurposesError) {
         res.status(400).json({ error: error.message }); return;
       }
       throw error;
@@ -241,7 +242,7 @@ export function createPublicSubscriptionsRouter(
     const parsed = UpdateVerifiedSubscriptionPreferencesBody.safeParse(req.body);
     if (!parsed.success || !hasOnlyKeys(req.body, [
       "accessToken", "name", "craft", "careerLevel", "location", "acquisitionSource",
-      "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities",
+       "acquisitionDetail", "acquisitionDetailDeclined", "interests", "contentTypes", "careerLevels", "crafts", "allOpportunities", "websitePurposes", "websitePurposeOther",
     ]) || parsed.data.contentTypes?.includes("content")) {
       res.status(400).json({ error: "Invalid request" }); return;
     }
@@ -251,7 +252,7 @@ export function createPublicSubscriptionsRouter(
       if (!result) { res.status(401).json({ error: "Verification expired" }); return; }
       res.json(UpdateVerifiedSubscriptionPreferencesResponse.parse(publicPreferences(result as Record<string, unknown>)));
     } catch (error) {
-      if (error instanceof InvalidReferralPreferencesError) {
+      if (error instanceof InvalidReferralPreferencesError || error instanceof InvalidWebsitePurposesError) {
         res.status(400).json({ error: error.message }); return;
       }
       req.log?.warn("Subscription preference update unavailable");

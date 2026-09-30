@@ -7,6 +7,7 @@
  */
 import type { AudienceContentType } from './audienceContentType';
 import type { CareerLevel } from './careerLevel';
+import type { WebsitePurpose } from './websitePurpose';
 
 export interface PublicAudiencePreferencesUpdate {
   /**
@@ -42,6 +43,13 @@ export interface PublicAudiencePreferencesUpdate {
      */
   acquisitionDetail?: string | null;
   acquisitionDetailDeclined?: boolean;
+  /** @maxItems 6 */
+  websitePurposes?: WebsitePurpose[];
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  websitePurposeOther?: string | null;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];

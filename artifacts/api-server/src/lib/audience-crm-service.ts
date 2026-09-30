@@ -13,6 +13,15 @@ import {
 } from "@workspace/db";
 
 export type PublicationKind = "role" | "programme";
+export const websitePurposeSlugs = [
+  "roles_self",
+  "training_self",
+  "share_network",
+  "on_behalf",
+  "industry_interest",
+  "other",
+] as const;
+
 export function shouldEnqueueFirstPublication(
   previousPublishedAt: Date | null, newStatus: string, demo: boolean,
 ): boolean {
@@ -344,6 +353,8 @@ export async function listAudience(filters: {
       careerLevels: row.careerLevels,
       crafts: row.crafts,
       allOpportunities: row.allOpportunities,
+      websitePurposes: row.websitePurposes,
+      websitePurposeOther: row.websitePurposeOther,
     }));
 }
 
@@ -371,6 +382,8 @@ export async function getAudienceMember(id: string) {
     careerLevels: row.careerLevels,
     crafts: row.crafts,
     allOpportunities: row.allOpportunities,
+    websitePurposes: row.websitePurposes,
+    websitePurposeOther: row.websitePurposeOther,
   };
 }
 
@@ -387,6 +400,18 @@ export function summarizeAcquisitionDetails(
     details.set(key, current ? { ...current, count: current.count + 1 } : { source, detail, count: 1 });
   }
   return [...details.values()].sort((a, b) => b.count - a.count);
+}
+
+export function summarizeWebsitePurposes(
+  subscribers: Pick<typeof publicSubscriptionsTable.$inferSelect, "websitePurposes">[],
+) {
+  const counts = new Map<string, number>(websitePurposeSlugs.map((purpose) => [purpose, 0]));
+  for (const subscriber of subscribers) {
+    for (const purpose of new Set(subscriber.websitePurposes)) {
+      if (counts.has(purpose)) counts.set(purpose, counts.get(purpose)! + 1);
+    }
+  }
+  return websitePurposeSlugs.map((purpose) => ({ purpose, count: counts.get(purpose)! }));
 }
 
 export async function crmDashboard() {
@@ -408,6 +433,7 @@ export async function crmDashboard() {
     },
     acquisitionBreakdown: [...acquisition.entries()].map(([source, total]) => ({ source, count: total })),
     acquisitionDetailBreakdown: summarizeAcquisitionDetails(subscribers),
+    purposeBreakdown: summarizeWebsitePurposes(subscribers),
     engagement: {
       views: events.filter((event) => event.event === "view").length,
       applications: events.filter((event) => event.event === "apply").length,
@@ -431,6 +457,7 @@ export async function crmDashboard() {
       acquisitionDetail: row.acquisitionDetail, acquisitionDetailDeclined: row.acquisitionDetailDeclined,
       interests: row.interests, contentTypes: row.contentTypes,
       careerLevels: row.careerLevels, crafts: row.crafts, allOpportunities: row.allOpportunities,
+      websitePurposes: row.websitePurposes, websitePurposeOther: row.websitePurposeOther,
     })),
   };
 }

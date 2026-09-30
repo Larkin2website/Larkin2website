@@ -11,11 +11,13 @@ import type { CrmAudienceCounts } from './crmAudienceCounts';
 import type { CrmAudienceItem } from './crmAudienceItem';
 import type { CrmDeliverySummary } from './crmDeliverySummary';
 import type { CrmEngagementSummary } from './crmEngagementSummary';
+import type { CrmWebsitePurposeBreakdown } from './crmWebsitePurposeBreakdown';
 
 export interface CrmDashboard {
   counts: CrmAudienceCounts;
   acquisitionBreakdown: CrmAcquisitionBreakdown[];
   acquisitionDetailBreakdown: CrmAcquisitionDetailBreakdown[];
+  purposeBreakdown: CrmWebsitePurposeBreakdown[];
   engagement: CrmEngagementSummary;
   delivery: CrmDeliverySummary;
   recentRegistrations: CrmAudienceItem[];

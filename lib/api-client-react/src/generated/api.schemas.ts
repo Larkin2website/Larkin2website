@@ -46,6 +46,18 @@ export const CareerLevel = {
   senior: 'senior',
 } as const;
 
+export type WebsitePurpose = typeof WebsitePurpose[keyof typeof WebsitePurpose];
+
+
+export const WebsitePurpose = {
+  roles_self: 'roles_self',
+  training_self: 'training_self',
+  share_network: 'share_network',
+  on_behalf: 'on_behalf',
+  industry_interest: 'industry_interest',
+  other: 'other',
+} as const;
+
 export type AudienceContentType = typeof AudienceContentType[keyof typeof AudienceContentType];
 
 
@@ -86,6 +98,10 @@ export interface PublicSubscriptionInput {
   /** @maxLength 500 */
   acquisitionDetail?: string;
   acquisitionDetailDeclined?: boolean;
+  /** @maxItems 6 */
+  websitePurposes?: WebsitePurpose[];
+  /** @maxLength 160 */
+  websitePurposeOther?: string;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -772,6 +788,13 @@ export interface PublicAudiencePreferences {
      */
   acquisitionDetail?: string | null;
   acquisitionDetailDeclined?: boolean;
+  /** @maxItems 6 */
+  websitePurposes?: WebsitePurpose[];
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  websitePurposeOther?: string | null;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -842,6 +865,13 @@ export interface VerifiedAudiencePreferencesUpdate {
      */
   acquisitionDetail?: string | null;
   acquisitionDetailDeclined?: boolean;
+  /** @maxItems 6 */
+  websitePurposes?: WebsitePurpose[];
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  websitePurposeOther?: string | null;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -894,6 +924,13 @@ export interface PublicAudiencePreferencesUpdate {
      */
   acquisitionDetail?: string | null;
   acquisitionDetailDeclined?: boolean;
+  /** @maxItems 6 */
+  websitePurposes?: WebsitePurpose[];
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  websitePurposeOther?: string | null;
   /** @items.maxLength 120 */
   interests?: string[];
   contentTypes?: AudienceContentType[];
@@ -961,6 +998,9 @@ export interface CrmAudienceItem {
   /** @nullable */
   acquisitionDetail: string | null;
   acquisitionDetailDeclined: boolean;
+  websitePurposes: WebsitePurpose[];
+  /** @nullable */
+  websitePurposeOther: string | null;
   interests: string[];
   contentTypes: AudienceContentType[];
   careerLevels: CareerLevel[];
@@ -1020,10 +1060,17 @@ export interface CrmAudienceCounts {
   inactive: number;
 }
 
+export interface CrmWebsitePurposeBreakdown {
+  purpose: WebsitePurpose;
+  /** @minimum 0 */
+  count: number;
+}
+
 export interface CrmDashboard {
   counts: CrmAudienceCounts;
   acquisitionBreakdown: CrmAcquisitionBreakdown[];
   acquisitionDetailBreakdown: CrmAcquisitionDetailBreakdown[];
+  purposeBreakdown: CrmWebsitePurposeBreakdown[];
   engagement: CrmEngagementSummary;
   delivery: CrmDeliverySummary;
   recentRegistrations: CrmAudienceItem[];

@@ -3,7 +3,7 @@ import { and, eq, gt, sql } from "drizzle-orm";
 import { ReplitConnectors } from "@replit/connectors-sdk";
 import { db, publicSubscriptionsTable, subscriptionChallengesTable, subscriptionSessionsTable } from "@workspace/db";
 import { reconcilePendingDeliveries } from "./audience-crm-service";
-import { normalizeReferralPreferences, normalizeSubscriptionEmail, preferencesFromInput, type SubscriptionPreferences } from "./public-subscription-service";
+import { normalizeReferralPreferences, normalizeSubscriptionEmail, normalizeWebsitePurposes, preferencesFromInput, type SubscriptionPreferences } from "./public-subscription-service";
 import { logger } from "./logger";
 
 const CODE_LIFETIME = 10 * 60_000;
@@ -84,6 +84,8 @@ export const drizzleVerificationStore: SubscriptionVerificationStore = {
       careerLevel: publicSubscriptionsTable.careerLevel, location: publicSubscriptionsTable.location,
       acquisitionSource: publicSubscriptionsTable.acquisitionSource, acquisitionDetail: publicSubscriptionsTable.acquisitionDetail,
       acquisitionDetailDeclined: publicSubscriptionsTable.acquisitionDetailDeclined,
+      websitePurposes: publicSubscriptionsTable.websitePurposes,
+      websitePurposeOther: publicSubscriptionsTable.websitePurposeOther,
       interests: publicSubscriptionsTable.interests, contentTypes: publicSubscriptionsTable.contentTypes,
       careerLevels: publicSubscriptionsTable.careerLevels, crafts: publicSubscriptionsTable.crafts,
       allOpportunities: publicSubscriptionsTable.allOpportunities,
@@ -170,6 +172,7 @@ export function createSubscriptionVerificationService(
       return store.updatePreferences(id, {
         ...preferences,
         ...normalizeReferralPreferences(preferences, existing),
+        ...normalizeWebsitePurposes(preferences, existing),
       }, now());
     },
     async unsubscribe(token: string) {
