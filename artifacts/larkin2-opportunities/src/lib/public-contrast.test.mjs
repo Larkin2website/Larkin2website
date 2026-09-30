@@ -84,29 +84,25 @@ test("entry cards use dark gradients with readable text and keyboard focus", () 
   }
 });
 
-test("Production & Culture overlay keeps all text readable over bright imagery", () => {
-  const shade = declarationsFor(".larkin2-split-section::after");
-  const stops = [...shade.background.matchAll(/rgba\((\d+),(\d+),(\d+),([\d.]+)\)\s+(\d+)%/g)];
-  assert.equal(stops.length, 3);
-  const lightestStop = stops.reduce((a, b) => Number(a[4]) < Number(b[4]) ? a : b);
-  const alpha = Number(lightestStop[4]);
-  // Even a white image under the weakest part of the shade must meet AA.
-  const surface = "#" + lightestStop.slice(1, 4).map(channel =>
-    Math.round(Number(channel) * alpha + 255 * (1 - alpha)).toString(16).padStart(2, "0")
-  ).join("");
+test("Production & Culture text stays readable beside the section-bound sticky image", () => {
+  const section = declarationsFor(".larkin2-split-section");
+  const surface = section.background;
+  assert.equal(section.display, "grid");
+  const sectionBase = css.match(/\.larkin2-split-section\s*\{([^}]+)\}/)?.[1];
+  assert.match(sectionBase, /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/);
   for (const selector of [
     ".larkin2-split-section .larkin2-title",
     ".larkin2-split-section .larkin2-copy",
+    ".larkin2-culture-heading",
   ]) {
     const color = declarationsFor(selector).color;
-    assert.ok(ratio(color, surface) >= 4.5, `${selector} over image`);
-    assert.ok(ratio(color, declarationsFor(".larkin2-split-section").background) >= 4.5, `${selector} before image loads`);
+    assert.ok(ratio(resolveColor(color), surface) >= 4.5, `${selector} on the solid text panel`);
   }
-  assert.equal(declarationsFor(".larkin2-split-image").position, "absolute");
-  assert.equal(declarationsFor(".larkin2-split-content").position, "relative");
-  assert.equal(declarationsFor(".larkin2-split-content")["justify-content"], "flex-end");
-  assert.match(css, /\.larkin2-split-content\s*\{[^}]*text-align:\s*center/s);
-  assert.ok(Number(shade["z-index"]) < Number(declarationsFor(".larkin2-split-content")["z-index"]));
+  const imageBase = css.match(/\.larkin2-split-image\s*\{([^}]+)\}/)?.[1];
+  assert.match(imageBase, /position:\s*sticky/);
+  assert.match(imageBase, /top:\s*0/);
+  assert.match(css, /@media \(max-width: 900px\)\s*\{[\s\S]*?\.larkin2-split-image\s*\{[^}]*position:\s*relative/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*?\.larkin2-reveal[^}]*opacity:\s*1/);
 });
 
 test("formerly dark public panels use light surfaces, not the ink text token", () => {

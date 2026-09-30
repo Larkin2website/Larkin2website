@@ -15,12 +15,13 @@ test("homepage retains the original hero introduction", () => {
   for (const paragraph of paragraphs) assert.ok(home.includes(paragraph), paragraph);
 });
 
-test("About Us precedes the culture statement over the full-width image", () => {
+test("About Us and the culture statement stay in separate ordered reveal groups beside the image", () => {
   const section = home.match(/<section[^>]+id="about"[\s\S]*?<\/section>/)?.[0];
   assert.ok(section);
   assert.equal((section.match(/<h2\b/g) ?? []).length, 1);
   assert.equal((section.match(/className="larkin2-split-content"/g) ?? []).length, 1);
   assert.equal((section.match(/className="larkin2-split-image"/g) ?? []).length, 1);
+  assert.equal((section.match(/className="larkin2-split-panel larkin2-reveal" data-reveal/g) ?? []).length, 2);
   assert.ok(section.indexOf("larkin2-split-image") < section.indexOf("larkin2-split-content"));
   assert.ok(section.includes('src="/larkin2-opportunities/images/production-culture.webp"'));
   assert.ok(section.includes('id="about-title"'));
