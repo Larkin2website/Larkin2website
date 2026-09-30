@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HETV Opportunities Hub — Accessibility audit</title>
+  <style>
+    :root { color-scheme: light; }
+    body { max-width: 860px; margin: 0 auto; padding: 28px 22px 70px; background: #f4f1ed; color: #1d2020; font: 16px/1.6 system-ui, sans-serif; }
+    h1, h2 { line-height: 1.2; letter-spacing: -.02em; }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); }
+    h2 { margin-top: 2.3rem; border-top: 1px solid #b8b0a5; padding-top: 1.1rem; font-size: 1.4rem; }
+    .eyebrow { font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #943719; }
+    .summary { border-left: 4px solid #943719; padding: 2px 18px; background: #e9e5df; }
+    li { margin: .35rem 0; }
+    strong { font-weight: 700; }
+    code { font-size: .9em; overflow-wrap: anywhere; }
+    a { color: #943719; }
+    a:focus-visible { outline: 2px solid #943719; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Accessibility review / 30 September 2026</p>
+    <h1>HETV Opportunities Hub</h1>
+    <div class="summary">
+      <p><strong>Target:</strong> WCAG 2.2 AA. The public website was tested in a real Chromium browser at desktop (1280 × 900), mobile (390 × 844), and narrow CSS viewport (320 × 760, representing the reflow width expected at 400% zoom from 1280px). The staff CRM and separate portal were excluded.</p>
+      <p><strong>Result:</strong> The initial 42 page/state snapshots had 32 automated rule violations affecting 77 elements. After fixes, 47 page/state snapshots returned <strong>zero detected axe violations</strong> and no document-level horizontal overflow. This is not a claim of full WCAG conformance.</p>
+    </div>
+
+    <h2>Pages and states covered</h2>
+    <p>Home, roles list and detail, opportunities list and detail, training, development, FAQs, privacy, terms, unsubscribe, optional preferences, and not-found. Additional states: active signup draft and expanded “Other” option; empty roles results; verification-code entry; private-link entry; verified preference editing with intercepted test responses; and the open mobile menu. No real email or unsubscribe was triggered by the audit.</p>
+
+    <h2>Confirmed barriers fixed</h2>
+    <ul>
+      <li><strong>Text contrast (1.4.3):</strong> Low-contrast signup, role count/detail metadata, and opportunity-card labels were darkened. These were the bulk of the automated failures.</li>
+      <li><strong>Structure and keyboard access (1.3.1, 2.1.1):</strong> Corrected skipped heading levels, the not-found main landmark, a horizontally scrollable privacy table that lacked keyboard focus, and the home page’s main landmark/skip-link target.</li>
+      <li><strong>Focus order and navigation (2.4.3, 2.4.7):</strong> Client-side page changes focus the new page heading; keyboard hash links focus their destination. The closed mobile menu is inert, and the open menu traps focus, provides a named dialog, supports Escape, and restores its opener. A browser keyboard check caught and fixed focus staying on the trigger during the opening transition.</li>
+      <li><strong>Names, help and feedback (3.3.2, 4.1.2, 4.1.3):</strong> Corrected duplicated/hidden link labels, associated form hints and errors with relevant inputs, focused submission errors, and added live busy/dismissal feedback for subscription management and the cookie notice. Existing native labels and fieldset groups remain intact.</li>
+    </ul>
+
+    <h2>Manual and regression checks</h2>
+    <ul>
+      <li>Keyboard walkthrough in Chromium: first Tab reaches the skip link; Enter moves to main; client-side Roles navigation focuses its heading; mobile menu focus wraps and Escape returns to its opener.</li>
+      <li>Inspected a browser accessibility-tree snapshot for heading exposure. Sampled mobile target boxes: menu trigger 62 × 37px, cookie-dismiss button 88 × 38px, and signup action 312 × 48px. Text links have the inline-text target-size exception.</li>
+      <li>Ran the browser with reduced motion enabled. The site’s reduced-motion CSS and native-scrolling path were inspected; no animation-dependent control was required to finish the tested flows. The narrow-viewport scans found no document-level horizontal overflow.</li>
+      <li>Added focused component tests for menu focus and names, signup error focus, optional purpose help, management errors, and cookie dismissal. The public artifact typecheck and all 22 Vitest tests passed.</li>
+    </ul>
+
+    <h2>Limits and remaining verification</h2>
+    <ul>
+      <li><strong>Screen-reader session not available:</strong> A browser accessibility tree is not a substitute for NVDA, VoiceOver, or TalkBack. Human assistive-technology testing remains necessary, especially for announcements and forms.</li>
+      <li><strong>Contrast still needs manual visual review:</strong> axe marked 233 individual checks “incomplete” across the final snapshots (primarily contrast over complex/image backgrounds, plus some ARIA checks). Zero violations means none of its conclusive checks failed; it does not certify every image/video frame or overlay.</li>
+      <li><strong>Coverage boundaries:</strong> The narrow CSS viewport tests reflow but were not a literal browser zoom session. Verified management used mocked API responses; real email delivery, account-specific data and production content were not tested. Touch target checks sampled key controls rather than measuring every target. Different dynamic records and future content may need another pass.</li>
+    </ul>
+    <p>Repeat the local checks from the artifact directory with <code>node scripts/accessibility-audit.mjs</code> and <code>node scripts/accessibility-keyboard.mjs</code>. The automated scan uses installed Chromium, Playwright and axe-core.</p>
+  </main>
+</body>
+</html>

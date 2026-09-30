@@ -3,6 +3,22 @@ import { Link, useLocation } from "wouter";
 import { scrollToHash } from "../utils/navigation";
 import { pausePageScroll, resumePageScroll } from "../utils/smooth-scroll";
 
+function focusHashTarget(href: string) {
+  if (!href.startsWith("#")) return;
+  let id: string;
+  try {
+    id = decodeURIComponent(href.slice(1));
+  } catch {
+    return;
+  }
+  window.setTimeout(() => {
+    const target = document.getElementById(id);
+    if (!target) return;
+    if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
+  }, 100);
+}
+
 export function MaskedLink({ href, children, className = "", testId, onClick, target, rel }: any) {
   const [location] = useLocation();
   const isHash = href.startsWith("#");
@@ -14,14 +30,15 @@ export function MaskedLink({ href, children, className = "", testId, onClick, ta
       e.preventDefault();
       history.pushState(null, '', href);
       scrollToHash(href);
+      if (e.detail === 0) focusHashTarget(href);
     }
   };
 
   const content = (
     <>
-      <span className="larkin2-link-label" aria-hidden="true">
+      <span className="larkin2-link-label">
         <span>{children}</span>
-        <span>{children}</span>
+        <span aria-hidden="true">{children}</span>
       </span>
       <span className="larkin2-link-arrow" aria-hidden="true">↗</span>
     </>
@@ -29,7 +46,7 @@ export function MaskedLink({ href, children, className = "", testId, onClick, ta
 
   if (isInternal) {
     return (
-      <Link href={href} className={`larkin2-link ${className}`} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
+      <Link href={href} className={`larkin2-link ${className}`} onClick={onClick} data-testid={testId}>
         {content}
       </Link>
     );
@@ -38,13 +55,16 @@ export function MaskedLink({ href, children, className = "", testId, onClick, ta
   if (isHash) {
     if (location === "/") {
       return (
-        <a className={`larkin2-link ${className}`} href={href} onClick={handleHashClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
+        <a className={`larkin2-link ${className}`} href={href} onClick={handleHashClick} data-testid={testId}>
           {content}
         </a>
       );
     } else {
       return (
-        <Link href={`/${href}`} className={`larkin2-link ${className}`} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId}>
+        <Link href={`/${href}`} className={`larkin2-link ${className}`} onClick={(event) => {
+          onClick?.(event);
+          if (event.detail === 0) focusHashTarget(href);
+        }} data-testid={testId}>
           {content}
         </Link>
       );
@@ -52,7 +72,7 @@ export function MaskedLink({ href, children, className = "", testId, onClick, ta
   }
 
   return (
-    <a className={`larkin2-link ${className}`} href={href} onClick={onClick} aria-label={typeof children === 'string' ? children : undefined} data-testid={testId} target={target} rel={rel}>
+    <a className={`larkin2-link ${className}`} href={href} onClick={onClick} data-testid={testId} target={target} rel={rel}>
       {content}
     </a>
   );
@@ -67,11 +87,14 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
         e.preventDefault();
         history.pushState(null, '', href);
         scrollToHash(href);
+        if (e.detail === 0) focusHashTarget(href);
       }
     };
 
     if (href.startsWith("#") && location !== "/") {
-      return <Link href={`/${href}`} className="larkin2-nav-link" data-testid={testId}>{children}</Link>;
+      return <Link href={`/${href}`} className="larkin2-nav-link" onClick={(event) => {
+        if (event.detail === 0) focusHashTarget(href);
+      }} data-testid={testId}>{children}</Link>;
     }
     if (href.startsWith("/")) {
       return <Link href={href} className="larkin2-nav-link" data-testid={testId}>{children}</Link>;
@@ -85,6 +108,7 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
         e.preventDefault();
         history.pushState(null, '', "#top");
         scrollToHash("#top");
+        if (e.detail === 0) focusHashTarget("#top");
       }
     };
 
@@ -111,7 +135,7 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
         aria-expanded={menuOpen}
         aria-controls="mobile-menu"
         aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-        onClick={() => setMenuOpen(true)}
+        onClick={() => setMenuOpen(!menuOpen)}
         data-testid="button-menu-toggle"
       >
         <span>{menuOpen ? "Close" : "Menu"}</span><i aria-hidden="true" />
@@ -125,7 +149,9 @@ export function SiteFooter() {
   
   const FooterLink = ({ href, children, testId }: any) => {
     if (href.startsWith("#") && location !== "/") {
-      return <Link href={`/${href}`} data-testid={testId}>{children}</Link>;
+      return <Link href={`/${href}`} onClick={(event) => {
+        if (event.detail === 0) focusHashTarget(href);
+      }} data-testid={testId}>{children}</Link>;
     }
     if (href.startsWith("/")) {
       return <Link href={href} data-testid={testId}>{children}</Link>;
@@ -135,6 +161,7 @@ export function SiteFooter() {
         event.preventDefault();
         history.pushState(null, "", href);
         scrollToHash(href);
+        if (event.detail === 0) focusHashTarget(href);
       }}>{children}</a>;
     }
     return <a href={href} data-testid={testId}>{children}</a>;
@@ -143,22 +170,22 @@ export function SiteFooter() {
   return (
     <footer className="larkin2-foot">
       <div className="larkin2-foot-brand"><span className="larkin2-mark">HETV Opportunities Hub<span aria-hidden="true">.</span></span><p>Roles, training and development across high-end television.</p></div>
-      <div className="larkin2-foot-col">
-        <span>Explore</span>
+      <div className="larkin2-foot-col" role="group" aria-labelledby="footer-explore-heading">
+        <span id="footer-explore-heading" role="heading" aria-level={2}>Explore</span>
         <FooterLink href="#production-culture" testId="link-footer-production-culture">Production Culture Statement</FooterLink>
         <FooterLink href="/roles" testId="link-footer-roles">Roles</FooterLink>
         <FooterLink href="/opportunities" testId="link-footer-opportunities">Opportunities</FooterLink>
         <FooterLink href="#commitments" testId="link-footer-commitments">Commitments</FooterLink>
         <FooterLink href="/faqs" testId="link-footer-faqs">FAQs</FooterLink>
       </div>
-      <div className="larkin2-foot-col">
-        <span>Manage Hub Updates</span>
+      <div className="larkin2-foot-col" role="group" aria-labelledby="footer-updates-heading">
+        <span id="footer-updates-heading" role="heading" aria-level={2}>Manage Hub Updates</span>
         <FooterLink href="#signup" testId="link-footer-signup">Sign Up for Updates</FooterLink>
         <FooterLink href="/unsubscribe" testId="link-footer-unsubscribe">Unsubscribe</FooterLink>
         <a href="mailto:opportunities@baileyopportunities.com" data-testid="link-footer-contact">Contact Us</a>
       </div>
-      <div className="larkin2-foot-col">
-        <span>Legal</span>
+      <div className="larkin2-foot-col" role="group" aria-labelledby="footer-legal-heading">
+        <span id="footer-legal-heading" role="heading" aria-level={2}>Legal</span>
         <FooterLink href="/privacy" testId="link-footer-privacy">Privacy Notice</FooterLink>
         <FooterLink href="/terms" testId="link-footer-terms">Terms &amp; Conditions</FooterLink>
       </div>
@@ -169,12 +196,12 @@ export function SiteFooter() {
 
 export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
   const [location] = useLocation();
-  const menuPanelRef = useRef<HTMLElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const lockedScrollY = useRef(0);
   const restoreFocusRef = useRef(true);
   
-  const closeMenu = (restoreFocus = false) => {
+  const closeMenu = (restoreFocus = true) => {
     restoreFocusRef.current = restoreFocus;
     setMenuOpen(false);
   };
@@ -188,18 +215,22 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
         
         history.pushState(null, '', href);
         scrollToHash(href);
+        if (e.detail === 0) focusHashTarget(href);
       } else {
         closeMenu();
       }
     };
 
     if (href.startsWith("#") && location !== "/") {
-      return <Link href={`/${href}`} onClick={() => closeMenu()} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
+      return <Link href={`/${href}`} onClick={(event) => {
+        closeMenu(true);
+        if (event.detail === 0) focusHashTarget(href);
+      }} data-testid={testId}>{children} {num && <span aria-hidden="true">{num}</span>}</Link>;
     }
     if (href.startsWith("/")) {
-      return <Link href={href} onClick={() => closeMenu()} data-testid={testId}>{children} {num && <span>{num}</span>}</Link>;
+      return <Link href={href} onClick={() => closeMenu(true)} data-testid={testId}>{children} {num && <span aria-hidden="true">{num}</span>}</Link>;
     }
-    return <a href={href} onClick={handleClick} data-testid={testId}>{children} {num && <span>{num}</span>}</a>;
+    return <a href={href} onClick={handleClick} data-testid={testId}>{children} {num && <span aria-hidden="true">{num}</span>}</a>;
   };
 
   useEffect(() => {
@@ -213,7 +244,15 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
     document.body.style.width = "100%";
     document.body.style.overflow = "hidden";
     
-    closeButtonRef.current?.focus();
+    // A hidden panel cannot receive focus during its entrance transition.
+    // Move focus as soon as its close button becomes visible.
+    const focusTimer = window.setInterval(() => {
+      const close = closeButtonRef.current;
+      if (close && getComputedStyle(close).visibility === "visible") {
+        close.focus();
+        window.clearInterval(focusTimer);
+      }
+    }, 20);
     
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -221,11 +260,16 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
         return;
       }
       if (event.key !== "Tab" || !menuPanelRef.current) return;
-      const focusable = Array.from(menuPanelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled])'));
+      const focusable = Array.from(menuPanelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+        .filter((element) => element.tabIndex >= 0);
       if (!focusable.length) return;
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
+      const focusIsInside = menuPanelRef.current.contains(document.activeElement);
+      if (!focusIsInside) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && document.activeElement === last) {
@@ -233,9 +277,9 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
         first.focus();
       }
     };
-    
     document.addEventListener("keydown", onKeyDown);
     return () => {
+      window.clearInterval(focusTimer);
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
@@ -250,16 +294,19 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
   }, [menuOpen, setMenuOpen, menuButtonRef]);
 
   return (
-    <aside
+    <div
       ref={menuPanelRef}
       id="mobile-menu"
       data-lenis-prevent
       className={`larkin2-mobile-menu ${menuOpen ? "is-open" : ""}`}
-      aria-label="Mobile navigation"
+      aria-labelledby="mobile-menu-title"
       aria-hidden={!menuOpen}
+      role="dialog"
+      aria-modal={menuOpen ? true : undefined}
+      inert={!menuOpen}
     >
       <div className="larkin2-mobile-menu-head">
-        <span className="larkin2-mobile-label">HETV Opportunities Hub / navigation</span>
+        <span className="larkin2-mobile-label" id="mobile-menu-title">HETV Opportunities Hub / navigation</span>
         <button ref={closeButtonRef} type="button" className="larkin2-menu-close" onClick={() => closeMenu(true)} aria-label="Close menu" data-testid="button-menu-close">
           Close <span aria-hidden="true">×</span>
         </button>
@@ -273,8 +320,8 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
       </nav>
       <div className="larkin2-mobile-contact">
         <span>Questions about an opportunity?</span>
-        <Link href="/faqs" onClick={() => closeMenu()} data-testid="link-mobile-faqs">Read the FAQs ↗</Link>
+        <Link href="/faqs" onClick={() => closeMenu()} data-testid="link-mobile-faqs">Read the FAQs <span aria-hidden="true">↗</span></Link>
       </div>
-    </aside>
+    </div>
   );
 }

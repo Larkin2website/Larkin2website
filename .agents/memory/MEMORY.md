@@ -18,3 +18,4 @@
 - [Responsive CSS assertions](responsive-css-assertions.md) — Static CSS tests must distinguish base rules from media overrides and resolve color tokens before contrast calculations.
 - [Workspace package installs](workspace-package-installs.md) — Package helper installs at the monorepo root; use a filtered pnpm command when adding a dependency to one artifact.
 - [Cookie notice is not consent](cookie-notice-consent.md) — Dismissing the public site's notice is informational only; optional tracking needs a separate opt-in.
+- [Animated menu focus timing](animated-menu-focus.md) — A just-opened mobile panel can still compute as hidden; defer focus until it becomes visible.

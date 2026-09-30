@@ -111,6 +111,7 @@ it("hides another link's details while loading the newly verified account", asyn
 it("uses email code access to update preferences and unsubscribe without a legacy token", async () => {
   const user = userEvent.setup();
   render(<UnsubscribePage />);
+  expect(screen.getByLabelText("Email address")).toHaveAttribute("aria-describedby", "verification-email-hint");
   await user.type(screen.getByLabelText("Email address"), "alex@example.com");
   await user.click(screen.getByRole("button", { name: "Send verification code" }));
   await waitFor(() => expect(api.requestSubscriptionCode).toHaveBeenCalledWith({ email: "alex@example.com" }));
@@ -132,6 +133,16 @@ it("uses email code access to update preferences and unsubscribe without a legac
   await waitFor(() => expect(api.unsubscribeVerifiedSubscription).toHaveBeenCalledWith({ accessToken: "s".repeat(43) }));
   expect(screen.getByTestId("status-unsubscribed")).toBeInTheDocument();
   expect(sessionStorage.getItem("hetv_verified_subscription_access")).toBeNull();
+});
+
+it("focuses an announced error for an invalid saved management link", async () => {
+  sessionStorage.setItem("legacy-link", "incomplete");
+  const user = userEvent.setup();
+  render(<UnsubscribePage />);
+  await user.click(screen.getByRole("button", { name: "Load preferences" }));
+  const error = await screen.findByRole("alert");
+  expect(error).toHaveFocus();
+  expect(error).toHaveTextContent("Please paste the complete personal link");
 });
 
 it("loads and saves website purpose answers through verified email access", async () => {

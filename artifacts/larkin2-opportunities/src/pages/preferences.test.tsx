@@ -53,6 +53,7 @@ it("clears route details on source changes and submits an explicit detail declin
 it("collects optional website purpose answers on the preferences step", async () => {
   const user = userEvent.setup();
   render(<SignupJourneyProvider><FollowupPage /></SignupJourneyProvider>);
+  expect(await screen.findByRole("group", { name: "What are you looking for? (Select all that apply)" })).toBeInTheDocument();
   for (const label of [
     "Roles for myself",
     "Training/development opportunities for myself",
@@ -66,13 +67,26 @@ it("collects optional website purpose answers on the preferences step", async ()
   expect(screen.queryByLabelText("Other (optional)")).not.toBeInTheDocument();
   await user.click(screen.getByLabelText("Roles for myself"));
   await user.click(screen.getByLabelText("Other"));
-  await user.type(screen.getByLabelText("Other (optional)"), "Something else");
+  const otherInput = screen.getByLabelText("Other (optional)");
+  expect(otherInput).toHaveAttribute("aria-describedby", "followup-website-purpose-other-detail-hint");
+  expect(screen.getByText("Please don’t include personally identifying details about anyone you represent."))
+    .toHaveAttribute("id", "followup-website-purpose-other-detail-hint");
+  await user.type(otherInput, "Something else");
   await user.click(screen.getByRole("button", { name: "Sign up with these preferences" }));
   await waitFor(() => expect(api.createPublicSubscription).toHaveBeenCalled());
   expect(api.createPublicSubscription.mock.calls[0]![0]).toMatchObject({
     websitePurposes: ["roles_self", "other"],
     websitePurposeOther: "Something else",
   });
+});
+
+it("moves focus to the live error after a failed preference submission", async () => {
+  api.createPublicSubscription.mockRejectedValue(new Error("Request failed"));
+  const user = userEvent.setup();
+  render(<SignupJourneyProvider><FollowupPage /></SignupJourneyProvider>);
+  await user.click(await screen.findByRole("button", { name: "Sign up with these preferences" }));
+  const error = await screen.findByRole("alert");
+  expect(error).toHaveFocus();
 });
 
 it("omits website purpose fields when the optional preferences step is skipped", async () => {

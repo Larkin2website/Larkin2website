@@ -193,17 +193,17 @@ export function RolesPage() {
 
           {rolesLoading ? (
             <div className="roles-empty" role="status" aria-live="polite">
-              <h3 className="roles-empty-title">Loading roles</h3>
+              <h2 className="roles-empty-title">Loading roles</h2>
               <p>Fetching the latest HETV Opportunities Hub roles.</p>
             </div>
           ) : rolesFailed ? (
             <div className="roles-empty" role="alert">
-              <h3 className="roles-empty-title">Roles are temporarily unavailable</h3>
+              <h2 className="roles-empty-title">Roles are temporarily unavailable</h2>
               <p>Please refresh the page or try again shortly.</p>
             </div>
           ) : filteredRoles.length === 0 ? (
             <div className="roles-empty" data-testid="container-roles-empty">
-              <h3 className="roles-empty-title">No roles match those filters</h3>
+              <h2 className="roles-empty-title">No roles match those filters</h2>
               <p>Try broadening your keyword search or clearing one of the selected filters.</p>
               {hasActiveFilters && <button type="button" className="roles-empty-reset" onClick={clearAllFilters}>Clear all filters</button>}
             </div>

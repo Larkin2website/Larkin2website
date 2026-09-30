@@ -28,6 +28,7 @@ export function PreferencesPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const errorRef = useRef<HTMLParagraphElement>(null);
   const { data: options, isError: optionsError, refetch: retryOptions } = useListPublicOpportunityOptions();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -45,6 +46,10 @@ export function PreferencesPage() {
   const [allOpportunities, setAllOpportunities] = useState(false);
   const [websitePurposes, setWebsitePurposes] = useState<WebsitePurpose[]>([]);
   const [websitePurposeOther, setWebsitePurposeOther] = useState("");
+
+  useEffect(() => {
+    if (error) errorRef.current?.focus();
+  }, [error]);
 
   useEffect(() => {
     document.title = "Your preferences | HETV Opportunities Hub";
@@ -127,7 +132,7 @@ export function PreferencesPage() {
                   <h2>Choose what matters to you.</h2>
                    <p>Everything below is optional. Leave opportunity types unselected for general HETV news only. Choosing interests does not turn on automated email alerts. Your signup is sent when you finish this step.</p>
                 </div>
-                 <form className="hetv-subscription-form" onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); void submit(); }}>
+                  <form className="hetv-subscription-form" aria-busy={saving} onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); void submit(); }}>
                   <div className="hetv-followup-grid">
                     <div className="hetv-followup-field"><label htmlFor="followup-location">Your location (optional)</label>
                       <input id="followup-location" type="text" maxLength={160} value={location} onChange={event => setLocation(event.target.value)} disabled={saving} placeholder="Town, city or region" /></div>
@@ -178,7 +183,7 @@ export function PreferencesPage() {
                           onChange={event => setCraftText(current => toggle(splitEntries(current), department, event.target.checked).join(", "))} />
                         <span>{department}</span>
                       </label>)}
-                      {optionsError && <p>Department choices could not load. You can enter them below. <button type="button" onClick={() => void retryOptions()}>Try again</button></p>}
+                      {optionsError && <p role="status">Department choices could not load. You can enter them below. <button type="button" onClick={() => void retryOptions()}>Try again</button></p>}
                       <label htmlFor="followup-crafts">Selected departments or other crafts, separated by commas</label>
                       <input id="followup-crafts" type="text" value={craftText}
                         onChange={event => setCraftText(event.target.value)}
@@ -223,7 +228,7 @@ export function PreferencesPage() {
                      <button type="submit" disabled={saving} data-testid="button-save-preferences">{saving ? "Saving…" : "Sign up with these preferences"}</button>
                      <button type="button" disabled={saving} onClick={() => void submit(true)} data-testid="button-skip-preferences">Skip preferences and sign up</button>
                   </div>
-                  {error && <p role="alert">{error}</p>}
+                   {error && <p id="preferences-error" ref={errorRef} role="alert" tabIndex={-1}>{error}</p>}
                 </form>
               </>}
             </div>

@@ -55,9 +55,10 @@ export function WebsitePurposeChoices({
             maxLength={120}
             value={other}
             disabled={disabled}
+            aria-describedby={`${idPrefix}-other-detail-hint`}
             onChange={event => onOtherChange(event.target.value)}
           />
-          <p>Please don’t include personally identifying details about anyone you represent.</p>
+          <p id={`${idPrefix}-other-detail-hint`}>Please don’t include personally identifying details about anyone you represent.</p>
         </>
       )}
     </fieldset>

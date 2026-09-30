@@ -160,7 +160,7 @@ export function OpportunityPage({ id }: { id: string }) {
           <div className="opp-content-layout">
             <aside className="opp-sidebar">
               <div className="opp-status-card">
-                  <h3>{isOpen ? "Applications Open" : "Applications Closed"}</h3>
+                  <h2>{isOpen ? "Applications Open" : "Applications Closed"}</h2>
                    <p>{isSample ? "Example only — this sample programme is not accepting applications." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
                    {!isSample && isOpen && displayOpp.applicationUrl && (
                      <a href={displayOpp.applicationUrl} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>Apply now</a>

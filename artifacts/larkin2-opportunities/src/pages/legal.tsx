@@ -101,7 +101,7 @@ export function PrivacyNoticePage() {
       </Section>
       <Section number={4} title="How do we use your personal data">
         <p>We will process your personal data for the following purposes. We have set out the lawful basis on which we process your personal data (as required under the UK GDPR). Where we have included text in italics, it is because it relates to special categories of personal data or personal data relating to criminal convictions and offences and we have set out the additional lawful basis for such data. We may also process your personal data for additional purposes if these are compatible with the list below. If we process your personal data for any other additional purposes, we will update this privacy notice.</p>
-        <div className="legal-table-wrap">
+        <div className="legal-table-wrap" role="region" aria-label="Privacy purposes and legal bases table" tabIndex={0}>
           <table>
             <thead><tr><th>Purpose</th><th>Lawful Basis</th></tr></thead>
             <tbody>

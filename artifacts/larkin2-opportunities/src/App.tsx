@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { Route, Switch, useLocation, Router as WouterRouter } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import "./index.css";
 import "./paper-orange.css";
 import { programmeRouteForHash, scrollToHash } from "./utils/navigation";
@@ -27,8 +27,25 @@ const queryClient = new QueryClient();
 
 function ScrollManager() {
   const [location, navigate] = useLocation();
+  const previousLocation = useRef(location);
 
   useEffect(() => startSmoothScroll(), []);
+
+  useEffect(() => {
+    if (previousLocation.current === location) return;
+    previousLocation.current = location;
+    // After a client-side route change, move assistive-technology and keyboard
+    // focus to the new page instead of leaving it on a removed navigation link.
+    const frame = requestAnimationFrame(() => {
+      const heading = document.querySelector<HTMLElement>("main h1");
+      const target = heading ?? document.querySelector<HTMLElement>("main");
+      if (target) {
+        target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+      }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [location]);
 
   useEffect(() => {
     const handleHash = () => {

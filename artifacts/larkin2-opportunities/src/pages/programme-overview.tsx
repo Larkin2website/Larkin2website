@@ -106,12 +106,12 @@ export function TrainingPage() {
               <div className={`programme-status-badge ${firstCreditStatus === "Open" ? "is-open" : "is-closed"}`}>
                 Applications {firstCreditStatus}
               </div>
-              <h3>First Credit Work Experience</h3>
+              <h2>First Credit Work Experience</h2>
               <p>The First Credit Work Experience Programme has been designed to provide meaningful first industry experience for people who have had little or no opportunity to access the Film &amp; Television industry.</p>
               <MaskedLink href="/opportunities/first-credit" testId="link-opp-first-credit">View First Credit Programme</MaskedLink>
             </div>
             <div className="hetv-empty-state">
-              <h4>No active training courses</h4>
+              <h2>No active training courses</h2>
               <p>No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available. In the meantime, you can read about First Credit.</p>
             </div>
           </div>
@@ -162,7 +162,7 @@ export function DevelopmentPage() {
               <div className={`programme-status-badge ${directorStatus === "Open" ? "is-open" : "is-closed"}`}>
                 Applications {directorStatus}
               </div>
-              <h3>Creative Leadership Shadowing Programme: Director Pathway</h3>
+              <h2>Creative Leadership Shadowing Programme: Director Pathway</h2>
               <p>The Creative Leadership Shadowing Programme: Director Pathway is designed for experienced directors who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
               <MaskedLink href="/opportunities/director-pathway" testId="link-opp-director">View Director Pathway</MaskedLink>
             </div>
@@ -170,7 +170,7 @@ export function DevelopmentPage() {
               <div className={`programme-status-badge ${producerStatus === "Open" ? "is-open" : "is-closed"}`}>
                 Applications {producerStatus}
               </div>
-              <h3>Creative Leadership Shadowing Programme: Producer Pathway</h3>
+              <h2>Creative Leadership Shadowing Programme: Producer Pathway</h2>
               <p>The Creative Leadership Shadowing Programme: Producer Pathway is designed for experienced producers who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
               <MaskedLink href="/opportunities/producer-pathway" testId="link-opp-producer">View Producer Pathway</MaskedLink>
             </div>

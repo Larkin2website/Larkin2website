@@ -149,8 +149,10 @@ function CommitmentsCarousel() {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowRight") {
+      e.preventDefault();
       setActive(p => Math.min(commitments.length - 1, p + 1));
     } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
       setActive(p => Math.max(0, p - 1));
     }
   };
@@ -165,7 +167,7 @@ function CommitmentsCarousel() {
       role="region"
     >
       <ol className="sr-only" aria-label="All commitments">
-        {commitments.map(([num, title, copy]) => <li key={num}><h3>{title}</h3><p>{copy}</p></li>)}
+        {commitments.map(([num, title, copy], index) => <li key={num} aria-current={active === index ? "step" : undefined}><h3>{title}</h3><p>{copy}</p></li>)}
       </ol>
       <div className="larkin2-carousel-viewport" aria-hidden="true">
         <div 
@@ -225,7 +227,7 @@ function CommitmentsCarousel() {
             ))}
           </div>
           <div className="larkin2-carousel-indicator" role="status" aria-live="polite" aria-atomic="true">
-            0{active + 1} / 0{commitments.length}
+            Commitment {active + 1} of {commitments.length}: {commitments[active][1]}
           </div>
         </div>
         <button 
@@ -349,7 +351,7 @@ export function Home() {
   }, []);
 
   return (
-    <main className="larkin2-page" id="top">
+    <div className="larkin2-page" id="top" tabIndex={-1}>
       {introVisible && <IntroOverlay onComplete={finishIntro} />}
       <a className="larkin2-skip" href="#content" data-testid="link-skip-content">Skip to content</a>
       <SiteHeader 
@@ -365,6 +367,7 @@ export function Home() {
         setMenuOpen={setMenuOpen} 
         menuButtonRef={menuButtonRef} 
       />
+      <main id="content" tabIndex={-1}>
       <section ref={heroTrackRef} className="larkin2-hero-track" aria-labelledby="hero-title">
         <div className="larkin2-hero-sticky">
           <div className="larkin2-hero-bg" />
@@ -409,7 +412,6 @@ export function Home() {
           </div>
         </div>
       </section>
-      <div id="content">
         <section className="larkin2-split-section" id="about" aria-labelledby="about-title">
           <div className="larkin2-split-image">
             <img src="/larkin2-opportunities/images/production-culture.webp" alt="" loading="lazy" />
@@ -536,8 +538,8 @@ export function Home() {
             <SubscriptionSignup />
           </div>
         </section>
-      </div>
+      </main>
       <HomeFooterReveal />
-    </main>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 
 const DISMISSAL_KEY = "hetv-cookie-notice-dismissed";
@@ -13,11 +13,23 @@ function wasDismissed() {
 
 export function CookieNotice() {
   const [visible, setVisible] = useState(() => !wasDismissed());
+  const [dismissed, setDismissed] = useState(false);
+  const dismissedRef = useRef<HTMLParagraphElement>(null);
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (dismissed) dismissedRef.current?.focus();
+  }, [dismissed]);
+
+  if (!visible) {
+    return dismissed
+      ? <p className="larkin2-cookie-dismissed" role="status" tabIndex={-1} ref={dismissedRef}
+          onBlur={() => setDismissed(false)}>Cookie notice dismissed.</p>
+      : null;
+  }
 
   const dismiss = () => {
     setVisible(false);
+    setDismissed(true);
     try {
       window.localStorage.setItem(DISMISSAL_KEY, "true");
     } catch {

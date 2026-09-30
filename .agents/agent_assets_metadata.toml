@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "TmEc_UoScNxLHu_uuNVFx"
+uri = "file://artifacts/larkin2-opportunities/reports/accessibility-audit.html"
+type = "html"
+title = "HETV public website accessibility audit"
+description = "WCAG 2.2 AA review: browser findings, fixes, tested states and remaining limits."
+logical_id = "945ac39a-f56a-497d-ac4f-b897b660c62c"
+content_hash = "sha256:501a7543107f4efd3b41509ed29a82d3535bd7023d37149297c0ee285aeb59df"
+size = 5937
+mtime_ms = 1790770074388
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d11b5c09-5f1a-4a65-b681-f214a1d21da8/945ac39a-f56a-497d-ac4f-b897b660c62c/1f42ea30-faf1-4af6-8535-cec6e1271154"
+storage_version_token = "1790770190268501"
+content_type = "text/html"

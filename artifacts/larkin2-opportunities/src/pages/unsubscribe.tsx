@@ -39,6 +39,7 @@ export function UnsubscribePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const errorRef = useRef<HTMLParagraphElement>(null);
   const [token, setToken] = useState(() =>
     new URLSearchParams(window.location.hash.slice(1)).get("token") ?? savedSubscriptionToken());
   const [showLegacyLink, setShowLegacyLink] = useState(() =>
@@ -67,6 +68,10 @@ export function UnsubscribePage() {
   const [allOpportunities, setAllOpportunities] = useState(false);
   const [websitePurposes, setWebsitePurposes] = useState<WebsitePurpose[]>([]);
   const [websitePurposeOther, setWebsitePurposeOther] = useState("");
+
+  useEffect(() => {
+    if (error) errorRef.current?.focus();
+  }, [error]);
 
   function setLoadedPreferences(value: PublicAudiencePreferences) {
     setPreferences(value);
@@ -279,32 +284,37 @@ export function UnsubscribePage() {
               <Link href="/">Return to the hub</Link>
              </div> : <>
               {!accessToken && <>
-                <form className="hetv-subscription" onSubmit={requestCode}>
+                <form className="hetv-subscription" aria-busy={busyAction === "request"} onSubmit={requestCode}>
                   <h2>Verify your email</h2>
-                  <p>Enter the email address you signed up with. If it has an active subscription and delivery is available, we'll send a six-digit code from hetv@gentraxtech.com. The code expires in 10 minutes.</p>
+                  <p id="verification-email-hint">Enter the email address you signed up with. If it has an active subscription and delivery is available, we'll send a six-digit code from hetv@gentraxtech.com. The code expires in 10 minutes.</p>
                   <label htmlFor="verification-email">Email address</label>
                   <input id="verification-email" type="email" required maxLength={254} autoComplete="email"
+                    aria-describedby="verification-email-hint"
                     value={email} disabled={!!busyAction} onChange={event => {
                       setEmail(event.target.value); setCodeRequested(false); setPreferences(null); setError("");
                     }} />
                   <button type="submit" disabled={!!busyAction}>{busyAction === "request" ? "Sending…" : "Send verification code"}</button>
                 </form>
-                {codeRequested && <form className="hetv-subscription" onSubmit={verifyCode}>
+                {codeRequested && <form className="hetv-subscription" aria-busy={busyAction === "verify"} onSubmit={verifyCode}>
                   <label htmlFor="verification-code">Six-digit verification code</label>
                   <input id="verification-code" type="text" inputMode="numeric" autoComplete="one-time-code"
                     pattern="[0-9]{6}" maxLength={6} required value={code} disabled={!!busyAction}
+                    aria-describedby="verification-code-hint"
                     onChange={event => setCode(event.target.value)} />
+                  <p id="verification-code-hint">Enter the six-digit code sent to your email. It expires in 10 minutes.</p>
                   <button type="submit" disabled={!!busyAction}>{busyAction === "verify" ? "Verifying…" : "Verify and manage"}</button>
                 </form>}
                 {verificationMessage && <p role="status">{verificationMessage}</p>}
               </>}
               {!showLegacyLink && !accessToken && <button type="button" onClick={() => setShowLegacyLink(true)} data-testid="button-existing-link">I already have a private link</button>}
-              {(showLegacyLink || accessToken) && <form className="hetv-subscription" onSubmit={accessToken ? event => event.preventDefault() : loadPreferences}>
+              {(showLegacyLink || accessToken) && <form className="hetv-subscription" aria-busy={busyAction === "load" || busyAction === "save" || busyAction === "unsubscribe"} onSubmit={accessToken ? event => event.preventDefault() : loadPreferences}>
                {!accessToken && <>
                <h2>Using an existing link</h2>
                <p>If you received a private link previously, you can continue to use it here. New signups do not receive a link.</p>
               <label htmlFor="unsubscribe-token">Personal unsubscribe link</label>
               <input id="unsubscribe-token" type="password" autoComplete="off" value={token}
+                 aria-invalid={!accessToken && !!error && /^(Please paste|We couldn't load preferences)/.test(error) || undefined}
+                 aria-describedby={`unsubscribe-token-hint${!accessToken && !!error && /^(Please paste|We couldn't load preferences)/.test(error) ? " subscription-management-error" : ""}`}
                 onChange={event => {
                   setToken(event.target.value);
                   setPreferences(null);
@@ -312,7 +322,7 @@ export function UnsubscribePage() {
                   setSavedMessage("");
                 }} required disabled={!!busyAction}
                 placeholder="Paste the link saved at signup" data-testid="input-unsubscribe-link" />
-               <p>If an older link was saved in this browser, it is filled in above. Otherwise paste your original link. Keep it private: anyone with it can stop that subscription.</p>
+                <p id="unsubscribe-token-hint">If an older link was saved in this browser, it is filled in above. Otherwise paste your original link. Keep it private: anyone with it can stop that subscription.</p>
                <button type="submit" disabled={!!busyAction || !token.trim()} data-testid="button-load-preferences">
                 {busyAction === "load" ? "Loading…" : preferences ? "Reload preferences" : "Load preferences"}
               </button>
@@ -432,7 +442,13 @@ export function UnsubscribePage() {
                 </button>
               </>}
               </form>}
-              {error && <p role="alert">{error}</p>}
+              {busyAction && <p role="status" aria-live="polite">
+                {busyAction === "request" ? "Sending verification code…" :
+                  busyAction === "verify" ? "Verifying code…" :
+                    busyAction === "load" ? "Loading preferences…" :
+                      busyAction === "save" ? "Saving preferences…" : "Processing unsubscribe request…"}
+              </p>}
+              {error && <p id="subscription-management-error" ref={errorRef} role="alert" tabIndex={-1}>{error}</p>}
               </>}
           </article>
         </div>

@@ -37,6 +37,7 @@ test("dismissal persists after a reload without claiming consent", () => {
 
   fireEvent.click(screen.getByRole("button", { name: "Dismiss cookie notice" }));
   expect(screen.queryByRole("region", { name: "Cookie notice" })).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveFocus();
   expect(window.localStorage.getItem("hetv-cookie-notice-dismissed")).toBe("true");
 
   notice.unmount();

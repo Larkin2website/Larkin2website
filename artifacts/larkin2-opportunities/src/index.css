@@ -115,6 +115,7 @@
 
 .larkin2-page a { color: inherit; text-decoration: none; }
 .larkin2-page :focus-visible { outline: 2px solid var(--sage); outline-offset: 5px; }
+.larkin2-page main[tabindex="-1"]:focus { outline: none; }
 .larkin2-skip {
   position: fixed;
   z-index: 70;
@@ -174,6 +175,21 @@
   outline: 2px solid #1d2020;
   outline-offset: 3px;
 }
+.larkin2-cookie-dismissed {
+  position: fixed;
+  z-index: 32;
+  bottom: 16px;
+  left: 16px;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #cbc5bc;
+  border-radius: 6px;
+  background: #f4f1ed;
+  color: #1d2020;
+  font: 14px/1.5 'DM Sans', sans-serif;
+}
+.larkin2-cookie-dismissed:focus { outline: 2px solid #1d2020; outline-offset: 3px; }
 @media (max-width: 600px) {
   .larkin2-cookie-notice {
     left: 16px;
@@ -1194,7 +1210,7 @@
 .larkin2-signup .larkin2-title { max-width: 820px; font-size: clamp(42px, 9vw, 120px); }
 .larkin2-signup .larkin2-eyebrow { color: #55261c; }
 .larkin2-signup .larkin2-copy { color: #3e211b; }
-.larkin2-signup .larkin2-small { color: #67372e; }
+.larkin2-signup .larkin2-small { color: #40231e; }
 .larkin2-form { max-width: 650px; margin-top: 48px; }
 .larkin2-form label { display: block; margin-bottom: 10px; color: #55261c; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
 .larkin2-form-row { display: flex; align-items: center; border-bottom: 1px solid #55261c; }
@@ -1536,7 +1552,7 @@
   font-size: 12px;
   letter-spacing: .15em;
   text-transform: uppercase;
-  color: rgba(29,32,32,.58);
+  color: #45413d;
   margin-bottom: 30px;
 }
 .roles-grid {
@@ -1737,7 +1753,7 @@
   border-bottom: 1px solid rgba(29,32,32,.2);
 }
 .roles-detail-meta span {
-  color: rgba(29,32,32,.55);
+  color: #45413d;
   font-size: 10px;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -1848,7 +1864,7 @@
   border-bottom: 1px solid rgba(29,32,32,.2);
 }
 .roles-detail-list dt {
-  color: rgba(29,32,32,.56);
+  color: #45413d;
   font-size: 10px;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -2610,7 +2626,7 @@
   margin-bottom: 40px;
 }
 
-.opp-status-card h3 {
+.opp-status-card h2 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 24px;
   margin: 0 0 15px;
@@ -3111,7 +3127,7 @@
   border: 1px solid var(--line);
   border-radius: 8px;
 }
-.hetv-programme-item h3 {
+.hetv-programme-item h2 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 24px;
   color: var(--paper-ink);
@@ -3138,7 +3154,7 @@
   border-radius: 8px;
   text-align: center;
 }
-.hetv-empty-state h4 {
+.hetv-empty-state h2 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 18px;
   color: var(--paper-ink);
@@ -3363,7 +3379,7 @@
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--sage);
+  color: #943719;
 }
 .opp-card-meta-item strong {
   font-size: 16px;

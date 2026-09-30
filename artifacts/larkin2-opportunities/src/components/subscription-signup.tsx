@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import { createPublicSubscription } from "@workspace/api-client-react";
 import { useSignupJourney } from "../lib/signup-journey";
@@ -10,8 +10,13 @@ export function SubscriptionSignup() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [processed, setProcessed] = useState(false);
+  const errorRef = useRef<HTMLParagraphElement>(null);
   const [, navigate] = useLocation();
   const { setDraft } = useSignupJourney();
+
+  useEffect(() => {
+    if (error) errorRef.current?.focus();
+  }, [error]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,12 +64,15 @@ export function SubscriptionSignup() {
         <div className="hetv-signup-field">
           <label htmlFor="signup-name">Your name</label>
           <input id="signup-name" type="text" autoComplete="name" required maxLength={160}
-            value={name} onChange={event => setName(event.target.value)} disabled={busy} data-testid="input-signup-name" />
+            value={name} onChange={event => { setName(event.target.value); setError(""); }}
+            disabled={busy} aria-invalid={!!error && !name.trim()}
+            aria-describedby={error && !name.trim() ? "signup-error" : undefined}
+            data-testid="input-signup-name" />
         </div>
         <div className="hetv-signup-field">
           <label htmlFor="signup-email">Email address</label>
           <input id="signup-email" type="email" autoComplete="email" required maxLength={254}
-            placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)}
+            placeholder="you@example.com" value={email} onChange={event => { setEmail(event.target.value); setError(""); }}
             disabled={busy} data-testid="input-signup-email" />
         </div>
       </div>
@@ -78,7 +86,7 @@ export function SubscriptionSignup() {
         <button type="submit" value="skip" disabled={busy || !consent}
           data-testid="button-signup-skip">{busy ? "Saving…" : "Skip preferences"}</button>
       </div>
-      {error && <p role="alert">{error}</p>}
+      {error && <p id="signup-error" ref={errorRef} role="alert" tabIndex={-1}>{error}</p>}
       <p className="hetv-signup-footnote">We are collecting interest, not sending automated marketing emails or opportunity alerts. Signing up does not send an email. Read our <Link href="/privacy">Privacy Notice</Link>. For later changes or unsubscribe requests, <a href="mailto:opportunities@baileyopportunities.com">contact HETV staff</a>.</p>
     </form>
   );
