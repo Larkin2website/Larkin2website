@@ -426,6 +426,10 @@
   min-height: 100svh;
   padding: clamp(90px, 12vh, 140px) clamp(28px, 5vw, 92px);
 }
+.larkin2-split-about {
+  background: var(--paper);
+  color: var(--ink);
+}
 .larkin2-split-image {
   position: sticky;
   top: 0;
@@ -451,6 +455,8 @@
   max-width: 590px;
   color: #e9e5df;
 }
+.larkin2-split-about .larkin2-title { color: var(--ink); }
+.larkin2-split-about .larkin2-copy { color: var(--secondary); }
 .larkin2-split-section .larkin2-copy p + p { margin-top: 24px; }
 .larkin2-culture-heading {
   margin: 0 0 22px;

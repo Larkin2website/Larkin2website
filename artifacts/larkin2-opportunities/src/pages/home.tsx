@@ -415,17 +415,21 @@ export function Home() {
             <img src="/larkin2-opportunities/images/production-culture.webp" alt="" loading="lazy" />
           </div>
           <div className="larkin2-split-content">
-            <div className="larkin2-split-panel larkin2-reveal" data-reveal>
-              <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>About Us</span></span></h2>
-              <div className="larkin2-copy">
-                <p>Through this platform we provide opportunities to apply for full-time crew roles, HETV work experience, specific skills training, bespoke shadowing programs or simply to join our talent pool. All of these possibilities are advertised on this platform.</p>
-                <p>Please sign up to HETV Opportunities Hub to keep updated</p>
+            <div className="larkin2-split-panel larkin2-split-about">
+              <div className="larkin2-reveal" data-reveal>
+                <h2 className="larkin2-title" id="about-title"><span className="larkin2-mask"><span>About Us</span></span></h2>
+                <div className="larkin2-copy">
+                  <p>Through this platform we provide opportunities to apply for full-time crew roles, HETV work experience, specific skills training, bespoke shadowing programs or simply to join our talent pool. All of these possibilities are advertised on this platform.</p>
+                  <p>Please sign up to HETV Opportunities Hub to keep updated</p>
+                </div>
               </div>
             </div>
-            <div className="larkin2-split-panel larkin2-reveal" data-reveal>
-              <h3 className="larkin2-culture-heading" id="production-culture">Production Culture Statement</h3>
-              <div className="larkin2-copy">
-                <p>Explore roles, work experience, training and development opportunities on Larkin 2, whether you’re new to HETV or an experienced crew member. We’re committed to increasing the awareness and opportunities on our productions through fair, inclusive recruitment and a respectful, supportive production culture, in the process creating opportunities for people at every level from every background.</p>
+            <div className="larkin2-split-panel">
+              <div className="larkin2-reveal" data-reveal>
+                <h3 className="larkin2-culture-heading" id="production-culture">Production Culture Statement</h3>
+                <div className="larkin2-copy">
+                  <p>Explore roles, work experience, training and development opportunities on Larkin 2, whether you’re new to HETV or an experienced crew member. We’re committed to increasing the awareness and opportunities on our productions through fair, inclusive recruitment and a respectful, supportive production culture, in the process creating opportunities for people at every level from every background.</p>
+                </div>
               </div>
             </div>
           </div>
