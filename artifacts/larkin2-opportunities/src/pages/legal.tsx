@@ -180,18 +180,18 @@ export function TermsPage() {
     >
       <p className="legal-updated">Last updated: [DATE]</p>
       <Section number={1} title="Introduction">
-        <p>Welcome to this website (the <strong>Website</strong>).</p>
+        <p>Welcome to our website, [URL] (the <strong>Website</strong>).</p>
         <p>These terms and conditions (the <strong>Terms</strong>) explain the rules for using the Website. Please read them carefully before using the Website. By accessing or using the Website, you confirm that you accept these Terms and agree to follow them. If you do not agree, please do not use the Website.</p>
       </Section>
       <Section number={2} title="About us">
-        <p>The Website is operated by Larkin AV Limited whose registered office is at 21 Poland Street, Third Floor, London, England, W1F 8QG (the <strong>Company</strong>, <strong>we</strong>, <strong>us</strong> or <strong>our</strong>). The Company is responsible for producing [Larkin 2] (the <strong>Production</strong>).</p>
+        <p>The Website is operated by Larkin AV Limited together with Bailey Productions Limited whose registered offices are at 21 Poland Street, Third Floor, London, England, W1F 8QG (together, the <strong>Companies</strong>, <strong>we</strong>, <strong>us</strong> or <strong>our</strong> and each a <strong>Company</strong>). Larkin AV Limited is responsible for producing the audio-visual programme provisionally entitled “Larkin” and Bailey Productions Limited is responsible for producing the audio-visual programme provisionally entitled “Bailey” (together, the <strong>Productions</strong> and each a <strong>Production</strong>).</p>
       </Section>
       <Section number={3} title="About the Website">
         <p>The Website provides functionality enabling users (<strong>you</strong>, <strong>your</strong>) to:</p>
-        <ol><li>browse and apply for job opportunities relating to the Production;</li><li>browse and apply for training opportunities relating to the Production and/or other training opportunities; and</li><li>sign up to our mailing list to receive updates.</li></ol>
+        <ol><li>browse and apply for job opportunities relating to the Productions;</li><li>browse and apply for training opportunities relating to the Productions and/or other training opportunities; and</li><li>sign up to the Companies’ (respective) mailing list to receive updates.</li></ol>
         <p>To access the main features of the Website, you will need to create an account and log in (see Section 5 below for more information).</p>
         <p>When applying for roles or training opportunities, you may be redirected to an external application form (hosted by Airtable) to complete and submit outside of the Website.</p>
-        <p>All job and training opportunities are posted and managed by or on behalf of the Company; and all hiring, acceptance, and other decisions are made solely by or on behalf of the Company.</p>
+        <p>All job and training opportunities, respective to the relevant Production, are posted and managed by or on behalf of the Companies; and all hiring, acceptance, and other decisions are made solely by or on behalf of the relevant Company.</p>
       </Section>
       <Section number={4} title="Who can use the Website">
         <p>The Website is designed for individuals working in, or looking to enter, the television and film production industry who are interested in job or training opportunities.</p>
@@ -199,7 +199,7 @@ export function TermsPage() {
         <p>If you are using the Website on behalf of an organisation, you confirm that you have the authority to bind that organisation to these Terms, and references to <strong>you</strong> and <strong>your</strong> in these Terms include that organisation.</p>
       </Section>
       <Section number={5} title="Your account">
-        <p>To access the main features of the Website, and in particular to apply for any roles or training opportunities, you will need to register for an account. For information about how we process your personal data in connection with your account, please see our <Link href="/privacy">Privacy Notice</Link>.</p>
+        <p>To access the main features of the Website, and in particular to apply for any roles or training opportunities, you will need to register for an account. For information about how we process your personal data in connection with your account, please see the Privacy Notice [LINK].</p>
         <p>If you create an account with us, you are responsible for keeping your login details secure and confidential. You must not share your account, or account details, with others.</p>
         <p>You agree to provide accurate and up-to-date information when creating your account and when applying for opportunities. If any of your details change, please update them promptly.</p>
         <p>We reserve the right to suspend or terminate your account at any time if we reasonably believe you have breached these Terms.</p>
@@ -214,18 +214,18 @@ export function TermsPage() {
         <p>Given the nature of audiovisual production, roles may need to be filled urgently and at very short notice (for example, where there is a last-minute need for particular crew members).</p>
         <p>We reserve the right, without liability, to:</p>
         <ol><li>withdraw any job or training opportunity at any time without notice;</li><li>amend role descriptions or training opportunity details at any time, including (but without limitation) where the scope of a role evolves as the Production progresses or for creative or other reasons; and</li><li>accept or decline any application at our sole discretion.</li></ol>
-        <p>We do not guarantee that any particular opportunity will remain available or that you will be offered a role or training place.</p>
+        <p>We do not guarantee that any particular opportunity will remain available on the relevant Production nor that you will be offered a role or training place.</p>
       </Section>
       <Section number={8} title="Vetting and moderation">
         <p>We reserve the right – but do not commit and are not obliged – to monitor, review, and/or moderate use of the Website and any applications submitted through it. This may include reviewing application materials, verifying information provided, and taking such other steps as we consider appropriate.</p>
         <p>We may remove or reject any content or application that we consider, in our sole but reasonable opinion, to be inappropriate, inaccurate, or in breach of these Terms.</p>
       </Section>
       <Section number={9} title="Intellectual property">
-        <p>The Company owns (or has the right to use) all intellectual property rights in and to the Website and its content, including but not limited to text, graphics, logos, images, software, and design elements. All such rights are reserved.</p>
+        <p>Each of the Companies owns (or has the right to use) all intellectual property rights in and to the Website and its content, including but not limited to text, graphics, logos, images, software, and design elements. All such rights are reserved.</p>
         <p>You may view, download, and print content from the Website for your personal, non-commercial use only. You must not otherwise reproduce, distribute, modify, or use any content from the Website without our prior written consent.</p>
       </Section>
       <Section number={10} title="Limitation of liability">
-        <p>We provide the Website on an “as is” basis. While we take reasonable care to ensure the information on the Website is accurate, we do not warrant that the Website, or any content on it, will be error-free, uninterrupted, or free from viruses or other harmful elements.</p>
+        <p>The Companies provide the Website on an “as is” basis. While we take reasonable care to ensure the information on the Website is accurate, we do not warrant that the Website, or any content on it, will be error-free, uninterrupted, or free from viruses or other harmful elements.</p>
         <p>To the fullest extent permitted by law:</p>
         <ol><li>we exclude all implied warranties, conditions, and representations;</li><li>we will not be liable for any indirect, consequential, or special loss or damage arising from your use of the Website;</li><li>we will not be liable for any loss arising from: (i) your reliance on any information or content on the Website; (ii) any decision made by us in relation to job or training applications; (iii) any failure to secure a role or training place; or (iv) the unavailability of the Website for any reason; and</li><li>to the extent permitted by law, we exclude all other liability to you in connection with your use of the Website.</li></ol>
         <p>Nothing in these Terms excludes or limits our liability for death or personal injury caused by our negligence, for fraud or fraudulent misrepresentation, or for any other liability that cannot be excluded or limited by law.</p>
@@ -234,7 +234,7 @@ export function TermsPage() {
         <p>The Website may contain links to external websites or services (including, but without limitation, Airtable for role application forms). We are not responsible for the content, privacy or other practices, or availability of any external sites or services. Your use of any external sites is at your own risk and subject to their terms and conditions.</p>
       </Section>
       <Section number={12} title="Your privacy">
-        <p>We take your privacy seriously. For information about how we collect, use, and protect your personal data, please see our <Link href="/privacy">Privacy Notice</Link>.</p>
+        <p>We take your privacy seriously. For information about how we collect, use, and protect your personal data, please see the Privacy Notice [LINK].</p>
       </Section>
       <Section number={13} title="Changes to these Terms">
         <p>We may update these Terms from time to time. Any changes will be posted on this page with an updated date. We encourage you to review these Terms periodically. Your continued use of the Website after any changes constitutes your acceptance of the updated Terms.</p>
@@ -242,7 +242,7 @@ export function TermsPage() {
       <Section number={14} title="General">
         <p>If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will continue in full force and effect.</p>
         <p>Our failure to enforce any right or provision of these Terms does not constitute a waiver of that right or provision.</p>
-        <p>These Terms constitute the entire agreement between you and the Company regarding your use of the Website.</p>
+        <p>These Terms constitute the entire agreement between you and the Companies regarding your use of the Website.</p>
         <p>These Terms are personal to you and you may not transfer or assign any of your rights or obligations under these Terms without our prior written consent. We may transfer or assign our rights and obligations under these Terms at any time without notice to you.</p>
         <p>These Terms do not create any rights enforceable by any person who is not a party to them under the Contracts (Rights of Third Parties) Act 1999.</p>
         <p>We will not be liable for any failure or delay in performing our obligations under these Terms where such failure or delay results from circumstances beyond our reasonable control.</p>
@@ -251,7 +251,7 @@ export function TermsPage() {
         <p>These Terms are governed by the laws of England and Wales. Any disputes arising from or in connection with these Terms or your use of the Website shall be subject to the exclusive jurisdiction of the courts of England and Wales.</p>
       </Section>
       <Section number={16} title="Contact us">
-        <p>If you have any questions about these Terms or the Website, please contact us at <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>.</p>
+        <p>If you have any questions about these Terms or the Website, please contact us at [CONTACT EMAIL ADDRESS].</p>
       </Section>
     </LegalPage>
   );
