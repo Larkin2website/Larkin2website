@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { SiteFooter } from "./layout";
+import { scrollPageTo } from "../utils/smooth-scroll";
 
 /** Keeps the homepage footer stationary as the FAQ section scrolls off it. */
 export function HomeFooterReveal() {
@@ -48,10 +49,7 @@ export function HomeFooterReveal() {
     const bottom = spacer.getBoundingClientRect().bottom;
     if (bottom > window.innerHeight) {
       // Keyboard navigation should reveal the footer before focusing its links.
-      window.scrollTo({
-        top: window.scrollY + bottom - window.innerHeight,
-        behavior: "instant",
-      });
+      scrollPageTo(window.scrollY + bottom - window.innerHeight, "instant");
     }
   };
 

@@ -1,3 +1,5 @@
+import { scrollPageTo } from "./smooth-scroll";
+
 export function programmeRouteForHash(pathname: string, hash: string) {
   if (pathname !== "/" && pathname !== "") return undefined;
   let id: string;
@@ -9,12 +11,8 @@ export function programmeRouteForHash(pathname: string, hash: string) {
 }
 
 export function scrollToHash(hash: string) {
-  const behavior: ScrollBehavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ? "auto"
-    : "smooth";
-
   if (!hash) {
-    window.scrollTo({ top: 0, behavior });
+    scrollPageTo(0);
     return;
   }
   
@@ -35,10 +33,7 @@ export function scrollToHash(hash: string) {
       const rect = target.getBoundingClientRect();
       const targetPosition = rect.top + window.scrollY;
       
-      window.scrollTo({
-        top: Math.max(0, targetPosition - headerHeight - 16),
-        behavior
-      });
+      scrollPageTo(Math.max(0, targetPosition - headerHeight - 16));
     }, 50);
   });
 }

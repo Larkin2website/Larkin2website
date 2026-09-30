@@ -34,7 +34,7 @@ test("legacy redirects replace the history entry and do not discard search param
   assert.ok(app.includes("navigate(`${programmeRoute}${window.location.search}`, { replace: true })"));
   assert.ok(app.includes('addEventListener("hashchange", handleHash)'));
   assert.ok(app.includes('addEventListener("popstate", handleHash)'));
-  assert.ok(app.includes('behavior: "instant"'));
+  assert.ok(app.includes('scrollPageTo(0, "instant")'));
 });
 
 test("overview pages retain the original guidance, programme links and truthful status", () => {

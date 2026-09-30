@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import "./index.css";
 import "./paper-orange.css";
 import { programmeRouteForHash, scrollToHash } from "./utils/navigation";
+import { scrollPageTo, startSmoothScroll } from "./utils/smooth-scroll";
 
 import { Home } from "./pages/home";
 import { RolesPage } from "./pages/roles";
@@ -26,6 +27,8 @@ const queryClient = new QueryClient();
 function ScrollManager() {
   const [location, navigate] = useLocation();
 
+  useEffect(() => startSmoothScroll(), []);
+
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash;
@@ -39,7 +42,7 @@ function ScrollManager() {
       if (hash) {
         scrollToHash(hash);
       } else {
-        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        scrollPageTo(0, "instant");
       }
     };
 

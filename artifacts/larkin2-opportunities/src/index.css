@@ -70,7 +70,7 @@
 
 @layer base {
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; background: #f8faf8; }
+  html { scroll-behavior: auto; background: #f8faf8; }
   body {
     margin: 0;
     background: hsl(var(--background));

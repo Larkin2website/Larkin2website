@@ -16,3 +16,4 @@
 - [Publish-time code synchronization](publish-time-code-synchronization.md) — Recheck changed files and typecheck after a user publishes during an assigned task; concurrent synchronization can alter previously verified code.
 - [Manual artifact builds](manual-artifact-builds.md) — A shell build may lack the route and port settings injected into managed artifact workflows; provide both for local build checks.
 - [Responsive CSS assertions](responsive-css-assertions.md) — Static CSS tests must distinguish base rules from media overrides and resolve color tokens before contrast calculations.
+- [Workspace package installs](workspace-package-installs.md) — Package helper installs at the monorepo root; use a filtered pnpm command when adding a dependency to one artifact.

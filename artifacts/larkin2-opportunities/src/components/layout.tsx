@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { scrollToHash } from "../utils/navigation";
+import { pausePageScroll, resumePageScroll } from "../utils/smooth-scroll";
 
 export function MaskedLink({ href, children, className = "", testId, onClick, target, rel }: any) {
   const [location] = useLocation();
@@ -129,6 +130,13 @@ export function SiteFooter() {
     if (href.startsWith("/")) {
       return <Link href={href} data-testid={testId}>{children}</Link>;
     }
+    if (href.startsWith("#")) {
+      return <a href={href} data-testid={testId} onClick={(event) => {
+        event.preventDefault();
+        history.pushState(null, "", href);
+        scrollToHash(href);
+      }}>{children}</a>;
+    }
     return <a href={href} data-testid={testId}>{children}</a>;
   };
 
@@ -199,6 +207,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
 
     restoreFocusRef.current = true;
     lockedScrollY.current = window.scrollY;
+    pausePageScroll();
     document.body.style.position = "fixed";
     document.body.style.top = `-${lockedScrollY.current}px`;
     document.body.style.width = "100%";
@@ -231,7 +240,10 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
       document.body.style.top = "";
       document.body.style.width = "";
       document.body.style.overflow = "";
-      window.scrollTo(0, lockedScrollY.current);
+      // Restore the native viewport after removing body:fixed, then let Lenis
+      // reset its internal position from the restored scroll offset.
+      window.scrollTo({ top: lockedScrollY.current, behavior: "instant" });
+      resumePageScroll();
       document.removeEventListener("keydown", onKeyDown);
       if (restoreFocusRef.current && menuButtonRef?.current?.isConnected) menuButtonRef.current.focus();
     };
@@ -241,6 +253,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
     <aside
       ref={menuPanelRef}
       id="mobile-menu"
+      data-lenis-prevent
       className={`larkin2-mobile-menu ${menuOpen ? "is-open" : ""}`}
       aria-label="Mobile navigation"
       aria-hidden={!menuOpen}
