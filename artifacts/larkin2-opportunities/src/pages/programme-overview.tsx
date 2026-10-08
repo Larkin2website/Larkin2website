@@ -103,7 +103,7 @@ export function TrainingPage() {
           </div>
           <TrainingListings />
           <div className="previous-programmes">
-            <MaskedLink href="/development#previous-programmes" testId="link-training-previous">Explore previous development programmes</MaskedLink>
+            <MaskedLink href="/development#previous-programmes" className="larkin2-btn development-archive-button" testId="link-training-previous">Explore previous development programmes</MaskedLink>
           </div>
         </section>
       </main>

@@ -39,6 +39,7 @@ test("legacy redirects replace the history entry and do not discard search param
 
 test("overview pages retain the original guidance, programme links and truthful status", () => {
   const pages = read("../pages/programme-overview.tsx");
+  assert.ok(pages.includes('href="/development#previous-programmes" className="larkin2-btn development-archive-button" testId="link-training-previous"'));
   for (const text of [
     "Helping you build the skills and knowledge you need to work confidently and effectively on production and beyond.",
     "Providing structured opportunities that support development at different career stages.",

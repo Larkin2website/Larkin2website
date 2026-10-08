@@ -10,8 +10,8 @@ Do not use thick black, grey, or accent-coloured bars across the top of Larkin2 
 **How to apply:** Create hierarchy with typography, spacing, background tone, status dots, badges, or subtle consistent one-pixel borders instead. Keep thin functional dividers where they clarify structure.
 
 Use the standard button design for programme and course card detail links,
-and the “Explore all closed programme records” action, not a separate plain-text
-link treatment.
+and the “Explore all closed programme records” and “Explore previous development
+programmes” actions, not a separate plain-text link treatment.
 
 **Why:** The user explicitly requested the standard design for both course
 detail links and programme detail links.
