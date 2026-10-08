@@ -148,12 +148,14 @@ export function OpportunityPage({ id }: { id: string }) {
             <aside className="opp-sidebar">
               <div className="opp-status-card">
                   <h2>{statusHeading}</h2>
-                   <p>{course && canApply ? "Course registration is handled by an external provider and is separate from registering interest in the hub." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
+                   <p>{course && canApply ? "Register using the course provider’s form. Hub signup is separate and does not register you for this course. Email alerts are not currently enabled." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
                    {course && reg.state === "unconfirmed" && <p>We cannot confirm that registration is still open, so no registration link is offered.</p>}
-                   {canApply && (
-                     <a href={displayOpp.applicationUrl ?? undefined} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>{course ? "Register with the course provider" : "Apply now"}</a>
-                 )}
-                   <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>
+                   <div className="opp-status-actions">
+                     {canApply && (
+                       <MaskedLink href={displayOpp.applicationUrl} className="larkin2-btn" testId="link-opp-apply" onClick={trackApply}>{course ? "Register for this course" : "Apply now"}</MaskedLink>
+                     )}
+                     <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-opp-signup">{course ? "Future opportunity updates" : "Register interest"}</MaskedLink>
+                   </div>
               </div>
             </aside>
             

@@ -2634,6 +2634,23 @@
   justify-content: center;
 }
 
+.opp-status-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.opp-status-actions .larkin2-link-label {
+  min-width: 0;
+  height: auto;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.opp-status-actions .larkin2-link-arrow {
+  flex-shrink: 0;
+}
+
 .opp-main {
   display: flex;
   flex-direction: column;
