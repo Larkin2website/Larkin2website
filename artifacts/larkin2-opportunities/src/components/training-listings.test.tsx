@@ -4,7 +4,7 @@ import { TrainingListings } from "./training-listings";
 
 const api = vi.hoisted(() => ({ useListPublicProgrammes: vi.fn() }));
 vi.mock("@workspace/api-client-react", () => ({ getListPublicProgrammesQueryKey: () => ["p"], ...api }));
-vi.mock("./layout", () => ({ MaskedLink: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a> }));
+vi.mock("./layout", () => ({ MaskedLink: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => <a href={href} className={className}>{children}</a> }));
 afterEach(cleanup);
 
 const base = { category: "training", shortDescription: "d", applicationDeadline: null };
@@ -46,6 +46,10 @@ describe("training listings", () => {
     expect(screen.getByTestId("training-closed")).toHaveTextContent("Old course");
     expect(screen.getByTestId("training-closed")).toHaveTextContent("First Credit Work Experience");
     expect(screen.getByRole("link", { name: "View First Credit Programme" })).toHaveAttribute("href", "/opportunities/first-credit");
+    expect(screen.getByRole("link", { name: "View First Credit Programme" })).toHaveClass("larkin2-btn");
+    for (const link of screen.getAllByRole("link", { name: "View course details" })) {
+      expect(link).toHaveClass("larkin2-btn");
+    }
     expect(screen.getByTestId("training-open")).not.toHaveTextContent("First Credit");
     expect(screen.getByTestId("training-open").compareDocumentPosition(screen.getByTestId("training-closed")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByTestId("training-open").compareDocumentPosition(screen.getByTestId("training-unconfirmed")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

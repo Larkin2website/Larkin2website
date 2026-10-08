@@ -21,7 +21,7 @@ export function TrainingListings() {
         <h3>{course.title}</h3>
         <p>{course.shortDescription}</p>
         {course.applicationDeadline && <p className="larkin2-small">Deadline: {course.applicationDeadline}</p>}
-        <MaskedLink href={`/opportunities/${course.slug}`} testId={`link-opp-${course.slug}`}>
+        <MaskedLink href={`/opportunities/${course.slug}`} className="larkin2-btn" testId={`link-opp-${course.slug}`}>
           {isTraining(course) ? "View course details" : "View First Credit Programme"}
         </MaskedLink>
       </article>

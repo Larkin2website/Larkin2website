@@ -17,6 +17,14 @@ try {
     assert.equal(await page.locator("main").getByText(/Registration status unconfirmed/i).count(), 0);
     assert.equal(await page.locator("main").getByText(/registration deadline for these courses cannot be confirmed/i).count(), 0);
     assert.equal(await page.locator(".training-overview-section h3").count(), 7);
+    assert.equal(await page.locator(".training-overview-section .hetv-programme-item > a.larkin2-btn").count(), 7);
+    assert.equal(await page.locator(".training-overview-section .hetv-programme-item > a").evaluateAll(links => links.every(link => {
+      const style = getComputedStyle(link);
+      return style.textDecorationLine === "none"
+        && parseFloat(style.borderRadius) >= 100
+        && link.getBoundingClientRect().height >= 46
+        && style.backgroundColor !== "rgba(0, 0, 0, 0)";
+    })), true);
     assert.equal(await page.locator(".training-course-group").first().getAttribute("data-testid"), "training-open");
     assert.equal(await page.locator("[data-testid=training-open]").getByRole("heading", { name: "First Credit Work Experience", exact: true }).count(), 0);
     assert.equal(await page.locator("[data-testid=training-closed]").getByRole("heading", { name: "First Credit Work Experience", exact: true }).count(), 1);

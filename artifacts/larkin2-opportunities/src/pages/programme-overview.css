@@ -62,10 +62,6 @@
 
 .training-overview-section .hetv-programme-item > a {
   margin-top: auto;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  font-weight: 500;
-  line-height: 1.5;
 }
 
 .training-overview-section .training-course-group {
@@ -139,4 +135,9 @@
 
 .previous-programmes .hetv-programme-item h3 {
   font-size: clamp(1.3rem, 2vw, 1.8rem);
+}
+
+/* Keep listing cards separated from their section heading or introduction. */
+:is(.opp-index-page, .programme-overview-page) :is(h2, p) + :is(.opp-list, .hetv-programme-list) {
+  margin-top: 32px;
 }
