@@ -15,7 +15,7 @@ export function TrainingListings() {
     const reg = programmeRegistration(course, now);
     return (
       <article className="hetv-programme-item" key={course.id}>
-        <div className={`programme-status-badge ${reg.state === "open" ? "is-open" : "is-closed"}`}>{reg.label}</div>
+        {reg.state !== "unconfirmed" && <div className={`programme-status-badge ${reg.state === "open" ? "is-open" : "is-closed"}`}>{reg.label}</div>}
         <h3>{course.title}</h3>
         <p>{course.shortDescription}</p>
         {course.applicationDeadline && <p className="larkin2-small">Deadline: {course.applicationDeadline}</p>}
@@ -25,20 +25,21 @@ export function TrainingListings() {
   });
   return (
     <>
-      <h2>Courses open for registration</h2>
-      <div className="hetv-programme-list" data-testid="training-open">
-        {open.length ? cards(open) : <p>No training courses are currently open for registration.</p>}
-      </div>
+      <section className="training-course-group" aria-labelledby="training-open-title" data-testid="training-open">
+        <h2 id="training-open-title">Courses open for registration</h2>
+        <div className="hetv-programme-list">
+          {open.length ? cards(open) : <p>No training courses are currently open for registration.</p>}
+        </div>
+      </section>
       {unconfirmed.length > 0 && (
-        <section aria-labelledby="training-unconfirmed-title" data-testid="training-unconfirmed">
-          <h2 id="training-unconfirmed-title">Registration status unconfirmed</h2>
-          <p>The registration deadline for these courses cannot be confirmed. Registration is not offered from this site; check the original course information.</p>
+        <section className="training-course-group" aria-labelledby="training-more-title" data-testid="training-unconfirmed">
+          <h2 id="training-more-title">More training courses</h2>
           <div className="hetv-programme-list">{cards(unconfirmed)}</div>
         </section>
       )}
-      <section aria-labelledby="training-previous-title" data-testid="training-closed">
+      <section className="training-course-group" aria-labelledby="training-previous-title" data-testid="training-closed">
         <h2 id="training-previous-title">Previous and closed courses</h2>
-        <p>Registration for these courses is closed. This does not confirm that a course has been delivered.</p>
+        <p>Registration for these courses is closed. </p>
         <div className="hetv-programme-list">{closed.length ? cards(closed) : <p>No closed training courses are currently listed.</p>}</div>
       </section>
     </>

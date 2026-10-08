@@ -22,3 +22,4 @@
 - [Preview root paths](preview-root-paths.md) — Visit path-routed artifact roots with a trailing slash; the bare prefix can reach a non-app route.
 - [Date-only API contracts](date-only-contracts.md) — Generated date formats coerce strings to Date; preserve editorial dates without invented timestamps.
 - [Programme imagery](programme-imagery.md) — The user does not want images for programmes; keep programme/course presentation text-only.
+- [Training status presentation](training-status-presentation.md) — Hide unconfirmed-status notices on the training overview without enabling unverified registration.

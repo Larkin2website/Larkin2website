@@ -38,6 +38,10 @@ describe("training listings", () => {
     render(<TrainingListings />);
     expect(screen.getByTestId("training-open")).toHaveTextContent("Open course");
     expect(screen.getByTestId("training-unconfirmed")).toHaveTextContent("Unknown course");
+    expect(screen.getByRole("heading", { name: "More training courses" })).toBeInTheDocument();
+    expect(screen.queryByText(/Registration status unconfirmed/i)).toBeNull();
+    expect(screen.queryByText(/registration deadline for these courses cannot be confirmed/i)).toBeNull();
+    expect(screen.getByTestId("training-unconfirmed").querySelector(".programme-status-badge")).toBeNull();
     expect(screen.getByTestId("training-closed")).toHaveTextContent("Old course");
     expect(screen.queryByText("Draft course")).toBeNull();
     expect(screen.queryByText("Dev")).toBeNull();

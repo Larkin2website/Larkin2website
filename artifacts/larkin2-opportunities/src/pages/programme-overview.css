@@ -14,6 +14,84 @@
   padding-bottom: 8rem;
 }
 
+/* Training is a normal document layout, not the homepage carousel section. */
+.training-overview-section {
+  background: var(--stage);
+}
+
+.training-overview-section .programme-overview-intro {
+  max-width: 780px;
+  margin-bottom: clamp(32px, 5vw, 56px);
+}
+
+.training-overview-section .larkin2-title {
+  margin-top: 0;
+}
+
+.training-overview-section .hetv-programme-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+.training-overview-section .hetv-programme-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: clamp(24px, 3vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  overflow-wrap: anywhere;
+}
+
+.training-overview-section .hetv-programme-item :is(h2, h3) {
+  margin: 0 0 16px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(24px, 2.5vw, 32px);
+  font-weight: 400;
+  letter-spacing: -.04em;
+  line-height: 1.15;
+}
+
+.training-overview-section .hetv-programme-item p {
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.training-overview-section .hetv-programme-item > a {
+  margin-top: auto;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.training-overview-section .training-course-group {
+  margin-top: clamp(40px, 5vw, 64px);
+}
+
+.training-overview-section .training-course-group > h2 {
+  margin: 0 0 20px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.training-overview-section .training-course-group > p {
+  max-width: 65ch;
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+@media (min-width: 900px) {
+  .training-overview-section [data-testid="training-closed"] .hetv-programme-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .programme-overview-page {
     padding-top: 70px;

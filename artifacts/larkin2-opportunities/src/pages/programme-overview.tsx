@@ -97,7 +97,7 @@ export function TrainingPage() {
       />
 
       <main id="content">
-        <section className="larkin2-section larkin2-commit programme-overview-section" aria-labelledby="training-title">
+        <section className="larkin2-section programme-overview-section training-overview-section" aria-labelledby="training-title">
           <div className="programme-overview-intro">
             <h1 className="larkin2-title" id="training-title">Training Courses</h1>
             <p className="larkin2-copy">Helping you build the skills and knowledge you need to work confidently and effectively on production and beyond.</p>
