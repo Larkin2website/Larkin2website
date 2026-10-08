@@ -14,7 +14,7 @@ export function DevelopmentListings() {
       <div className={`programme-status-badge ${closed ? "is-closed" : "is-open"}`}>Applications {closed ? "closed" : "open"}</div>
       <h3>{programme.title}</h3>
       <p>{programme.shortDescription}</p>
-      <MaskedLink href={`/opportunities/${programme.slug}`} testId={`link-opp-${programme.slug}`}>View programme details</MaskedLink>
+      <MaskedLink href={`/opportunities/${programme.slug}`} className="larkin2-btn" testId={`link-opp-${programme.slug}`}>View programme details</MaskedLink>
     </article>
   ));
   return (

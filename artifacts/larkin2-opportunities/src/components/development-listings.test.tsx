@@ -8,7 +8,7 @@ vi.mock("@workspace/api-client-react", () => ({
   ...api,
 }));
 vi.mock("./layout", () => ({
-  MaskedLink: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a>,
+  MaskedLink: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => <a href={href} className={className}>{children}</a>,
 }));
 afterEach(cleanup);
 beforeEach(() => api.useListPublicProgrammes.mockReturnValue({ data: [], isLoading: false, isError: false }));
@@ -40,6 +40,7 @@ describe("development programme archive", () => {
     expect(screen.getByText("Applications open")).toBeInTheDocument();
     const links = screen.getAllByRole("link", { name: "View programme details" });
     expect(links.map((link) => link.getAttribute("href"))).toEqual(["/opportunities/producer-pathway", "/opportunities/director-pathway"]);
+    links.forEach(link => expect(link).toHaveClass("larkin2-btn"));
     expect(screen.queryByText("Training programme")).not.toBeInTheDocument();
     expect(screen.queryByText(/Private/)).not.toBeInTheDocument();
     expect(screen.queryByText(/does not confirm that a programme has been delivered/)).not.toBeInTheDocument();
