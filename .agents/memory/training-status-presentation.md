@@ -1,6 +1,6 @@
 ---
-name: Training status presentation
-description: The user's direction to remove unconfirmed-status notices from the Training Courses overview.
+name: Programme overview status presentation
+description: User direction on status notices and course ordering on Training Courses and Opportunities overview pages.
 ---
 
 Do not display an unconfirmed-registration notice or badge on the Training
@@ -21,3 +21,14 @@ closed and belongs in the closed section, not a separate card above open courses
 **How to apply:** Group First Credit with the courses using its live registration
 status rather than an independently positioned static card; recheck its status if
 it changes in future.
+
+Apply the same neutral treatment to unconfirmed listings on the Opportunities
+overview: keep the real listing visible without an unconfirmed-status heading,
+explanation or status label. Remove the notices about closed application windows
+not confirming delivery from public programme listings.
+
+**Why:** The user explicitly requested these notice removals on the Opportunities
+page after the Training Courses changes.
+
+**How to apply:** These requests concern overview presentation; retain registration
+safety and do not relabel unverified courses as open or closed.

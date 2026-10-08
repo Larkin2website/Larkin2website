@@ -66,25 +66,26 @@ describe("development sample listings", () => {
     expect(api.recordPublicEngagement).not.toHaveBeenCalled();
   });
 
-  it("links from opportunities to an example programme and renders its detail without apply actions", () => {
+  it("removes the example programme from the list and lets its former detail route return Not Found", () => {
     const { unmount, container } = render(<OpportunitiesIndexPage />);
     expect(container.querySelector("main img, .opp-card-media")).toBeNull();
-    expect(screen.getByText("EXAMPLE ONLY")).toBeInTheDocument();
-    expect(screen.getByTestId("link-opp-sample-round-2-programme")).toHaveAttribute(
-      "href",
-      "/opportunities/sample-round-2-programme",
-    );
+    expect(screen.queryByText("EXAMPLE ONLY")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("link-opp-sample-round-2-programme")).not.toBeInTheDocument();
     unmount();
 
     api.useGetPublicProgramme.mockClear();
+    api.useGetPublicProgramme.mockReturnValueOnce(Object.assign(
+      { data: undefined, isLoading: false, isError: true },
+      { error: { status: 404 } },
+    ));
     const detail = render(<OpportunityPage id="sample-round-2-programme" />);
     expect(detail.container.querySelector("main img, .opp-hero-media")).toBeNull();
-    expect(screen.getByRole("heading", { name: "Example HETV development programme" })).toBeInTheDocument();
-    expect(screen.getByText("Example only — this sample programme is not accepting applications.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Page not found" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Example HETV development programme" })).not.toBeInTheDocument();
     expect(screen.queryByTestId("link-opp-apply")).not.toBeInTheDocument();
     expect(screen.queryByTestId("link-opp-signup")).not.toBeInTheDocument();
     expect(api.useGetPublicProgramme).toHaveBeenCalledWith("sample-round-2-programme", expect.objectContaining({
-      query: expect.objectContaining({ enabled: false }),
+      query: expect.not.objectContaining({ enabled: false }),
     }));
     expect(api.recordPublicEngagement).not.toHaveBeenCalled();
   });

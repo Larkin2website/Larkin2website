@@ -25,7 +25,7 @@ export function DevelopmentListings() {
       </div>
       <section className="previous-programmes" id="previous-programmes" aria-labelledby="previous-development-title">
         <h2 id="previous-development-title">Previous programmes</h2>
-        <p>These development programme application windows are closed. This does not confirm that a programme has been delivered.</p>
+        <p>These development programme application windows are closed.</p>
         <div className="hetv-programme-list">{previous.length ? cards(previous, true) : <p>No closed development programmes are currently listed.</p>}</div>
         <MaskedLink href="/opportunities#previous-programmes" testId="link-development-previous">Explore all closed programme records</MaskedLink>
       </section>

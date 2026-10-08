@@ -5,7 +5,6 @@ import {
   useGetPublicProgramme,
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
-import { SAMPLE_PROGRAMME, SAMPLE_PROGRAMME_SLUG } from "../data/sample-listings";
 import NotFound from "./not-found";
 import { ProgrammeContent } from "@workspace/programme-content";
 import { programmeRegistration } from "@workspace/programme-content/registration";
@@ -13,7 +12,6 @@ import { LIVE_QUERY_OPTIONS, developmentDetailContent, isTraining, useNow } from
 
 
 export function OpportunityPage({ id }: { id: string }) {
-  const isSample = import.meta.env.DEV && id === SAMPLE_PROGRAMME_SLUG;
   const {
     data: opp,
     isLoading: programmeLoading,
@@ -23,11 +21,10 @@ export function OpportunityPage({ id }: { id: string }) {
     query: {
       queryKey: getGetPublicProgrammeQueryKey(id),
       ...LIVE_QUERY_OPTIONS,
-      enabled: !isSample,
     },
   });
   const now = useNow();
-  const displayedProgramme = isSample ? SAMPLE_PROGRAMME : opp;
+  const displayedProgramme = opp;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -47,13 +44,13 @@ export function OpportunityPage({ id }: { id: string }) {
   }, [displayedProgramme]);
 
   useEffect(() => {
-    if (isSample || !opp || trackedViewId.current === opp.slug) return;
+    if (!opp || trackedViewId.current === opp.slug) return;
     trackedViewId.current = opp.slug;
     void recordPublicEngagement({ kind: "programme", id: opp.id, event: "view" }).catch(() => undefined);
-  }, [isSample, opp]);
+  }, [opp]);
 
   function trackApply() {
-    if (!isSample && opp) void recordPublicEngagement({ kind: "programme", id: opp.id, event: "apply" }).catch(() => undefined);
+    if (opp) void recordPublicEngagement({ kind: "programme", id: opp.id, event: "apply" }).catch(() => undefined);
   }
 
   useEffect(() => {
@@ -79,18 +76,18 @@ export function OpportunityPage({ id }: { id: string }) {
     && "status" in programmeError
     && programmeError.status === 404;
 
-  if (!isSample && isNotFound) return <NotFound />;
-  if (!isSample && programmeLoading) {
+  if (isNotFound) return <NotFound />;
+  if (programmeLoading) {
     return <div className="larkin2-page opp-page"><main id="content"><div className="opp-list-state" role="status" aria-live="polite">Loading opportunity…</div></main></div>;
   }
-  if (!isSample && (programmeFailed || !opp)) {
+  if (programmeFailed || !opp) {
     return <div className="larkin2-page opp-page"><main id="content"><div className="opp-list-state" role="alert">We couldn’t load this opportunity right now. Please refresh the page and try again.</div></main></div>;
   }
 
   if (!displayedProgramme) return <NotFound />;
   const displayOpp = displayedProgramme;
   const course = isTraining(displayOpp);
-  const reg = isSample ? { state: "closed" as const, canApply: false, label: "Applications closed" } : programmeRegistration(displayOpp, now);
+  const reg = programmeRegistration(displayOpp, now);
   const canApply = reg.canApply && !!displayOpp.applicationUrl;
   const sectionGroups = (course ? [
     ["About the Course", displayOpp.about],
@@ -129,14 +126,13 @@ export function OpportunityPage({ id }: { id: string }) {
         <section className="opp-hero larkin2-section">
           <div className="opp-hero-grid">
              <div className="opp-hero-content">
-                 <div className="larkin2-eyebrow">{isSample ? "EXAMPLE ONLY" : `Pathway / ${displayOpp.num}`}</div>
-                 {isSample && <p className="roles-badge is-featured" role="note">EXAMPLE ONLY</p>}
+                 <div className="larkin2-eyebrow">Pathway / {displayOpp.num}</div>
                  <h1 className="opp-title">{displayOpp.title}</h1>
                  <p className="larkin2-intro">{displayOpp.shortDescription}</p>
                 <div className="opp-meta">
                    <div className="opp-meta-item">
                      <span>Status</span>
-                      <strong>{isSample ? displayOpp.applicationStatus : reg.label}</strong>
+                      <strong>{reg.label}</strong>
                    </div>
                    <div className="opp-meta-item">
                      <span>Location</span>
@@ -152,12 +148,12 @@ export function OpportunityPage({ id }: { id: string }) {
             <aside className="opp-sidebar">
               <div className="opp-status-card">
                   <h2>{statusHeading}</h2>
-                   <p>{isSample ? "Example only — this sample programme is not accepting applications." : course && canApply ? "Course registration is handled by an external provider and is separate from registering interest in the hub." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
-                   {course && !isSample && reg.state === "unconfirmed" && <p>We cannot confirm that registration is still open, so no registration link is offered.</p>}
-                   {!isSample && canApply && (
+                   <p>{course && canApply ? "Course registration is handled by an external provider and is separate from registering interest in the hub." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
+                   {course && reg.state === "unconfirmed" && <p>We cannot confirm that registration is still open, so no registration link is offered.</p>}
+                   {canApply && (
                      <a href={displayOpp.applicationUrl ?? undefined} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>{course ? "Register with the course provider" : "Apply now"}</a>
                  )}
-                   {!isSample && <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>}
+                   <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>
               </div>
             </aside>
             

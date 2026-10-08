@@ -42,7 +42,8 @@ describe("development programme archive", () => {
     expect(links.map((link) => link.getAttribute("href"))).toEqual(["/opportunities/producer-pathway", "/opportunities/director-pathway"]);
     expect(screen.queryByText("Training programme")).not.toBeInTheDocument();
     expect(screen.queryByText(/Private/)).not.toBeInTheDocument();
-    expect(screen.getByText(/does not confirm that a programme has been delivered/)).toBeInTheDocument();
+    expect(screen.queryByText(/does not confirm that a programme has been delivered/)).not.toBeInTheDocument();
+    expect(screen.getByText("These development programme application windows are closed.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Explore all closed programme records" })).toHaveAttribute("href", "/opportunities#previous-programmes");
   });
 });

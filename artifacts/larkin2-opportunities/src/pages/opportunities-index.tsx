@@ -4,7 +4,6 @@ import {
   useListPublicProgrammes,
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
-import { SAMPLE_PROGRAMME } from "../data/sample-listings";
 import { programmeRegistration } from "@workspace/programme-content/registration";
 import { LIVE_QUERY_OPTIONS, groupByRegistration, isTraining, useNow } from "../lib/programme-presentation";
 import "./programme-overview.css";
@@ -87,7 +86,7 @@ export function OpportunitiesIndexPage() {
         <h3 className="opp-card-title">{opp.title}</h3>
         <p className="opp-card-desc">{opp.shortDescription}</p>
         <div className="opp-card-meta">
-          <div className="opp-card-meta-item"><span>Status</span><strong>{programmeRegistration(opp, now).label}</strong></div>
+          {programmeRegistration(opp, now).state !== "unconfirmed" && <div className="opp-card-meta-item"><span>Status</span><strong>{programmeRegistration(opp, now).label}</strong></div>}
           {opp.applicationDeadline && <div className="opp-card-meta-item"><span>Deadline</span><strong>{opp.applicationDeadline}</strong></div>}
           <div className="opp-card-meta-item"><span>Location</span><strong>{opp.location}</strong></div>
         </div>
@@ -128,24 +127,6 @@ export function OpportunitiesIndexPage() {
         <section className="larkin2-section" style={{ borderTop: "none", paddingTop: 0 }}>
           <h2>Current programmes</h2>
           <div className="opp-list">
-            {import.meta.env.DEV && (
-              <article className="opp-card">
-                <div className="opp-card-content">
-                  <div className="larkin2-eyebrow">EXAMPLE ONLY</div>
-                  <h2 className="opp-card-title">{SAMPLE_PROGRAMME.cardTitle}</h2>
-                  <p className="opp-card-desc">{SAMPLE_PROGRAMME.cardCopy}</p>
-                  <div className="opp-card-meta">
-                    <div className="opp-card-meta-item"><span>Status</span><strong>{SAMPLE_PROGRAMME.applicationStatus}</strong></div>
-                    <div className="opp-card-meta-item"><span>Location</span><strong>{SAMPLE_PROGRAMME.location}</strong></div>
-                  </div>
-                  <div className="opp-card-action">
-                    <MaskedLink href={`/opportunities/${SAMPLE_PROGRAMME.slug}`} className="larkin2-btn" testId={`link-opp-${SAMPLE_PROGRAMME.slug}`}>
-                      View example programme
-                    </MaskedLink>
-                  </div>
-                </div>
-              </article>
-            )}
             {programmesLoading ? (
               <div className="opp-list-state" role="status" aria-live="polite">
                 Loading opportunities…
@@ -163,14 +144,13 @@ export function OpportunitiesIndexPage() {
         </section>
         {unconfirmed.length > 0 && (
           <section className="larkin2-section" id="unconfirmed-registration" aria-labelledby="unconfirmed-title" data-testid="section-unconfirmed">
-            <h2 id="unconfirmed-title">Registration status unconfirmed</h2>
-            <p>We cannot confirm whether registration is still open for these listings. Check the original information before acting.</p>
+            <h2 id="unconfirmed-title">More opportunities</h2>
             <div className="opp-list">{programmeCards(unconfirmed)}</div>
           </section>
         )}
         <section className="larkin2-section previous-programmes" id="previous-programmes" aria-labelledby="previous-programmes-title">
           <h2 id="previous-programmes-title">Previous programmes</h2>
-          <p>Explore programmes whose application windows are closed. A closed application window does not confirm that the programme has been delivered.</p>
+          <p>Explore programmes whose application windows are closed.</p>
           <div className="opp-list">
             {programmesLoading ? <p role="status">Loading previous programmes…</p>
               : programmesFailed ? <p role="alert">We couldn’t load previous programmes. Please refresh the page and try again.</p>
