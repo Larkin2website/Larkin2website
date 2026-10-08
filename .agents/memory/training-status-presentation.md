@@ -63,3 +63,9 @@ present on other pages.
 **How to apply:** Keep source references available internally for editorial
 verification, but omit them from public detail content without removing provider
 registration links or surrounding course information.
+
+Training-course listings are intended for the live public website, not just the workspace preview.
+
+**Why:** The user said “these should also be visible to the public,” referring to the course cards including Career Mapping Session.
+
+**How to apply:** Treat visibility on the live public site as part of delivering the training courses; preview visibility alone is not completion.
