@@ -45,10 +45,10 @@ export interface ProgrammeInput {
      */
   cardCta: string;
   /**
-     * @minLength 1
+     * Legacy media value, no longer displayed. Omission defaults to empty on creation and preserves the stored value on update.
      * @maxLength 500
      */
-  image: string;
+  image?: string;
   /**
      * @minLength 2
      * @maxLength 160

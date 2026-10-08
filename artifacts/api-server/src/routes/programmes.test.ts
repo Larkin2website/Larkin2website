@@ -7,6 +7,7 @@ import { can, permissionsForRole } from "../lib/permissions";
 import type { PortalActor } from "../lib/portal-auth";
 import { createProgrammesRouter } from "./programmes";
 import { CreatePortalProgrammeResponse, GetPublicProgrammeResponse } from "@workspace/api-zod";
+import { programmeFieldsForWrite } from "../lib/programme-service";
 
 const id = "11111111-1111-4111-8111-111111111111";
 const input = {
@@ -59,11 +60,15 @@ async function withServer(run: (base: string) => Promise<void>, calls: { create:
     createProgramme: async (body: any, actor: PortalActor) => {
       calls.create += 1;
       const now = new Date();
-      const row = { ...body, id, status: "draft", createdBy: actor.userId, updatedBy: actor.userId, createdAt: now, updatedAt: now, publishedAt: null, archivedAt: null };
+      const row = { ...body, ...programmeFieldsForWrite(body), id, status: "draft", createdBy: actor.userId, updatedBy: actor.userId, createdAt: now, updatedAt: now, publishedAt: null, archivedAt: null };
       state.set(id, row); return row;
     },
     getProgramme: async (programmeId: string) => state.get(programmeId),
-    updateProgramme: async () => undefined,
+    updateProgramme: async (programmeId: string, body: any) => {
+      const row = state.get(programmeId); if (!row) return undefined;
+      const updated = { ...row, ...programmeFieldsForWrite(body, row), sections: body.sections, updatedAt: new Date() };
+      state.set(programmeId, updated); return updated;
+    },
     transitionProgramme: async (programmeId: string, status: string) => {
       const row = state.get(programmeId); if (!row) return undefined;
       row.status = status; row.updatedAt = new Date(); return row;
@@ -100,4 +105,33 @@ test("programme routes validate, publish, close, archive, and restore lifecycle 
     assert.equal((await transition("draft")).status, 200);
     assert.equal((await fetch(`${base}/public/programmes/aa`)).status, 404);
   }, calls);
+});
+
+test("programme and training authoring accept missing or blank images and keep legacy edit values", async () => {
+  await withServer(async base => {
+    const { image: _, ...withoutImage } = input;
+    for (const category of ["programme", "training"]) {
+      for (const optionalImage of [{}, { image: "" }]) {
+        const response = await fetch(`${base}/portal/programmes`, {
+          method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ ...withoutImage, category, ...optionalImage }),
+        });
+        assert.equal(response.status, 201);
+        assert.equal(CreatePortalProgrammeResponse.parse(await response.json()).image, "");
+        await fetch(`${base}/portal/programmes/${id}/transition`, {
+          method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ status: "published" }),
+        });
+        const visible = GetPublicProgrammeResponse.parse(await (await fetch(`${base}/public/programmes/aa`)).json());
+        assert.equal(visible.image, "");
+      }
+      await fetch(`${base}/portal/programmes`, {
+        method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...input, category }),
+      });
+      const updated = await fetch(`${base}/portal/programmes/${id}`, {
+        method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...withoutImage, category }),
+      });
+      assert.equal(updated.status, 200);
+      assert.equal(CreatePortalProgrammeResponse.parse(await updated.json()).image, input.image);
+    }
+  }, { create: 0 });
 });

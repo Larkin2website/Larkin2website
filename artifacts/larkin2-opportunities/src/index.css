@@ -2522,13 +2522,12 @@
 
 .opp-hero-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(40px, 8vw, 120px);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .opp-hero-content {
-  max-width: 680px;
+  max-width: 960px;
+  min-width: 0;
 }
 
 .opp-hero-content .larkin2-eyebrow {
@@ -2578,23 +2577,6 @@
   color: var(--ink);
   font-size: 16px;
   font-weight: 400;
-}
-
-.opp-hero-media img {
-  width: 100%;
-  aspect-ratio: 4/5;
-  object-fit: cover;
-  border-radius: 2px;
-  filter: saturate(0.7) contrast(1.05);
-}
-
-@media (max-width: 900px) {
-  .opp-hero-grid {
-    grid-template-columns: 1fr;
-  }
-  .opp-hero-media img {
-    aspect-ratio: 16/9;
-  }
 }
 
 .opp-content {
@@ -3315,39 +3297,16 @@
 }
 .opp-card {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   background: var(--paper);
   border: 1px solid rgba(29,32,32,.12);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04);
 }
-@media (min-width: 900px) {
-  .opp-card {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  }
-  .opp-card.is-reversed {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  }
-  .opp-card.is-reversed .opp-card-media {
-    order: 2;
-  }
-}
-.opp-card-media {
-  position: relative;
-  min-height: 320px;
-  background: #171b1d;
-}
-.opp-card-media img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: saturate(0.8) contrast(1.05);
-}
 .opp-card-content {
-  padding: clamp(40px, 6vw, 80px);
+  padding: clamp(24px, 4vw, 48px);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;

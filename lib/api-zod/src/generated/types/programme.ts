@@ -46,10 +46,7 @@ export interface Programme {
      * @maxLength 100
      */
   cardCta: string;
-  /**
-     * @minLength 1
-     * @maxLength 500
-     */
+  /** @maxLength 500 */
   image: string;
   /**
      * @minLength 2

@@ -80,11 +80,8 @@ export function OpportunitiesIndexPage() {
     },
   });
   const { open: current, unconfirmed, closed: previous } = groupByRegistration(opps, now);
-  const programmeCards = (programmes: typeof opps) => programmes.map((opp, index) => (
-    <article key={opp.slug} className={`opp-card ${index % 2 !== 0 ? "is-reversed" : ""}`}>
-      <div className="opp-card-media">
-        <img src={`/larkin2-opportunities/images/${opp.image}`} alt="" loading="lazy" />
-      </div>
+  const programmeCards = (programmes: typeof opps) => programmes.map((opp) => (
+    <article key={opp.slug} className="opp-card">
       <div className="opp-card-content">
         <div className="larkin2-eyebrow">Pathway / {opp.num}</div>
         <h3 className="opp-card-title">{opp.title}</h3>
@@ -133,9 +130,6 @@ export function OpportunitiesIndexPage() {
           <div className="opp-list">
             {import.meta.env.DEV && (
               <article className="opp-card">
-                <div className="opp-card-media">
-                  <img src={`/larkin2-opportunities/images/${SAMPLE_PROGRAMME.image}`} alt="" loading="lazy" />
-                </div>
                 <div className="opp-card-content">
                   <div className="larkin2-eyebrow">EXAMPLE ONLY</div>
                   <h2 className="opp-card-title">{SAMPLE_PROGRAMME.cardTitle}</h2>

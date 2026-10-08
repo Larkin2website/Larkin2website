@@ -67,7 +67,8 @@ describe("development sample listings", () => {
   });
 
   it("links from opportunities to an example programme and renders its detail without apply actions", () => {
-    const { unmount } = render(<OpportunitiesIndexPage />);
+    const { unmount, container } = render(<OpportunitiesIndexPage />);
+    expect(container.querySelector("main img, .opp-card-media")).toBeNull();
     expect(screen.getByText("EXAMPLE ONLY")).toBeInTheDocument();
     expect(screen.getByTestId("link-opp-sample-round-2-programme")).toHaveAttribute(
       "href",
@@ -76,7 +77,8 @@ describe("development sample listings", () => {
     unmount();
 
     api.useGetPublicProgramme.mockClear();
-    render(<OpportunityPage id="sample-round-2-programme" />);
+    const detail = render(<OpportunityPage id="sample-round-2-programme" />);
+    expect(detail.container.querySelector("main img, .opp-hero-media")).toBeNull();
     expect(screen.getByRole("heading", { name: "Example HETV development programme" })).toBeInTheDocument();
     expect(screen.getByText("Example only — this sample programme is not accepting applications.")).toBeInTheDocument();
     expect(screen.queryByTestId("link-opp-apply")).not.toBeInTheDocument();

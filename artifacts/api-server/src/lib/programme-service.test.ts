@@ -36,6 +36,13 @@ test("programme writes preserve section content separately", () => {
   assert.deepEqual(programme.sections, [{ section: "about", position: 0, content: "About this opportunity." }]);
 });
 
+test("imageless authoring defaults new records safely and preserves omitted legacy images on edits", () => {
+  const { image: _, ...withoutImage } = input([]);
+  assert.equal(programmeFieldsForWrite(withoutImage).image, "");
+  assert.equal(programmeFieldsForWrite(withoutImage, { image: "legacy.webp" }).image, "legacy.webp");
+  assert.equal(programmeFieldsForWrite({ ...withoutImage, image: "" }).image, "");
+});
+
 test("programme lifecycle supports archive restore without invalid shortcuts", () => {
   assert.equal(canProgrammeTransition("draft", "published"), true);
   assert.equal(canProgrammeTransition("published", "closed"), true);

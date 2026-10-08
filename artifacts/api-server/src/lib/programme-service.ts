@@ -6,16 +6,16 @@ import { enqueuePublication, shouldEnqueueFirstPublication } from "./audience-cr
 
 export type ProgrammeInput = {
   category?: "programme" | "training"; registrationState?: "open" | "closed" | "unconfirmed" | null; registrationClosesOn?: string | null;
-  slug: string; num: string; cardTitle: string; cardCopy: string; cardCta: string; image: string;
+  slug: string; num: string; cardTitle: string; cardCopy: string; cardCta: string; image?: string;
   title: string; shortDescription: string; applicationStatus?: string; applicationDeadline?: string | null; deadline?: Date | null; location: string;
   applicationUrl?: string | null; featured: boolean; displayOrder: number;
   sections: { section: "about" | "placement" | "training" | "eligibility" | "timeline" | "application_guidance"; position: number; content: string }[];
 };
 const snapshot = (value: unknown) => JSON.parse(JSON.stringify(value)) as Record<string, unknown>;
 
-export function programmeFieldsForWrite(input: ProgrammeInput) {
+export function programmeFieldsForWrite(input: ProgrammeInput, current?: { image: string }) {
   const { sections: _, ...fields } = input;
-  return { ...fields, category: fields.category ?? "programme",
+  return { ...fields, image: fields.image ?? current?.image ?? "", category: fields.category ?? "programme",
     registrationState: fields.registrationState ?? null, registrationClosesOn: fields.registrationClosesOn ?? null };
 }
 
@@ -76,7 +76,7 @@ export async function updateProgramme(id: string, input: ProgrammeInput, actor: 
       if (!current) return undefined;
       const oldSections = await tx.select().from(programmeSectionsTable).where(eq(programmeSectionsTable.programmeId, id));
       const { sections } = input;
-      const fields = programmeFieldsForWrite(input);
+      const fields = programmeFieldsForWrite(input, current);
       const [row] = await tx.update(programmesTable).set({ ...fields, updatedBy: actor.userId }).where(eq(programmesTable.id, id)).returning();
       await tx.delete(programmeSectionsTable).where(eq(programmeSectionsTable.programmeId, id));
       const stored = sections.length

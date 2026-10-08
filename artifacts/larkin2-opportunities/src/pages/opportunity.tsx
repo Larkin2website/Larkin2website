@@ -144,9 +144,6 @@ export function OpportunityPage({ id }: { id: string }) {
                    </div>
                 </div>
              </div>
-             <div className="opp-hero-media">
-                 <img src={`/larkin2-opportunities/images/${displayOpp.image}`} alt="" role="presentation" />
-             </div>
           </div>
         </section>
 

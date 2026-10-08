@@ -38,7 +38,8 @@ const programmeSchema = z.object({
   cardTitle: z.string().min(2).max(160),
   cardCopy: z.string().min(1).max(2000),
   cardCta: z.string().min(1).max(100).default("Apply Now"),
-  image: z.string().min(1).max(500),
+  // Preserve legacy values when editing, without requiring or displaying imagery.
+  image: z.string().max(500).optional().default(""),
   title: z.string().min(2).max(160),
   shortDescription: z.string().min(1).max(4000),
   applicationStatus: z.string().min(1).max(100).default("Open"),
@@ -407,19 +408,6 @@ export function ProgrammeForm({ initialValues, onSubmit, isSubmitting }: Program
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="image"
-                  render={({ field }) => (
-                    <FormItem className="min-w-0">
-                      <FormLabel className={sharedLabelClasses}>Card Image</FormLabel>
-                      <FormControl>
-                        <Input className={sharedInputClasses} placeholder="https://..." {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage className="break-words" />
-                    </FormItem>
-                  )}
-                />
               </CardContent>
             </Card>
           </TabsContent>

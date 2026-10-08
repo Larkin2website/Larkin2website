@@ -13,6 +13,10 @@ const browser = await chromium.launch({ headless: true, executablePath: "/repl/t
 const faults = [];
 async function checkPage(page, label) {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${label}: horizontal overflow`);
+  assert.equal(await page.locator("main img, .opp-card-media, .opp-hero-media").count(), 0, `${label}: programme imagery`);
+  assert.equal(await page.locator(".opp-card, .opp-hero-grid").evaluateAll(elements => elements.every(el =>
+    el.children.length === 1 && getComputedStyle(el).gridTemplateColumns.split(" ").length === 1
+  )), true, `${label}: no unused media columns`);
   await page.addScriptTag({ path: axePath });
   const result = await page.evaluate(() => window.axe.run(document, {
     runOnly: { type: "tag", values: ["wcag2a","wcag2aa","wcag21a","wcag21aa","best-practice"] },
@@ -23,6 +27,9 @@ try {
   for (const width of [1280, 1024, 820, 390]) {
     const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
     page.on("pageerror", error => faults.push(error.message));
+    page.on("request", request => {
+      if (request.resourceType() === "image" && request.url().includes("/images/")) faults.push(`Unexpected programme image request: ${request.url()}`);
+    });
     await page.goto(`${base}/training`);
     for (const c of courses) await page.getByRole("heading",{name:c.title,exact:true}).waitFor();
     assert.match(await page.getByTestId("training-open").innerText(), /Career Mapping Session/);
@@ -36,6 +43,13 @@ try {
     await page.goto(`${base}/development`);
     await page.getByRole("heading",{name:"Creative Leadership Shadowing Programme: Director Pathway",exact:true}).waitFor();
     for(const c of courses) assert.equal(await page.getByRole("heading",{name:c.title,exact:true}).count(),0);
+    await checkPage(page, `${width}px development overview`);
+    for (const slug of ["first-credit", "director-pathway", "producer-pathway", "sample-round-2-programme"]) {
+      await page.goto(`${base}/opportunities/${slug}`);
+      await page.locator(".opp-hero-content h1").waitFor();
+      await checkPage(page, `${width}px ${slug}`);
+      assert.equal(await page.getByTestId("link-opp-apply").count(), 0);
+    }
     for(const c of courses) {
       await page.goto(`${base}/opportunities/${c.slug}`);
       await page.getByRole("heading",{name:c.title,exact:true}).waitFor();
@@ -52,7 +66,7 @@ try {
       if(c.sections.some(s=>s.content.includes("• "))) assert(await page.locator(".opp-main li").count()>0);
       await checkPage(page,`${width}px ${c.slug}`);
     }
-    console.log(`${width}px: six real courses, original content, internal routes, category separation, gated provider links, accessibility and no overflow passed`);
+    console.log(`${width}px: all programme/course listings and details are imageless, single-column layouts, no image requests, original course content, links, registration gates and accessibility passed`);
     await page.close();
   }
   assert.deepEqual(faults,[]);

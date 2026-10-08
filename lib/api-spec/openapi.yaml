@@ -1539,7 +1539,7 @@ components:
         cardTitle: { type: string, minLength: 2, maxLength: 160 }
         cardCopy: { type: string, minLength: 1, maxLength: 2000 }
         cardCta: { type: string, minLength: 1, maxLength: 100 }
-        image: { type: string, minLength: 1, maxLength: 500 }
+        image: { type: string, maxLength: 500 }
         title: { type: string, minLength: 2, maxLength: 160 }
         shortDescription: { type: string, minLength: 1, maxLength: 4000 }
         status: { $ref: "#/components/schemas/ProgrammeStatus" }
@@ -1589,7 +1589,7 @@ components:
         applicationGuidance: { type: array, items: { type: string } }
     ProgrammeInput:
       type: object
-      required: [slug, num, cardTitle, cardCopy, cardCta, image, title, shortDescription, applicationStatus, location, featured, displayOrder, sections]
+      required: [slug, num, cardTitle, cardCopy, cardCta, title, shortDescription, applicationStatus, location, featured, displayOrder, sections]
       properties:
         category: { type: string, enum: [programme, training], default: programme }
         registrationState: { type: ["string", "null"], enum: [open, closed, unconfirmed, null] }
@@ -1599,7 +1599,10 @@ components:
         cardTitle: { type: string, minLength: 2, maxLength: 160 }
         cardCopy: { type: string, minLength: 1, maxLength: 2000 }
         cardCta: { type: string, minLength: 1, maxLength: 100 }
-        image: { type: string, minLength: 1, maxLength: 500 }
+        image:
+          type: string
+          maxLength: 500
+          description: Legacy media value, no longer displayed. Omission defaults to empty on creation and preserves the stored value on update.
         title: { type: string, minLength: 2, maxLength: 160 }
         shortDescription: { type: string, minLength: 1, maxLength: 4000 }
         applicationStatus: { type: string, minLength: 1, maxLength: 100 }
