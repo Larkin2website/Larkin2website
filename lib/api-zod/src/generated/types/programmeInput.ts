@@ -5,9 +5,19 @@
  * Shared contract for Larkin2 public opportunities and the internal management portal.
  * OpenAPI spec version: 1.0.0
  */
+import type { ProgrammeInputCategory } from './programmeInputCategory';
+import type { ProgrammeInputRegistrationState } from './programmeInputRegistrationState';
 import type { ProgrammeSectionInput } from './programmeSectionInput';
 
 export interface ProgrammeInput {
+  category?: ProgrammeInputCategory;
+  /** @nullable */
+  registrationState?: ProgrammeInputRegistrationState;
+  /**
+     * @nullable
+     * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+     */
+  registrationClosesOn?: string | null;
   /**
      * @minLength 2
      * @maxLength 100

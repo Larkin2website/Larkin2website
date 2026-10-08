@@ -8,7 +8,8 @@ import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/la
 import { SAMPLE_PROGRAMME, SAMPLE_PROGRAMME_SLUG } from "../data/sample-listings";
 import NotFound from "./not-found";
 import { ProgrammeContent } from "@workspace/programme-content";
-import { developmentDetailContent } from "../lib/programme-presentation";
+import { programmeRegistration } from "@workspace/programme-content/registration";
+import { LIVE_QUERY_OPTIONS, developmentDetailContent, isTraining, useNow } from "../lib/programme-presentation";
 
 
 export function OpportunityPage({ id }: { id: string }) {
@@ -21,11 +22,11 @@ export function OpportunityPage({ id }: { id: string }) {
   } = useGetPublicProgramme(id, {
     query: {
       queryKey: getGetPublicProgrammeQueryKey(id),
-      staleTime: 60_000,
-      retry: 2,
+      ...LIVE_QUERY_OPTIONS,
       enabled: !isSample,
     },
   });
+  const now = useNow();
   const displayedProgramme = isSample ? SAMPLE_PROGRAMME : opp;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -88,16 +89,26 @@ export function OpportunityPage({ id }: { id: string }) {
 
   if (!displayedProgramme) return <NotFound />;
   const displayOpp = displayedProgramme;
-  const sectionGroups = [
+  const course = isTraining(displayOpp);
+  const reg = isSample ? { state: "closed" as const, canApply: false, label: "Applications closed" } : programmeRegistration(displayOpp, now);
+  const canApply = reg.canApply && !!displayOpp.applicationUrl;
+  const sectionGroups = (course ? [
+    ["About the Course", displayOpp.about],
+    ["Supported Placement", displayOpp.placement],
+    ["Course Content", displayOpp.training],
+    ["Who Can Register?", displayOpp.eligibility],
+    ["Course Dates", displayOpp.timeline],
+    ["Original registration information", displayOpp.applicationGuidance],
+  ] : [
     ["About the Programme", displayOpp.about],
     ["Work Experience Placement", displayOpp.placement],
     ["Training & Development", displayOpp.training],
     ["Who Can Apply?", displayOpp.eligibility],
     ["Programme Timeline & Structure", displayOpp.timeline],
     ["How to Apply", displayOpp.applicationGuidance],
-  ] as const;
-  const isOpen = !isSample && displayOpp.status === "published";
-
+  ]) as ReadonlyArray<readonly [string, string[]]>;
+  const statusHeading = course ? (reg.state === "open" ? "Registration open" : reg.state === "closed" ? "Registration closed" : "Registration status unconfirmed")
+    : reg.canApply ? "Applications Open" : "Applications Closed";
   return (
     <div className="larkin2-page opp-page" id="top">
       <SiteHeader 
@@ -125,7 +136,7 @@ export function OpportunityPage({ id }: { id: string }) {
                 <div className="opp-meta">
                    <div className="opp-meta-item">
                      <span>Status</span>
-                      <strong>{displayOpp.applicationStatus}</strong>
+                      <strong>{isSample ? displayOpp.applicationStatus : reg.label}</strong>
                    </div>
                    <div className="opp-meta-item">
                      <span>Location</span>
@@ -143,10 +154,11 @@ export function OpportunityPage({ id }: { id: string }) {
           <div className="opp-content-layout">
             <aside className="opp-sidebar">
               <div className="opp-status-card">
-                  <h2>{isOpen ? "Applications Open" : "Applications Closed"}</h2>
-                   <p>{isSample ? "Example only — this sample programme is not accepting applications." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
-                   {!isSample && isOpen && displayOpp.applicationUrl && (
-                     <a href={displayOpp.applicationUrl} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>Apply now</a>
+                  <h2>{statusHeading}</h2>
+                   <p>{isSample ? "Example only — this sample programme is not accepting applications." : course && canApply ? "Course registration is handled by an external provider and is separate from registering interest in the hub." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
+                   {course && !isSample && reg.state === "unconfirmed" && <p>We cannot confirm that registration is still open, so no registration link is offered.</p>}
+                   {!isSample && canApply && (
+                     <a href={displayOpp.applicationUrl ?? undefined} className="larkin2-btn" data-testid="link-opp-apply" onClick={trackApply}>{course ? "Register with the course provider" : "Apply now"}</a>
                  )}
                    {!isSample && <MaskedLink href="#signup" className="larkin2-btn" testId="link-opp-signup">Register interest</MaskedLink>}
               </div>
@@ -156,6 +168,9 @@ export function OpportunityPage({ id }: { id: string }) {
                 {sectionGroups.map(([heading, content]) => content.length > 0 && (
                   <div className="opp-block" key={heading}>
                     <h2>{heading}</h2>
+                    {course && heading === "Original registration information" && !canApply && (
+                      <p className="larkin2-small" role="note">This is the original wording from the source listing. Registration is no longer open or cannot be confirmed, so do not rely on it to register.</p>
+                    )}
                     {content.map((paragraph, index) => (
                       <ProgrammeContent key={`${heading}-${index}`} content={developmentDetailContent(displayOpp.slug, paragraph)} />
                     ))}

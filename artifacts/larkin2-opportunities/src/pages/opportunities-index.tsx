@@ -5,10 +5,12 @@ import {
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { SAMPLE_PROGRAMME } from "../data/sample-listings";
-import { splitPublicProgrammes } from "../lib/programme-presentation";
+import { programmeRegistration } from "@workspace/programme-content/registration";
+import { LIVE_QUERY_OPTIONS, groupByRegistration, isTraining, useNow } from "../lib/programme-presentation";
 import "./programme-overview.css";
 
 export function OpportunitiesIndexPage() {
+  const now = useNow();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -74,12 +76,11 @@ export function OpportunitiesIndexPage() {
   } = useListPublicProgrammes(undefined, {
     query: {
       queryKey: getListPublicProgrammesQueryKey(),
-      staleTime: 60_000,
-      retry: 2,
+      ...LIVE_QUERY_OPTIONS,
     },
   });
-  const { current, previous } = splitPublicProgrammes(opps);
-  const programmeCards = (programmes: typeof opps, closed: boolean) => programmes.map((opp, index) => (
+  const { open: current, unconfirmed, closed: previous } = groupByRegistration(opps, now);
+  const programmeCards = (programmes: typeof opps) => programmes.map((opp, index) => (
     <article key={opp.slug} className={`opp-card ${index % 2 !== 0 ? "is-reversed" : ""}`}>
       <div className="opp-card-media">
         <img src={`/larkin2-opportunities/images/${opp.image}`} alt="" loading="lazy" />
@@ -89,11 +90,12 @@ export function OpportunitiesIndexPage() {
         <h3 className="opp-card-title">{opp.title}</h3>
         <p className="opp-card-desc">{opp.shortDescription}</p>
         <div className="opp-card-meta">
-          <div className="opp-card-meta-item"><span>Status</span><strong>Applications {closed ? "closed" : "open"}</strong></div>
+          <div className="opp-card-meta-item"><span>Status</span><strong>{programmeRegistration(opp, now).label}</strong></div>
+          {opp.applicationDeadline && <div className="opp-card-meta-item"><span>Deadline</span><strong>{opp.applicationDeadline}</strong></div>}
           <div className="opp-card-meta-item"><span>Location</span><strong>{opp.location}</strong></div>
         </div>
         <div className="opp-card-action">
-          <MaskedLink href={`/opportunities/${opp.slug}`} className="larkin2-btn" testId={`link-opp-${opp.slug}`}>View programme details</MaskedLink>
+          <MaskedLink href={`/opportunities/${opp.slug}`} className="larkin2-btn" testId={`link-opp-${opp.slug}`}>{isTraining(opp) ? "View course details" : "View programme details"}</MaskedLink>
         </div>
       </div>
     </article>
@@ -162,16 +164,23 @@ export function OpportunitiesIndexPage() {
               <div className="opp-list-state">
                 No programmes are currently accepting applications. You can explore previous programmes below.
               </div>
-            ) : programmeCards(current, false)}
+            ) : programmeCards(current)}
           </div>
         </section>
+        {unconfirmed.length > 0 && (
+          <section className="larkin2-section" id="unconfirmed-registration" aria-labelledby="unconfirmed-title" data-testid="section-unconfirmed">
+            <h2 id="unconfirmed-title">Registration status unconfirmed</h2>
+            <p>We cannot confirm whether registration is still open for these listings. Check the original information before acting.</p>
+            <div className="opp-list">{programmeCards(unconfirmed)}</div>
+          </section>
+        )}
         <section className="larkin2-section previous-programmes" id="previous-programmes" aria-labelledby="previous-programmes-title">
           <h2 id="previous-programmes-title">Previous programmes</h2>
           <p>Explore programmes whose application windows are closed. A closed application window does not confirm that the programme has been delivered.</p>
           <div className="opp-list">
             {programmesLoading ? <p role="status">Loading previous programmes…</p>
               : programmesFailed ? <p role="alert">We couldn’t load previous programmes. Please refresh the page and try again.</p>
-              : previous.length ? programmeCards(previous, true)
+              : previous.length ? programmeCards(previous)
               : <p>No closed programmes are currently listed.</p>}
           </div>
         </section>

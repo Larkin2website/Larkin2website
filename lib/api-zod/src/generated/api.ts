@@ -1187,6 +1187,7 @@ export const ListPublicProgrammesQueryParams = zod.object({
   "q": zod.coerce.string().max(listPublicProgrammesQueryQMax).optional()
 })
 
+export const listPublicProgrammesResponseRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const listPublicProgrammesResponseApplicationStatusMax = 100;
 
 export const listPublicProgrammesResponseLocationMax = 500;
@@ -1194,6 +1195,9 @@ export const listPublicProgrammesResponseLocationMax = 500;
 
 
 export const ListPublicProgrammesResponseItem = zod.object({
+  "category": zod.enum(['programme', 'training']).optional(),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(listPublicProgrammesResponseRegistrationClosesOnRegExp).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "num": zod.string(),
@@ -1235,6 +1239,7 @@ export const GetPublicProgrammeParams = zod.object({
   "slug": zod.coerce.string().min(getPublicProgrammePathSlugMin).max(getPublicProgrammePathSlugMax).regex(getPublicProgrammePathSlugRegExp)
 })
 
+export const getPublicProgrammeResponseRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const getPublicProgrammeResponseApplicationStatusMax = 100;
 
 export const getPublicProgrammeResponseLocationMax = 500;
@@ -1242,6 +1247,9 @@ export const getPublicProgrammeResponseLocationMax = 500;
 
 
 export const GetPublicProgrammeResponse = zod.object({
+  "category": zod.enum(['programme', 'training']).optional(),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(getPublicProgrammeResponseRegistrationClosesOnRegExp).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "num": zod.string(),
@@ -1287,6 +1295,7 @@ export const ListPortalProgrammesQueryParams = zod.object({
   "order": zod.enum(['asc', 'desc']).default(listPortalProgrammesQueryOrderDefault)
 })
 
+export const listPortalProgrammesResponseItemsItemRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const listPortalProgrammesResponseItemsItemSlugMin = 2;
 export const listPortalProgrammesResponseItemsItemSlugMax = 100;
 
@@ -1314,6 +1323,9 @@ export const listPortalProgrammesResponseItemsItemSectionsItemPositionMin = 0;
 
 export const ListPortalProgrammesResponse = zod.object({
   "items": zod.array(zod.object({
+  "category": zod.enum(['programme', 'training']).optional(),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(listPortalProgrammesResponseItemsItemRegistrationClosesOnRegExp).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string().min(listPortalProgrammesResponseItemsItemSlugMin).max(listPortalProgrammesResponseItemsItemSlugMax).regex(listPortalProgrammesResponseItemsItemSlugRegExp),
   "num": zod.string().min(1).max(listPortalProgrammesResponseItemsItemNumMax),
@@ -1351,6 +1363,8 @@ export const ListPortalProgrammesResponse = zod.object({
 })
 
 
+export const createPortalProgrammeBodyCategoryDefault = `programme`;
+export const createPortalProgrammeBodyRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const createPortalProgrammeBodySlugMin = 2;
 export const createPortalProgrammeBodySlugMax = 100;
 
@@ -1383,6 +1397,9 @@ export const createPortalProgrammeBodySectionsItemPositionMin = 0;
 
 
 export const CreatePortalProgrammeBody = zod.object({
+  "category": zod.enum(['programme', 'training']).default(createPortalProgrammeBodyCategoryDefault),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(createPortalProgrammeBodyRegistrationClosesOnRegExp).nullish(),
   "slug": zod.string().min(createPortalProgrammeBodySlugMin).max(createPortalProgrammeBodySlugMax).regex(createPortalProgrammeBodySlugRegExp),
   "num": zod.string().min(1).max(createPortalProgrammeBodyNumMax),
   "cardTitle": zod.string().min(createPortalProgrammeBodyCardTitleMin).max(createPortalProgrammeBodyCardTitleMax),
@@ -1405,6 +1422,7 @@ export const CreatePortalProgrammeBody = zod.object({
 }))
 })
 
+export const createPortalProgrammeResponseRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const createPortalProgrammeResponseSlugMin = 2;
 export const createPortalProgrammeResponseSlugMax = 100;
 
@@ -1431,6 +1449,9 @@ export const createPortalProgrammeResponseSectionsItemPositionMin = 0;
 
 
 export const CreatePortalProgrammeResponse = zod.object({
+  "category": zod.enum(['programme', 'training']).optional(),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(createPortalProgrammeResponseRegistrationClosesOnRegExp).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string().min(createPortalProgrammeResponseSlugMin).max(createPortalProgrammeResponseSlugMax).regex(createPortalProgrammeResponseSlugRegExp),
   "num": zod.string().min(1).max(createPortalProgrammeResponseNumMax),
@@ -1467,6 +1488,7 @@ export const GetPortalProgrammeParams = zod.object({
   "id": zod.coerce.string().uuid()
 })
 
+export const getPortalProgrammeResponseRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const getPortalProgrammeResponseSlugMin = 2;
 export const getPortalProgrammeResponseSlugMax = 100;
 
@@ -1493,6 +1515,9 @@ export const getPortalProgrammeResponseSectionsItemPositionMin = 0;
 
 
 export const GetPortalProgrammeResponse = zod.object({
+  "category": zod.enum(['programme', 'training']).optional(),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(getPortalProgrammeResponseRegistrationClosesOnRegExp).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string().min(getPortalProgrammeResponseSlugMin).max(getPortalProgrammeResponseSlugMax).regex(getPortalProgrammeResponseSlugRegExp),
   "num": zod.string().min(1).max(getPortalProgrammeResponseNumMax),
@@ -1529,6 +1554,8 @@ export const UpdatePortalProgrammeParams = zod.object({
   "id": zod.coerce.string().uuid()
 })
 
+export const updatePortalProgrammeBodyCategoryDefault = `programme`;
+export const updatePortalProgrammeBodyRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const updatePortalProgrammeBodySlugMin = 2;
 export const updatePortalProgrammeBodySlugMax = 100;
 
@@ -1561,6 +1588,9 @@ export const updatePortalProgrammeBodySectionsItemPositionMin = 0;
 
 
 export const UpdatePortalProgrammeBody = zod.object({
+  "category": zod.enum(['programme', 'training']).default(updatePortalProgrammeBodyCategoryDefault),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(updatePortalProgrammeBodyRegistrationClosesOnRegExp).nullish(),
   "slug": zod.string().min(updatePortalProgrammeBodySlugMin).max(updatePortalProgrammeBodySlugMax).regex(updatePortalProgrammeBodySlugRegExp),
   "num": zod.string().min(1).max(updatePortalProgrammeBodyNumMax),
   "cardTitle": zod.string().min(updatePortalProgrammeBodyCardTitleMin).max(updatePortalProgrammeBodyCardTitleMax),
@@ -1583,6 +1613,7 @@ export const UpdatePortalProgrammeBody = zod.object({
 }))
 })
 
+export const updatePortalProgrammeResponseRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const updatePortalProgrammeResponseSlugMin = 2;
 export const updatePortalProgrammeResponseSlugMax = 100;
 
@@ -1609,6 +1640,9 @@ export const updatePortalProgrammeResponseSectionsItemPositionMin = 0;
 
 
 export const UpdatePortalProgrammeResponse = zod.object({
+  "category": zod.enum(['programme', 'training']).optional(),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(updatePortalProgrammeResponseRegistrationClosesOnRegExp).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string().min(updatePortalProgrammeResponseSlugMin).max(updatePortalProgrammeResponseSlugMax).regex(updatePortalProgrammeResponseSlugRegExp),
   "num": zod.string().min(1).max(updatePortalProgrammeResponseNumMax),
@@ -1656,6 +1690,7 @@ export const TransitionPortalProgrammeBody = zod.object({
   "status": zod.enum(['draft', 'published', 'closed', 'archived'])
 })
 
+export const transitionPortalProgrammeResponseRegistrationClosesOnRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
 export const transitionPortalProgrammeResponseSlugMin = 2;
 export const transitionPortalProgrammeResponseSlugMax = 100;
 
@@ -1682,6 +1717,9 @@ export const transitionPortalProgrammeResponseSectionsItemPositionMin = 0;
 
 
 export const TransitionPortalProgrammeResponse = zod.object({
+  "category": zod.enum(['programme', 'training']).optional(),
+  "registrationState": zod.union([zod.literal('open'),zod.literal('closed'),zod.literal('unconfirmed'),zod.literal(null)]).nullish(),
+  "registrationClosesOn": zod.string().regex(transitionPortalProgrammeResponseRegistrationClosesOnRegExp).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string().min(transitionPortalProgrammeResponseSlugMin).max(transitionPortalProgrammeResponseSlugMax).regex(transitionPortalProgrammeResponseSlugRegExp),
   "num": zod.string().min(1).max(transitionPortalProgrammeResponseNumMax),

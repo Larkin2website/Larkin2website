@@ -8,6 +8,9 @@ export const programmeSectionEnum = pgEnum("programme_section", [
 export const programmesTable = pgTable("programmes", {
   id: uuid("id").defaultRandom().primaryKey(),
   slug: text("slug").notNull(),
+  category: text("category").$type<"programme" | "training">().notNull().default("programme"),
+  registrationState: text("registration_state").$type<"open" | "closed" | "unconfirmed">(),
+  registrationClosesOn: text("registration_closes_on"),
   num: text("num").notNull(),
   cardTitle: text("card_title").notNull(),
   cardCopy: text("card_copy").notNull(),

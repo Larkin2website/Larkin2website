@@ -20,3 +20,5 @@
 - [Cookie notice is not consent](cookie-notice-consent.md) — Dismissing the public site's notice is informational only; optional tracking needs a separate opt-in.
 - [Animated menu focus timing](animated-menu-focus.md) — A just-opened mobile panel can still compute as hidden; defer focus until it becomes visible.
 - [Preview root paths](preview-root-paths.md) — Visit path-routed artifact roots with a trailing slash; the bare prefix can reach a non-app route.
+- [Date-only API contracts](date-only-contracts.md) — Generated date formats coerce strings to Date; preserve editorial dates without invented timestamps.
+- [Programme imagery](programme-imagery.md) — The user does not want images for programmes; keep programme/course presentation text-only.

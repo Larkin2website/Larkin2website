@@ -5,6 +5,7 @@ import { canProgrammeTransition, type ProgrammeStatus } from "./programme-lifecy
 import { enqueuePublication, shouldEnqueueFirstPublication } from "./audience-crm-service";
 
 export type ProgrammeInput = {
+  category?: "programme" | "training"; registrationState?: "open" | "closed" | "unconfirmed" | null; registrationClosesOn?: string | null;
   slug: string; num: string; cardTitle: string; cardCopy: string; cardCta: string; image: string;
   title: string; shortDescription: string; applicationStatus?: string; applicationDeadline?: string | null; deadline?: Date | null; location: string;
   applicationUrl?: string | null; featured: boolean; displayOrder: number;
@@ -14,7 +15,8 @@ const snapshot = (value: unknown) => JSON.parse(JSON.stringify(value)) as Record
 
 export function programmeFieldsForWrite(input: ProgrammeInput) {
   const { sections: _, ...fields } = input;
-  return fields;
+  return { ...fields, category: fields.category ?? "programme",
+    registrationState: fields.registrationState ?? null, registrationClosesOn: fields.registrationClosesOn ?? null };
 }
 
 async function hydrate(rows: (typeof programmesTable.$inferSelect)[]) {

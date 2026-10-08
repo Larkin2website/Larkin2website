@@ -10,15 +10,22 @@ import {
 import { requirePortal } from "../lib/portal-auth";
 import * as programmes from "../lib/programme-service";
 import { canTransitionProgramme } from "../lib/permissions";
+import { programmeRegistration, validRegistrationDate } from "@workspace/programme-content/registration";
 
-const input = CreatePortalProgrammeBody;
+const input = CreatePortalProgrammeBody.refine(
+  value => !value.registrationClosesOn || validRegistrationDate(value.registrationClosesOn),
+  { message: "Invalid registration deadline date", path: ["registrationClosesOn"] },
+);
 const query = ListPortalProgrammesQueryParams;
 const id = GetPortalProgrammeParams;
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const publicMap = (row: any) => ({
+  category: row.category ?? "programme", registrationState: row.registrationState ?? null,
+  registrationClosesOn: row.registrationClosesOn ?? null,
   id: row.id, slug: row.slug, num: row.num, cardTitle: row.cardTitle, cardCopy: row.cardCopy, cardCta: row.cardCta,
   image: row.image, title: row.title, shortDescription: row.shortDescription, status: row.status,
-  applicationStatus: row.applicationStatus, location: row.location, applicationUrl: row.applicationUrl,
+  applicationStatus: row.category === "training" ? programmeRegistration(row).label : row.applicationStatus,
+  location: row.location, applicationUrl: programmeRegistration(row).canApply ? row.applicationUrl : null,
   applicationDeadline: row.applicationDeadline, deadline: row.deadline, featured: row.featured,
   displayOrder: row.displayOrder,
   about: row.sections.filter((x: any) => x.section === "about").map((x: any) => x.content),

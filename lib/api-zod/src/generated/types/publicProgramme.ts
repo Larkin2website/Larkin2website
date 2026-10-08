@@ -6,8 +6,18 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ProgrammeStatus } from './programmeStatus';
+import type { PublicProgrammeCategory } from './publicProgrammeCategory';
+import type { PublicProgrammeRegistrationState } from './publicProgrammeRegistrationState';
 
 export interface PublicProgramme {
+  category?: PublicProgrammeCategory;
+  /** @nullable */
+  registrationState?: PublicProgrammeRegistrationState;
+  /**
+     * @nullable
+     * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+     */
+  registrationClosesOn?: string | null;
   id: string;
   slug: string;
   num: string;

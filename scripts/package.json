@@ -9,6 +9,8 @@
     "seed:opportunity-options": "tsx ./src/seed-opportunity-options.ts",
     "seed:programmes": "tsx ./src/seed-programmes.ts",
     "test:programme-seed-data": "tsx --test ./src/programme-seed-data.test.ts",
+    "prepare:training-import": "tsx ./src/prepare-training-import.ts",
+    "test:training-import": "tsx --test ./src/training-import.test.ts",
     "test:seed-opportunity-options": "tsx --test ./src/seed-opportunity-options.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
@@ -18,6 +20,7 @@
   },
   "dependencies": {
     "@workspace/db": "workspace:*",
+    "@workspace/programme-content": "workspace:*",
     "drizzle-orm": "catalog:"
   }
 }

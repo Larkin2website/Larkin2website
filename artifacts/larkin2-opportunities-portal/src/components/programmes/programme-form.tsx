@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SectionContentEditor } from "./section-content-editor";
+import { validRegistrationDate } from "@workspace/programme-content/registration";
 import {
   Select,
   SelectContent,
@@ -29,6 +30,9 @@ import {
 } from "@/components/ui/select";
 
 const programmeSchema = z.object({
+  category: z.enum(["programme", "training"]).default("programme"),
+  registrationState: z.enum(["open", "closed", "unconfirmed"]).optional().nullable(),
+  registrationClosesOn: z.string().refine(value => !value || validRegistrationDate(value), "Use a valid date").optional().nullable(),
   slug: z.string().min(2).max(100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Lowercase alphanumeric and hyphens only"),
   num: z.string().min(1).max(10),
   cardTitle: z.string().min(2).max(160),
@@ -63,6 +67,9 @@ export function ProgrammeForm({ initialValues, onSubmit, isSubmitting }: Program
   const form = useForm<ProgrammeFormValues>({
     resolver: zodResolver(programmeSchema),
     defaultValues: {
+      category: "programme",
+      registrationState: null,
+      registrationClosesOn: "",
       slug: "",
       num: "",
       cardTitle: "",
@@ -93,6 +100,8 @@ export function ProgrammeForm({ initialValues, onSubmit, isSubmitting }: Program
     const cleaned: ProgrammeInput = {
       ...parsed,
       applicationUrl: parsed.applicationUrl || null,
+      registrationState: parsed.category === "training" ? parsed.registrationState ?? "unconfirmed" : null,
+      registrationClosesOn: parsed.category === "training" ? parsed.registrationClosesOn || null : null,
       applicationDeadline: parsed.applicationDeadline || null,
       deadline: parsed.deadline ? new Date(parsed.deadline).toISOString() : null,
       sections: parsed.sections.map((s, i) => ({ ...s, position: i }))
@@ -132,6 +141,30 @@ export function ProgrammeForm({ initialValues, onSubmit, isSubmitting }: Program
               </CardHeader>
               <CardContent className="space-y-6 sm:space-y-8 p-4 sm:p-8 min-w-0">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 min-w-0">
+                  <FormField control={form.control} name="category" render={({ field }) => (
+                    <FormItem><FormLabel className={sharedLabelClasses}>Listing category</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl><SelectTrigger className={sharedInputClasses}><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent><SelectItem value="programme">Programme</SelectItem><SelectItem value="training">Training course</SelectItem></SelectContent>
+                      </Select><FormDescription>Training courses appear on the public Training Courses page. This does not change audience matching criteria.</FormDescription>
+                    </FormItem>
+                  )} />
+                  {form.watch("category") === "training" && <>
+                    <FormField control={form.control} name="registrationState" render={({ field }) => (
+                      <FormItem><FormLabel className={sharedLabelClasses}>Verified registration status</FormLabel>
+                        <Select value={field.value ?? "unconfirmed"} onValueChange={field.onChange}>
+                          <FormControl><SelectTrigger className={sharedInputClasses}><SelectValue /></SelectTrigger></FormControl>
+                          <SelectContent><SelectItem value="unconfirmed">Unconfirmed — no Apply link</SelectItem><SelectItem value="open">Open — verified</SelectItem><SelectItem value="closed">Closed</SelectItem></SelectContent>
+                        </Select><FormDescription>Publishing makes a course visible, not open for registration. Only select Open after checking the provider.</FormDescription>
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="registrationClosesOn" render={({ field }) => (
+                      <FormItem><FormLabel className={sharedLabelClasses}>Registration deadline date (no timezone)</FormLabel>
+                        <FormControl><Input type="date" className={sharedInputClasses} {...field} value={field.value ?? ""} /></FormControl>
+                        <FormDescription>For a source that provides only a date. Apply is disabled throughout the uncertain deadline window. Use System Deadline only for a confirmed exact timestamp.</FormDescription><FormMessage />
+                      </FormItem>
+                    )} />
+                  </>}
                   <FormField
                     control={form.control}
                     name="title"

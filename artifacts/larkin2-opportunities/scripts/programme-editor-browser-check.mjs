@@ -16,6 +16,7 @@ try {
       shortDescription: "Editor check introduction", applicationStatus: "Closed", location: "London",
       status: "closed", featured: false, displayOrder: 0, deadline: null, applicationDeadline: null,
       applicationUrl: null, createdAt: "2026-10-08T00:00:00Z", updatedAt: "2026-10-08T00:00:00Z",
+      category: "training", registrationState: "unconfirmed", registrationClosesOn: "2026-10-13",
       sections: [{ section: "training", position: 0, content: "Introduction\n\nFirst\nSecond\n\nConclusion" }],
     };
     let saved = false;
@@ -36,6 +37,9 @@ try {
       }
     });
     await page.goto(`${base}/opportunities/${id}/edit`);
+    assert.equal(await page.getByLabel("Registration deadline date (no timezone)").inputValue(), "2026-10-13");
+    assert.match(await page.getByLabel("Listing category").innerText(), /Training course/);
+    assert.match(await page.getByLabel("Verified registration status").innerText(), /Unconfirmed/);
     await page.getByRole("tab", { name: "Page Content", exact: true }).click();
     const textarea = page.locator('textarea[name="sections.0.content"]');
     await textarea.focus();
@@ -53,9 +57,13 @@ try {
     await page.getByRole("button", { name: "Save Opportunity", exact: true }).click();
     await page.waitForURL(`${base}/opportunities/${id}`);
     assert(saved);
+    assert.equal(record.category, "training");
+    assert.equal(record.registrationState, "unconfirmed");
+    assert.equal(record.registrationClosesOn, "2026-10-13");
     assert.equal(record.sections[0].content, "Introduction\n\n• First\n• Second\n\nConclusion");
     assert.equal(record.sections[1].content, "New paragraph\n\n- New first\n- New second");
     await page.goto(`${base}/opportunities/${id}/edit`);
+    assert.equal(await page.getByLabel("Registration deadline date (no timezone)").inputValue(), "2026-10-13");
     await page.getByRole("tab", { name: "Page Content", exact: true }).click();
     assert.equal(await page.locator('textarea[name="sections.0.content"]').inputValue(), record.sections[0].content);
     assert.equal(await page.locator('textarea[name="sections.1.content"]').inputValue(), record.sections[1].content);

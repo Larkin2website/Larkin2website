@@ -165,7 +165,35 @@ export interface ProgrammeSection {
   content: string;
 }
 
+export type ProgrammeCategory = typeof ProgrammeCategory[keyof typeof ProgrammeCategory];
+
+
+export const ProgrammeCategory = {
+  programme: 'programme',
+  training: 'training',
+} as const;
+
+/**
+ * @nullable
+ */
+export type ProgrammeRegistrationState = typeof ProgrammeRegistrationState[keyof typeof ProgrammeRegistrationState] | null;
+
+
+export const ProgrammeRegistrationState = {
+  open: 'open',
+  closed: 'closed',
+  unconfirmed: 'unconfirmed',
+} as const;
+
 export interface Programme {
+  category?: ProgrammeCategory;
+  /** @nullable */
+  registrationState?: ProgrammeRegistrationState;
+  /**
+     * @nullable
+     * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+     */
+  registrationClosesOn?: string | null;
   id: string;
   /**
      * @minLength 2
@@ -230,7 +258,35 @@ export interface Programme {
   updatedBy: string;
 }
 
+export type PublicProgrammeCategory = typeof PublicProgrammeCategory[keyof typeof PublicProgrammeCategory];
+
+
+export const PublicProgrammeCategory = {
+  programme: 'programme',
+  training: 'training',
+} as const;
+
+/**
+ * @nullable
+ */
+export type PublicProgrammeRegistrationState = typeof PublicProgrammeRegistrationState[keyof typeof PublicProgrammeRegistrationState] | null;
+
+
+export const PublicProgrammeRegistrationState = {
+  open: 'open',
+  closed: 'closed',
+  unconfirmed: 'unconfirmed',
+} as const;
+
 export interface PublicProgramme {
+  category?: PublicProgrammeCategory;
+  /** @nullable */
+  registrationState?: PublicProgrammeRegistrationState;
+  /**
+     * @nullable
+     * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+     */
+  registrationClosesOn?: string | null;
   id: string;
   slug: string;
   num: string;
@@ -267,6 +323,26 @@ export interface PublicProgramme {
   applicationGuidance: string[];
 }
 
+export type ProgrammeInputCategory = typeof ProgrammeInputCategory[keyof typeof ProgrammeInputCategory];
+
+
+export const ProgrammeInputCategory = {
+  programme: 'programme',
+  training: 'training',
+} as const;
+
+/**
+ * @nullable
+ */
+export type ProgrammeInputRegistrationState = typeof ProgrammeInputRegistrationState[keyof typeof ProgrammeInputRegistrationState] | null;
+
+
+export const ProgrammeInputRegistrationState = {
+  open: 'open',
+  closed: 'closed',
+  unconfirmed: 'unconfirmed',
+} as const;
+
 export type ProgrammeSectionInputSection = typeof ProgrammeSectionInputSection[keyof typeof ProgrammeSectionInputSection];
 
 
@@ -287,6 +363,14 @@ export interface ProgrammeSectionInput {
 }
 
 export interface ProgrammeInput {
+  category?: ProgrammeInputCategory;
+  /** @nullable */
+  registrationState?: ProgrammeInputRegistrationState;
+  /**
+     * @nullable
+     * @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+     */
+  registrationClosesOn?: string | null;
   /**
      * @minLength 2
      * @maxLength 100

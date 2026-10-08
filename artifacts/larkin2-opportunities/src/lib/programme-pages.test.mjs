@@ -45,8 +45,6 @@ test("overview pages retain the original guidance, programme links and truthful 
     "Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment.",
     "Check each listing for eligibility, support and pay.",
     "Free participation means no fees; it does not mean every course is paid.",
-    "No active training courses",
-    "No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available.",
     "Designed for industry professionals looking to step up or transition into High-End Television drama.",
     'href="/opportunities/first-credit" testId="link-opp-first-credit"',
   ]) assert.ok(pages.includes(text), text);

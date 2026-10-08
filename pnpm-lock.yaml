@@ -185,6 +185,9 @@ importers:
       '@workspace/db':
         specifier: workspace:*
         version: link:../../lib/db
+      '@workspace/programme-content':
+        specifier: workspace:*
+        version: link:../../lib/programme-content
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -1088,6 +1091,9 @@ importers:
       '@workspace/db':
         specifier: workspace:*
         version: link:../lib/db
+      '@workspace/programme-content':
+        specifier: workspace:*
+        version: link:../lib/programme-content
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.20.0)(pg@8.22.0)

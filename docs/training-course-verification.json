@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-08T06:20:35.163Z",
+  "environment": "development",
+  "importExecuted": true,
+  "firstImportResult": "All six approved courses created through an explicitly development-targeted parameterized atomic SQL statement.",
+  "repeatImportResult": "All six existing course records preserved. Complete programme and section fingerprints unchanged.",
+  "originalRecordsPreserved": true,
+  "originalRecordsBefore": "programmes_hash,sections_hash\n6cf46f1036a00c76799be9ad01a4bdbe,e719a4dc9199a74a5fce2a4fdce26791\n",
+  "originalRecordsAfter": "programmes_hash,sections_hash\n6cf46f1036a00c76799be9ad01a4bdbe,e719a4dc9199a74a5fce2a4fdce26791\n",
+  "currentRecords": "slug,category,status,registration_state,registration_closes_on,sections\nfirst-credit,programme,closed,,,21\ndirector-pathway,programme,closed,,,22\nproducer-pathway,programme,closed,,,23\ndepartmental-budgeting,training,published,unconfirmed,,9\nconflict-resolution-training,training,closed,closed,2026-09-30,6\nconfidence-resilience-training,training,closed,closed,2026-10-02,9\nexcel-foundations-training,training,closed,closed,2026-10-02,5\ncareer-mapping-session,training,published,open,2026-10-13,9\nmental-health-awareness-for-all,training,closed,closed,,17\n",
+  "publicBrowserCheck": "Real API data: training page, all opportunities, development separation, all six details and full source text at 1280,1024,820,390 pixels. Zero accessibility violations or horizontal overflow; closed/unconfirmed Airtable links absent; original source links present.",
+  "portalEditorCheck": "Mocked session and API only: metadata, bullet rendering, save payload and reopen at 1280,820,390 pixels. No real signed-in save was claimed.",
+  "productionTouched": false,
+  "published": false
+}

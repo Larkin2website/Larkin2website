@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { OPPORTUNITIES } from "../data/opportunities";
+import { TrainingListings } from "../components/training-listings";
 import { DevelopmentListings } from "../components/development-listings";
 import "./programme-overview.css";
 
@@ -111,11 +112,8 @@ export function TrainingPage() {
               <p>The First Credit Work Experience Programme has been designed to provide meaningful first industry experience for people who have had little or no opportunity to access the Film &amp; Television industry.</p>
               <MaskedLink href="/opportunities/first-credit" testId="link-opp-first-credit">View First Credit Programme</MaskedLink>
             </div>
-            <div className="hetv-empty-state">
-              <h2>No active training courses</h2>
-              <p>No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available. In the meantime, you can read about First Credit.</p>
-            </div>
           </div>
+          <TrainingListings />
           <div className="previous-programmes">
             <MaskedLink href="/development#previous-programmes" testId="link-training-previous">Explore previous development programmes</MaskedLink>
           </div>

@@ -6,6 +6,7 @@ import type { Permission, PortalRole } from "../lib/permissions";
 import { can, permissionsForRole } from "../lib/permissions";
 import type { PortalActor } from "../lib/portal-auth";
 import { createProgrammesRouter } from "./programmes";
+import { CreatePortalProgrammeResponse, GetPublicProgrammeResponse } from "@workspace/api-zod";
 
 const id = "11111111-1111-4111-8111-111111111111";
 const input = {
@@ -15,6 +16,30 @@ const input = {
   location: "A", applicationUrl: null, applicationDeadline: null,
   deadline: null, featured: false, displayOrder: 0, sections: [],
 };
+
+test("training authoring validates date-only strings and public responses gate unconfirmed registration", async () => {
+  await withServer(async base => {
+    const training = { ...input, category: "training", registrationState: "unconfirmed",
+      registrationClosesOn: "2026-10-13", applicationUrl: "https://example.com/register" };
+    const post = (data: unknown) => fetch(`${base}/portal/programmes`, {
+      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data),
+    });
+    assert.equal((await post({ ...training, registrationClosesOn: "2026-02-31" })).status, 400);
+    const created = await post(training);
+    assert.equal(created.status, 201);
+    const stored = CreatePortalProgrammeResponse.parse(await created.json());
+    assert.equal(stored.registrationClosesOn, "2026-10-13");
+    assert.equal(stored.category, "training");
+    await fetch(`${base}/portal/programmes/${id}/transition`, {
+      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ status: "published" }),
+    });
+    const visible = GetPublicProgrammeResponse.parse(await (await fetch(`${base}/public/programmes/aa`)).json());
+    assert.equal(visible.applicationStatus, "Registration status unconfirmed");
+    assert.equal(visible.applicationUrl, null);
+    assert.equal(visible.registrationClosesOn, "2026-10-13");
+    assert.equal(visible.category, "training");
+  }, { create: 0 });
+});
 
 function testAuth(permission?: Permission): RequestHandler {
   return (req, res, next) => {

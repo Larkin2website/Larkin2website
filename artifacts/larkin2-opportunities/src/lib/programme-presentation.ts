@@ -1,4 +1,4 @@
-/** Existing editorial pathways; the current programme API has no category field. */
+/** The two approved development pathways; training has its own explicit category. */
 export const DEVELOPMENT_SLUGS = ["director-pathway", "producer-pathway"];
 
 /** Target only the approved development-detail notes, not the general FAQ or stored records. */
@@ -17,4 +17,35 @@ export function splitPublicProgrammes<T extends { status: string }>(programmes: 
     current: programmes.filter((programme) => programme.status === "published"),
     previous: programmes.filter((programme) => programme.status === "closed"),
   };
+}
+
+import { useEffect, useState } from "react";
+import { programmeRegistration } from "@workspace/programme-content/registration";
+
+/** Clock that ticks so date cutoffs update in an already-open page. */
+export function useNow(intervalMs = 30_000): Date {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), intervalMs);
+    return () => window.clearInterval(id);
+  }, [intervalMs]);
+  return now;
+}
+
+export const LIVE_QUERY_OPTIONS = { staleTime: 60_000, retry: 2, refetchInterval: 5 * 60_000, refetchOnWindowFocus: true } as const;
+
+type Registerable = Parameters<typeof programmeRegistration>[0];
+
+/** Live (published/closed) records grouped by true registration state. Draft/archived never shown. */
+export function groupByRegistration<T extends Registerable>(programmes: T[], now: Date) {
+  const groups = { open: [] as T[], unconfirmed: [] as T[], closed: [] as T[] };
+  for (const programme of programmes) {
+    if (programme.status !== "published" && programme.status !== "closed") continue;
+    groups[programmeRegistration(programme, now).state].push(programme);
+  }
+  return groups;
+}
+
+export function isTraining(programme: { category?: string }) {
+  return programme.category === "training";
 }
