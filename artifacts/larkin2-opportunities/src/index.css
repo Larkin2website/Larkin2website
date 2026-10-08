@@ -1032,10 +1032,15 @@
 
 .larkin2-carousel-btn {
   display: flex;
+  flex: 0 0 48px;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0;
+  line-height: 1;
   border-radius: 50%;
   border: 1px solid rgba(29,32,32,.2);
   background: var(--deep);
@@ -1072,6 +1077,7 @@
 
 .larkin2-carousel-dot {
   position: relative;
+  flex: 0 0 28px;
   width: 28px;
   height: 44px;
   border-radius: 0;
@@ -1155,7 +1161,25 @@
   .larkin2-commit-card-media {
     min-height: 220px;
   }
-  .larkin2-carousel-pagination { gap: 8px; }
+  .larkin2-carousel-controls {
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .larkin2-carousel-pagination {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+  .larkin2-carousel-dots {
+    min-height: 48px;
+    align-items: center;
+  }
+  .larkin2-carousel-indicator {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
 }
 
 .larkin2-culture {
