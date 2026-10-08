@@ -36,7 +36,11 @@ export function programmeRegistration(programme: RegistrationProgramme, now = ne
   return {
     state,
     canApply: state === "open" && programme.status === "published",
-    label: state === "unconfirmed" ? "Registration status unconfirmed"
+    // A missing source date is not a provider announcement that registration is unavailable.
+    // Offer the provider's form without declaring registration open; known cutoffs stay gated.
+    canVisitRegistrationForm: state === "unconfirmed" && programme.category === "training"
+      && programme.status === "published" && !programme.deadline && !programme.registrationClosesOn,
+    label: state === "unconfirmed" ? "Course registration"
       : programme.category === "training" ? `Registration ${state}` : `Applications ${state}`,
   };
 }

@@ -25,7 +25,7 @@ const publicMap = (row: any) => ({
   id: row.id, slug: row.slug, num: row.num, cardTitle: row.cardTitle, cardCopy: row.cardCopy, cardCta: row.cardCta,
   image: row.image, title: row.title, shortDescription: row.shortDescription, status: row.status,
   applicationStatus: row.category === "training" ? programmeRegistration(row).label : row.applicationStatus,
-  location: row.location, applicationUrl: programmeRegistration(row).canApply ? row.applicationUrl : null,
+  location: row.location, applicationUrl: programmeRegistration(row).canApply || programmeRegistration(row).canVisitRegistrationForm ? row.applicationUrl : null,
   applicationDeadline: row.applicationDeadline, deadline: row.deadline, featured: row.featured,
   displayOrder: row.displayOrder,
   about: row.sections.filter((x: any) => x.section === "about").map((x: any) => x.content),
@@ -33,7 +33,8 @@ const publicMap = (row: any) => ({
   training: row.sections.filter((x: any) => x.section === "training").map((x: any) => x.content),
   eligibility: row.sections.filter((x: any) => x.section === "eligibility").map((x: any) => x.content),
   timeline: row.sections.filter((x: any) => x.section === "timeline").map((x: any) => x.content),
-  applicationGuidance: row.sections.filter((x: any) => x.section === "application_guidance").map((x: any) => x.content),
+  applicationGuidance: row.sections.filter((x: any) => x.section === "application_guidance").map((x: any) => x.content)
+    .filter((content: string) => !content.startsWith("Registration status is unconfirmed:")),
 });
 
 type ProgrammeRouteDependencies = {

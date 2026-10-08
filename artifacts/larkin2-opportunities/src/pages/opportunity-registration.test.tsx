@@ -56,7 +56,7 @@ describe("registration sidebar", () => {
   });
   it.each([
     { status: "closed", registrationState: "closed" },
-    { registrationState: "unconfirmed" },
+    { registrationState: "unconfirmed", registrationClosesOn: "2026-10-13" },
     { registrationState: "closed" },
     { registrationClosesOn: "2020-01-01" },
     { applicationUrl: null },
@@ -66,6 +66,19 @@ describe("registration sidebar", () => {
     expect(screen.queryByTestId("link-opp-apply")).toBeNull();
     expect(screen.getByRole("link", { name: "Future opportunity updates" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /register for this course|register interest/i })).toBeNull();
+  });
+  it("offers the source form without inventing a status when the source gives no complete deadline", () => {
+    show({
+      registrationState: "unconfirmed", registrationClosesOn: null,
+      applicationGuidance: ["Signing up does not confirm your place.", "Registration status is unconfirmed: No application link is available until these details are confirmed."],
+      timeline: ["Sign-up deadline: 8 October 12 pm (Noon)."],
+    });
+    expect(screen.getByRole("link", { name: "View registration form" })).toHaveAttribute("href", form);
+    expect(screen.getByRole("heading", { name: "Course registration" })).toBeInTheDocument();
+    expect(screen.getByText("Sign-up deadline: 8 October 12 pm (Noon).")).toBeInTheDocument();
+    expect(screen.getByText("Signing up does not confirm your place.")).toBeInTheDocument();
+    expect(screen.queryByText(/unconfirmed|cannot be confirmed|cannot confirm|no registration link/i)).toBeNull();
+    expect(screen.queryByText("Registration open")).toBeNull();
   });
   it("keeps programme application destinations, labels and gating", () => {
     show({ category: "programme", applicationUrl: "https://forms.example.org/programme" });

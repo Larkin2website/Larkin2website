@@ -8,7 +8,7 @@ Audience matching settings are separate and are not changed by this import.
 
 | Course | Source registration information | Imported status |
 | --- | --- | --- |
-| Departmental Budgeting | 8 October, 12 pm (Noon); no year, timezone or session dates | Published, registration unconfirmed; no Apply link |
+| Departmental Budgeting | 8 October, 12 pm (Noon); no year, timezone or session dates | Published; original provider form available without an open/closed claim |
 | Conflict Resolution Training | Deadline 30 September 2026; source session says “Monday, 6th October 2026” | Closed |
 | Confidence & Resilience Training – EXTENDED | Extended deadline 2 October 2026; session 5 October 2026 | Closed |
 | Excel Foundations Training | Deadline 2 October 2026; session 8 October 2026 | Closed |
@@ -17,9 +17,11 @@ Audience matching settings are separate and are not changed by this import.
 
 Conflict Resolution's weekday conflicts with the numeric date: 6 October 2026 is
 a Tuesday. The original wording is retained and the discrepancy is disclosed.
-Departmental Budgeting must not be opened until missing dates and registration
-availability are confirmed. Existing source Apply buttons are not proof that
-registration is still open. Closed does not mean the course was delivered.
+Departmental Budgeting must not be relabelled as open or given invented dates.
+Its internal missing-date metadata is not a provider-announced status and must not
+appear as “unconfirmed” on the public site. Offer the original provider form as
+“View registration form” so visitors can check availability with the provider.
+Known closed registrations and known-date safety checks remain gated.
 
 ## Explicit development-only provisioning
 

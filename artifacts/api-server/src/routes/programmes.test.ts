@@ -21,7 +21,11 @@ const input = {
 test("training authoring validates date-only strings and public responses gate unconfirmed registration", async () => {
   await withServer(async base => {
     const training = { ...input, category: "training", registrationState: "unconfirmed",
-      registrationClosesOn: "2026-10-13", applicationUrl: "https://example.com/register" };
+      registrationClosesOn: "2026-10-13", applicationUrl: "https://example.com/register",
+      sections: [
+        { section: "application_guidance", position: 0, content: "Signing up does not confirm your place." },
+        { section: "application_guidance", position: 1, content: "Registration status is unconfirmed: No application link is available until these details are confirmed." },
+      ] };
     const post = (data: unknown) => fetch(`${base}/portal/programmes`, {
       method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data),
     });
@@ -35,10 +39,19 @@ test("training authoring validates date-only strings and public responses gate u
       method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ status: "published" }),
     });
     const visible = GetPublicProgrammeResponse.parse(await (await fetch(`${base}/public/programmes/aa`)).json());
-    assert.equal(visible.applicationStatus, "Registration status unconfirmed");
+    assert.equal(visible.applicationStatus, "Course registration");
     assert.equal(visible.applicationUrl, null);
     assert.equal(visible.registrationClosesOn, "2026-10-13");
     assert.equal(visible.category, "training");
+    await fetch(`${base}/portal/programmes/${id}`, {
+      method: "PATCH", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...training, registrationClosesOn: null }),
+    });
+    const neutral = GetPublicProgrammeResponse.parse(await (await fetch(`${base}/public/programmes/aa`)).json());
+    assert.equal(neutral.applicationStatus, "Course registration");
+    assert.equal(neutral.applicationUrl, training.applicationUrl);
+    assert.equal(neutral.registrationState, "unconfirmed");
+    assert.deepEqual(neutral.applicationGuidance, ["Signing up does not confirm your place."]);
   }, { create: 0 });
 });
 
@@ -60,13 +73,17 @@ async function withServer(run: (base: string) => Promise<void>, calls: { create:
     createProgramme: async (body: any, actor: PortalActor) => {
       calls.create += 1;
       const now = new Date();
-      const row = { ...body, ...programmeFieldsForWrite(body), id, status: "draft", createdBy: actor.userId, updatedBy: actor.userId, createdAt: now, updatedAt: now, publishedAt: null, archivedAt: null };
+      const row = { ...body, ...programmeFieldsForWrite(body),
+        sections: body.sections.map((section: any, index: number) => ({ ...section, id: `11111111-1111-4111-8111-${String(index).padStart(12, "0")}` })),
+        id, status: "draft", createdBy: actor.userId, updatedBy: actor.userId, createdAt: now, updatedAt: now, publishedAt: null, archivedAt: null };
       state.set(id, row); return row;
     },
     getProgramme: async (programmeId: string) => state.get(programmeId),
     updateProgramme: async (programmeId: string, body: any) => {
       const row = state.get(programmeId); if (!row) return undefined;
-      const updated = { ...row, ...programmeFieldsForWrite(body, row), sections: body.sections, updatedAt: new Date() };
+      const updated = { ...row, ...programmeFieldsForWrite(body, row),
+        sections: body.sections.map((section: any, index: number) => ({ ...section, id: `11111111-1111-4111-8111-${String(index).padStart(12, "0")}` })),
+        updatedAt: new Date() };
       state.set(programmeId, updated); return updated;
     },
     transitionProgramme: async (programmeId: string, status: string) => {

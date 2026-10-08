@@ -64,7 +64,7 @@ try {
     await page.getByRole("heading", { name: "Verified registration destination" }).waitFor();
     assert.equal(page.url(), expected);
     assert.ok(events.some(event => event.kind === "programme" && event.event === "apply"));
-    for (const slug of ["departmental-budgeting", "conflict-resolution-training", "first-credit"]) {
+    for (const slug of ["conflict-resolution-training", "first-credit"]) {
       await page.goto(`${base}/opportunities/${slug}`);
       await page.getByTestId("link-opp-signup").waitFor();
       assert.equal(await page.getByTestId("link-opp-apply").count(), 0);

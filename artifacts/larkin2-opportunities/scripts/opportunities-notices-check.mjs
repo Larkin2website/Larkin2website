@@ -23,9 +23,10 @@ try {
     assert.equal(await page.locator("main").getByText(/programme has been delivered/i).count(), 0);
     await page.goto(`${base}/opportunities/departmental-budgeting`);
     await page.getByRole("heading", { name: "Departmental Budgeting", exact: true }).waitFor();
-    assert.equal(await page.getByTestId("link-opp-apply").count(), 0);
+    assert.equal(await page.getByRole("link", { name: "View registration form" }).getAttribute("href"), "https://airtable.com/appBmuMR6u77V1PsU/pagxKsbTsGPSQJ24H/form");
+    assert.equal(await page.locator("main").getByText(/unconfirmed|cannot confirm|cannot be confirmed|no application link is available/i).count(), 0);
     assert.deepEqual(errors, []);
-    console.log(`${width}px: real listings retained, notices and example removed, unverified Apply remains disabled`);
+    console.log(`${width}px: real listings retained, notices and example removed, original form available without invented registration status`);
     await page.close();
   }
   const page = await browser.newPage();

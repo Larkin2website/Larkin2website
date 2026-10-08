@@ -30,8 +30,21 @@ not confirming delivery from public programme listings.
 **Why:** The user explicitly requested these notice removals on the Opportunities
 page after the Training Courses changes.
 
-**How to apply:** These requests concern overview presentation; retain registration
-safety and do not relabel unverified courses as open or closed.
+**How to apply:** Do not relabel courses with incomplete source dates as open or
+closed. The user's later correction also applies to course detail pages: do not
+publish an invented “unconfirmed” status or explanatory warning as if it came
+from the provider.
+
+If a source provides a course registration form but no complete deadline,
+retain access to that form with neutral wording such as “View registration form”.
+Missing date details alone must not be presented as provider-confirmed closure.
+
+**Why:** The user challenged the imported status because Larkin did not describe
+the course as unconfirmed, then explicitly asked to correct it.
+
+**How to apply:** Keep the source's deadline wording unchanged, let visitors check
+availability through the provider form, and retain gating for explicitly closed
+courses and known deadline cutoffs. Do not invent missing years or timezones.
 
 Course registration links must lead to the appropriate course form, not the
 Larkin website.

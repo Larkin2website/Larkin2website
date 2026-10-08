@@ -88,14 +88,14 @@ export function OpportunityPage({ id }: { id: string }) {
   const displayOpp = displayedProgramme;
   const course = isTraining(displayOpp);
   const reg = programmeRegistration(displayOpp, now);
-  const canApply = reg.canApply && !!displayOpp.applicationUrl;
+  const canApply = (reg.canApply || reg.canVisitRegistrationForm) && !!displayOpp.applicationUrl;
   const sectionGroups = (course ? [
     ["About the Course", displayOpp.about],
     ["Supported Placement", displayOpp.placement],
     ["Course Content", displayOpp.training],
     ["Who Can Register?", displayOpp.eligibility],
     ["Course Dates", displayOpp.timeline],
-    ["Original registration information", displayOpp.applicationGuidance],
+    ["Original registration information", displayOpp.applicationGuidance.filter(paragraph => !paragraph.startsWith("Registration status is unconfirmed:"))],
   ] : [
     ["About the Programme", displayOpp.about],
     ["Work Experience Placement", displayOpp.placement],
@@ -104,7 +104,7 @@ export function OpportunityPage({ id }: { id: string }) {
     ["Programme Timeline & Structure", displayOpp.timeline],
     ["How to Apply", displayOpp.applicationGuidance],
   ]) as ReadonlyArray<readonly [string, string[]]>;
-  const statusHeading = course ? (reg.state === "open" ? "Registration open" : reg.state === "closed" ? "Registration closed" : "Registration status unconfirmed")
+  const statusHeading = course ? (reg.state === "open" ? "Registration open" : reg.state === "closed" ? "Registration closed" : "Course registration")
     : reg.canApply ? "Applications Open" : "Applications Closed";
   return (
     <div className="larkin2-page opp-page" id="top">
@@ -148,11 +148,10 @@ export function OpportunityPage({ id }: { id: string }) {
             <aside className="opp-sidebar">
               <div className="opp-status-card">
                   <h2>{statusHeading}</h2>
-                   <p>{course && canApply ? "Register using the course provider’s form. Hub signup is separate and does not register you for this course. Email alerts are not currently enabled." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
-                   {course && reg.state === "unconfirmed" && <p>We cannot confirm that registration is still open, so no registration link is offered.</p>}
+                   <p>{course && canApply ? "Use the course provider’s form to check availability and register. Hub signup is separate and does not register you for this course. Email alerts are not currently enabled." : "You can register your interest in future opportunities. Email alerts are not currently enabled."}</p>
                    <div className="opp-status-actions">
                      {canApply && (
-                       <MaskedLink href={displayOpp.applicationUrl} className="larkin2-btn" testId="link-opp-apply" onClick={trackApply}>{course ? "Register for this course" : "Apply now"}</MaskedLink>
+                       <MaskedLink href={displayOpp.applicationUrl} className="larkin2-btn" testId="link-opp-apply" onClick={trackApply}>{course ? reg.canApply ? "Register for this course" : "View registration form" : "Apply now"}</MaskedLink>
                      )}
                      <MaskedLink href="#signup" className="larkin2-btn secondary" testId="link-opp-signup">{course ? "Future opportunity updates" : "Register interest"}</MaskedLink>
                    </div>
@@ -163,8 +162,8 @@ export function OpportunityPage({ id }: { id: string }) {
                 {sectionGroups.map(([heading, content]) => content.length > 0 && (
                   <div className="opp-block" key={heading}>
                     <h2>{heading}</h2>
-                    {course && heading === "Original registration information" && !canApply && (
-                      <p className="larkin2-small" role="note">This is the original wording from the source listing. Registration is no longer open or cannot be confirmed, so do not rely on it to register.</p>
+                    {course && heading === "Original registration information" && reg.state === "closed" && (
+                      <p className="larkin2-small" role="note">Registration is closed. These details reproduce the original source listing.</p>
                     )}
                     {content.map((paragraph, index) => (
                       <ProgrammeContent key={`${heading}-${index}`} content={developmentDetailContent(displayOpp.slug, paragraph)} />

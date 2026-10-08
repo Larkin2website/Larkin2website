@@ -41,10 +41,10 @@ try {
       runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"] },
     })).violations.map(v => ({ id: v.id, targets: v.nodes.map(n => n.target) })));
     assert.deepEqual(violations, []);
-    // Hiding a notice must not enable unverified provider registration.
+    // Missing source dates must not hide the original provider form or invent an open status.
     await page.goto(`${base}/opportunities/departmental-budgeting`);
     await page.getByRole("heading", { name: "Departmental Budgeting", exact: true }).waitFor();
-    assert.equal(await page.getByTestId("link-opp-apply").count(), 0);
+    assert.equal(await page.getByRole("link", { name: "View registration form" }).getAttribute("href"), "https://airtable.com/appBmuMR6u77V1PsU/pagxKsbTsGPSQJ24H/form");
     assert.deepEqual(errors, []);
     console.log(`${width}px: open courses first, First Credit in closed section, all six courses visible, responsive cards, accessibility and registration safety passed`);
     await page.close();
