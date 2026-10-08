@@ -10,7 +10,9 @@ export function TrainingListings() {
   });
   if (isLoading) return <p role="status">Loading training courses…</p>;
   if (isError) return <div role="alert"><p>We couldn’t load training courses. Please try again.</p><button type="button" className="larkin2-btn" onClick={() => void refetch()}>Retry</button></div>;
-  const { open, unconfirmed, closed } = groupByRegistration(data.filter(isTraining), now);
+  const { open, unconfirmed, closed } = groupByRegistration(
+    data.filter(programme => isTraining(programme) || programme.slug === "first-credit"), now,
+  );
   const cards = (list: typeof data) => list.map((course) => {
     const reg = programmeRegistration(course, now);
     return (
@@ -19,7 +21,9 @@ export function TrainingListings() {
         <h3>{course.title}</h3>
         <p>{course.shortDescription}</p>
         {course.applicationDeadline && <p className="larkin2-small">Deadline: {course.applicationDeadline}</p>}
-        <MaskedLink href={`/opportunities/${course.slug}`} testId={`link-opp-${course.slug}`}>View course details</MaskedLink>
+        <MaskedLink href={`/opportunities/${course.slug}`} testId={`link-opp-${course.slug}`}>
+          {isTraining(course) ? "View course details" : "View First Credit Programme"}
+        </MaskedLink>
       </article>
     );
   });
@@ -39,7 +43,7 @@ export function TrainingListings() {
       )}
       <section className="training-course-group" aria-labelledby="training-previous-title" data-testid="training-closed">
         <h2 id="training-previous-title">Previous and closed courses</h2>
-        <p>Registration for these courses is closed. </p>
+        <p>Applications and registration for these listings are closed.</p>
         <div className="hetv-programme-list">{closed.length ? cards(closed) : <p>No closed training courses are currently listed.</p>}</div>
       </section>
     </>

@@ -16,7 +16,10 @@ try {
     assert.equal(await page.locator("[data-testid=training-unconfirmed] .programme-status-badge").count(), 0);
     assert.equal(await page.locator("main").getByText(/Registration status unconfirmed/i).count(), 0);
     assert.equal(await page.locator("main").getByText(/registration deadline for these courses cannot be confirmed/i).count(), 0);
-    assert.equal(await page.locator(".training-overview-section h3").count(), 6);
+    assert.equal(await page.locator(".training-overview-section h3").count(), 7);
+    assert.equal(await page.locator(".training-course-group").first().getAttribute("data-testid"), "training-open");
+    assert.equal(await page.locator("[data-testid=training-open]").getByRole("heading", { name: "First Credit Work Experience", exact: true }).count(), 0);
+    assert.equal(await page.locator("[data-testid=training-closed]").getByRole("heading", { name: "First Credit Work Experience", exact: true }).count(), 1);
     assert.equal(await page.locator("[data-testid=training-closed] .hetv-programme-list").evaluate(el =>
       getComputedStyle(el).gridTemplateColumns.split(" ").length
     ), width >= 900 ? 2 : 1);
@@ -35,7 +38,7 @@ try {
     await page.getByRole("heading", { name: "Departmental Budgeting", exact: true }).waitFor();
     assert.equal(await page.getByTestId("link-opp-apply").count(), 0);
     assert.deepEqual(errors, []);
-    console.log(`${width}px: six visible courses, no unconfirmed notice/badge, responsive cards, no overflow, accessibility and registration safety passed`);
+    console.log(`${width}px: open courses first, First Credit in closed section, all six courses visible, responsive cards, accessibility and registration safety passed`);
     await page.close();
   }
 } finally {

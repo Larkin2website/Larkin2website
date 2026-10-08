@@ -34,6 +34,7 @@ describe("training listings", () => {
       { ...base, id: "3", slug: "c", title: "Old course", status: "closed", registrationState: "closed" },
       { ...base, id: "4", slug: "d", title: "Draft course", status: "draft", registrationState: "open" },
       { ...base, id: "5", slug: "e", title: "Dev", status: "published", category: "programme" },
+      { ...base, id: "6", slug: "first-credit", title: "First Credit Work Experience", status: "closed", category: "programme" },
     ] });
     render(<TrainingListings />);
     expect(screen.getByTestId("training-open")).toHaveTextContent("Open course");
@@ -43,6 +44,11 @@ describe("training listings", () => {
     expect(screen.queryByText(/registration deadline for these courses cannot be confirmed/i)).toBeNull();
     expect(screen.getByTestId("training-unconfirmed").querySelector(".programme-status-badge")).toBeNull();
     expect(screen.getByTestId("training-closed")).toHaveTextContent("Old course");
+    expect(screen.getByTestId("training-closed")).toHaveTextContent("First Credit Work Experience");
+    expect(screen.getByRole("link", { name: "View First Credit Programme" })).toHaveAttribute("href", "/opportunities/first-credit");
+    expect(screen.getByTestId("training-open")).not.toHaveTextContent("First Credit");
+    expect(screen.getByTestId("training-open").compareDocumentPosition(screen.getByTestId("training-closed")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByTestId("training-open").compareDocumentPosition(screen.getByTestId("training-unconfirmed")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.queryByText("Draft course")).toBeNull();
     expect(screen.queryByText("Dev")).toBeNull();
   });

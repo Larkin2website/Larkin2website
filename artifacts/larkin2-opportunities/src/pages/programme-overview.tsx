@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
-import { OPPORTUNITIES } from "../data/opportunities";
 import { TrainingListings } from "../components/training-listings";
 import { DevelopmentListings } from "../components/development-listings";
 import "./programme-overview.css";
@@ -72,7 +71,6 @@ function PageMeta({ title, description }: { title: string, description: string }
 
 export function TrainingPage() {
   const { menuOpen, setMenuOpen, scrolled, headerHidden, headerRef, menuButtonRef } = useHeaderScroll();
-  const firstCreditStatus = OPPORTUNITIES["first-credit"].applicationStatus;
 
   return (
     <div className="larkin2-page programme-overview-page" id="top">
@@ -102,16 +100,6 @@ export function TrainingPage() {
             <h1 className="larkin2-title" id="training-title">Training Courses</h1>
             <p className="larkin2-copy">Helping you build the skills and knowledge you need to work confidently and effectively on production and beyond.</p>
             <p className="larkin2-small">Work experience and traineeships focus on learning and supported placements, rather than standard job recruitment. Check each listing for eligibility, support and pay. Free participation means no fees; it does not mean every course is paid.</p>
-          </div>
-          <div className="hetv-programme-list">
-            <div className="hetv-programme-item">
-              <div className={`programme-status-badge ${firstCreditStatus === "Open" ? "is-open" : "is-closed"}`}>
-                Applications {firstCreditStatus}
-              </div>
-              <h2>First Credit Work Experience</h2>
-              <p>The First Credit Work Experience Programme has been designed to provide meaningful first industry experience for people who have had little or no opportunity to access the Film &amp; Television industry.</p>
-              <MaskedLink href="/opportunities/first-credit" testId="link-opp-first-credit">View First Credit Programme</MaskedLink>
-            </div>
           </div>
           <TrainingListings />
           <div className="previous-programmes">

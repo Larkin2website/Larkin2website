@@ -46,9 +46,13 @@ test("overview pages retain the original guidance, programme links and truthful 
     "Check each listing for eligibility, support and pay.",
     "Free participation means no fees; it does not mean every course is paid.",
     "Designed for industry professionals looking to step up or transition into High-End Television drama.",
-    'href="/opportunities/first-credit" testId="link-opp-first-credit"',
   ]) assert.ok(pages.includes(text), text);
-  assert.ok(pages.includes('OPPORTUNITIES["first-credit"].applicationStatus'));
+  assert.ok(pages.includes("<TrainingListings />"));
+  const training = read("../components/training-listings.tsx");
+  assert.ok(training.includes('programme.slug === "first-credit"'));
+  assert.ok(training.includes("groupByRegistration"));
+  assert.ok(training.includes('href={`/opportunities/${course.slug}`}'));
+  assert.ok(!pages.includes('OPPORTUNITIES["first-credit"].applicationStatus'));
   assert.ok(pages.includes("<DevelopmentListings />"));
   const listings = read("../components/development-listings.tsx");
   assert.ok(listings.includes("useListPublicProgrammes"));
