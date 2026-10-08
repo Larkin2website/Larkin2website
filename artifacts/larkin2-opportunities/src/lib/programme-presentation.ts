@@ -12,6 +12,14 @@ export function developmentDetailContent(slug: string, content: string): string 
     .trim();
 }
 
+/** Source attribution stays in editorial records, not in public detail content. */
+export function publicProgrammeDetailContent(slug: string, content: string): string {
+  const withoutSourceListing = content.split(/\r?\n/)
+    .filter(line => !/^\s*(?:[•*-]\s+)?Original course listing\s*(?::.*)?$/i.test(line))
+    .join("\n").trim();
+  return developmentDetailContent(slug, withoutSourceListing);
+}
+
 export function splitPublicProgrammes<T extends { status: string }>(programmes: T[]) {
   return {
     current: programmes.filter((programme) => programme.status === "published"),

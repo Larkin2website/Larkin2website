@@ -54,3 +54,12 @@ registration sidebar buttons.
 
 **How to apply:** Verify the course-specific form destination and distinguish
 course registration from subscribing to future hub updates.
+
+Do not show “Original course listing” links on public detail pages.
+
+**Why:** The user asked to remove the selected source-listing item and any others
+present on other pages.
+
+**How to apply:** Keep source references available internally for editorial
+verification, but omit them from public detail content without removing provider
+registration links or surrounding course information.

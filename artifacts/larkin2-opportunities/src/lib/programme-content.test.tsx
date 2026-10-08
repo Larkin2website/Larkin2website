@@ -1,10 +1,22 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { ProgrammeContent, parseProgrammeContent, toggleProgrammeBullets } from "@workspace/programme-content";
-import { developmentDetailContent, splitPublicProgrammes } from "./programme-presentation";
+import { developmentDetailContent, publicProgrammeDetailContent, splitPublicProgrammes } from "./programme-presentation";
 afterEach(cleanup);
 
 describe("programme text content", () => {
+  it("removes source listing lines on every detail page while preserving nearby course information and links", () => {
+    for (const slug of ["departmental-budgeting", "career-mapping-session", "director-pathway", "another-course"]) {
+      expect(publicProgrammeDetailContent(slug, "Original course listing: https://larkin2opportunities.com/trainings/example/")).toBe("");
+      expect(publicProgrammeDetailContent(slug, "Original course listing")).toBe("");
+      const content = "Sign-up deadline: 8 October 12 pm (Noon).\r\n• Original course listing: https://larkin2opportunities.com/trainings/example/\r\nRegister: https://airtable.com/example/form";
+      render(<ProgrammeContent content={publicProgrammeDetailContent(slug, content)} />);
+      expect(screen.queryByText(/Original course listing/i)).toBeNull();
+      expect(screen.getByText("Sign-up deadline: 8 October 12 pm (Noon).")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Register" })).toHaveAttribute("href", "https://airtable.com/example/form");
+      cleanup();
+    }
+  });
   it("renders mixed paragraphs, bullet runs and subsequent paragraphs semantically", () => {
     render(<ProgrammeContent content={"Introduction.\nContinued.\n\n• First\n- Second\n* Third\n\nConclusion.\n\n• Another"} />);
     expect(screen.getAllByRole("list")).toHaveLength(2);

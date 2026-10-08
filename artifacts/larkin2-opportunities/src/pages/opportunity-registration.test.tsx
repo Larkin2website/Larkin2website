@@ -28,6 +28,18 @@ beforeEach(() => vi.clearAllMocks());
 afterEach(cleanup);
 
 describe("registration sidebar", () => {
+  it("omits source attribution links and empty source-only blocks across detail sections", () => {
+    show({
+      about: ["A course.", "Original course listing: https://larkin2opportunities.com/trainings/example/"],
+      eligibility: ["Original course listing: https://larkin2opportunities.com/trainings/example/"],
+      applicationGuidance: ["Register through the provider.", "Original course listing: https://larkin2opportunities.com/trainings/example/"],
+    });
+    expect(screen.queryByText(/Original course listing/i)).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Who Can Register?" })).toBeNull();
+    expect(screen.getByText("Register through the provider.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Register for this course" })).toHaveAttribute("href", form);
+    expect(document.querySelector('a[href*="larkin2opportunities.com/trainings/"]')).toBeNull();
+  });
   it("uses the actual form and shared button, with a distinct secondary hub action", () => {
     show();
     const primary = screen.getByRole("link", { name: "Register for this course" });

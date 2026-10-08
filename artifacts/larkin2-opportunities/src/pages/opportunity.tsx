@@ -8,7 +8,7 @@ import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/la
 import NotFound from "./not-found";
 import { ProgrammeContent } from "@workspace/programme-content";
 import { programmeRegistration } from "@workspace/programme-content/registration";
-import { LIVE_QUERY_OPTIONS, developmentDetailContent, isTraining, useNow } from "../lib/programme-presentation";
+import { LIVE_QUERY_OPTIONS, publicProgrammeDetailContent, isTraining, useNow } from "../lib/programme-presentation";
 
 
 export function OpportunityPage({ id }: { id: string }) {
@@ -89,7 +89,7 @@ export function OpportunityPage({ id }: { id: string }) {
   const course = isTraining(displayOpp);
   const reg = programmeRegistration(displayOpp, now);
   const canApply = (reg.canApply || reg.canVisitRegistrationForm) && !!displayOpp.applicationUrl;
-  const sectionGroups = (course ? [
+  const sourceSectionGroups = (course ? [
     ["About the Course", displayOpp.about],
     ["Supported Placement", displayOpp.placement],
     ["Course Content", displayOpp.training],
@@ -104,6 +104,10 @@ export function OpportunityPage({ id }: { id: string }) {
     ["Programme Timeline & Structure", displayOpp.timeline],
     ["How to Apply", displayOpp.applicationGuidance],
   ]) as ReadonlyArray<readonly [string, string[]]>;
+  const sectionGroups = sourceSectionGroups.map(([heading, content]) => [
+    heading,
+    content.map(paragraph => publicProgrammeDetailContent(displayOpp.slug, paragraph)).filter(Boolean),
+  ] as const);
   const statusHeading = course ? (reg.state === "open" ? "Registration open" : reg.state === "closed" ? "Registration closed" : "Course registration")
     : reg.canApply ? "Applications Open" : "Applications Closed";
   return (
@@ -166,7 +170,7 @@ export function OpportunityPage({ id }: { id: string }) {
                       <p className="larkin2-small" role="note">Registration is closed. These details reproduce the original source listing.</p>
                     )}
                     {content.map((paragraph, index) => (
-                      <ProgrammeContent key={`${heading}-${index}`} content={developmentDetailContent(displayOpp.slug, paragraph)} />
+                      <ProgrammeContent key={`${heading}-${index}`} content={paragraph} />
                     ))}
                   </div>
                 ))}
