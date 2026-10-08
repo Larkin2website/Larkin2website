@@ -1,0 +1,51 @@
+/* Round two: compact core areas and commitments (scoped to homepage sections). */
+.larkin2-page .larkin2-paths { padding-top: clamp(36px, 4.5vw, 56px); }
+.larkin2-page .larkin2-paths .larkin2-paths-header { margin-bottom: clamp(20px, 2.4vw, 32px); gap: clamp(20px, 4vw, 64px); }
+.larkin2-page .larkin2-paths .larkin2-title { font-size: clamp(34px, 4.6vw, 64px); }
+.larkin2-page .larkin2-paths .larkin2-small { margin-top: 12px; }
+.larkin2-page .larkin2-path-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.larkin2-page .larkin2-path:nth-child(n) {
+  grid-column: auto;
+  min-height: clamp(340px, 42vh, 400px);
+  padding: 22px 26px 26px;
+  border-bottom: 0;
+  border-right: 1px solid rgba(244,241,237,.62);
+}
+.larkin2-page .larkin2-path:nth-child(3) { border-right: 0; }
+.larkin2-page .larkin2-path-bottom { flex-direction: column; align-items: flex-start; gap: 18px; }
+.larkin2-page .larkin2-path-bottom-main { max-width: none; }
+.larkin2-page .larkin2-path h3 { font-size: clamp(26px, 2.6vw, 38px); margin-bottom: 10px; }
+.larkin2-page .larkin2-path-bottom-main p { font-size: 15px; line-height: 1.45; }
+
+@media (max-width: 900px) {
+  .larkin2-page .larkin2-path-grid { grid-template-columns: 1fr; display: grid; }
+  .larkin2-page .larkin2-path:nth-child(n) {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(244,241,237,.62);
+    padding-top: 120px;
+  }
+  .larkin2-page .larkin2-path:nth-child(3) { border-bottom: 0; }
+  .larkin2-page .larkin2-path-top { position: absolute; top: 20px; left: 22px; }
+  .larkin2-page .larkin2-path h3 { font-size: 28px; }
+}
+
+/* Commitments */
+.larkin2-page #commitments { padding-top: clamp(32px, 4vw, 56px); padding-bottom: clamp(28px, 3.5vw, 48px); }
+.larkin2-page .larkin2-commit-header { margin-bottom: 0; }
+.larkin2-page .larkin2-commit-header-text .larkin2-title { font-size: clamp(32px, 4.6vw, 64px); margin: 8px 0 10px; }
+.larkin2-page .larkin2-commit-header-text .larkin2-small { font-size: clamp(16px, 1.5vw, 18px) !important; max-width: 640px; }
+.larkin2-page .larkin2-carousel { margin-top: 18px; padding-bottom: 0; }
+.larkin2-page .larkin2-commit-card-content { padding: clamp(20px, 2.6vw, 36px); }
+.larkin2-page .larkin2-commit-meta { margin-bottom: 12px; }
+.larkin2-page .larkin2-commit-card-content h3 { font-size: clamp(24px, 2.6vw, 34px); margin-bottom: 10px; }
+.larkin2-page .larkin2-commit-card-content p { font-size: clamp(16px, 1.4vw, 18px); }
+.larkin2-page .larkin2-carousel-controls { margin-top: 16px; }
+@media (min-width: 901px) {
+  .larkin2-page .larkin2-commit-card-inner { flex-direction: row; min-height: 300px; }
+  .larkin2-page .larkin2-commit-card-content { flex: 1.2; }
+  .larkin2-page .larkin2-commit-card-media { flex: 0.8; min-height: 0; border-bottom: 0; }
+}
+@media (max-width: 900px) {
+  .larkin2-page .larkin2-commit-card-media { min-height: 110px; flex: none; }
+}

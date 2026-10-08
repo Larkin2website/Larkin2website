@@ -1,0 +1,9 @@
+{
+  "name": "@workspace/programme-content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "peerDependencies": { "react": ">=18" },
+  "devDependencies": { "react": "catalog:", "@types/react": "catalog:" }
+}

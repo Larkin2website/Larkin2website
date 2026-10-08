@@ -31,11 +31,12 @@ test("About Us and the culture statement stay in separate ordered reveal groups 
   assert.ok(section.includes("About Us"));
   assert.ok(section.includes("Production Culture Statement"));
   const body = section.match(/<p>(.*?)<\/p>/g) ?? [];
-  assert.equal(body.length, 3);
+  assert.equal(body.length, 5);
   assert.ok(body[0].includes("Through this platform we provide opportunities to apply for full-time crew roles"));
   assert.ok(body[1].includes("Please sign up to HETV Opportunities Hub to keep updated"));
-  assert.ok(body[2].includes("Explore roles, work experience, training and development opportunities on Larkin 2"));
-  assert.ok(body[2].includes("fair, inclusive recruitment"));
+  assert.ok(section.includes("We believe everyone should have the opportunity to work in film and television"));
+  assert.ok(section.includes("every person feels valued and heard."));
+  assert.ok(!section.includes("fair, inclusive recruitment"));
   assert.ok(!section.includes("HETV Opportunities Hub is operated by Larkin AV Limited."));
   assert.ok(!section.includes("AI-generated illustrations of television production"));
   assert.ok(!section.includes('href="/roles"'));
@@ -69,9 +70,22 @@ test("signup copy preserves consent and the no-email disclosure", () => {
 
 test("roles use approved wording without replacing live data or filters", () => {
   const roles = read("../pages/roles.tsx");
+  const detail = read("../pages/role-detail.tsx");
+  assert.ok(detail.includes("<h2>Explore all roles</h2>"));
+  assert.ok(!detail.includes("Explore every role connected to the production."));
   assert.ok(roles.includes("Search Available roles here"));
   assert.ok(roles.includes("Find jobs and career opportunities"));
   for (const text of ["useListPublicOpportunities", "filter-status", "filter-department", "filter-role-type"]) {
     assert.ok(roles.includes(text), text);
   }
+});
+test("round two: commitment 3 and new FAQ copy", () => {
+  assert.ok(home.includes("allowing every applicant to put themselves forward.\""));
+  assert.ok(!home.includes("shared with the relevant department"));
+  const faq = read("../pages/faq-data.ts");
+  assert.ok(faq.includes("Can other productions or companies advertise opportunities on this site?"));
+  assert.ok(faq.includes("opportunities@baileyopportunities.com"));
+  assert.ok(!faq.includes("tbc"));
+  assert.ok(read("../pages/faqs.tsx").includes("NewFaqAnswer"));
+  assert.ok(home.includes("NewFaqAnswer"));
 });

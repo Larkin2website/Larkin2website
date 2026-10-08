@@ -5,6 +5,8 @@ import {
 } from "@workspace/api-client-react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { SAMPLE_PROGRAMME } from "../data/sample-listings";
+import { splitPublicProgrammes } from "../lib/programme-presentation";
+import "./programme-overview.css";
 
 export function OpportunitiesIndexPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -76,6 +78,26 @@ export function OpportunitiesIndexPage() {
       retry: 2,
     },
   });
+  const { current, previous } = splitPublicProgrammes(opps);
+  const programmeCards = (programmes: typeof opps, closed: boolean) => programmes.map((opp, index) => (
+    <article key={opp.slug} className={`opp-card ${index % 2 !== 0 ? "is-reversed" : ""}`}>
+      <div className="opp-card-media">
+        <img src={`/larkin2-opportunities/images/${opp.image}`} alt="" loading="lazy" />
+      </div>
+      <div className="opp-card-content">
+        <div className="larkin2-eyebrow">Pathway / {opp.num}</div>
+        <h3 className="opp-card-title">{opp.title}</h3>
+        <p className="opp-card-desc">{opp.shortDescription}</p>
+        <div className="opp-card-meta">
+          <div className="opp-card-meta-item"><span>Status</span><strong>Applications {closed ? "closed" : "open"}</strong></div>
+          <div className="opp-card-meta-item"><span>Location</span><strong>{opp.location}</strong></div>
+        </div>
+        <div className="opp-card-action">
+          <MaskedLink href={`/opportunities/${opp.slug}`} className="larkin2-btn" testId={`link-opp-${opp.slug}`}>View programme details</MaskedLink>
+        </div>
+      </div>
+    </article>
+  ));
 
   return (
     <div className="larkin2-page opp-index-page" id="top">
@@ -105,6 +127,7 @@ export function OpportunitiesIndexPage() {
         </section>
 
         <section className="larkin2-section" style={{ borderTop: "none", paddingTop: 0 }}>
+          <h2>Current programmes</h2>
           <div className="opp-list">
             {import.meta.env.DEV && (
               <article className="opp-card">
@@ -135,39 +158,21 @@ export function OpportunitiesIndexPage() {
               <div className="opp-list-state" role="alert">
                 We couldn’t load opportunities right now. Please refresh the page and try again.
               </div>
-            ) : opps.length === 0 ? (
+            ) : current.length === 0 ? (
               <div className="opp-list-state">
-                There are no published opportunities at the moment. Please check back soon.
+                No programmes are currently accepting applications. You can explore previous programmes below.
               </div>
-            ) : opps.map((opp, index) => (
-              <article key={opp.slug} className={`opp-card ${index % 2 !== 0 ? "is-reversed" : ""}`}>
-                <div className="opp-card-media">
-                  <img src={`/larkin2-opportunities/images/${opp.image}`} alt="" loading="lazy" />
-                </div>
-                <div className="opp-card-content">
-                  <div className="larkin2-eyebrow">Pathway / {opp.num}</div>
-                  <h2 className="opp-card-title">{opp.title}</h2>
-                  <p className="opp-card-desc">{opp.shortDescription}</p>
-                  
-                  <div className="opp-card-meta">
-                    <div className="opp-card-meta-item">
-                      <span>Status</span>
-                      <strong>{opp.applicationStatus}</strong>
-                    </div>
-                    <div className="opp-card-meta-item">
-                      <span>Location</span>
-                      <strong>{opp.location}</strong>
-                    </div>
-                  </div>
-                  
-                  <div className="opp-card-action">
-                    <MaskedLink href={`/opportunities/${opp.slug}`} className="larkin2-btn" testId={`link-opp-${opp.slug}`}>
-                      View Opportunity
-                    </MaskedLink>
-                  </div>
-                </div>
-              </article>
-            ))}
+            ) : programmeCards(current, false)}
+          </div>
+        </section>
+        <section className="larkin2-section previous-programmes" id="previous-programmes" aria-labelledby="previous-programmes-title">
+          <h2 id="previous-programmes-title">Previous programmes</h2>
+          <p>Explore programmes whose application windows are closed. A closed application window does not confirm that the programme has been delivered.</p>
+          <div className="opp-list">
+            {programmesLoading ? <p role="status">Loading previous programmes…</p>
+              : programmesFailed ? <p role="alert">We couldn’t load previous programmes. Please refresh the page and try again.</p>
+              : previous.length ? programmeCards(previous, true)
+              : <p>No closed programmes are currently listed.</p>}
           </div>
         </section>
       </main>

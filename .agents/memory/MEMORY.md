@@ -19,3 +19,4 @@
 - [Workspace package installs](workspace-package-installs.md) — Package helper installs at the monorepo root; use a filtered pnpm command when adding a dependency to one artifact.
 - [Cookie notice is not consent](cookie-notice-consent.md) — Dismissing the public site's notice is informational only; optional tracking needs a separate opt-in.
 - [Animated menu focus timing](animated-menu-focus.md) — A just-opened mobile panel can still compute as hidden; defer focus until it becomes visible.
+- [Preview root paths](preview-root-paths.md) — Visit path-routed artifact roots with a trailing slash; the bare prefix can reach a non-app route.

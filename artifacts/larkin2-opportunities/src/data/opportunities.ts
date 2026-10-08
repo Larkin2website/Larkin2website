@@ -213,7 +213,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
         blocks: [
           { type: "paragraph", text: "To apply, please complete the online application form linked below and upload the required supporting documents." },
           { type: "paragraph", text: "Applications for the Creative Leadership Shadowing Programme: Director Pathway are now closed." },
-          { type: "paragraph", text: "Note: As a reminder, due to the anticipated volume of applications, we’re unfortunately unable to provide individual feedback to unsuccessful applicants. If you have not been contacted by Wednesday 5th August, please assume that you have been unsuccessful on this occasion." }
+          { type: "paragraph", text: "Note: If you have not been contacted by Wednesday 5th August, please assume that you have been unsuccessful on this occasion." }
         ]
       }
     ]
@@ -296,7 +296,7 @@ export const OPPORTUNITIES: Record<string, Opportunity> = {
         blocks: [
           { type: "paragraph", text: "To apply, please complete the online application form linked below and upload the required supporting documents." },
           { type: "paragraph", text: "Applications for the Creative Leadership Shadowing Programme: Producer Pathway are now closed." },
-          { type: "paragraph", text: "Note: As a reminder, due to the anticipated volume of applications, we’re unfortunately unable to provide individual feedback to unsuccessful applicants. If you have not been contacted by Wednesday 5th August, please assume that you have been unsuccessful on this occasion." }
+          { type: "paragraph", text: "Note: If you have not been contacted by Wednesday 5th August, please assume that you have been unsuccessful on this occasion." }
         ]
       }
     ]

@@ -7,26 +7,9 @@ import {
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { SAMPLE_PROGRAMME, SAMPLE_PROGRAMME_SLUG } from "../data/sample-listings";
 import NotFound from "./not-found";
+import { ProgrammeContent } from "@workspace/programme-content";
+import { developmentDetailContent } from "../lib/programme-presentation";
 
-function ProgrammeContent({ content }: { content: string }) {
-  const lines = content.split("\n").map((line) => line.trim()).filter(Boolean);
-  if (lines.length > 0 && lines.every((line) => line.startsWith("• "))) {
-    return <ul>{lines.map((line) => <li key={line}>{line.slice(2)}</li>)}</ul>;
-  }
-  if (lines.length > 0 && lines.every((line) => /^.+: https?:\/\//.test(line))) {
-    return (
-      <ul>
-        {lines.map((line) => {
-          const separator = line.indexOf(": http");
-          const label = line.slice(0, separator);
-          const href = line.slice(separator + 2);
-          return <li key={href}><a href={href} target="_blank" rel="noreferrer">{label}</a></li>;
-        })}
-      </ul>
-    );
-  }
-  return <p>{content}</p>;
-}
 
 export function OpportunityPage({ id }: { id: string }) {
   const isSample = import.meta.env.DEV && id === SAMPLE_PROGRAMME_SLUG;
@@ -174,7 +157,7 @@ export function OpportunityPage({ id }: { id: string }) {
                   <div className="opp-block" key={heading}>
                     <h2>{heading}</h2>
                     {content.map((paragraph, index) => (
-                      <ProgrammeContent key={`${heading}-${index}`} content={paragraph} />
+                      <ProgrammeContent key={`${heading}-${index}`} content={developmentDetailContent(displayOpp.slug, paragraph)} />
                     ))}
                   </div>
                 ))}

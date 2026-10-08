@@ -2,13 +2,16 @@ import { type CSSProperties, useCallback, useEffect, useRef, useState } from "re
 import { SiteHeader, MobileMenu, MaskedLink } from "../components/layout";
 import { HomeFooterReveal } from "../components/home-footer-reveal";
 import { SubscriptionSignup } from "../components/subscription-signup";
+import "./home-round-two.css";
+import { newFaq } from "./faq-data";
+import { NewFaqAnswer } from "./faq-answer";
 
 let hasVisitedHomeThisPageLoad = false;
 
 const commitments = [
   ["01", "Paid Opportunities", "All advertised roles, work experience placements and shadowing programmes are paid.", "commitment-paid-camera-crew.webp"],
   ["02", "Opportunities are Open for All", "We want everyone to feel welcome and supported when applying for opportunities on our productions. We are committed to making information available in alternative formats (such as Easy Read guides, which are available for all advertised roles) and providing additional support where needed.", "commitment-inclusive-crew.webp"],
-  ["03", "Every application matters", "We aim to keep applications open for a minimum of five working days, allowing every applicant to put themselves forward. Every application received within the advertised application window will be shared with the relevant department for consideration.", "commitment-alerts-slate.webp"],
+  ["03", "Every application matters", "We aim to keep applications open for a minimum of five working days, allowing every applicant to put themselves forward.", "commitment-alerts-slate.webp"],
   ["04", "Clear Timelines", "Every role listing will tell you when applications close, when you can expect to hear back and when to assume your application has progressed", "commitment-dates-calendar.webp"],
 ] as const;
 
@@ -430,7 +433,9 @@ export function Home() {
               <div className="larkin2-reveal" data-reveal>
                 <h3 className="larkin2-culture-heading" id="production-culture">Production Culture Statement</h3>
                 <div className="larkin2-copy">
-                  <p>Explore roles, work experience, training and development opportunities on Larkin 2, whether you’re new to HETV or an experienced crew member. We’re committed to increasing the awareness and opportunities on our productions through fair, inclusive recruitment and a respectful, supportive production culture, in the process creating opportunities for people at every level from every background.</p>
+                  <p>We believe everyone should have the opportunity to work in film and television - regardless of background, experience level, or personal circumstances. Our recruitment processes are designed to be transparent, inclusive, and fair at every stage.</p>
+                  <p>We actively seek to create pathways for people who are new to the industry as well as those who are established. Through partnerships with training providers, community organisations, regional talent networks, unions, agents and guilds, we ensure that opportunity reaches those who might not otherwise have access to it as well as those that are already established.</p>
+                  <p>Our production values centre on respect, collaboration, and genuine support. We are committed to building crews that reflect the diversity of the communities we work in - and to creating a working environment where every person feels valued and heard.</p>
                 </div>
               </div>
             </div>
@@ -523,6 +528,10 @@ export function Home() {
               <div className="hetv-faq-item">
                 <h3>Do you offer individual feedback on applications?</h3>
                 <p>Due to the volume of applications we receive, we’re unable to provide individual feedback</p>
+              </div>
+              <div className="hetv-faq-item">
+                <h3>{newFaq.question}</h3>
+                <NewFaqAnswer />
               </div>
               <MaskedLink href="/faqs" className="larkin2-btn" testId="link-more-faqs">View more FAQs</MaskedLink>
             </div>

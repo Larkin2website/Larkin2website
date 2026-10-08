@@ -218,7 +218,7 @@ export function RoleDetailPage({ id }: { id: string }) {
 
         <section className="roles-detail-footer larkin2-section">
           <p className="larkin2-eyebrow">HETV Hub opportunities</p>
-          <h2>Explore every role connected to the production.</h2>
+          <h2>Explore all roles</h2>
           <MaskedLink href="/roles" className="larkin2-btn roles-detail-footer-link" testId="link-role-return">All roles</MaskedLink>
         </section>
       </main>

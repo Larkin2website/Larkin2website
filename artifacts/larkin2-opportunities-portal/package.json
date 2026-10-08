@@ -11,6 +11,7 @@
     "test": "node --experimental-strip-types --test src/**/*.test.mjs"
   },
   "devDependencies": {
+    "@workspace/programme-content": "workspace:*",
     "@clerk/react": "latest",
     "@clerk/themes": "latest",
     "@hookform/resolvers": "^3.10.0",

@@ -43,3 +43,22 @@
   background: var(--orange);
   color: var(--ink);
 }
+
+.previous-programmes {
+  margin-top: 3rem;
+  scroll-margin-top: 110px;
+}
+
+.previous-programmes > h2 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  margin: 0 0 1rem;
+}
+
+.previous-programmes > p {
+  max-width: 65ch;
+  line-height: 1.6;
+}
+
+.previous-programmes .hetv-programme-item h3 {
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+}

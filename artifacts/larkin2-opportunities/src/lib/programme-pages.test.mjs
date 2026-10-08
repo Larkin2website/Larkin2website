@@ -49,12 +49,14 @@ test("overview pages retain the original guidance, programme links and truthful 
     "No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available.",
     "Designed for industry professionals looking to step up or transition into High-End Television drama.",
     'href="/opportunities/first-credit" testId="link-opp-first-credit"',
-    'href="/opportunities/director-pathway" testId="link-opp-director"',
-    'href="/opportunities/producer-pathway" testId="link-opp-producer"',
   ]) assert.ok(pages.includes(text), text);
-  for (const id of ["first-credit", "director-pathway", "producer-pathway"]) {
-    assert.ok(pages.includes(`OPPORTUNITIES["${id}"].applicationStatus`));
-  }
+  assert.ok(pages.includes('OPPORTUNITIES["first-credit"].applicationStatus'));
+  assert.ok(pages.includes("<DevelopmentListings />"));
+  const listings = read("../components/development-listings.tsx");
+  assert.ok(listings.includes("useListPublicProgrammes"));
+  assert.ok(listings.includes("splitPublicProgrammes"));
+  assert.ok(listings.includes('href={`/opportunities/${programme.slug}`}'));
+  assert.ok(listings.includes('Applications {closed ? "closed" : "open"}'));
   assert.equal((pages.match(/<h1\b/g) ?? []).length, 2);
   assert.equal((pages.match(/<main id="content">/g) ?? []).length, 2);
   assert.ok(!pages.includes("larkin2-reveal"));

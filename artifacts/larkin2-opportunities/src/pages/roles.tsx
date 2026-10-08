@@ -244,7 +244,10 @@ export function RolesPage() {
             <div className="roles-grid">{sampleRoleCard}</div>
           )}
         </section>
-        <section className="roles-page-footer larkin2-section" aria-label="Return to homepage">
+        <section className="roles-page-footer larkin2-section" aria-label="More opportunities">
+          <MaskedLink href="/development#previous-programmes" className="larkin2-btn" testId="link-roles-previous">
+            Explore previous development programmes
+          </MaskedLink>
           <MaskedLink href="/" className="larkin2-btn" testId="link-roles-home">
             Back to homepage
           </MaskedLink>

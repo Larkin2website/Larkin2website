@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { SiteHeader, MobileMenu, SiteFooter, MaskedLink } from "../components/layout";
 import { OPPORTUNITIES } from "../data/opportunities";
+import { DevelopmentListings } from "../components/development-listings";
 import "./programme-overview.css";
 
 function useHeaderScroll() {
@@ -115,6 +116,9 @@ export function TrainingPage() {
               <p>No standalone training courses are currently listed. Approved courses, dates and eligibility will appear here when available. In the meantime, you can read about First Credit.</p>
             </div>
           </div>
+          <div className="previous-programmes">
+            <MaskedLink href="/development#previous-programmes" testId="link-training-previous">Explore previous development programmes</MaskedLink>
+          </div>
         </section>
       </main>
 
@@ -125,8 +129,6 @@ export function TrainingPage() {
 
 export function DevelopmentPage() {
   const { menuOpen, setMenuOpen, scrolled, headerHidden, headerRef, menuButtonRef } = useHeaderScroll();
-  const directorStatus = OPPORTUNITIES["director-pathway"].applicationStatus;
-  const producerStatus = OPPORTUNITIES["producer-pathway"].applicationStatus;
 
   return (
     <div className="larkin2-page programme-overview-page" id="top">
@@ -157,24 +159,7 @@ export function DevelopmentPage() {
             <p className="larkin2-copy">Providing structured opportunities that support development at different career stages.</p>
             <p className="larkin2-small">Designed for industry professionals looking to step up or transition into High-End Television drama.</p>
           </div>
-          <div className="hetv-programme-list">
-            <div className="hetv-programme-item">
-              <div className={`programme-status-badge ${directorStatus === "Open" ? "is-open" : "is-closed"}`}>
-                Applications {directorStatus}
-              </div>
-              <h2>Creative Leadership Shadowing Programme: Director Pathway</h2>
-              <p>The Creative Leadership Shadowing Programme: Director Pathway is designed for experienced directors who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
-              <MaskedLink href="/opportunities/director-pathway" testId="link-opp-director">View Director Pathway</MaskedLink>
-            </div>
-            <div className="hetv-programme-item">
-              <div className={`programme-status-badge ${producerStatus === "Open" ? "is-open" : "is-closed"}`}>
-                Applications {producerStatus}
-              </div>
-              <h2>Creative Leadership Shadowing Programme: Producer Pathway</h2>
-              <p>The Creative Leadership Shadowing Programme: Producer Pathway is designed for experienced producers who have established their craft through scripted film and television and are seeking to progress their careers within High-End Television (HETV) drama.</p>
-              <MaskedLink href="/opportunities/producer-pathway" testId="link-opp-producer">View Producer Pathway</MaskedLink>
-            </div>
-          </div>
+          <DevelopmentListings />
         </section>
       </main>
 

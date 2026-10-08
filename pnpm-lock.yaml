@@ -559,6 +559,9 @@ importers:
       '@workspace/api-client-react':
         specifier: workspace:*
         version: link:../../lib/api-client-react
+      '@workspace/programme-content':
+        specifier: workspace:*
+        version: link:../../lib/programme-content
       axe-core:
         specifier: ^4.13.0
         version: 4.13.0
@@ -769,6 +772,9 @@ importers:
       '@workspace/api-client-react':
         specifier: workspace:*
         version: link:../../lib/api-client-react
+      '@workspace/programme-content':
+        specifier: workspace:*
+        version: link:../../lib/programme-content
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1
@@ -1067,6 +1073,15 @@ importers:
       drizzle-kit:
         specifier: ^0.31.10
         version: 0.31.10
+
+  lib/programme-content:
+    devDependencies:
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.17
+      react:
+        specifier: 'catalog:'
+        version: 19.1.0
 
   scripts:
     dependencies:

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { MobileMenu, SiteFooter, SiteHeader } from "../components/layout";
 import "./faqs.css";
+import { newFaq } from "./faq-data";
+import { NewFaqAnswer } from "./faq-answer";
 
 const questions = [
   {
@@ -11,6 +13,7 @@ const questions = [
     question: "Why do some roles use an application form and others have a different way to apply?",
     answer: "One of our commitments is to widen access to our industry and support consistent processes. With this, as well as the recruitment that takes place directly within departments, we also open up a number of roles in each department to a recruitment process, which has a clear application process and form.",
   },
+  { question: newFaq.question, answer: null },
 ];
 
 export function FAQsPage() {
@@ -69,7 +72,11 @@ export function FAQsPage() {
                 <h2 id={`faq-question-${index + 1}`} data-testid={`text-faq-question-${index + 1}`}>
                   <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>{question}
                 </h2>
-                <p data-testid={`text-faq-answer-${index + 1}`}>{answer}</p>
+                {answer === null ? (
+                  <div data-testid={`text-faq-answer-${index + 1}`}>
+                    <NewFaqAnswer />
+                  </div>
+                ) : <p data-testid={`text-faq-answer-${index + 1}`}>{answer}</p>}
               </section>
             ))}
           </div>

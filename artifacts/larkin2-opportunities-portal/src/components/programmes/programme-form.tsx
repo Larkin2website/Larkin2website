@@ -19,6 +19,7 @@ import {
   FormMessage 
 } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SectionContentEditor } from "./section-content-editor";
 import {
   Select,
   SelectContent,
@@ -446,10 +447,8 @@ export function ProgrammeForm({ initialValues, onSubmit, isSubmitting }: Program
                           name={`sections.${index}.content`}
                           render={({ field: inputField }) => (
                             <FormItem className="min-w-0">
-                              <FormLabel className={sharedLabelClasses}>Content (Markdown)</FormLabel>
-                              <FormControl>
-                                <Textarea {...inputField} className={`min-h-[180px] resize-y bg-[#171b1d] border-[#2a2f31] rounded-none focus-visible:ring-primary focus-visible:border-primary font-mono text-sm min-w-0 break-words font-sans`} />
-                              </FormControl>
+                              <FormLabel className={sharedLabelClasses}>Content</FormLabel>
+                              <SectionContentEditor value={inputField.value} name={inputField.name} onChange={inputField.onChange} onBlur={inputField.onBlur} inputRef={inputField.ref} />
                               <FormMessage className="break-words" />
                             </FormItem>
                           )}
