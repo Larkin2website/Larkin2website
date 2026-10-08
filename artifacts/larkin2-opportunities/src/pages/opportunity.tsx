@@ -130,7 +130,6 @@ export function OpportunityPage({ id }: { id: string }) {
         <section className="opp-hero larkin2-section">
           <div className="opp-hero-grid">
              <div className="opp-hero-content">
-                 <div className="larkin2-eyebrow">Pathway / {displayOpp.num}</div>
                  <h1 className="opp-title">{displayOpp.title}</h1>
                  <p className="larkin2-intro">{displayOpp.shortDescription}</p>
                 <div className="opp-meta">

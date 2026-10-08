@@ -82,7 +82,6 @@ export function OpportunitiesIndexPage() {
   const programmeCards = (programmes: typeof opps) => programmes.map((opp) => (
     <article key={opp.slug} className="opp-card">
       <div className="opp-card-content">
-        <div className="larkin2-eyebrow">Pathway / {opp.num}</div>
         <h3 className="opp-card-title">{opp.title}</h3>
         <p className="opp-card-desc">{opp.shortDescription}</p>
         <div className="opp-card-meta">
