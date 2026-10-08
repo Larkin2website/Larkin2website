@@ -3,8 +3,7 @@ import { SiteHeader, MobileMenu, MaskedLink } from "../components/layout";
 import { HomeFooterReveal } from "../components/home-footer-reveal";
 import { SubscriptionSignup } from "../components/subscription-signup";
 import "./home-round-two.css";
-import { newFaq } from "./faq-data";
-import { NewFaqAnswer } from "./faq-answer";
+import { HomeFaqs } from "../components/home-faqs";
 
 let hasVisitedHomeThisPageLoad = false;
 
@@ -525,14 +524,7 @@ export function Home() {
               <h2 className="larkin2-title" id="faqs-title"><span className="larkin2-mask"><span>Frequently Asked Questions</span></span></h2>
             </div>
             <div className="larkin2-copy larkin2-reveal" data-reveal style={{ paddingBlock: 0 }}>
-              <div className="hetv-faq-item">
-                <h3>Do you offer individual feedback on applications?</h3>
-                <p>Due to the volume of applications we receive, we’re unable to provide individual feedback</p>
-              </div>
-              <div className="hetv-faq-item">
-                <h3>{newFaq.question}</h3>
-                <NewFaqAnswer />
-              </div>
+              <HomeFaqs />
               <MaskedLink href="/faqs" className="larkin2-btn" testId="link-more-faqs">View more FAQs</MaskedLink>
             </div>
           </div>

@@ -3185,6 +3185,10 @@
 }
 
 /* FAQs */
+#faqs .larkin2-copy {
+  min-width: 0;
+}
+
 .hetv-faq-item h3 {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 24px;
@@ -3196,6 +3200,70 @@
   color: var(--muted);
   line-height: 1.6;
   margin: 0;
+}
+
+.home-faq-dropdown {
+  border-top: 1px solid var(--line);
+}
+
+.home-faq-dropdown:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
+
+.home-faq-dropdown > summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 48px;
+  padding: 24px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.home-faq-dropdown > summary::-webkit-details-marker {
+  display: none;
+}
+
+.home-faq-dropdown > summary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.home-faq-dropdown > summary h3 {
+  min-width: 0;
+  margin: 0;
+  font-size: clamp(20px, 2vw, 24px);
+  line-height: 1.35;
+}
+
+.home-faq-chevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 5px;
+  color: var(--ink);
+  transition: transform 200ms ease;
+}
+
+.home-faq-dropdown[open] .home-faq-chevron {
+  transform: rotate(180deg);
+}
+
+.home-faq-answer {
+  padding: 0 0 24px;
+  overflow-wrap: anywhere;
+}
+
+.home-faq-answer p + p {
+  margin-top: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-faq-chevron {
+    transition: none;
+  }
 }
 
 /* Update Top Header for HETV Hub */
