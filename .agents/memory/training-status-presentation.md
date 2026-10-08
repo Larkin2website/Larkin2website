@@ -32,3 +32,12 @@ page after the Training Courses changes.
 
 **How to apply:** These requests concern overview presentation; retain registration
 safety and do not relabel unverified courses as open or closed.
+
+Course registration links must lead to the appropriate course form, not the
+Larkin website.
+
+**Why:** The user explicitly requested direct form links when correcting the
+registration sidebar buttons.
+
+**How to apply:** Verify the course-specific form destination and distinguish
+course registration from subscribing to future hub updates.
