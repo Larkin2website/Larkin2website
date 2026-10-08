@@ -46,5 +46,6 @@ describe("development programme archive", () => {
     expect(screen.queryByText(/does not confirm that a programme has been delivered/)).not.toBeInTheDocument();
     expect(screen.getByText("These development programme application windows are closed.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Explore all closed programme records" })).toHaveAttribute("href", "/opportunities#previous-programmes");
+    expect(screen.getByRole("link", { name: "Explore all closed programme records" })).toHaveClass("larkin2-btn");
   });
 });

@@ -3147,6 +3147,18 @@
 .hetv-programme-item .larkin2-link {
   margin-top: auto;
 }
+
+.development-archive-button {
+  max-width: 100%;
+}
+
+.development-archive-button .larkin2-link-label {
+  min-width: 0;
+  height: auto;
+  line-height: 1.25;
+  text-align: center;
+}
+
 @media (max-width: 767px) {
   .hetv-programme-list {
     grid-template-columns: 1fr;
