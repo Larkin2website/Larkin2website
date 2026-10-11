@@ -146,7 +146,6 @@ export function RolesPage() {
       
       <main id="content">
         <section className="roles-hero larkin2-section">
-          <div className="larkin2-eyebrow" style={{ marginBottom: "20px" }}>Opportunities</div>
           <h1 className="roles-title">Search Available roles here</h1>
           <p className="roles-intro">Find jobs and career opportunities</p>
         </section>

@@ -183,7 +183,6 @@ export function ContactPage() {
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} menuButtonRef={menuButtonRef} />
       <main id="content">
         <header className="legal-hero">
-          <span className="larkin2-eyebrow">Get in touch / 01</span>
           <h1>Contact Us</h1>
           <p>Questions about a role, a training course or a development programme? Send us a note and the team will pick it up.</p>
         </header>
