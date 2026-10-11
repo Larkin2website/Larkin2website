@@ -54,9 +54,13 @@ preservation evidence from this execution.
 The broad programme baseline seed is NOT part of this procedure. The import does
 not enqueue subscriber emails or register anyone with a course provider.
 
-## Later production content approval
+## Production handover planned after the development import
 
-No production data was inspected or changed, and nothing was published.
+At the end of the development import, no production data had been inspected or
+changed, and nothing had been published. Live course content was subsequently
+provisioned through the authorised staff portal on 8 October 2026; see
+`docs/training-live-publication.md` for results and the remaining owner-run Publish
+step.
 
 Before publishing, review the dates and original source wording with the content
 owner, especially the two unresolved date issues above. Recheck Career Mapping:
@@ -74,8 +78,10 @@ Publish only reviewed records; close the four past courses, and keep Budgeting
 registration unconfirmed. Review existing same-slug records rather than overwriting.
 
 Finally check the live training page, all-opportunities archive, all six details,
-and disabled Apply actions for closed/unconfirmed records. No third-party form
-submission is needed. Hub interest registration is not course registration.
+and disabled Apply actions for closed records and known-date uncertain windows.
+For incomplete source dates, retain the provider form with neutral wording where
+the current registration policy permits it. No third-party form submission is
+needed. Hub interest registration is not course registration.
 
 ## Date-only policy and editor behavior
 
