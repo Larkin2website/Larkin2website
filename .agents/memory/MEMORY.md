@@ -25,3 +25,4 @@
 - [Programme status presentation](training-status-presentation.md) — Do not publish inferred “unconfirmed” status; retain source forms when dates are missing, closed gating, and open-first ordering.
 - [Read-only browser audits](read-only-browser-audits.md) — Chromium isolation must include OS user storage as well as its browser profile in Plan mode.
 - [Enquiry recipient](enquiry-recipient.md) — All HETV enquiries go to admin@HETVopportunities.com; a recipient address does not approve a sender.
+- [Role profile intake](role-profile-workflow.md) — People complete the role-profile template before portal entry; extend the existing role form to capture the same information.
