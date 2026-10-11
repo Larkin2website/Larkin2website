@@ -124,7 +124,7 @@ export function PrivacyNoticePage() {
         </div>
         <h3>Update subscriptions</h3>
         <p>When you subscribe, we store your name, email address, affirmative consent and consent timestamp. Additional interests and profile details are optional. We are currently collecting interest only and do not send automated update emails. New signups do not receive or need a personal management link. Previously issued private links remain usable; a hash of each existing link&apos;s token is stored in our database, and some older visitors may have saved their token in their browser.</p>
-         <p>To change preferences or unsubscribe, you can request a short-lived verification code sent to your subscribed email address. This verification-only message is sent through Resend from hetv@gentraxtech.com; it does not mean that automated opportunity updates are being sent. Entering an email address alone cannot remove or reveal a subscription. Existing private-link holders can still use their original link. For an erasure or other data-rights request, email <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>. When a subscription is deactivated, we retain a suppression record so the opt-out continues to be respected.</p>
+         <p>To change preferences or unsubscribe, you can request a short-lived verification code sent to your subscribed email address. This verification-only message is sent through Resend from hetv@gentraxtech.com; it does not mean that automated opportunity updates are being sent. Entering an email address alone cannot remove or reveal a subscription. Existing private-link holders can still use their original link. For an erasure or other data-rights request, email <a href="mailto:admin@HETVopportunities.com">admin@HETVopportunities.com</a>. When a subscription is deactivated, we retain a suppression record so the opt-out continues to be respected.</p>
       </Section>
       <Section number={5} title="Automated decision-making">
         <p>Under data protection laws, you have the right not to have significant decisions made about you without human involvement. All decisions about our roles are made by humans.</p>
@@ -167,7 +167,7 @@ export function PrivacyNoticePage() {
         <p>You also have the right to complain to us or your supervisory authority (in the UK this is the ICO) if you have any concerns about how our personal data is being processed. We ask that you contact us with any complaints in the first instance.</p>
       </Section>
       <Section number={11} title="Contact us">
-        <p>If you have any questions about our privacy notice or wish to exercise your rights, please contact us at <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>.</p>
+        <p>If you have any questions about our privacy notice or wish to exercise your rights, please contact us at <a href="mailto:admin@HETVopportunities.com">admin@HETVopportunities.com</a>.</p>
       </Section>
     </LegalPage>
   );

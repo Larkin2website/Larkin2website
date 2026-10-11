@@ -49,7 +49,7 @@ it("preserves inputs on failure and reuses the requestId for an identical retry"
   renderPage();
   await fill(user);
   await user.click(screen.getByTestId("button-contact-submit"));
-  expect(await screen.findByRole("alert")).toHaveTextContent("opportunities@baileyopportunities.com");
+  expect(await screen.findByRole("alert")).toHaveTextContent("admin@HETVopportunities.com");
   expect(screen.getByLabelText(/Subject/)).toHaveValue("Trainee roles");
   await user.click(screen.getByTestId("button-contact-submit"));
   expect(api.mutateAsync).toHaveBeenCalledTimes(2);

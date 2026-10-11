@@ -55,7 +55,7 @@
 .hetv-contact-page .contact-aside-block:last-child { border-bottom: 1px solid var(--line); }
 .hetv-contact-page .contact-aside-block p { margin: 10px 0 0; color: var(--secondary); font-size: 15px; line-height: 1.6; }
 .hetv-contact-page .contact-aside-note { font-size: 13px !important; color: var(--muted) !important; }
-.hetv-contact-page .contact-email { display: inline-block; margin-top: 10px; font-family: 'Space Grotesk', sans-serif; font-size: clamp(17px, 1.6vw, 21px); overflow-wrap: anywhere; }
+.hetv-contact-page .contact-email { display: block; margin-top: 10px; font-family: 'Space Grotesk', sans-serif; font-size: clamp(17px, 1.6vw, 21px); overflow-wrap: anywhere; }
 @media (max-width: 1024px) {
   .hetv-contact-page .contact-layout { grid-template-columns: 1fr; }
 }

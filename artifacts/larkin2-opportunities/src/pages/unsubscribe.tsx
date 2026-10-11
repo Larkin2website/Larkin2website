@@ -277,7 +277,7 @@ export function UnsubscribePage() {
         <div className="legal-content">
           <article className="legal-document">
              <h2>Need to make a change?</h2>
-              <p>Verify your email to manage preferences or unsubscribe. We send a code only for this request, not opportunity alerts. For a privacy request or help, email <a href="mailto:opportunities@baileyopportunities.com">opportunities@baileyopportunities.com</a>.</p>
+              <p>Verify your email to manage preferences or unsubscribe. We send a code only for this request, not opportunity alerts. For a privacy request or help, email <a href="mailto:admin@HETVopportunities.com">admin@HETVopportunities.com</a>.</p>
              {done ? <div role="status" data-testid="status-unsubscribed">
               <h2>Request processed</h2>
                <p>Your subscription has been stopped. If you used an older private link, any subscription associated with it is now stopped.</p>

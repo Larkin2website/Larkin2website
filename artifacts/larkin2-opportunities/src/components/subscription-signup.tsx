@@ -52,7 +52,7 @@ export function SubscriptionSignup() {
       <span className="hetv-signup-kicker">Request processed</span>
       <h3>Thank you for your interest.</h3>
       <p>If this is a new signup, we have recorded your interest in general HETV news and announcements. Repeating a signup will not change or reactivate an existing subscription. No email has been sent, and automated updates are not running.</p>
-      <p>To change your details or unsubscribe later, <a href="mailto:opportunities@baileyopportunities.com">contact HETV staff</a>. They will verify your request before making changes.</p>
+      <p>To change your details or unsubscribe later, <a href="mailto:admin@HETVopportunities.com">contact HETV staff</a>. They will verify your request before making changes.</p>
     </div>
   );
 
@@ -87,7 +87,7 @@ export function SubscriptionSignup() {
           data-testid="button-signup-skip">{busy ? "Saving…" : "Skip preferences"}</button>
       </div>
       {error && <p id="signup-error" ref={errorRef} role="alert" tabIndex={-1}>{error}</p>}
-      <p className="hetv-signup-footnote">We are collecting interest, not sending automated marketing emails or opportunity alerts. Signing up does not send an email. Read our <Link href="/privacy">Privacy Notice</Link>. For later changes or unsubscribe requests, <a href="mailto:opportunities@baileyopportunities.com">contact HETV staff</a>.</p>
+      <p className="hetv-signup-footnote">We are collecting interest, not sending automated marketing emails or opportunity alerts. Signing up does not send an email. Read our <Link href="/privacy">Privacy Notice</Link>. For later changes or unsubscribe requests, <a href="mailto:admin@HETVopportunities.com">contact HETV staff</a>.</p>
     </form>
   );
 }

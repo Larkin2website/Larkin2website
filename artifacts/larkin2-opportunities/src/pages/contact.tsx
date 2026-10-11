@@ -4,7 +4,7 @@ import { useSubmitContactEnquiry } from "@workspace/api-client-react";
 import { MobileMenu, SiteFooter, SiteHeader } from "../components/layout";
 import "./contact.css";
 
-export const CONTACT_EMAIL = "opportunities@baileyopportunities.com";
+export const CONTACT_EMAIL = "admin@HETVopportunities.com";
 const TITLE = "Contact Us | HETV Opportunities Hub";
 const DESCRIPTION = "Send the HETV Opportunities Hub team a question about roles, training, development programmes or the Hub itself.";
 

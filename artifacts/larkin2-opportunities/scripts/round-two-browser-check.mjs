@@ -49,7 +49,7 @@ try {
       assert.equal(await page.locator('a[href$="/development#previous-programmes"]').count(), 1);
     }
     await page.goto(`${base}/faqs`);
-    assert.equal(await page.locator('main a[href="mailto:opportunities@baileyopportunities.com"]').count(), 1);
+    assert.equal(await page.locator('main a[href="mailto:admin@HETVopportunities.com"]').count(), 1);
     console.log(`${width}×${height}: core ${Math.round(core.height)}px, commitments ${Math.round(commitmentHeight)}px; archive links, feedback removal, FAQ, keyboard and overflow passed`);
     await page.close();
   }

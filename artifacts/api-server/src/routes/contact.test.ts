@@ -135,7 +135,7 @@ test("mail transport requires explicit approved sender and verified domain, chec
   const mail = calls.find(c => c.path === "/emails")!;
   const sent = JSON.parse(mail.options.body!);
   assert.equal(sent.from, "HETV Opportunities Hub <hetv@gentraxtech.com>");
-  assert.deepEqual(sent.to, [CONTACT_RECIPIENT]);
+  assert.deepEqual(sent.to, ["admin@HETVopportunities.com"]);
   assert.equal(sent.reply_to, body.email);
   assert.equal(mail.options.headers?.["Idempotency-Key"], `hetv-contact/${body.requestId}`);
   assert.equal(sent.html, undefined);

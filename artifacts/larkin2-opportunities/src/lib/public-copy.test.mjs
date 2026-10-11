@@ -84,8 +84,9 @@ test("round two: commitment 3 and new FAQ copy", () => {
   assert.ok(!home.includes("shared with the relevant department"));
   const faq = read("../pages/faq-data.ts");
   assert.ok(faq.includes("Can other productions or companies advertise opportunities on this site?"));
-  assert.ok(faq.includes("opportunities@baileyopportunities.com"));
+  assert.ok(faq.includes("admin@HETVopportunities.com"));
   assert.ok(!faq.includes("tbc"));
   assert.ok(read("../pages/faqs.tsx").includes("NewFaqAnswer"));
-  assert.ok(home.includes("NewFaqAnswer"));
+  assert.ok(home.includes("<HomeFaqs />"));
+  assert.ok(read("../components/home-faqs.tsx").includes("<NewFaqAnswer />"));
 });

@@ -124,7 +124,7 @@ export function PreferencesPage() {
                {saved && <div role="status" data-testid="status-signup-processed">
                  <h2>Thank you for your interest.</h2>
                  <p>If this is a new signup, we have recorded your choices. Repeating signup does not change or reactivate an existing subscription. No email has been sent; automated updates are not running.</p>
-                 <p>For later changes, unsubscribe, or privacy requests, <a href="mailto:opportunities@baileyopportunities.com">contact HETV staff</a>. They will verify your request before making changes.</p>
+                 <p>For later changes, unsubscribe, or privacy requests, <a href="mailto:admin@HETVopportunities.com">contact HETV staff</a>. They will verify your request before making changes.</p>
                  <Link href="/">Return to the hub</Link>
                </div>}
                {draft && !saved && <>

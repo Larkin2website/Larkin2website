@@ -33,8 +33,8 @@ try {
     await second.locator("summary").click();
     assert.equal(await second.locator(".home-faq-answer").isVisible(), true);
     assert.equal(await first.locator(".home-faq-answer").isVisible(), true);
-    const email = second.getByRole("link", { name: "opportunities@baileyopportunities.com" });
-    assert.equal(await email.getAttribute("href"), "mailto:opportunities@baileyopportunities.com");
+    const email = second.getByRole("link", { name: "admin@HETVopportunities.com" });
+    assert.equal(await email.getAttribute("href"), "mailto:admin@HETVopportunities.com");
     assert.equal(await second.locator("p").count(), 3);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     assert.equal(await items.evaluateAll(nodes => nodes.every(el => {

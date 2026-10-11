@@ -2,7 +2,7 @@ import { ReplitConnectors } from "@replit/connectors-sdk";
 import type { ContactEnquiryInput } from "@workspace/api-zod";
 import { SubmitContactEnquiryBody } from "@workspace/api-zod";
 
-export const CONTACT_RECIPIENT = "opportunities@baileyopportunities.com";
+export const CONTACT_RECIPIENT = "admin@HETVopportunities.com";
 
 type ProxyOptions = {
   method: string;

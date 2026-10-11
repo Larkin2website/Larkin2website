@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { Router, type RequestHandler } from "express";
 import { SubmitContactEnquiryBody, SubmitContactEnquiryResponse } from "@workspace/api-zod";
 import type { ContactEnquiryInput } from "@workspace/api-zod";
-import { createContactDelivery } from "../lib/contact-delivery";
+import { createContactDelivery, CONTACT_RECIPIENT } from "../lib/contact-delivery";
 import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
 import { logger } from "../lib/logger";
 
@@ -10,7 +10,7 @@ const accepted = SubmitContactEnquiryResponse.parse({
   status: "accepted",
   message: "Your message has been accepted for delivery to the HETV team.",
 });
-const unavailable = "We couldn’t send your message. Please try again or email opportunities@baileyopportunities.com directly.";
+const unavailable = `We couldn’t send your message. Please try again or email ${CONTACT_RECIPIENT} directly.`;
 type Delivery = { send(input: ContactEnquiryInput): Promise<void> };
 
 export function createContactRouter(options: {

@@ -6,7 +6,7 @@ content remain available.
 
 ## Delivery and sender approval
 
-The recipient is `opportunities@baileyopportunities.com`. The existing Resend
+The owner-confirmed recipient is `admin@HETVopportunities.com`. The existing Resend
 connection is used without exposing its credentials to the browser.
 
 `CONTACT_ENQUIRY_FROM` is a non-secret configuration value containing the sender
