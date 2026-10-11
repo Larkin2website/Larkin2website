@@ -24,3 +24,4 @@
 - [Programme imagery](programme-imagery.md) — The user does not want images for programmes; keep programme/course presentation text-only.
 - [Programme status presentation](training-status-presentation.md) — Do not publish inferred “unconfirmed” status; retain source forms when dates are missing, closed gating, and open-first ordering.
 - [Read-only browser audits](read-only-browser-audits.md) — Chromium isolation must include OS user storage as well as its browser profile in Plan mode.
+- [Enquiry recipient](enquiry-recipient.md) — All HETV enquiries go to admin@HETVopportunities.com; a recipient address does not approve a sender.
