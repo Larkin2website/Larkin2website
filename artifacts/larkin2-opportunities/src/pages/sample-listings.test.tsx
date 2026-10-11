@@ -14,7 +14,8 @@ const api = vi.hoisted(() => ({
   recordPublicEngagement: vi.fn(),
 }));
 
-vi.mock("@workspace/api-client-react", () => ({
+vi.mock("@workspace/api-client-react", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@workspace/api-client-react")>(),
   getListPublicOpportunityOptionsQueryKey: () => ["/public/opportunity-options"],
   getListPublicOpportunitiesQueryKey: () => ["/public/opportunities"],
   getListPublicProgrammesQueryKey: () => ["/public/programmes"],

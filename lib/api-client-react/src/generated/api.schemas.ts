@@ -657,7 +657,67 @@ export interface OpportunityDetailInput {
   value: string;
 }
 
+/**
+ * @nullable
+ */
+export type PublicOpportunityWorkArrangement = typeof PublicOpportunityWorkArrangement[keyof typeof PublicOpportunityWorkArrangement] | null;
+
+
+export const PublicOpportunityWorkArrangement = {
+  in_person: 'in_person',
+  hybrid: 'hybrid',
+  work_from_home: 'work_from_home',
+} as const;
+
 export interface PublicOpportunity {
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  accountableTo?: string | null;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  contractDatesHours?: string | null;
+  /** @nullable */
+  workArrangement?: PublicOpportunityWorkArrangement;
+  /**
+     * @maxItems 5
+     * @items.minLength 1
+     * @items.maxLength 500
+     */
+  worksCloselyWith?: string[];
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  additionalInformation?: string | null;
+  /**
+     * @maxLength 320
+     * @nullable
+     */
+  applicationEmail?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     */
+  applicationClosingDate?: string | null;
+  /**
+     * @nullable
+     * @pattern ^([01]\d|2[0-3]):[0-5]\d$
+     */
+  applicationClosingTime?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  applicationInstructions?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  trainingApplicationInstructions?: string | null;
   id: string;
   slug: string;
   title: string;
@@ -682,7 +742,123 @@ export interface PublicOpportunity {
   urgent: boolean;
 }
 
+/**
+ * @nullable
+ */
+export type OpportunityWorkArrangement = typeof OpportunityWorkArrangement[keyof typeof OpportunityWorkArrangement] | null;
+
+
+export const OpportunityWorkArrangement = {
+  in_person: 'in_person',
+  hybrid: 'hybrid',
+  work_from_home: 'work_from_home',
+} as const;
+
+/**
+ * Internal only
+ * @nullable
+ */
+export type OpportunityRecruitmentRoute = typeof OpportunityRecruitmentRoute[keyof typeof OpportunityRecruitmentRoute] | null;
+
+
+export const OpportunityRecruitmentRoute = {
+  independent: 'independent',
+  production: 'production',
+} as const;
+
+/**
+ * Internal only
+ * @nullable
+ */
+export type OpportunityInterviewFormat = typeof OpportunityInterviewFormat[keyof typeof OpportunityInterviewFormat] | null;
+
+
+export const OpportunityInterviewFormat = {
+  virtual: 'virtual',
+  in_person: 'in_person',
+  phone_screening: 'phone_screening',
+  not_applicable: 'not_applicable',
+} as const;
+
 export interface Opportunity {
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  accountableTo?: string | null;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  contractDatesHours?: string | null;
+  /** @nullable */
+  workArrangement?: OpportunityWorkArrangement;
+  /**
+     * @maxItems 5
+     * @items.minLength 1
+     * @items.maxLength 500
+     */
+  worksCloselyWith?: string[];
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  additionalInformation?: string | null;
+  /**
+     * @maxLength 320
+     * @nullable
+     */
+  applicationEmail?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     */
+  applicationClosingDate?: string | null;
+  /**
+     * @nullable
+     * @pattern ^([01]\d|2[0-3]):[0-5]\d$
+     */
+  applicationClosingTime?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  applicationInstructions?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  trainingApplicationInstructions?: string | null;
+  /**
+     * Internal only
+     * @nullable
+     */
+  recruitmentRoute?: OpportunityRecruitmentRoute;
+  /**
+     * Internal only
+     * @minimum 5
+     * @maximum 10
+     * @nullable
+     */
+  shortlistSize?: number | null;
+  /**
+     * Internal only
+     * @nullable
+     */
+  interviewFormat?: OpportunityInterviewFormat;
+  /**
+     * Internal only; approximate dates or unknown/N/A
+     * @maxLength 1000
+     * @nullable
+     */
+  interviewDates?: string | null;
+  /**
+     * Internal only; not sent to an external provider
+     * @maxItems 3
+     * @items.minLength 1
+     * @items.maxLength 1000
+     */
+  technicalQuestions?: string[];
   id: string;
   slug: string;
   title: string;
@@ -713,7 +889,112 @@ export interface Opportunity {
   updatedBy: string;
 }
 
+/**
+ * @nullable
+ */
+export type OpportunityInputWorkArrangement = typeof OpportunityInputWorkArrangement[keyof typeof OpportunityInputWorkArrangement] | null;
+
+
+export const OpportunityInputWorkArrangement = {
+  in_person: 'in_person',
+  hybrid: 'hybrid',
+  work_from_home: 'work_from_home',
+} as const;
+
+/**
+ * @nullable
+ */
+export type OpportunityInputRecruitmentRoute = typeof OpportunityInputRecruitmentRoute[keyof typeof OpportunityInputRecruitmentRoute] | null;
+
+
+export const OpportunityInputRecruitmentRoute = {
+  independent: 'independent',
+  production: 'production',
+} as const;
+
+/**
+ * @nullable
+ */
+export type OpportunityInputInterviewFormat = typeof OpportunityInputInterviewFormat[keyof typeof OpportunityInputInterviewFormat] | null;
+
+
+export const OpportunityInputInterviewFormat = {
+  virtual: 'virtual',
+  in_person: 'in_person',
+  phone_screening: 'phone_screening',
+  not_applicable: 'not_applicable',
+} as const;
+
 export interface OpportunityInput {
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  accountableTo?: string | null;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  contractDatesHours?: string | null;
+  /** @nullable */
+  workArrangement?: OpportunityInputWorkArrangement;
+  /**
+     * @maxItems 5
+     * @items.minLength 1
+     * @items.maxLength 500
+     */
+  worksCloselyWith?: string[];
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  additionalInformation?: string | null;
+  /**
+     * @maxLength 320
+     * @nullable
+     */
+  applicationEmail?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     */
+  applicationClosingDate?: string | null;
+  /**
+     * @nullable
+     * @pattern ^([01]\d|2[0-3]):[0-5]\d$
+     */
+  applicationClosingTime?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  applicationInstructions?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  trainingApplicationInstructions?: string | null;
+  /** @nullable */
+  recruitmentRoute?: OpportunityInputRecruitmentRoute;
+  /**
+     * @minimum 5
+     * @maximum 10
+     * @nullable
+     */
+  shortlistSize?: number | null;
+  /** @nullable */
+  interviewFormat?: OpportunityInputInterviewFormat;
+  /**
+     * @maxLength 1000
+     * @nullable
+     */
+  interviewDates?: string | null;
+  /**
+     * @maxItems 3
+     * @items.minLength 1
+     * @items.maxLength 1000
+     */
+  technicalQuestions?: string[];
   /**
      * @minLength 2
      * @maxLength 100
@@ -766,12 +1047,12 @@ export interface OpportunityInput {
   featured: boolean;
   urgent: boolean;
   /**
-     * @minItems 1
+     * @minItems 0
      * @maxItems 100
      */
   contentItems: OpportunityContentItemInput[];
   /**
-     * @minItems 1
+     * @minItems 0
      * @maxItems 30
      */
   details: OpportunityDetailInput[];

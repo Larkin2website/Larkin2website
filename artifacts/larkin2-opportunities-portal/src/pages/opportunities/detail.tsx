@@ -10,7 +10,16 @@ import {
   getGetPortalDashboardQueryKey,
   getListOpportunityAuditEventsQueryKey,
   OpportunityStatus,
+  PRODUCTION_CULTURE,
+  PRODUCTION_COMMITMENTS,
+  roleApplicationTarget,
 } from "@workspace/api-client-react";
+import {
+  INTERVIEW_FORMAT_LABELS,
+  PSI_LINK,
+  RECRUITMENT_ROUTE_LABELS,
+  WORK_ARRANGEMENT_LABELS,
+} from "@/components/opportunities/role-profile-fields";
 import { useParams, Link, useLocation } from "wouter";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -20,7 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/brand";
 import { MatchingCriteriaPanel } from "@/components/matching-criteria-panel";
 import { 
-  ChevronLeft, Edit, ExternalLink, Calendar, Clock, Loader2, PlayCircle, Eye, RefreshCw, Trash2, ShieldAlert, SlidersHorizontal
+  ChevronLeft, Edit, ExternalLink, Calendar, Clock, Loader2, PlayCircle, Eye, RefreshCw, Trash2, ShieldAlert, SlidersHorizontal, Lock
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -157,6 +166,19 @@ export default function DetailOpportunityPage() {
   const essentials = opp.contentItems.filter(i => i.section === "essential").sort((a,b) => a.position - b.position);
   const desired = opp.contentItems.filter(i => i.section === "desired").sort((a,b) => a.position - b.position);
   const sortedDetails = [...opp.details].sort((a,b) => a.position - b.position);
+
+  const profileRows = [
+    opp.accountableTo ? { label: "Accountable to", value: opp.accountableTo } : null,
+    opp.contractDatesHours ? { label: "Contract dates / hours", value: opp.contractDatesHours } : null,
+    opp.workArrangement ? { label: "Work arrangement", value: WORK_ARRANGEMENT_LABELS[opp.workArrangement] } : null,
+  ].filter((r): r is { label: string; value: string } => r !== null);
+  const worksWith = opp.worksCloselyWith ?? [];
+  const techQs = opp.technicalQuestions ?? [];
+  const target = roleApplicationTarget(opp);
+  const closing = opp.applicationClosingDate
+    ? `${format(new Date(`${opp.applicationClosingDate}T00:00:00`), "EEEE d MMMM yyyy")}${opp.applicationClosingTime ? ` at ${opp.applicationClosingTime}` : ""}`
+    : null;
+  const h2 = "font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground break-words";
 
   const ActionButtons = () => (
     <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full lg:w-auto mt-4 lg:mt-0 min-w-0">
@@ -380,7 +402,7 @@ export default function DetailOpportunityPage() {
                 <div className="md:col-span-2 order-1 md:order-2 space-y-10 sm:space-y-12 min-w-0">
                   {responsibilities.length > 0 && (
                     <section className="min-w-0">
-                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground break-words">About the role</h2>
+                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground break-words">Scope of role</h2>
                       <ul className="list-disc pl-5 space-y-3 text-[#c6c6c0] text-[15px] marker:text-primary min-w-0">
                         {responsibilities.map(r => <li key={r.id} className="pl-1 leading-relaxed break-words">{r.content}</li>)}
                       </ul>
@@ -396,17 +418,25 @@ export default function DetailOpportunityPage() {
                   )}
                   {desired.length > 0 && (
                     <section className="min-w-0">
-                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground break-words">Desired experience</h2>
+                      <h2 className="font-mono text-lg sm:text-xl font-medium mb-4 sm:mb-5 border-b border-[#2a2f31] pb-3 text-foreground break-words">Desired (but not essential)</h2>
                       <ul className="list-disc pl-5 space-y-3 text-[#c6c6c0] text-[15px] marker:text-primary min-w-0">
                         {desired.map(d => <li key={d.id} className="pl-1 leading-relaxed break-words">{d.content}</li>)}
                       </ul>
                     </section>
                   )}
-                  {sortedDetails.length > 0 && (
+                  {worksWith.length > 0 && (
+                    <section className="min-w-0" data-testid="preview-works-closely-with">
+                      <h2 className={h2}>Works closely with</h2>
+                      <ul className="list-disc pl-5 space-y-3 text-[#c6c6c0] text-[15px] marker:text-primary min-w-0">
+                        {worksWith.map((w, i) => <li key={i} className="pl-1 leading-relaxed break-words">{w}</li>)}
+                      </ul>
+                    </section>
+                  )}
+                  {(sortedDetails.length > 0 || profileRows.length > 0) && (
                     <section className="min-w-0">
                       <h2 className="font-mono text-lg sm:text-xl font-medium mb-5 sm:mb-6 border-b border-[#2a2f31] pb-3 text-foreground break-words">Role details</h2>
                       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8 min-w-0">
-                        {sortedDetails.map((detail, idx) => (
+                        {[...profileRows, ...sortedDetails].map((detail, idx) => (
                           <div key={idx} className="min-w-0">
                             <dt className="text-[11px] font-mono uppercase tracking-widest text-[#85898a] mb-2 break-words">{detail.label}</dt>
                             <dd className="text-[#f4f1ed] text-[15px] break-words">{detail.value}</dd>
@@ -415,6 +445,34 @@ export default function DetailOpportunityPage() {
                       </dl>
                     </section>
                   )}
+                  {opp.additionalInformation && (
+                    <section className="min-w-0">
+                      <h2 className={h2}>Additional information</h2>
+                      <p className="text-[#c6c6c0] text-[15px] leading-relaxed whitespace-pre-line break-words">{opp.additionalInformation}</p>
+                    </section>
+                  )}
+                  {(closing || target || opp.applicationInstructions || opp.trainingApplicationInstructions) && (
+                    <section className="min-w-0" data-testid="preview-how-to-apply">
+                      <h2 className={h2}>How to apply</h2>
+                      <div className="space-y-3 text-[#c6c6c0] text-[15px] leading-relaxed break-words">
+                        {closing && <p>Applications close {closing}.</p>}
+                        {opp.applicationEmail && <p>Apply by email: {opp.applicationEmail}</p>}
+                        {!opp.applicationEmail && opp.applicationUrl && <p>Apply via: {opp.applicationUrl}</p>}
+                        {opp.applicationInstructions && <p className="whitespace-pre-line">{opp.applicationInstructions}</p>}
+                        {opp.trainingApplicationInstructions && <p className="whitespace-pre-line">{opp.trainingApplicationInstructions}</p>}
+                      </div>
+                    </section>
+                  )}
+                  <section className="min-w-0">
+                    <h2 className={h2}>Our production culture</h2>
+                    <div className="space-y-3 text-[#c6c6c0] text-[15px] leading-relaxed break-words">
+                      {PRODUCTION_CULTURE.map((p) => <p key={p}>{p}</p>)}
+                      <a href={PSI_LINK} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-4">More information on this Production Support led approach can be found here</a>
+                      <h3 className="font-mono text-base font-medium text-foreground pt-2">What does this mean for you?</h3>
+                      <p>This means, we ask everyone working on the production to:</p>
+                      <ol className="list-decimal pl-5 space-y-2 marker:text-primary">{PRODUCTION_COMMITMENTS.map((c) => <li key={c}>{c}</li>)}</ol>
+                    </div>
+                  </section>
                 </div>
               </div>
             </div>
@@ -456,6 +514,36 @@ export default function DetailOpportunityPage() {
                 <div className="min-w-0">
                   <dt className="text-[10px] font-mono uppercase tracking-[0.1em] text-[#85898a] mb-1.5 break-words">Created By</dt>
                   <dd className="font-medium text-foreground break-words">{opp.createdBy}</dd>
+                </div>
+              </dl>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#171b1d] border border-[#2a2f31] rounded-none shadow-none min-w-0" data-testid="card-internal-planning">
+            <CardHeader className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31] min-w-0">
+              <CardTitle className="font-mono text-sm uppercase tracking-widest font-medium break-words flex items-center gap-2"><Lock className="w-3.5 h-3.5 text-primary shrink-0" /> Internal Planning</CardTitle>
+              <CardDescription className="text-xs break-words">Never shown on the public site</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 min-w-0">
+              <dl className="space-y-4 text-sm min-w-0">
+                {([
+                  ["Recruitment route", opp.recruitmentRoute ? RECRUITMENT_ROUTE_LABELS[opp.recruitmentRoute] : null],
+                  ["Shortlist size", opp.shortlistSize != null ? String(opp.shortlistSize) : null],
+                  ["Interview format", opp.interviewFormat ? INTERVIEW_FORMAT_LABELS[opp.interviewFormat] : null],
+                  ["Interview dates", opp.interviewDates],
+                ] as const).map(([label, value]) => (
+                  <div key={label} className="min-w-0">
+                    <dt className="text-[10px] font-mono uppercase tracking-[0.1em] text-[#85898a] mb-1">{label}</dt>
+                    <dd className={`break-words ${value ? "font-medium text-foreground" : "text-[#85898a]"}`}>{value || "Not set"}</dd>
+                  </div>
+                ))}
+                <div className="min-w-0">
+                  <dt className="text-[10px] font-mono uppercase tracking-[0.1em] text-[#85898a] mb-1">Technical questions</dt>
+                  <dd>
+                    {techQs.length ? (
+                      <ol className="list-decimal pl-5 space-y-1.5 marker:text-primary">{techQs.map((q, i) => <li key={i} className="break-words">{q}</li>)}</ol>
+                    ) : <span className="text-[#85898a]">None</span>}
+                  </dd>
                 </div>
               </dl>
             </CardContent>

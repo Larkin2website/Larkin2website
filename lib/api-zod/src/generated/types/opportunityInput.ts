@@ -7,8 +7,80 @@
  */
 import type { OpportunityContentItemInput } from './opportunityContentItemInput';
 import type { OpportunityDetailInput } from './opportunityDetailInput';
+import type { OpportunityInputInterviewFormat } from './opportunityInputInterviewFormat';
+import type { OpportunityInputRecruitmentRoute } from './opportunityInputRecruitmentRoute';
+import type { OpportunityInputWorkArrangement } from './opportunityInputWorkArrangement';
 
 export interface OpportunityInput {
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  accountableTo?: string | null;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  contractDatesHours?: string | null;
+  /** @nullable */
+  workArrangement?: OpportunityInputWorkArrangement;
+  /**
+     * @maxItems 5
+     * @items.minLength 1
+     * @items.maxLength 500
+     */
+  worksCloselyWith?: string[];
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  additionalInformation?: string | null;
+  /**
+     * @maxLength 320
+     * @nullable
+     */
+  applicationEmail?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     */
+  applicationClosingDate?: string | null;
+  /**
+     * @nullable
+     * @pattern ^([01]\d|2[0-3]):[0-5]\d$
+     */
+  applicationClosingTime?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  applicationInstructions?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  trainingApplicationInstructions?: string | null;
+  /** @nullable */
+  recruitmentRoute?: OpportunityInputRecruitmentRoute;
+  /**
+     * @minimum 5
+     * @maximum 10
+     * @nullable
+     */
+  shortlistSize?: number | null;
+  /** @nullable */
+  interviewFormat?: OpportunityInputInterviewFormat;
+  /**
+     * @maxLength 1000
+     * @nullable
+     */
+  interviewDates?: string | null;
+  /**
+     * @maxItems 3
+     * @items.minLength 1
+     * @items.maxLength 1000
+     */
+  technicalQuestions?: string[];
   /**
      * @minLength 2
      * @maxLength 100
@@ -61,12 +133,12 @@ export interface OpportunityInput {
   featured: boolean;
   urgent: boolean;
   /**
-     * @minItems 1
+     * @minItems 0
      * @maxItems 100
      */
   contentItems: OpportunityContentItemInput[];
   /**
-     * @minItems 1
+     * @minItems 0
      * @maxItems 30
      */
   details: OpportunityDetailInput[];

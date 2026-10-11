@@ -20,5 +20,15 @@ export function publicOpportunityToRole(opportunity: PublicOpportunity): Role {
     applicationDeadline: opportunity.applicationDeadline,
     responseDate: opportunity.responseDate ?? undefined,
     applicationUrl: opportunity.applicationUrl,
+    accountableTo: opportunity.accountableTo ?? null,
+    contractDatesHours: opportunity.contractDatesHours ?? null,
+    workArrangement: opportunity.workArrangement ?? null,
+    worksCloselyWith: opportunity.worksCloselyWith ?? [],
+    additionalInformation: opportunity.additionalInformation ?? null,
+    applicationEmail: opportunity.applicationEmail ?? null,
+    applicationClosingDate: opportunity.applicationClosingDate ?? null,
+    applicationClosingTime: opportunity.applicationClosingTime ?? null,
+    applicationInstructions: opportunity.applicationInstructions ?? null,
+    trainingApplicationInstructions: opportunity.trainingApplicationInstructions ?? null,
   };
 }

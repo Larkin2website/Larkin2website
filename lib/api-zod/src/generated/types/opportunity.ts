@@ -7,9 +7,90 @@
  */
 import type { OpportunityContentItem } from './opportunityContentItem';
 import type { OpportunityDetail } from './opportunityDetail';
+import type { OpportunityInterviewFormat } from './opportunityInterviewFormat';
+import type { OpportunityRecruitmentRoute } from './opportunityRecruitmentRoute';
 import type { OpportunityStatus } from './opportunityStatus';
+import type { OpportunityWorkArrangement } from './opportunityWorkArrangement';
 
 export interface Opportunity {
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  accountableTo?: string | null;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  contractDatesHours?: string | null;
+  /** @nullable */
+  workArrangement?: OpportunityWorkArrangement;
+  /**
+     * @maxItems 5
+     * @items.minLength 1
+     * @items.maxLength 500
+     */
+  worksCloselyWith?: string[];
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  additionalInformation?: string | null;
+  /**
+     * @maxLength 320
+     * @nullable
+     */
+  applicationEmail?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     */
+  applicationClosingDate?: string | null;
+  /**
+     * @nullable
+     * @pattern ^([01]\d|2[0-3]):[0-5]\d$
+     */
+  applicationClosingTime?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  applicationInstructions?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  trainingApplicationInstructions?: string | null;
+  /**
+     * Internal only
+     * @nullable
+     */
+  recruitmentRoute?: OpportunityRecruitmentRoute;
+  /**
+     * Internal only
+     * @minimum 5
+     * @maximum 10
+     * @nullable
+     */
+  shortlistSize?: number | null;
+  /**
+     * Internal only
+     * @nullable
+     */
+  interviewFormat?: OpportunityInterviewFormat;
+  /**
+     * Internal only; approximate dates or unknown/N/A
+     * @maxLength 1000
+     * @nullable
+     */
+  interviewDates?: string | null;
+  /**
+     * Internal only; not sent to an external provider
+     * @maxItems 3
+     * @items.minLength 1
+     * @items.maxLength 1000
+     */
+  technicalQuestions?: string[];
   id: string;
   slug: string;
   title: string;

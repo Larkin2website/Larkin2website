@@ -10,15 +10,9 @@ import {
 } from "./opportunity-domain";
 import { canonicalizeOpportunityOptions } from "./opportunity-option-service";
 import { enqueuePublication, shouldEnqueueFirstPublication } from "./audience-crm-service";
+import type { OpportunityInput } from "@workspace/api-zod";
 
-type Input = {
-  slug: string; title: string; publicationLabel: string; department: string; roleType: string;
-  summary: string; applicationDeadline: string; responseDate?: string | null;
-  applicationUrl?: string | null; deadline?: Date | null; deadlineExtended: boolean;
-  featured: boolean; urgent: boolean;
-  contentItems: { section: "responsibility" | "essential" | "desired"; position: number; content: string }[];
-  details: { position: number; label: string; value: string }[];
-};
+type Input = Omit<OpportunityInput, "deadline"> & { deadline?: Date | null };
 const snapshot = (value: unknown) => JSON.parse(JSON.stringify(value)) as Record<string, unknown>;
 
 async function hydrate(rows: (typeof opportunitiesTable.$inferSelect)[]) {
@@ -51,8 +45,8 @@ export async function createOpportunity(input: Input, actor: PortalActor) {
       const canonicalOptions = await canonicalizeOpportunityOptions(input, undefined, tx, true);
       const { contentItems, details: inputDetails, ...fields } = input;
       const [row] = await tx.insert(opportunitiesTable).values({ ...fields, ...canonicalOptions, status: "draft", createdBy: actor.userId, updatedBy: actor.userId }).returning();
-      const content = await tx.insert(opportunityContentItemsTable).values(contentItems.map((x) => ({ ...x, opportunityId: row.id }))).returning();
-      const storedDetails = await tx.insert(opportunityDetailsTable).values(inputDetails.map((x) => ({ ...x, opportunityId: row.id }))).returning();
+      const content = contentItems.length ? await tx.insert(opportunityContentItemsTable).values(contentItems.map((x) => ({ ...x, opportunityId: row.id }))).returning() : [];
+      const storedDetails = inputDetails.length ? await tx.insert(opportunityDetailsTable).values(inputDetails.map((x) => ({ ...x, opportunityId: row.id }))).returning() : [];
       const result = { ...row, contentItems: content.map(({ opportunityId: _, ...x }) => x), details: storedDetails.map(({ opportunityId: _, ...x }) => x) };
       await tx.insert(auditEventsTable).values({ action: "opportunity.created", opportunityId: row.id, actorUserId: actor.userId, actorName: actor.displayName, afterState: snapshot(result) });
       return result;
@@ -83,8 +77,8 @@ export async function updateOpportunity(id: string, input: Input, actor: PortalA
       const [row] = await tx.update(opportunitiesTable).set({ ...fields, ...canonicalOptions, updatedBy: actor.userId }).where(eq(opportunitiesTable.id, id)).returning();
       await tx.delete(opportunityContentItemsTable).where(eq(opportunityContentItemsTable.opportunityId, id));
       await tx.delete(opportunityDetailsTable).where(eq(opportunityDetailsTable.opportunityId, id));
-      const content = await tx.insert(opportunityContentItemsTable).values(contentItems.map((x) => ({ ...x, opportunityId: id }))).returning();
-      const storedDetails = await tx.insert(opportunityDetailsTable).values(inputDetails.map((x) => ({ ...x, opportunityId: id }))).returning();
+      const content = contentItems.length ? await tx.insert(opportunityContentItemsTable).values(contentItems.map((x) => ({ ...x, opportunityId: id }))).returning() : [];
+      const storedDetails = inputDetails.length ? await tx.insert(opportunityDetailsTable).values(inputDetails.map((x) => ({ ...x, opportunityId: id }))).returning() : [];
       const result = { ...row, contentItems: content.map(({ opportunityId: _, ...x }) => x), details: storedDetails.map(({ opportunityId: _, ...x }) => x) };
       await tx.insert(auditEventsTable).values({ action: "opportunity.updated", opportunityId: id, actorUserId: actor.userId, actorName: actor.displayName, beforeState: snapshot(before), afterState: snapshot(result) });
       return result;

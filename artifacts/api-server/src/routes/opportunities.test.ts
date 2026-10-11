@@ -76,6 +76,57 @@ const validOpportunityInput = {
   details: [{ position: 0, label: "Location", value: "London" }],
 };
 
+test("public list and detail include profile fields but never internal recruitment planning", async () => {
+  const row = {
+    ...validOpportunityInput, id: optionId, status: "published", createdAt, updatedAt: createdAt,
+    createdBy: "staff", updatedBy: "staff", accountableTo: "Head of department",
+    contractDatesHours: "10-hour days, planned hiatus in December", workArrangement: "hybrid",
+    worksCloselyWith: ["Camera", "Production"], additionalInformation: "Portfolio requested",
+    applicationEmail: "agreed@example.com", applicationClosingDate: "2026-12-01",
+    applicationClosingTime: "17:00", applicationInstructions: "Send your CV",
+    trainingApplicationInstructions: "Alternative formats are welcome",
+    recruitmentRoute: "production", shortlistSize: 8, interviewFormat: "virtual",
+    interviewDates: "unknown", technicalQuestions: ["PRIVATE TECHNICAL DRAFT"],
+    contentItems: [], details: [],
+  };
+  await withServer(async () => { throw new Error("unused"); }, async base => {
+    for (const path of ["/public/opportunities", `/public/opportunities/${row.slug}`]) {
+      const response = await fetch(`${base}${path}`);
+      assert.equal(response.status, 200);
+      const body = await response.json();
+      const profile = Array.isArray(body) ? body[0] : body;
+      assert.equal(profile.accountableTo, row.accountableTo);
+      assert.deepEqual(profile.worksCloselyWith, row.worksCloselyWith);
+      assert.equal(profile.applicationEmail, row.applicationEmail);
+      assert.equal(profile.trainingApplicationInstructions, row.trainingApplicationInstructions);
+      for (const field of ["recruitmentRoute", "shortlistSize", "interviewFormat", "interviewDates", "technicalQuestions", "createdBy", "updatedBy"]) {
+        assert.equal(field in profile, false, field);
+      }
+      assert.equal(JSON.stringify(body).includes("PRIVATE TECHNICAL DRAFT"), false);
+    }
+    const privateResponse = await fetch(`${base}/portal/opportunities/${optionId}`, { headers: { "x-test-role": "viewer" } });
+    assert.equal(privateResponse.status, 200);
+    assert.deepEqual((await privateResponse.json() as { technicalQuestions: string[] }).technicalQuestions, row.technicalQuestions);
+    assert.equal((await fetch(`${base}/portal/opportunities/${optionId}`)).status, 401);
+    assert.equal((await fetch(`${base}/portal/opportunities`, {
+      method: "POST", headers: { "content-type": "application/json", "x-test-role": "viewer" },
+      body: JSON.stringify(row),
+    })).status, 403);
+  }, { opportunities: { listPublic: async () => [row], getOpportunity: async () => row } as any });
+});
+
+test("create and edit reject conflicting application destinations without calling persistence", async () => {
+  await withServer(async () => { throw new Error("unused"); }, async base => {
+    for (const [path, method] of [["/portal/opportunities", "POST"], [`/portal/opportunities/${optionId}`, "PATCH"]]) {
+      const response = await fetch(`${base}${path}`, {
+        method, headers: { "content-type": "application/json", "x-test-role": "opportunity_manager" },
+        body: JSON.stringify({ ...validOpportunityInput, applicationEmail: "agreed@example.com", applicationUrl: "https://example.com" }),
+      });
+      assert.equal(response.status, 400);
+    }
+  });
+});
+
 test("public opportunity options need no authentication and expose active labels only", async () => {
   let includeRetiredValue: boolean | undefined;
   await withServer(async () => {

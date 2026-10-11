@@ -25,6 +25,7 @@ import { toPublicStatus } from "../lib/opportunity-domain";
 import * as opportunities from "../lib/opportunity-service";
 import * as opportunityOptions from "../lib/opportunity-option-service";
 import { grantPortalAccess, portalGrantResponse, portalMemberResponse, updatePortalPerson } from "../lib/portal-members";
+import { roleProfileValidationError } from "../lib/role-profile-validation";
 
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const developmentSignInLimit = createFixedWindowRateLimit({ limit: 120, windowMs: 15 * 60_000 });
@@ -38,6 +39,11 @@ const publicMap = (row: any) => ({
   details: row.details, applicationDeadline: row.applicationDeadline, responseDate: row.responseDate,
   applicationUrl: row.applicationUrl, deadline: row.deadline, deadlineExtended: row.deadlineExtended,
   featured: row.featured, urgent: row.urgent,
+  accountableTo: row.accountableTo, contractDatesHours: row.contractDatesHours,
+  workArrangement: row.workArrangement, worksCloselyWith: row.worksCloselyWith,
+  additionalInformation: row.additionalInformation, applicationEmail: row.applicationEmail,
+  applicationClosingDate: row.applicationClosingDate, applicationClosingTime: row.applicationClosingTime,
+  applicationInstructions: row.applicationInstructions, trainingApplicationInstructions: row.trainingApplicationInstructions,
 });
 
 type OpportunityRouteDependencies = {
@@ -193,6 +199,8 @@ router.get("/portal/opportunities", dependencies.requirePortal("opportunities:re
 router.post("/portal/opportunities", dependencies.requirePortal("opportunities:write"), async (req, res): Promise<void> => {
   const parsed = CreatePortalOpportunityBody.safeParse(req.body);
   if (!parsed.success) { invalid(res, parsed.error); return; }
+  const profileError = roleProfileValidationError(parsed.data);
+  if (profileError) { invalid(res, new Error(profileError)); return; }
   try { res.status(201).json(CreatePortalOpportunityResponse.parse(await dependencies.opportunities.createOpportunity(parsed.data, req.portalActor!))); }
   catch (error) {
     if ((error as Error).message === "DUPLICATE") { res.status(409).json({ error: "Slug already exists" }); return; }
@@ -210,6 +218,8 @@ router.get("/portal/opportunities/:id", dependencies.requirePortal("opportunitie
 router.patch("/portal/opportunities/:id", dependencies.requirePortal("opportunities:write"), async (req, res): Promise<void> => {
   const params = UpdatePortalOpportunityParams.safeParse(req.params), body = UpdatePortalOpportunityBody.safeParse(req.body);
   if (!params.success) { invalid(res, params.error); return; } if (!body.success) { invalid(res, body.error); return; }
+  const profileError = roleProfileValidationError(body.data);
+  if (profileError) { invalid(res, new Error(profileError)); return; }
   try {
     const row = await dependencies.opportunities.updateOpportunity(params.data.id, body.data, req.portalActor!);
     if (!row) { res.status(404).json({ error: "Opportunity not found" }); return; }

@@ -1865,6 +1865,16 @@ components:
         - featured
         - urgent
       properties:
+        accountableTo: { type: ["string", "null"], maxLength: 500 }
+        contractDatesHours: { type: ["string", "null"], maxLength: 2000 }
+        workArrangement: { type: ["string", "null"], enum: [in_person, hybrid, work_from_home, null] }
+        worksCloselyWith: { type: array, maxItems: 5, items: { type: string, minLength: 1, maxLength: 500 } }
+        additionalInformation: { type: ["string", "null"], maxLength: 4000 }
+        applicationEmail: { type: ["string", "null"], format: email, maxLength: 320 }
+        applicationClosingDate: { type: ["string", "null"], pattern: '^\d{4}-\d{2}-\d{2}$' }
+        applicationClosingTime: { type: ["string", "null"], pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        applicationInstructions: { type: ["string", "null"], maxLength: 4000 }
+        trainingApplicationInstructions: { type: ["string", "null"], maxLength: 4000 }
         id:
           type: string
           format: uuid
@@ -1936,6 +1946,21 @@ components:
         - createdBy
         - updatedBy
       properties:
+        accountableTo: { type: ["string", "null"], maxLength: 500 }
+        contractDatesHours: { type: ["string", "null"], maxLength: 2000 }
+        workArrangement: { type: ["string", "null"], enum: [in_person, hybrid, work_from_home, null] }
+        worksCloselyWith: { type: array, maxItems: 5, items: { type: string, minLength: 1, maxLength: 500 } }
+        additionalInformation: { type: ["string", "null"], maxLength: 4000 }
+        applicationEmail: { type: ["string", "null"], format: email, maxLength: 320 }
+        applicationClosingDate: { type: ["string", "null"], pattern: '^\d{4}-\d{2}-\d{2}$' }
+        applicationClosingTime: { type: ["string", "null"], pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        applicationInstructions: { type: ["string", "null"], maxLength: 4000 }
+        trainingApplicationInstructions: { type: ["string", "null"], maxLength: 4000 }
+        recruitmentRoute: { type: ["string", "null"], enum: [independent, production, null], description: Internal only }
+        shortlistSize: { type: ["integer", "null"], minimum: 5, maximum: 10, description: Internal only }
+        interviewFormat: { type: ["string", "null"], enum: [virtual, in_person, phone_screening, not_applicable, null], description: Internal only }
+        interviewDates: { type: ["string", "null"], maxLength: 1000, description: Internal only; approximate dates or unknown/N/A }
+        technicalQuestions: { type: array, maxItems: 3, items: { type: string, minLength: 1, maxLength: 1000 }, description: Internal only; not sent to an external provider }
         id:
           type: string
           format: uuid
@@ -2010,6 +2035,21 @@ components:
         - contentItems
         - details
       properties:
+        accountableTo: { type: ["string", "null"], maxLength: 500 }
+        contractDatesHours: { type: ["string", "null"], maxLength: 2000 }
+        workArrangement: { type: ["string", "null"], enum: [in_person, hybrid, work_from_home, null] }
+        worksCloselyWith: { type: array, maxItems: 5, items: { type: string, minLength: 1, maxLength: 500 } }
+        additionalInformation: { type: ["string", "null"], maxLength: 4000 }
+        applicationEmail: { type: ["string", "null"], format: email, maxLength: 320 }
+        applicationClosingDate: { type: ["string", "null"], pattern: '^\d{4}-\d{2}-\d{2}$' }
+        applicationClosingTime: { type: ["string", "null"], pattern: '^([01]\d|2[0-3]):[0-5]\d$' }
+        applicationInstructions: { type: ["string", "null"], maxLength: 4000 }
+        trainingApplicationInstructions: { type: ["string", "null"], maxLength: 4000 }
+        recruitmentRoute: { type: ["string", "null"], enum: [independent, production, null] }
+        shortlistSize: { type: ["integer", "null"], minimum: 5, maximum: 10 }
+        interviewFormat: { type: ["string", "null"], enum: [virtual, in_person, phone_screening, not_applicable, null] }
+        interviewDates: { type: ["string", "null"], maxLength: 1000 }
+        technicalQuestions: { type: array, maxItems: 3, items: { type: string, minLength: 1, maxLength: 1000 } }
         slug:
           type: string
           minLength: 2
@@ -2057,13 +2097,13 @@ components:
           type: boolean
         contentItems:
           type: array
-          minItems: 1
+          minItems: 0
           maxItems: 100
           items:
             $ref: "#/components/schemas/OpportunityContentItemInput"
         details:
           type: array
-          minItems: 1
+          minItems: 0
           maxItems: 30
           items:
             $ref: "#/components/schemas/OpportunityDetailInput"

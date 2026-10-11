@@ -58,6 +58,24 @@ export const ListPublicOpportunitiesQueryParams = zod.object({
   "q": zod.coerce.string().max(listPublicOpportunitiesQueryQMax).optional()
 })
 
+export const listPublicOpportunitiesResponseAccountableToMax = 500;
+
+export const listPublicOpportunitiesResponseContractDatesHoursMax = 2000;
+
+export const listPublicOpportunitiesResponseWorksCloselyWithItemMax = 500;
+
+export const listPublicOpportunitiesResponseWorksCloselyWithMax = 5;
+
+export const listPublicOpportunitiesResponseAdditionalInformationMax = 4000;
+
+export const listPublicOpportunitiesResponseApplicationEmailMax = 320;
+
+export const listPublicOpportunitiesResponseApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const listPublicOpportunitiesResponseApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const listPublicOpportunitiesResponseApplicationInstructionsMax = 4000;
+
+export const listPublicOpportunitiesResponseTrainingApplicationInstructionsMax = 4000;
+
 export const listPublicOpportunitiesResponseDetailsItemPositionMin = 0;
 
 export const listPublicOpportunitiesResponseDetailsItemLabelMax = 80;
@@ -67,6 +85,16 @@ export const listPublicOpportunitiesResponseDetailsItemValueMax = 2000;
 
 
 export const ListPublicOpportunitiesResponseItem = zod.object({
+  "accountableTo": zod.string().max(listPublicOpportunitiesResponseAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(listPublicOpportunitiesResponseContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(listPublicOpportunitiesResponseWorksCloselyWithItemMax)).max(listPublicOpportunitiesResponseWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(listPublicOpportunitiesResponseAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(listPublicOpportunitiesResponseApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(listPublicOpportunitiesResponseApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(listPublicOpportunitiesResponseApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(listPublicOpportunitiesResponseApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(listPublicOpportunitiesResponseTrainingApplicationInstructionsMax).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),
@@ -389,6 +417,24 @@ export const GetPublicOpportunityParams = zod.object({
   "slug": zod.coerce.string().min(getPublicOpportunityPathSlugMin).max(getPublicOpportunityPathSlugMax).regex(getPublicOpportunityPathSlugRegExp)
 })
 
+export const getPublicOpportunityResponseAccountableToMax = 500;
+
+export const getPublicOpportunityResponseContractDatesHoursMax = 2000;
+
+export const getPublicOpportunityResponseWorksCloselyWithItemMax = 500;
+
+export const getPublicOpportunityResponseWorksCloselyWithMax = 5;
+
+export const getPublicOpportunityResponseAdditionalInformationMax = 4000;
+
+export const getPublicOpportunityResponseApplicationEmailMax = 320;
+
+export const getPublicOpportunityResponseApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const getPublicOpportunityResponseApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const getPublicOpportunityResponseApplicationInstructionsMax = 4000;
+
+export const getPublicOpportunityResponseTrainingApplicationInstructionsMax = 4000;
+
 export const getPublicOpportunityResponseDetailsItemPositionMin = 0;
 
 export const getPublicOpportunityResponseDetailsItemLabelMax = 80;
@@ -398,6 +444,16 @@ export const getPublicOpportunityResponseDetailsItemValueMax = 2000;
 
 
 export const GetPublicOpportunityResponse = zod.object({
+  "accountableTo": zod.string().max(getPublicOpportunityResponseAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(getPublicOpportunityResponseContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(getPublicOpportunityResponseWorksCloselyWithItemMax)).max(getPublicOpportunityResponseWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(getPublicOpportunityResponseAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(getPublicOpportunityResponseApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(getPublicOpportunityResponseApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(getPublicOpportunityResponseApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(getPublicOpportunityResponseApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(getPublicOpportunityResponseTrainingApplicationInstructionsMax).nullish(),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),
@@ -524,6 +580,33 @@ export const CreatePortalAccessGrantResponse = zod.object({
 /**
  * @summary Get opportunity totals and recent activity
  */
+export const getPortalDashboardResponseRecentOpportunitiesItemAccountableToMax = 500;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemContractDatesHoursMax = 2000;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemWorksCloselyWithItemMax = 500;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemWorksCloselyWithMax = 5;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemAdditionalInformationMax = 4000;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemApplicationEmailMax = 320;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const getPortalDashboardResponseRecentOpportunitiesItemApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const getPortalDashboardResponseRecentOpportunitiesItemApplicationInstructionsMax = 4000;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemTrainingApplicationInstructionsMax = 4000;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemShortlistSizeMin = 5;
+export const getPortalDashboardResponseRecentOpportunitiesItemShortlistSizeMax = 10;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemInterviewDatesMax = 1000;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemTechnicalQuestionsItemMax = 1000;
+
+export const getPortalDashboardResponseRecentOpportunitiesItemTechnicalQuestionsMax = 3;
+
 export const getPortalDashboardResponseRecentOpportunitiesItemContentItemsItemPositionMin = 0;
 
 export const getPortalDashboardResponseRecentOpportunitiesItemContentItemsItemContentMax = 1000;
@@ -547,6 +630,21 @@ export const GetPortalDashboardResponse = zod.object({
   "archived": zod.number().int()
 }),
   "recentOpportunities": zod.array(zod.object({
+  "accountableTo": zod.string().max(getPortalDashboardResponseRecentOpportunitiesItemAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(getPortalDashboardResponseRecentOpportunitiesItemContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(getPortalDashboardResponseRecentOpportunitiesItemWorksCloselyWithItemMax)).max(getPortalDashboardResponseRecentOpportunitiesItemWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(getPortalDashboardResponseRecentOpportunitiesItemAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(getPortalDashboardResponseRecentOpportunitiesItemApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(getPortalDashboardResponseRecentOpportunitiesItemApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(getPortalDashboardResponseRecentOpportunitiesItemApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(getPortalDashboardResponseRecentOpportunitiesItemApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(getPortalDashboardResponseRecentOpportunitiesItemTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish().describe('Internal only'),
+  "shortlistSize": zod.number().int().min(getPortalDashboardResponseRecentOpportunitiesItemShortlistSizeMin).max(getPortalDashboardResponseRecentOpportunitiesItemShortlistSizeMax).nullish().describe('Internal only'),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish().describe('Internal only'),
+  "interviewDates": zod.string().max(getPortalDashboardResponseRecentOpportunitiesItemInterviewDatesMax).nullish().describe('Internal only; approximate dates or unknown\/N\/A'),
+  "technicalQuestions": zod.array(zod.string().min(1).max(getPortalDashboardResponseRecentOpportunitiesItemTechnicalQuestionsItemMax)).max(getPortalDashboardResponseRecentOpportunitiesItemTechnicalQuestionsMax).optional().describe('Internal only; not sent to an external provider'),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),
@@ -749,6 +847,33 @@ export const ListPortalOpportunitiesQueryParams = zod.object({
   "order": zod.enum(['asc', 'desc']).default(listPortalOpportunitiesQueryOrderDefault)
 })
 
+export const listPortalOpportunitiesResponseItemsItemAccountableToMax = 500;
+
+export const listPortalOpportunitiesResponseItemsItemContractDatesHoursMax = 2000;
+
+export const listPortalOpportunitiesResponseItemsItemWorksCloselyWithItemMax = 500;
+
+export const listPortalOpportunitiesResponseItemsItemWorksCloselyWithMax = 5;
+
+export const listPortalOpportunitiesResponseItemsItemAdditionalInformationMax = 4000;
+
+export const listPortalOpportunitiesResponseItemsItemApplicationEmailMax = 320;
+
+export const listPortalOpportunitiesResponseItemsItemApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const listPortalOpportunitiesResponseItemsItemApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const listPortalOpportunitiesResponseItemsItemApplicationInstructionsMax = 4000;
+
+export const listPortalOpportunitiesResponseItemsItemTrainingApplicationInstructionsMax = 4000;
+
+export const listPortalOpportunitiesResponseItemsItemShortlistSizeMin = 5;
+export const listPortalOpportunitiesResponseItemsItemShortlistSizeMax = 10;
+
+export const listPortalOpportunitiesResponseItemsItemInterviewDatesMax = 1000;
+
+export const listPortalOpportunitiesResponseItemsItemTechnicalQuestionsItemMax = 1000;
+
+export const listPortalOpportunitiesResponseItemsItemTechnicalQuestionsMax = 3;
+
 export const listPortalOpportunitiesResponseItemsItemContentItemsItemPositionMin = 0;
 
 export const listPortalOpportunitiesResponseItemsItemContentItemsItemContentMax = 1000;
@@ -769,6 +894,21 @@ export const listPortalOpportunitiesResponsePageCountMin = 0;
 
 export const ListPortalOpportunitiesResponse = zod.object({
   "items": zod.array(zod.object({
+  "accountableTo": zod.string().max(listPortalOpportunitiesResponseItemsItemAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(listPortalOpportunitiesResponseItemsItemContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(listPortalOpportunitiesResponseItemsItemWorksCloselyWithItemMax)).max(listPortalOpportunitiesResponseItemsItemWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(listPortalOpportunitiesResponseItemsItemAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(listPortalOpportunitiesResponseItemsItemApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(listPortalOpportunitiesResponseItemsItemApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(listPortalOpportunitiesResponseItemsItemApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(listPortalOpportunitiesResponseItemsItemApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(listPortalOpportunitiesResponseItemsItemTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish().describe('Internal only'),
+  "shortlistSize": zod.number().int().min(listPortalOpportunitiesResponseItemsItemShortlistSizeMin).max(listPortalOpportunitiesResponseItemsItemShortlistSizeMax).nullish().describe('Internal only'),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish().describe('Internal only'),
+  "interviewDates": zod.string().max(listPortalOpportunitiesResponseItemsItemInterviewDatesMax).nullish().describe('Internal only; approximate dates or unknown\/N\/A'),
+  "technicalQuestions": zod.array(zod.string().min(1).max(listPortalOpportunitiesResponseItemsItemTechnicalQuestionsItemMax)).max(listPortalOpportunitiesResponseItemsItemTechnicalQuestionsMax).optional().describe('Internal only; not sent to an external provider'),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),
@@ -813,6 +953,33 @@ export const ListPortalOpportunitiesResponse = zod.object({
 /**
  * @summary Create a draft opportunity
  */
+export const createPortalOpportunityBodyAccountableToMax = 500;
+
+export const createPortalOpportunityBodyContractDatesHoursMax = 2000;
+
+export const createPortalOpportunityBodyWorksCloselyWithItemMax = 500;
+
+export const createPortalOpportunityBodyWorksCloselyWithMax = 5;
+
+export const createPortalOpportunityBodyAdditionalInformationMax = 4000;
+
+export const createPortalOpportunityBodyApplicationEmailMax = 320;
+
+export const createPortalOpportunityBodyApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const createPortalOpportunityBodyApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const createPortalOpportunityBodyApplicationInstructionsMax = 4000;
+
+export const createPortalOpportunityBodyTrainingApplicationInstructionsMax = 4000;
+
+export const createPortalOpportunityBodyShortlistSizeMin = 5;
+export const createPortalOpportunityBodyShortlistSizeMax = 10;
+
+export const createPortalOpportunityBodyInterviewDatesMax = 1000;
+
+export const createPortalOpportunityBodyTechnicalQuestionsItemMax = 1000;
+
+export const createPortalOpportunityBodyTechnicalQuestionsMax = 3;
+
 export const createPortalOpportunityBodySlugMin = 2;
 export const createPortalOpportunityBodySlugMax = 100;
 
@@ -844,6 +1011,7 @@ export const createPortalOpportunityBodyContentItemsItemPositionMin = 0;
 
 export const createPortalOpportunityBodyContentItemsItemContentMax = 1000;
 
+export const createPortalOpportunityBodyContentItemsMin = 0;
 export const createPortalOpportunityBodyContentItemsMax = 100;
 
 export const createPortalOpportunityBodyDetailsItemPositionMin = 0;
@@ -852,11 +1020,27 @@ export const createPortalOpportunityBodyDetailsItemLabelMax = 80;
 
 export const createPortalOpportunityBodyDetailsItemValueMax = 2000;
 
+export const createPortalOpportunityBodyDetailsMin = 0;
 export const createPortalOpportunityBodyDetailsMax = 30;
 
 
 
 export const CreatePortalOpportunityBody = zod.object({
+  "accountableTo": zod.string().max(createPortalOpportunityBodyAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(createPortalOpportunityBodyContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(createPortalOpportunityBodyWorksCloselyWithItemMax)).max(createPortalOpportunityBodyWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(createPortalOpportunityBodyAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(createPortalOpportunityBodyApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(createPortalOpportunityBodyApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(createPortalOpportunityBodyApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(createPortalOpportunityBodyApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(createPortalOpportunityBodyTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish(),
+  "shortlistSize": zod.number().int().min(createPortalOpportunityBodyShortlistSizeMin).max(createPortalOpportunityBodyShortlistSizeMax).nullish(),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish(),
+  "interviewDates": zod.string().max(createPortalOpportunityBodyInterviewDatesMax).nullish(),
+  "technicalQuestions": zod.array(zod.string().min(1).max(createPortalOpportunityBodyTechnicalQuestionsItemMax)).max(createPortalOpportunityBodyTechnicalQuestionsMax).optional(),
   "slug": zod.string().min(createPortalOpportunityBodySlugMin).max(createPortalOpportunityBodySlugMax).regex(createPortalOpportunityBodySlugRegExp),
   "title": zod.string().min(createPortalOpportunityBodyTitleMin).max(createPortalOpportunityBodyTitleMax),
   "publicationLabel": zod.string().min(createPortalOpportunityBodyPublicationLabelMin).max(createPortalOpportunityBodyPublicationLabelMax),
@@ -874,13 +1058,40 @@ export const CreatePortalOpportunityBody = zod.object({
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(createPortalOpportunityBodyContentItemsItemPositionMin),
   "content": zod.string().min(1).max(createPortalOpportunityBodyContentItemsItemContentMax)
-})).min(1).max(createPortalOpportunityBodyContentItemsMax),
+})).min(createPortalOpportunityBodyContentItemsMin).max(createPortalOpportunityBodyContentItemsMax),
   "details": zod.array(zod.object({
   "position": zod.number().int().min(createPortalOpportunityBodyDetailsItemPositionMin),
   "label": zod.string().min(1).max(createPortalOpportunityBodyDetailsItemLabelMax),
   "value": zod.string().min(1).max(createPortalOpportunityBodyDetailsItemValueMax)
-})).min(1).max(createPortalOpportunityBodyDetailsMax)
+})).min(createPortalOpportunityBodyDetailsMin).max(createPortalOpportunityBodyDetailsMax)
 })
+
+export const createPortalOpportunityResponseAccountableToMax = 500;
+
+export const createPortalOpportunityResponseContractDatesHoursMax = 2000;
+
+export const createPortalOpportunityResponseWorksCloselyWithItemMax = 500;
+
+export const createPortalOpportunityResponseWorksCloselyWithMax = 5;
+
+export const createPortalOpportunityResponseAdditionalInformationMax = 4000;
+
+export const createPortalOpportunityResponseApplicationEmailMax = 320;
+
+export const createPortalOpportunityResponseApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const createPortalOpportunityResponseApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const createPortalOpportunityResponseApplicationInstructionsMax = 4000;
+
+export const createPortalOpportunityResponseTrainingApplicationInstructionsMax = 4000;
+
+export const createPortalOpportunityResponseShortlistSizeMin = 5;
+export const createPortalOpportunityResponseShortlistSizeMax = 10;
+
+export const createPortalOpportunityResponseInterviewDatesMax = 1000;
+
+export const createPortalOpportunityResponseTechnicalQuestionsItemMax = 1000;
+
+export const createPortalOpportunityResponseTechnicalQuestionsMax = 3;
 
 export const createPortalOpportunityResponseContentItemsItemPositionMin = 0;
 
@@ -895,6 +1106,21 @@ export const createPortalOpportunityResponseDetailsItemValueMax = 2000;
 
 
 export const CreatePortalOpportunityResponse = zod.object({
+  "accountableTo": zod.string().max(createPortalOpportunityResponseAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(createPortalOpportunityResponseContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(createPortalOpportunityResponseWorksCloselyWithItemMax)).max(createPortalOpportunityResponseWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(createPortalOpportunityResponseAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(createPortalOpportunityResponseApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(createPortalOpportunityResponseApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(createPortalOpportunityResponseApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(createPortalOpportunityResponseApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(createPortalOpportunityResponseTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish().describe('Internal only'),
+  "shortlistSize": zod.number().int().min(createPortalOpportunityResponseShortlistSizeMin).max(createPortalOpportunityResponseShortlistSizeMax).nullish().describe('Internal only'),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish().describe('Internal only'),
+  "interviewDates": zod.string().max(createPortalOpportunityResponseInterviewDatesMax).nullish().describe('Internal only; approximate dates or unknown\/N\/A'),
+  "technicalQuestions": zod.array(zod.string().min(1).max(createPortalOpportunityResponseTechnicalQuestionsItemMax)).max(createPortalOpportunityResponseTechnicalQuestionsMax).optional().describe('Internal only; not sent to an external provider'),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),
@@ -938,6 +1164,33 @@ export const GetPortalOpportunityParams = zod.object({
   "id": zod.coerce.string().uuid()
 })
 
+export const getPortalOpportunityResponseAccountableToMax = 500;
+
+export const getPortalOpportunityResponseContractDatesHoursMax = 2000;
+
+export const getPortalOpportunityResponseWorksCloselyWithItemMax = 500;
+
+export const getPortalOpportunityResponseWorksCloselyWithMax = 5;
+
+export const getPortalOpportunityResponseAdditionalInformationMax = 4000;
+
+export const getPortalOpportunityResponseApplicationEmailMax = 320;
+
+export const getPortalOpportunityResponseApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const getPortalOpportunityResponseApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const getPortalOpportunityResponseApplicationInstructionsMax = 4000;
+
+export const getPortalOpportunityResponseTrainingApplicationInstructionsMax = 4000;
+
+export const getPortalOpportunityResponseShortlistSizeMin = 5;
+export const getPortalOpportunityResponseShortlistSizeMax = 10;
+
+export const getPortalOpportunityResponseInterviewDatesMax = 1000;
+
+export const getPortalOpportunityResponseTechnicalQuestionsItemMax = 1000;
+
+export const getPortalOpportunityResponseTechnicalQuestionsMax = 3;
+
 export const getPortalOpportunityResponseContentItemsItemPositionMin = 0;
 
 export const getPortalOpportunityResponseContentItemsItemContentMax = 1000;
@@ -951,6 +1204,21 @@ export const getPortalOpportunityResponseDetailsItemValueMax = 2000;
 
 
 export const GetPortalOpportunityResponse = zod.object({
+  "accountableTo": zod.string().max(getPortalOpportunityResponseAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(getPortalOpportunityResponseContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(getPortalOpportunityResponseWorksCloselyWithItemMax)).max(getPortalOpportunityResponseWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(getPortalOpportunityResponseAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(getPortalOpportunityResponseApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(getPortalOpportunityResponseApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(getPortalOpportunityResponseApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(getPortalOpportunityResponseApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(getPortalOpportunityResponseTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish().describe('Internal only'),
+  "shortlistSize": zod.number().int().min(getPortalOpportunityResponseShortlistSizeMin).max(getPortalOpportunityResponseShortlistSizeMax).nullish().describe('Internal only'),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish().describe('Internal only'),
+  "interviewDates": zod.string().max(getPortalOpportunityResponseInterviewDatesMax).nullish().describe('Internal only; approximate dates or unknown\/N\/A'),
+  "technicalQuestions": zod.array(zod.string().min(1).max(getPortalOpportunityResponseTechnicalQuestionsItemMax)).max(getPortalOpportunityResponseTechnicalQuestionsMax).optional().describe('Internal only; not sent to an external provider'),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),
@@ -994,6 +1262,33 @@ export const UpdatePortalOpportunityParams = zod.object({
   "id": zod.coerce.string().uuid()
 })
 
+export const updatePortalOpportunityBodyAccountableToMax = 500;
+
+export const updatePortalOpportunityBodyContractDatesHoursMax = 2000;
+
+export const updatePortalOpportunityBodyWorksCloselyWithItemMax = 500;
+
+export const updatePortalOpportunityBodyWorksCloselyWithMax = 5;
+
+export const updatePortalOpportunityBodyAdditionalInformationMax = 4000;
+
+export const updatePortalOpportunityBodyApplicationEmailMax = 320;
+
+export const updatePortalOpportunityBodyApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const updatePortalOpportunityBodyApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const updatePortalOpportunityBodyApplicationInstructionsMax = 4000;
+
+export const updatePortalOpportunityBodyTrainingApplicationInstructionsMax = 4000;
+
+export const updatePortalOpportunityBodyShortlistSizeMin = 5;
+export const updatePortalOpportunityBodyShortlistSizeMax = 10;
+
+export const updatePortalOpportunityBodyInterviewDatesMax = 1000;
+
+export const updatePortalOpportunityBodyTechnicalQuestionsItemMax = 1000;
+
+export const updatePortalOpportunityBodyTechnicalQuestionsMax = 3;
+
 export const updatePortalOpportunityBodySlugMin = 2;
 export const updatePortalOpportunityBodySlugMax = 100;
 
@@ -1025,6 +1320,7 @@ export const updatePortalOpportunityBodyContentItemsItemPositionMin = 0;
 
 export const updatePortalOpportunityBodyContentItemsItemContentMax = 1000;
 
+export const updatePortalOpportunityBodyContentItemsMin = 0;
 export const updatePortalOpportunityBodyContentItemsMax = 100;
 
 export const updatePortalOpportunityBodyDetailsItemPositionMin = 0;
@@ -1033,11 +1329,27 @@ export const updatePortalOpportunityBodyDetailsItemLabelMax = 80;
 
 export const updatePortalOpportunityBodyDetailsItemValueMax = 2000;
 
+export const updatePortalOpportunityBodyDetailsMin = 0;
 export const updatePortalOpportunityBodyDetailsMax = 30;
 
 
 
 export const UpdatePortalOpportunityBody = zod.object({
+  "accountableTo": zod.string().max(updatePortalOpportunityBodyAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(updatePortalOpportunityBodyContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(updatePortalOpportunityBodyWorksCloselyWithItemMax)).max(updatePortalOpportunityBodyWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(updatePortalOpportunityBodyAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(updatePortalOpportunityBodyApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(updatePortalOpportunityBodyApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(updatePortalOpportunityBodyApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(updatePortalOpportunityBodyApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(updatePortalOpportunityBodyTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish(),
+  "shortlistSize": zod.number().int().min(updatePortalOpportunityBodyShortlistSizeMin).max(updatePortalOpportunityBodyShortlistSizeMax).nullish(),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish(),
+  "interviewDates": zod.string().max(updatePortalOpportunityBodyInterviewDatesMax).nullish(),
+  "technicalQuestions": zod.array(zod.string().min(1).max(updatePortalOpportunityBodyTechnicalQuestionsItemMax)).max(updatePortalOpportunityBodyTechnicalQuestionsMax).optional(),
   "slug": zod.string().min(updatePortalOpportunityBodySlugMin).max(updatePortalOpportunityBodySlugMax).regex(updatePortalOpportunityBodySlugRegExp),
   "title": zod.string().min(updatePortalOpportunityBodyTitleMin).max(updatePortalOpportunityBodyTitleMax),
   "publicationLabel": zod.string().min(updatePortalOpportunityBodyPublicationLabelMin).max(updatePortalOpportunityBodyPublicationLabelMax),
@@ -1055,13 +1367,40 @@ export const UpdatePortalOpportunityBody = zod.object({
   "section": zod.enum(['responsibility', 'essential', 'desired']),
   "position": zod.number().int().min(updatePortalOpportunityBodyContentItemsItemPositionMin),
   "content": zod.string().min(1).max(updatePortalOpportunityBodyContentItemsItemContentMax)
-})).min(1).max(updatePortalOpportunityBodyContentItemsMax),
+})).min(updatePortalOpportunityBodyContentItemsMin).max(updatePortalOpportunityBodyContentItemsMax),
   "details": zod.array(zod.object({
   "position": zod.number().int().min(updatePortalOpportunityBodyDetailsItemPositionMin),
   "label": zod.string().min(1).max(updatePortalOpportunityBodyDetailsItemLabelMax),
   "value": zod.string().min(1).max(updatePortalOpportunityBodyDetailsItemValueMax)
-})).min(1).max(updatePortalOpportunityBodyDetailsMax)
+})).min(updatePortalOpportunityBodyDetailsMin).max(updatePortalOpportunityBodyDetailsMax)
 })
+
+export const updatePortalOpportunityResponseAccountableToMax = 500;
+
+export const updatePortalOpportunityResponseContractDatesHoursMax = 2000;
+
+export const updatePortalOpportunityResponseWorksCloselyWithItemMax = 500;
+
+export const updatePortalOpportunityResponseWorksCloselyWithMax = 5;
+
+export const updatePortalOpportunityResponseAdditionalInformationMax = 4000;
+
+export const updatePortalOpportunityResponseApplicationEmailMax = 320;
+
+export const updatePortalOpportunityResponseApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const updatePortalOpportunityResponseApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const updatePortalOpportunityResponseApplicationInstructionsMax = 4000;
+
+export const updatePortalOpportunityResponseTrainingApplicationInstructionsMax = 4000;
+
+export const updatePortalOpportunityResponseShortlistSizeMin = 5;
+export const updatePortalOpportunityResponseShortlistSizeMax = 10;
+
+export const updatePortalOpportunityResponseInterviewDatesMax = 1000;
+
+export const updatePortalOpportunityResponseTechnicalQuestionsItemMax = 1000;
+
+export const updatePortalOpportunityResponseTechnicalQuestionsMax = 3;
 
 export const updatePortalOpportunityResponseContentItemsItemPositionMin = 0;
 
@@ -1076,6 +1415,21 @@ export const updatePortalOpportunityResponseDetailsItemValueMax = 2000;
 
 
 export const UpdatePortalOpportunityResponse = zod.object({
+  "accountableTo": zod.string().max(updatePortalOpportunityResponseAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(updatePortalOpportunityResponseContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(updatePortalOpportunityResponseWorksCloselyWithItemMax)).max(updatePortalOpportunityResponseWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(updatePortalOpportunityResponseAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(updatePortalOpportunityResponseApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(updatePortalOpportunityResponseApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(updatePortalOpportunityResponseApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(updatePortalOpportunityResponseApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(updatePortalOpportunityResponseTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish().describe('Internal only'),
+  "shortlistSize": zod.number().int().min(updatePortalOpportunityResponseShortlistSizeMin).max(updatePortalOpportunityResponseShortlistSizeMax).nullish().describe('Internal only'),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish().describe('Internal only'),
+  "interviewDates": zod.string().max(updatePortalOpportunityResponseInterviewDatesMax).nullish().describe('Internal only; approximate dates or unknown\/N\/A'),
+  "technicalQuestions": zod.array(zod.string().min(1).max(updatePortalOpportunityResponseTechnicalQuestionsItemMax)).max(updatePortalOpportunityResponseTechnicalQuestionsMax).optional().describe('Internal only; not sent to an external provider'),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),
@@ -1138,6 +1492,33 @@ export const TransitionPortalOpportunityBody = zod.object({
   "status": zod.enum(['draft', 'published', 'closed', 'filled', 'archived'])
 })
 
+export const transitionPortalOpportunityResponseAccountableToMax = 500;
+
+export const transitionPortalOpportunityResponseContractDatesHoursMax = 2000;
+
+export const transitionPortalOpportunityResponseWorksCloselyWithItemMax = 500;
+
+export const transitionPortalOpportunityResponseWorksCloselyWithMax = 5;
+
+export const transitionPortalOpportunityResponseAdditionalInformationMax = 4000;
+
+export const transitionPortalOpportunityResponseApplicationEmailMax = 320;
+
+export const transitionPortalOpportunityResponseApplicationClosingDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const transitionPortalOpportunityResponseApplicationClosingTimeRegExp = new RegExp('^([01]\\d|2[0-3]):[0-5]\\d$');
+export const transitionPortalOpportunityResponseApplicationInstructionsMax = 4000;
+
+export const transitionPortalOpportunityResponseTrainingApplicationInstructionsMax = 4000;
+
+export const transitionPortalOpportunityResponseShortlistSizeMin = 5;
+export const transitionPortalOpportunityResponseShortlistSizeMax = 10;
+
+export const transitionPortalOpportunityResponseInterviewDatesMax = 1000;
+
+export const transitionPortalOpportunityResponseTechnicalQuestionsItemMax = 1000;
+
+export const transitionPortalOpportunityResponseTechnicalQuestionsMax = 3;
+
 export const transitionPortalOpportunityResponseContentItemsItemPositionMin = 0;
 
 export const transitionPortalOpportunityResponseContentItemsItemContentMax = 1000;
@@ -1151,6 +1532,21 @@ export const transitionPortalOpportunityResponseDetailsItemValueMax = 2000;
 
 
 export const TransitionPortalOpportunityResponse = zod.object({
+  "accountableTo": zod.string().max(transitionPortalOpportunityResponseAccountableToMax).nullish(),
+  "contractDatesHours": zod.string().max(transitionPortalOpportunityResponseContractDatesHoursMax).nullish(),
+  "workArrangement": zod.union([zod.literal('in_person'),zod.literal('hybrid'),zod.literal('work_from_home'),zod.literal(null)]).nullish(),
+  "worksCloselyWith": zod.array(zod.string().min(1).max(transitionPortalOpportunityResponseWorksCloselyWithItemMax)).max(transitionPortalOpportunityResponseWorksCloselyWithMax).optional(),
+  "additionalInformation": zod.string().max(transitionPortalOpportunityResponseAdditionalInformationMax).nullish(),
+  "applicationEmail": zod.string().email().max(transitionPortalOpportunityResponseApplicationEmailMax).nullish(),
+  "applicationClosingDate": zod.string().regex(transitionPortalOpportunityResponseApplicationClosingDateRegExp).nullish(),
+  "applicationClosingTime": zod.string().regex(transitionPortalOpportunityResponseApplicationClosingTimeRegExp).nullish(),
+  "applicationInstructions": zod.string().max(transitionPortalOpportunityResponseApplicationInstructionsMax).nullish(),
+  "trainingApplicationInstructions": zod.string().max(transitionPortalOpportunityResponseTrainingApplicationInstructionsMax).nullish(),
+  "recruitmentRoute": zod.union([zod.literal('independent'),zod.literal('production'),zod.literal(null)]).nullish().describe('Internal only'),
+  "shortlistSize": zod.number().int().min(transitionPortalOpportunityResponseShortlistSizeMin).max(transitionPortalOpportunityResponseShortlistSizeMax).nullish().describe('Internal only'),
+  "interviewFormat": zod.union([zod.literal('virtual'),zod.literal('in_person'),zod.literal('phone_screening'),zod.literal('not_applicable'),zod.literal(null)]).nullish().describe('Internal only'),
+  "interviewDates": zod.string().max(transitionPortalOpportunityResponseInterviewDatesMax).nullish().describe('Internal only; approximate dates or unknown\/N\/A'),
+  "technicalQuestions": zod.array(zod.string().min(1).max(transitionPortalOpportunityResponseTechnicalQuestionsItemMax)).max(transitionPortalOpportunityResponseTechnicalQuestionsMax).optional().describe('Internal only; not sent to an external provider'),
   "id": zod.string().uuid(),
   "slug": zod.string(),
   "title": zod.string(),

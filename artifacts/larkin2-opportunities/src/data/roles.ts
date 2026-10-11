@@ -16,6 +16,16 @@ export type Role = {
   applicationDeadline: string;
   responseDate?: string;
   applicationUrl?: string | null;
+  accountableTo?: string | null;
+  contractDatesHours?: string | null;
+  workArrangement?: "in_person" | "hybrid" | "work_from_home" | null;
+  worksCloselyWith?: string[];
+  additionalInformation?: string | null;
+  applicationEmail?: string | null;
+  applicationClosingDate?: string | null;
+  applicationClosingTime?: string | null;
+  applicationInstructions?: string | null;
+  trainingApplicationInstructions?: string | null;
 };
 
 const commonEligibility = "Applicants must be aged 18 or over, have the right to work in the UK, and be able to provide evidence of that right if selected.";

@@ -7,8 +7,57 @@
  */
 import type { OpportunityDetail } from './opportunityDetail';
 import type { PublicOpportunityStatus } from './publicOpportunityStatus';
+import type { PublicOpportunityWorkArrangement } from './publicOpportunityWorkArrangement';
 
 export interface PublicOpportunity {
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  accountableTo?: string | null;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  contractDatesHours?: string | null;
+  /** @nullable */
+  workArrangement?: PublicOpportunityWorkArrangement;
+  /**
+     * @maxItems 5
+     * @items.minLength 1
+     * @items.maxLength 500
+     */
+  worksCloselyWith?: string[];
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  additionalInformation?: string | null;
+  /**
+     * @maxLength 320
+     * @nullable
+     */
+  applicationEmail?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{4}-\d{2}-\d{2}$
+     */
+  applicationClosingDate?: string | null;
+  /**
+     * @nullable
+     * @pattern ^([01]\d|2[0-3]):[0-5]\d$
+     */
+  applicationClosingTime?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  applicationInstructions?: string | null;
+  /**
+     * @maxLength 4000
+     * @nullable
+     */
+  trainingApplicationInstructions?: string | null;
   id: string;
   slug: string;
   title: string;
