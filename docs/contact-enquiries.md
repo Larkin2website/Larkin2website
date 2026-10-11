@@ -6,13 +6,16 @@ content remain available.
 
 ## Delivery and sender approval
 
-The owner-confirmed recipient is `admin@HETVopportunities.com`. The existing Resend
+The owner-confirmed sender and recipient are both `admin@HETVopportunities.com`.
+The owner has stated that the sender is not yet set up. The existing Resend
 connection is used without exposing its credentials to the browser.
 
 `CONTACT_ENQUIRY_FROM` is a non-secret configuration value containing the sender
 email address specifically approved by the owner for contact enquiries. There is
-no default and no fallback to the subscription-verification sender. Until this
-approval/configuration exists, submissions fail explicitly and offer direct email.
+no default and no fallback to the subscription-verification sender. Sender selection
+is approved, but configuration and domain verification are still pending. Until
+these are ready, submissions fail explicitly and offer direct email; that fallback
+does not establish that the mailbox is ready to receive messages.
 
 The transport verifies the sender's domain with Resend, caching a successful
 verification for five minutes. It requires an accepted email response containing
