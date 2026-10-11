@@ -49,3 +49,6 @@
 @media (max-width: 900px) {
   .larkin2-page .larkin2-commit-card-media { min-height: 110px; flex: none; }
 }
+@media (max-width: 767px) {
+  .larkin2-page .larkin2-commit-card-media { min-height: clamp(240px, 70vw, 360px); }
+}
