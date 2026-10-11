@@ -9,6 +9,37 @@ import * as zod from 'zod';
 
 
 /**
+ * Does not create a subscription. Success means the provider accepted the enquiry for delivery, not that it reached an inbox.
+ * @summary Send a contact enquiry to the HETV team
+ */
+export const submitContactEnquiryBodyNameMax = 100;
+
+export const submitContactEnquiryBodyEmailMax = 254;
+
+export const submitContactEnquiryBodySubjectMax = 160;
+
+export const submitContactEnquiryBodyMessageMax = 5000;
+
+export const submitContactEnquiryBodyWebsiteMax = 200;
+
+
+
+export const SubmitContactEnquiryBody = zod.object({
+  "name": zod.string().min(1).max(submitContactEnquiryBodyNameMax),
+  "email": zod.string().email().max(submitContactEnquiryBodyEmailMax),
+  "subject": zod.string().min(1).max(submitContactEnquiryBodySubjectMax),
+  "message": zod.string().min(1).max(submitContactEnquiryBodyMessageMax),
+  "requestId": zod.string().uuid().describe('Stable identifier for retries of the same enquiry, used for provider idempotency.'),
+  "website": zod.string().max(submitContactEnquiryBodyWebsiteMax).optional().describe('Anti-spam honeypot; legitimate visitors leave this empty.')
+})
+
+export const SubmitContactEnquiryResponse = zod.object({
+  "status": zod.enum(['accepted']),
+  "message": zod.string()
+})
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({

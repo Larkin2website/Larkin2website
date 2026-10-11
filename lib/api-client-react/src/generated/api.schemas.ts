@@ -5,6 +5,45 @@
  * Shared contract for Larkin2 public opportunities and the internal management portal.
  * OpenAPI spec version: 1.0.0
  */
+export interface ContactEnquiryInput {
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  name: string;
+  /** @maxLength 254 */
+  email: string;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  subject: string;
+  /**
+     * @minLength 1
+     * @maxLength 5000
+     */
+  message: string;
+  /** Stable identifier for retries of the same enquiry, used for provider idempotency. */
+  requestId: string;
+  /**
+     * Anti-spam honeypot; legitimate visitors leave this empty.
+     * @maxLength 200
+     */
+  website?: string;
+}
+
+export type ContactEnquiryMessageStatus = typeof ContactEnquiryMessageStatus[keyof typeof ContactEnquiryMessageStatus];
+
+
+export const ContactEnquiryMessageStatus = {
+  accepted: 'accepted',
+} as const;
+
+export interface ContactEnquiryMessage {
+  status: ContactEnquiryMessageStatus;
+  message: string;
+}
+
 export interface DevelopmentSignInInput {
   email: string;
   /** @minLength 1 */

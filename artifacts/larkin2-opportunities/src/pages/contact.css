@@ -1,0 +1,65 @@
+.hetv-contact-page .contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 96px);
+  padding: clamp(40px, 6vw, 80px) clamp(20px, 7.5vw, 120px) clamp(64px, 8vw, 112px);
+  border-top: 1px solid var(--line);
+}
+.hetv-contact-page h2 {
+  margin: 0 0 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 400;
+  letter-spacing: -.05em;
+}
+.hetv-contact-page .contact-lede { margin: 0 0 32px; color: var(--secondary); font-size: 16px; line-height: 1.55; }
+.hetv-contact-page main a:not(.larkin2-btn) { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.hetv-contact-page .contact-form { display: grid; gap: 22px; }
+.hetv-contact-page .contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.hetv-contact-page .contact-field { display: grid; gap: 8px; min-width: 0; }
+.hetv-contact-page .contact-field label { font-size: 14px; font-weight: 600; color: var(--ink); }
+.hetv-contact-page .contact-required { margin-left: 6px; color: var(--muted); font-size: 11px; font-weight: 400; letter-spacing: .12em; text-transform: uppercase; }
+.hetv-contact-page .contact-field :is(input, textarea) {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #faf8f5;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  transition: border-color .2s ease;
+}
+.hetv-contact-page .contact-field textarea { min-height: 200px; resize: vertical; }
+.hetv-contact-page .contact-field :is(input, textarea):hover { border-color: var(--secondary); }
+.hetv-contact-page .contact-field :is(input, textarea):focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; border-color: var(--ink); }
+.hetv-contact-page .contact-field :is(input, textarea):disabled { opacity: .7; }
+.hetv-contact-page .contact-field.has-error :is(input, textarea) { border-color: #a3281c; }
+.hetv-contact-page .contact-error { color: #a3281c; font-size: 14px; }
+.hetv-contact-page .contact-count { justify-self: end; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.hetv-contact-page .contact-count.is-low { color: var(--accent-text); }
+.hetv-contact-page .contact-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.hetv-contact-page .contact-privacy { margin: 0; padding: 16px 18px; border-left: 2px solid var(--line); color: var(--secondary); font-size: 14px; line-height: 1.6; }
+.hetv-contact-page .contact-actions .larkin2-btn { cursor: pointer; font-weight: 600; min-width: 180px; }
+.hetv-contact-page .contact-actions .larkin2-btn:disabled { cursor: progress; opacity: .7; }
+.hetv-contact-page .contact-notice { padding: 20px 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+.hetv-contact-page .contact-notice:focus { outline: 2px solid var(--accent-text); outline-offset: 3px; }
+.hetv-contact-page .contact-notice.is-error { border-color: #a3281c; }
+.hetv-contact-page .contact-notice h3 { margin: 0 0 8px; font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 500; }
+.hetv-contact-page .contact-notice p { margin: 0 0 16px; color: var(--secondary); line-height: 1.6; }
+.hetv-contact-page .contact-notice.is-error p { margin-bottom: 0; }
+.hetv-contact-page .contact-notice .larkin2-btn { cursor: pointer; }
+.hetv-contact-page .contact-aside { display: grid; align-content: start; gap: 0; }
+.hetv-contact-page .contact-aside-block { padding: 24px 0; border-top: 1px solid var(--line); }
+.hetv-contact-page .contact-aside-block:last-child { border-bottom: 1px solid var(--line); }
+.hetv-contact-page .contact-aside-block p { margin: 10px 0 0; color: var(--secondary); font-size: 15px; line-height: 1.6; }
+.hetv-contact-page .contact-aside-note { font-size: 13px !important; color: var(--muted) !important; }
+.hetv-contact-page .contact-email { display: inline-block; margin-top: 10px; font-family: 'Space Grotesk', sans-serif; font-size: clamp(17px, 1.6vw, 21px); overflow-wrap: anywhere; }
+@media (max-width: 1024px) {
+  .hetv-contact-page .contact-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 767px) {
+  .hetv-contact-page .contact-row { grid-template-columns: 1fr; }
+  .hetv-contact-page .contact-actions .larkin2-btn { width: 100%; }
+}

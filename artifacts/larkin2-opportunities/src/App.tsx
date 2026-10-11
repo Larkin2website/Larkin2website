@@ -21,6 +21,7 @@ import { PreferencesPage } from "./pages/preferences";
 import { SignupJourneyProvider } from "./lib/signup-journey";
 import { TrainingPage, DevelopmentPage } from "./pages/programme-overview";
 import { FAQsPage } from "./pages/faqs";
+import { ContactPage } from "./pages/contact";
 import { CookieNotice } from "./components/cookie-notice";
 
 const queryClient = new QueryClient();
@@ -92,6 +93,7 @@ function Router() {
         </Route>
         <Route path="/opportunities" component={OpportunitiesIndexPage} />
         <Route path="/faqs" component={FAQsPage} />
+        <Route path="/contact" component={ContactPage} />
         <Route path="/opportunities/:id">
           {(params) => <OpportunityPage id={params.id} />}
         </Route>

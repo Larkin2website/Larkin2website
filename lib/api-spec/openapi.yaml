@@ -18,7 +18,35 @@ tags:
   - name: portal-members
   - name: public-programmes
   - name: portal-programmes
+  - name: public-contact
 paths:
+  /public/contact:
+    post:
+      operationId: submitContactEnquiry
+      tags: [public-contact]
+      summary: Send a contact enquiry to the HETV team
+      description: Does not create a subscription. Success means the provider accepted the enquiry for delivery, not that it reached an inbox.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactEnquiryInput"
+      responses:
+        "200":
+          description: Enquiry accepted for delivery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactEnquiryMessage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
   /healthz:
     get:
       operationId: healthCheck
@@ -1408,6 +1436,44 @@ components:
           schema:
             $ref: "#/components/schemas/ApiError"
   schemas:
+    ContactEnquiryInput:
+      type: object
+      additionalProperties: false
+      required: [name, email, subject, message, requestId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 160
+        message:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        requestId:
+          type: string
+          format: uuid
+          description: Stable identifier for retries of the same enquiry, used for provider idempotency.
+        website:
+          type: string
+          maxLength: 200
+          description: Anti-spam honeypot; legitimate visitors leave this empty.
+    ContactEnquiryMessage:
+      type: object
+      required: [status, message]
+      properties:
+        status:
+          type: string
+          enum: [accepted]
+        message:
+          type: string
     DevelopmentSignInInput:
       type: object
       required: [email, password]

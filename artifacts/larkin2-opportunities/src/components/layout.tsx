@@ -127,7 +127,7 @@ export function SiteHeader({ scrolled, headerHidden, menuOpen, setMenuOpen, head
         <NavLink href="/development" testId="link-nav-development">Development Programmes</NavLink>
         <NavLink href="/training" testId="link-nav-training">Training Courses</NavLink>
       </nav>
-      <MaskedLink href="mailto:opportunities@baileyopportunities.com" className="larkin2-header-cta" testId="link-nav-contact">Contact Us</MaskedLink>
+      <MaskedLink href="/contact" className="larkin2-header-cta" testId="link-nav-contact">Contact Us</MaskedLink>
       <button
         ref={menuButtonRef}
         type="button"
@@ -182,7 +182,7 @@ export function SiteFooter() {
         <span id="footer-updates-heading" role="heading" aria-level={2}>Manage Hub Updates</span>
         <FooterLink href="#signup" testId="link-footer-signup">Sign Up for Updates</FooterLink>
         <FooterLink href="/unsubscribe" testId="link-footer-unsubscribe">Unsubscribe</FooterLink>
-        <a href="mailto:opportunities@baileyopportunities.com" data-testid="link-footer-contact">Contact Us</a>
+        <FooterLink href="/contact" testId="link-footer-contact">Contact Us</FooterLink>
       </div>
       <div className="larkin2-foot-col" role="group" aria-labelledby="footer-legal-heading">
         <span id="footer-legal-heading" role="heading" aria-level={2}>Legal</span>
@@ -316,7 +316,7 @@ export function MobileMenu({ menuOpen, setMenuOpen, menuButtonRef }: any) {
         <MobileLink href="/roles" testId="link-mobile-roles" num="02">Roles</MobileLink>
         <MobileLink href="/development" testId="link-mobile-development" num="03">Development Programmes</MobileLink>
         <MobileLink href="/training" testId="link-mobile-training" num="04">Training Courses</MobileLink>
-        <MobileLink href="mailto:opportunities@baileyopportunities.com" testId="link-mobile-contact" num="05">Contact Us</MobileLink>
+        <MobileLink href="/contact" testId="link-mobile-contact" num="05">Contact Us</MobileLink>
       </nav>
       <div className="larkin2-mobile-contact">
         <span>Questions about an opportunity?</span>

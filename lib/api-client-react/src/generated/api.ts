@@ -23,6 +23,8 @@ import type {
   AuditEvent,
   BadRequestResponse,
   ConflictResponse,
+  ContactEnquiryInput,
+  ContactEnquiryMessage,
   CrmAudienceItem,
   CrmCommunication,
   CrmDashboard,
@@ -111,6 +113,78 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getSubmitContactEnquiryUrl = () => {
+
+
+
+
+  return `/api/public/contact`
+}
+
+/**
+ * Does not create a subscription. Success means the provider accepted the enquiry for delivery, not that it reached an inbox.
+ * @summary Send a contact enquiry to the HETV team
+ */
+export const submitContactEnquiry = async (contactEnquiryInput: ContactEnquiryInput, options?: Parameters<typeof customFetch>[1]): Promise<ContactEnquiryMessage> => {
+
+  return customFetch<ContactEnquiryMessage>(getSubmitContactEnquiryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(contactEnquiryInput)
+  }
+);}
+
+
+
+
+
+export const getSubmitContactEnquiryMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContactEnquiry>>, TError,{data: BodyType<ContactEnquiryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitContactEnquiry>>, TError,{data: BodyType<ContactEnquiryInput>}, TContext> => {
+
+const mutationKey = ['submitContactEnquiry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitContactEnquiry>>, {data: BodyType<ContactEnquiryInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitContactEnquiry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitContactEnquiryMutationResult = NonNullable<Awaited<ReturnType<typeof submitContactEnquiry>>>
+    export type SubmitContactEnquiryMutationBody = BodyType<ContactEnquiryInput>
+    export type SubmitContactEnquiryMutationError = ErrorType<BadRequestResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>
+
+    /**
+ * @summary Send a contact enquiry to the HETV team
+ */
+export const useSubmitContactEnquiry = <TError = ErrorType<BadRequestResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContactEnquiry>>, TError,{data: BodyType<ContactEnquiryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitContactEnquiry>>,
+        TError,
+        {data: BodyType<ContactEnquiryInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitContactEnquiryMutationOptions(options));
+    }
 
 export const getHealthCheckUrl = () => {
 
