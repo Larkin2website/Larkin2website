@@ -26,3 +26,4 @@
 - [Read-only browser audits](read-only-browser-audits.md) — Chromium isolation must include OS user storage as well as its browser profile in Plan mode.
 - [Enquiry email](enquiry-recipient.md) — admin@HETVopportunities.com is approved as both sender and recipient; sender setup is still pending.
 - [Role profile intake](role-profile-workflow.md) — People complete the role-profile template before portal entry; extend the existing role form to capture the same information.
+- [Client ownership goal](client-ownership-goal.md) — All three apps should move outside Replit into client-owned services; recommend providers and document the migration in Markdown.

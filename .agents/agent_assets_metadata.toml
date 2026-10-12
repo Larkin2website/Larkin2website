@@ -14,3 +14,17 @@ mtime_ms = 1790770074388
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d11b5c09-5f1a-4a65-b681-f214a1d21da8/945ac39a-f56a-497d-ac4f-b897b660c62c/1f42ea30-faf1-4af6-8535-cec6e1271154"
 storage_version_token = "1790770190268501"
 content_type = "text/html"
+
+[[outputs]]
+id = "vyrTz5hDTB5LsndRBedjI"
+uri = "file://.local/tasks/client-owned-migration-plan.md"
+type = "text"
+title = "Client-Owned Migration Guide"
+description = "Markdown guide recommending GitHub, Render hosting and PostgreSQL, client-owned Clerk, and direct Resend, with migration, testing, cutover, rollback, and handover checklists."
+logical_id = "59e2dfb6-2719-46ea-8baf-39bb5340a031"
+content_hash = "sha256:a32161800e98ee5c321872209a420363a6f4d24f086d65a4e239827eeb3c588b"
+size = 35874
+mtime_ms = 1791808923647
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:1855d08d-cc88-438a-8a7e-143ea6035cf2/59e2dfb6-2719-46ea-8baf-39bb5340a031/8f65ee06-e087-4fbc-a82c-eae2034114b7"
+storage_version_token = "1791808924758259"
+content_type = "text/markdown"
