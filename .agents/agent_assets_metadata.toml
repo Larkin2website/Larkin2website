@@ -28,3 +28,17 @@ mtime_ms = 1791808923647
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:1855d08d-cc88-438a-8a7e-143ea6035cf2/59e2dfb6-2719-46ea-8baf-39bb5340a031/8f65ee06-e087-4fbc-a82c-eae2034114b7"
 storage_version_token = "1791808924758259"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "CAgYLx9fM1JlzINFYFmnb"
+uri = "file://docs/client-owned-migration.md"
+type = "text"
+title = "Client-Owned Migration Guide"
+description = "GitHub-tracked Markdown handover guide covering recommended providers, ownership, deployment, data/authentication migration, testing, cutover, rollback, backups, and costs."
+logical_id = "e0e0eb30-770e-4ddf-8809-a5f54d05a6fd"
+content_hash = "sha256:abac1a02447dbbd6129ecb9d61cca0336c3825593c6e4131fe76bf4c0af4ecb0"
+size = 34068
+mtime_ms = 1791809079919
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:1855d08d-cc88-438a-8a7e-143ea6035cf2/e0e0eb30-770e-4ddf-8809-a5f54d05a6fd/5cdbd7d6-220f-4a13-884c-3fea186bcfa9"
+storage_version_token = "1791809117390104"
+content_type = "text/markdown"
