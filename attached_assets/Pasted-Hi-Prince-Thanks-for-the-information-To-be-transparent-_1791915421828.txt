@@ -1,0 +1,19 @@
+Hi Prince
+Thanks for the information.
+To be transparent, I’m a little oncerned about the additional costs we’re only now being made aware of.
+With our existing website, we haven’t had to factor in additional charges beyond the original development cost, so naturally, we’d anticipated a similar arrangement here. Ideally, any additional third-party services and ongoing fees would have been outlined alongside the original quote, so we could understand the full financial commitment before proceeding.
+As I’ve mentioned previously, this is a new initiative within the production space, and we’ve already stretched our budget to accommodate the website build. Unfortunately, we don’t have the flexibility to keep absorbing costs that weren’t originally anticipated.
+We’re also now significantly behind our intended launch timeline, and with recruitment for Bailey soon coming to an end, I’m concerned that we’re losing the opportunity to use the Hub for one of the key purposes it was commissioned for.
+At this stage, I’d really appreciate a straightforward breakdown of:
+- The exact costs for the third-party services required, including whether they’re monthly, annual or usage-based.
+- Whether there are any lower-cost or no-cost alternatives that would allow us to achieve the agreed functionality.
+- The earliest realistic date we can get the Hub live and begin using it.
+Best wishes,
+
+This is their response. Let's clarify a few things: the portal and crm work as work applications and not static websites. Users being able to manage their preferences also move the hub from just a website to a web application. They usually run on a dedicated machine, with cpu and ram. All data are being stored in a database and they usually charge for storage + compute usage.
+
+Transactional email can be on the free plan but the only cap will be the 100 mails per day cap. 
+
+Development cost never includes these stuff as they're not predictable. 
+
+Go through render's pricing page and let's get a potential sub fee for them. we can forego clerk an just use the standard auth we have set up.
