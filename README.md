@@ -6,7 +6,15 @@ This repository contains the public HETV Opportunities Hub, Larkin2 Opportunitie
 
 Read the [Client-Owned Migration Guide](docs/client-owned-migration.md) for recommended providers, account ownership, required portability changes, data and authentication migration, deployment, testing, cutover, rollback, backups, costs, and client handover.
 
-The guide is documentation, not confirmation that migration has occurred. The recommended stack is client-owned GitHub, a paid Render Node service and Render PostgreSQL, external Clerk, and direct Resend. Live infrastructure and application behavior remain unchanged.
+The guide is documentation, not confirmation that migration has occurred. The recommended stack is client-owned GitHub, a paid Render Node service and Render PostgreSQL, external Clerk, and direct Resend. Hosting, database, and authentication migration have not been performed.
+
+## Email configuration
+
+Email uses direct Resend with server-side runtime settings. See
+[Portable Resend Setup](docs/resend-setup.md) and the secret-free
+[environment example](.env.example). Set credentials privately, restart the API,
+and conduct approved controlled tests; email configuration changes do not require
+rebuilding. No real email is sent by the automated checks.
 
 ## Existing project operations
 

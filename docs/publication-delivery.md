@@ -6,6 +6,9 @@ The portal queues matched subscribers only when a real role or programme is firs
 
 Configure these settings for the API server in the intended environment:
 
+- `RESEND_API_KEY`: server-only direct Resend credential; no Replit connector is
+  required. See [portable email setup](resend-setup.md) and `.env.example`.
+
 - `PUBLIC_OPPORTUNITIES_URL`: the public **artifact root**, including `/larkin2-opportunities/` (for example `https://larkin2opportunities.gentraxtech.com/larkin2-opportunities/`). Message links are built relative to this root.
 - `PUBLICATION_EMAIL_FROM`: a sender/address verified for publication notifications in Resend. This is separate from the address used for subscription verification; obtain approval before reusing it.
 - `PUBLICATION_TEST_EMAIL`: the approved, single test mailbox. The CRM cannot accept a recipient from the browser.

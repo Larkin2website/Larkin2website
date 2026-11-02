@@ -7,8 +7,9 @@ content remain available.
 ## Delivery and sender approval
 
 The owner-confirmed sender and recipient are both `admin@HETVopportunities.com`.
-The owner has stated that the sender is not yet set up. The existing Resend
-connection is used without exposing its credentials to the browser.
+The owner has stated that the sender is not yet set up. Direct Resend API delivery
+uses server-only `RESEND_API_KEY`, not Replit's connector. See
+[portable email setup](resend-setup.md) for runtime configuration and moving hosts.
 
 `CONTACT_ENQUIRY_FROM` is a non-secret configuration value containing the sender
 email address specifically approved by the owner for contact enquiries. There is
@@ -21,6 +22,10 @@ The transport verifies the sender's domain with Resend, caching a successful
 verification for five minutes. It requires an accepted email response containing
 a provider ID before returning success. The visitor's validated email is Reply-To,
 never From. Emails contain plain text rather than visitor-supplied HTML.
+
+`CONTACT_ENQUIRY_TO` can override the approved recipient at runtime; it must be a
+valid bare email address. Omission keeps the existing approved recipient.
+The Resend key needs domain-read as well as sending permission for the preflight.
 
 Automated tests use mocked delivery. No real test enquiries should be sent without
 the owner's permission. A normal successful submission means provider acceptance

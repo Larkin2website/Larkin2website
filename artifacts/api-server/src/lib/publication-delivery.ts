@@ -1,6 +1,6 @@
 import { and, eq, gte, inArray, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { createHash } from "node:crypto";
-import { ReplitConnectors } from "@replit/connectors-sdk";
+import { emailAddress, sendResendEmail, type ResendTransport } from "./resend-transport";
 import {
   audienceMatchingTable, crmCommunicationOutboxTable, crmCommunicationsTable,
   db, opportunitiesTable, programmesTable, publicSubscriptionsTable,
@@ -23,6 +23,7 @@ export function publicationDeliveryConfig(env: NodeJS.ProcessEnv = process.env):
   const from = env.PUBLICATION_EMAIL_FROM?.trim();
   const siteUrl = env.PUBLIC_OPPORTUNITIES_URL?.trim();
   const testEmail = env.PUBLICATION_TEST_EMAIL?.trim();
+  try { emailAddress(from, "PUBLICATION_EMAIL_FROM", true); } catch { return {}; }
   if (!from || !siteUrl || !URL.canParse(siteUrl) || new URL(siteUrl).protocol !== "https:") return {};
   const test = testEmail && mailAddress.test(testEmail) ? { from, siteUrl, testEmail } : undefined;
   const rawCutoff = env.PUBLICATION_ALERTS_ACTIVATED_AT;
@@ -66,16 +67,12 @@ export function publicationTestMessage(publication: Publication, config: Deliver
   return { ...message, idempotencyKey: `publication-test-${publication.id}-${fingerprint}` };
 }
 
-export async function sendPublicationEmail(message: Message): Promise<string> {
-  const response = await new ReplitConnectors().proxy("resend", "/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Idempotency-Key": message.idempotencyKey },
-    body: JSON.stringify({ from: message.from, to: [message.to], subject: message.subject, text: message.text }),
-  });
-  if (!response.ok) throw new Error(`Resend rejected delivery (${response.status})`);
-  const body = await response.json() as { id?: unknown };
-  if (typeof body.id !== "string" || !body.id) throw new Error("Resend returned no message reference");
-  return body.id;
+export async function sendPublicationEmail(message: Message, transport?: ResendTransport): Promise<string> {
+  return sendResendEmail(
+    { from: message.from, to: [message.to], subject: message.subject, text: message.text },
+    message.idempotencyKey,
+    transport,
+  );
 }
 
 export function publicationSampleMessage(config: DeliveryConfig, at = new Date()): Message {

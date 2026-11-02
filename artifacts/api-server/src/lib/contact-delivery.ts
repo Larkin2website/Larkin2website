@@ -1,8 +1,12 @@
-import { ReplitConnectors } from "@replit/connectors-sdk";
+import { emailAddress, resendTransport } from "./resend-transport";
 import type { ContactEnquiryInput } from "@workspace/api-zod";
 import { SubmitContactEnquiryBody } from "@workspace/api-zod";
 
 export const CONTACT_RECIPIENT = "admin@HETVopportunities.com";
+
+export function contactRecipient(): string {
+  return emailAddress(process.env.CONTACT_ENQUIRY_TO ?? CONTACT_RECIPIENT, "CONTACT_ENQUIRY_TO");
+}
 
 type ProxyOptions = {
   method: string;
@@ -16,9 +20,10 @@ type Proxy = (path: string, options: ProxyOptions) => Promise<ProxyResponse>;
 export function createContactDelivery(options: {
   proxy?: Proxy;
   from?: () => string | undefined;
+  to?: () => string | undefined;
   now?: () => number;
 } = {}) {
-  const proxy = options.proxy ?? ((path, init) => new ReplitConnectors().proxy("resend", path, init));
+  const proxy = options.proxy ?? resendTransport;
   // Intentionally no subscription-sender fallback: configuring this address
   // represents specific owner approval for sending contact enquiries.
   const from = options.from ?? (() => process.env["CONTACT_ENQUIRY_FROM"]);
@@ -30,6 +35,10 @@ export function createContactDelivery(options: {
     async send(input: ContactEnquiryInput): Promise<void> {
       const sender = SubmitContactEnquiryBody.shape.email.safeParse(from()?.trim());
       if (!sender.success) throw new Error("Contact sender approval is required");
+      const recipient = emailAddress(
+        options.to ? options.to() : contactRecipient(),
+        "CONTACT_ENQUIRY_TO",
+      );
       const domain = sender.data.split("@")[1].toLowerCase();
       if (verifiedDomain !== domain || verifiedUntil <= now()) {
         const response = await proxy("/domains", { method: "GET", signal: AbortSignal.timeout(10_000) });
@@ -50,7 +59,7 @@ export function createContactDelivery(options: {
         },
         body: JSON.stringify({
           from: `HETV Opportunities Hub <${sender.data}>`,
-          to: [CONTACT_RECIPIENT],
+          to: [recipient],
           reply_to: input.email,
           subject: `HETV contact: ${input.subject}`,
           text: `Contact enquiry from HETV Opportunities Hub\n\nName: ${input.name}\nEmail: ${input.email}\nSubject: ${input.subject}\n\n${input.message}\n\nThis is a contact enquiry, not a newsletter subscription or a role/course application.`,

@@ -1,7 +1,7 @@
 # Client-Owned Migration Guide
 
 Prepared: 12 October 2026
-Status: documentation complete; migration implementation, provider setup, and cutover have not been performed.
+Status: direct Resend email portability is implemented; full hosting/database/auth migration, provider setup, and cutover have not been performed.
 
 This guide covers HETV Opportunities Hub, Larkin2 Opportunities Portal, HETV Audience & Engagement CRM, and their shared API, PostgreSQL database, authentication, email, assets, domains, and operational handover. It recommends providers because the client has no preferred stack. Account creation, purchases, code changes, data exports, DNS changes, and retiring services require separate approval.
 
@@ -134,7 +134,7 @@ Build sequence to implement and verify:
 
 Current frontend Vite configuration requires both PORT and BASE_PATH even during builds. Refactor that portability restriction so frontend compilation does not need a running frontend port, or supply explicit build-only values until it is changed. One global BASE_PATH cannot represent all three builds; set it per command/package. The current output folders are each artifact's dist/public directory.
 
-Remove or isolate Replit-specific Vite development plugins and production reliance on artifact/workflow configuration. Replace managed Clerk host/key inference and proxy assumptions with a supported external Clerk configuration. Replace connector-based email calls with direct Resend API/SDK calls. Add production static serving, fallback routing, trusted-proxy handling appropriate to Render, and safe hostname validation.
+Remove or isolate Replit-specific Vite development plugins and production reliance on artifact/workflow configuration. Replace managed Clerk host/key inference and proxy assumptions with a supported external Clerk configuration. Email now uses direct runtime-configured Resend; follow [portable email setup](resend-setup.md), configure destination values, restart, and test rather than rewriting it. Add production static serving, fallback routing, trusted-proxy handling appropriate to Render, and safe hostname validation.
 
 The existing Replit production startup runs the opportunity-option seed before accepting traffic. Review whether that exact idempotent category setup is still required and perform it as an explicit release operation. Do not replace it with broad opportunity/programme seeding or overwrite editorial records on every boot.
 
@@ -215,9 +215,10 @@ Store actual values in the client-owned hosting/provider secret managers. Only t
 | VITE_CLERK_PUBLISHABLE_KEY | Portal/CRM build-time public key | Correct environment-specific key; rebuilding is required when changed |
 | VITE_CLERK_PROXY_URL | Existing managed proxy config | Remove or deliberately replace for external Clerk; do not keep a broken Replit dependency |
 | SESSION_SECRET | Backend verification/signing | Secure destination value; explicitly decide code invalidation/compatibility |
-| RESEND_API_KEY | Proposed direct-email secret | New implementation requirement; does not currently replace the connector by itself |
+| RESEND_API_KEY | Direct-email backend secret | Implemented for all three email flows; configure at runtime and restart, no connector required |
 | RESEND_WEBHOOK_SECRET | Backend event verification | Store the destination Resend endpoint's signing secret; never reuse blindly across endpoints |
 | CONTACT_ENQUIRY_FROM | Backend enquiry sender | Explicit approved client sender; verify domain |
+| CONTACT_ENQUIRY_TO | Backend enquiry recipient | Optional validated override; omission retains the existing approved product mailbox |
 | SUBSCRIPTION_VERIFICATION_FROM | Backend verification sender | Explicit client sender; remove reliance on developer-domain fallback |
 | PUBLICATION_EMAIL_FROM | Backend notifications sender | Explicit verified sender |
 | PUBLIC_OPPORTUNITIES_URL | Backend email links | Confirm canonical public URL and current prefixes |
@@ -230,13 +231,13 @@ Store actual values in the client-owned hosting/provider secret managers. Only t
 | PORT, NODE_ENV | Backend runtime | Render PORT; production environment |
 | BASE_PATH | Individual frontend build | Existing prefix per app; not one shared global value |
 
-Inventory all additional variables and hardcoded sender/recipient/domain values during implementation. The contact recipient is currently a fixed approved product address; confirm mailbox ownership and destination rather than silently substituting a developer mailbox.
+Inventory additional domain/auth/runtime settings during hosting migration. The contact recipient now supports the runtime override listed above; confirm mailbox ownership and destination rather than silently substituting a developer mailbox. The optional repository-root `.env` loader preserves injected host values; see `.env.example` and the email setup guide.
 
 Rotate destination provider credentials as appropriate. If a signing secret is temporarily retained for compatibility, record why, restrict access, and schedule rotation. Never document actual secret values in this guide.
 
 ## 10. Email, webhooks, and existing links
 
-Replace all Replit connector email paths: contact enquiries, subscription verification, and publication delivery. Preserve explicit failures and neutral subscription-verification responses; do not introduce address-existence leaks or falsely claim successful delivery.
+All email paths (contact enquiries, subscription verification, and publication/test delivery) now use direct Resend. Supply runtime credentials, senders, URLs, and webhook secret using [portable email setup](resend-setup.md); no email rebuild is needed when those values change. Explicit failures and neutral subscription-verification responses are preserved; no live provider delivery has been verified by mocked tests.
 
 In the client Resend account:
 - Verify approved sending domains and configure DNS records supplied by Resend. Review SPF, DKIM, and DMARC without breaking existing mail delivery.

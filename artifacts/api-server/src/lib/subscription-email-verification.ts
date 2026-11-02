@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import { and, eq, gt, sql } from "drizzle-orm";
-import { ReplitConnectors } from "@replit/connectors-sdk";
+import { emailAddress, sendResendEmail, type ResendTransport } from "./resend-transport";
 import { db, publicSubscriptionsTable, subscriptionChallengesTable, subscriptionSessionsTable } from "@workspace/db";
 import { reconcilePendingDeliveries } from "./audience-crm-service";
 import { normalizeReferralPreferences, normalizeSubscriptionEmail, normalizeWebsitePurposes, preferencesFromInput, type SubscriptionPreferences } from "./public-subscription-service";
@@ -9,7 +9,6 @@ import { logger } from "./logger";
 const CODE_LIFETIME = 10 * 60_000;
 const ACCESS_LIFETIME = 30 * 60_000;
 const neutralMessage = "If that address has an active subscription and delivery is available, a verification code should arrive shortly.";
-const FROM = process.env["SUBSCRIPTION_VERIFICATION_FROM"] || "HETV Opportunities Hub <hetv@gentraxtech.com>";
 const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 
 export interface SubscriptionVerificationStore {
@@ -110,16 +109,14 @@ export const drizzleVerificationStore: SubscriptionVerificationStore = {
   },
 };
 
-export async function sendSubscriptionCode(email: string, code: string): Promise<void> {
-  const response = await new ReplitConnectors().proxy("resend", "/emails", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from: FROM, to: [email], subject: "Your HETV subscription verification code",
+export async function sendSubscriptionCode(email: string, code: string, options: {
+  env?: NodeJS.ProcessEnv; transport?: ResendTransport;
+} = {}): Promise<void> {
+  await sendResendEmail({
+      from: emailAddress((options.env ?? process.env).SUBSCRIPTION_VERIFICATION_FROM, "SUBSCRIPTION_VERIFICATION_FROM", true),
+      to: [email], subject: "Your HETV subscription verification code",
       text: `Your HETV Opportunities Hub verification code is ${code}. It expires in 10 minutes. Use it only to manage your preferences or unsubscribe. If you did not request it, ignore this email. We are not sending opportunity alerts.`,
-    }),
-  });
-  if (!response.ok) throw new Error("Verification mail delivery failed");
+  }, undefined, options.transport);
 }
 
 export function createSubscriptionVerificationService(

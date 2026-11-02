@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { Router, type RequestHandler } from "express";
 import { SubmitContactEnquiryBody, SubmitContactEnquiryResponse } from "@workspace/api-zod";
 import type { ContactEnquiryInput } from "@workspace/api-zod";
-import { createContactDelivery, CONTACT_RECIPIENT } from "../lib/contact-delivery";
+import { createContactDelivery, contactRecipient, CONTACT_RECIPIENT } from "../lib/contact-delivery";
 import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
 import { logger } from "../lib/logger";
 
@@ -10,7 +10,11 @@ const accepted = SubmitContactEnquiryResponse.parse({
   status: "accepted",
   message: "Your message has been accepted for delivery to the HETV team.",
 });
-const unavailable = `We couldn’t send your message. Please try again or email ${CONTACT_RECIPIENT} directly.`;
+function unavailable(): string {
+  let recipient = CONTACT_RECIPIENT;
+  try { recipient = contactRecipient(); } catch { /* Keep the approved public contact if config is invalid. */ }
+  return `We couldn’t send your message. Please try again or email ${recipient} directly.`;
+}
 type Delivery = { send(input: ContactEnquiryInput): Promise<void> };
 
 export function createContactRouter(options: {
@@ -83,7 +87,7 @@ export function createContactRouter(options: {
       if (requests.get(input.requestId) === entry) requests.delete(input.requestId);
       // Do not log enquiry contents, addresses, provider payloads or credentials.
       logger.warn("Contact enquiry delivery unavailable");
-      res.status(503).json({ error: unavailable });
+      res.status(503).json({ error: unavailable() });
     }
   });
   return router;

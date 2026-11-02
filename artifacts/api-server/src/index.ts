@@ -1,3 +1,4 @@
+import "./lib/load-env";
 import app from "./app";
 import { logger } from "./lib/logger";
 import { startPublicationDeliveryWorker } from "./lib/publication-delivery";
@@ -23,5 +24,8 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+  if (!process.env.RESEND_API_KEY?.trim()) {
+    logger.warn("Direct Resend email is unavailable until RESEND_API_KEY is configured; no connector fallback is used");
+  }
   startPublicationDeliveryWorker();
 });
