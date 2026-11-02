@@ -14,3 +14,9 @@ The user explicitly chose Resend and wants to move its integration by replacing 
 **Why:** The user wants email portability before leaving Replit.
 
 **How to apply:** Keep email credentials and host/account-specific settings server-side and runtime-configurable. Do not reintroduce a mandatory platform connector or claim all other hosting/auth migration work is covered by portable email settings.
+
+When email limits stop sending, the user wants an admin pop-up or email advising that the Resend plan must be changed if new mail needs to go out.
+
+**Why:** The user explicitly requested admin notification rather than discovering quota failures later.
+
+**How to apply:** Include actionable admin-facing quota warnings in email-delivery work; do not depend exclusively on sending a warning email through an already-exhausted allowance.
