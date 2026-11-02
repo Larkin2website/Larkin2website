@@ -29,12 +29,14 @@ import type {
   CrmCommunication,
   CrmDashboard,
   CrmDeliverySettings,
+  CrmEmailHealth,
   CrmEnquiry,
   CrmEnquiryInput,
   CrmEnquiryUpdate,
   CrmPublicationSampleResult,
   CrmTaxonomy,
   DevelopmentSignInInput,
+  EmailDeliveryFailure,
   ForbiddenResponse,
   HealthStatus,
   ListCrmAudienceParams,
@@ -3832,7 +3834,7 @@ export const sendCrmCommunicationTest = async (id: string, options?: Parameters<
 
 
 
-export const getSendCrmCommunicationTestMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ServiceUnavailableResponse>,
+export const getSendCrmCommunicationTestMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | EmailDeliveryFailure>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmCommunicationTest>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof sendCrmCommunicationTest>>, TError,{id: string}, TContext> => {
 
@@ -3861,12 +3863,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type SendCrmCommunicationTestMutationResult = NonNullable<Awaited<ReturnType<typeof sendCrmCommunicationTest>>>
 
-    export type SendCrmCommunicationTestMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ServiceUnavailableResponse>
+    export type SendCrmCommunicationTestMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | EmailDeliveryFailure>
 
     /**
  * @summary Send a publication notification preview to the configured test mailbox
  */
-export const useSendCrmCommunicationTest = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ServiceUnavailableResponse>,
+export const useSendCrmCommunicationTest = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | EmailDeliveryFailure>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmCommunicationTest>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof sendCrmCommunicationTest>>,
@@ -3954,6 +3956,83 @@ export function useGetCrmDeliverySettings<TData = Awaited<ReturnType<typeof getC
 
 
 
+export const getGetCrmEmailHealthUrl = () => {
+
+
+
+
+  return `/api/crm/communications/email-health`
+}
+
+/**
+ * @summary Admin-only account email allowance and delivery health
+ */
+export const getCrmEmailHealth = async ( options?: Parameters<typeof customFetch>[1]): Promise<CrmEmailHealth> => {
+
+  return customFetch<CrmEmailHealth>(getGetCrmEmailHealthUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCrmEmailHealthQueryKey = () => {
+    return [
+    `/api/crm/communications/email-health`
+    ] as const;
+    }
+
+
+export const getGetCrmEmailHealthQueryOptions = <TData = Awaited<ReturnType<typeof getCrmEmailHealth>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmEmailHealth>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCrmEmailHealthQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCrmEmailHealth>>> = ({ signal }) => getCrmEmailHealth({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCrmEmailHealth>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCrmEmailHealthQueryResult = NonNullable<Awaited<ReturnType<typeof getCrmEmailHealth>>>
+export type GetCrmEmailHealthQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Admin-only account email allowance and delivery health
+ */
+
+export function useGetCrmEmailHealth<TData = Awaited<ReturnType<typeof getCrmEmailHealth>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCrmEmailHealth>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCrmEmailHealthQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
 export const getSendCrmPublicationSampleUrl = () => {
 
 
@@ -3980,7 +4059,7 @@ export const sendCrmPublicationSample = async ( options?: Parameters<typeof cust
 
 
 
-export const getSendCrmPublicationSampleMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+export const getSendCrmPublicationSampleMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | EmailDeliveryFailure>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmPublicationSample>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof sendCrmPublicationSample>>, TError,void, TContext> => {
 
@@ -4009,12 +4088,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type SendCrmPublicationSampleMutationResult = NonNullable<Awaited<ReturnType<typeof sendCrmPublicationSample>>>
 
-    export type SendCrmPublicationSampleMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>
+    export type SendCrmPublicationSampleMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | EmailDeliveryFailure>
 
     /**
  * @summary Send a sample alert only to the configured test mailbox
  */
-export const useSendCrmPublicationSample = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | ServiceUnavailableResponse>,
+export const useSendCrmPublicationSample = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | TooManyRequestsResponse | EmailDeliveryFailure>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendCrmPublicationSample>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof sendCrmPublicationSample>>,

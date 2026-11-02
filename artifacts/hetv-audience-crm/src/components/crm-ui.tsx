@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { ArrowUpRight, ChartNoAxesCombined, ChevronRight, Inbox, LayoutDashboard, LogOut, MailCheck, PanelLeftClose, PanelLeftOpen, UsersRound } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { crmTestAccessLabel } from '@/lib/demo-mode';
+import { EmailHealthBanner } from '@/components/email-health';
 
 export function Brand({ light = false }: { light?: boolean }) {
   return <div className={`flex items-center gap-2 display font-bold text-xl tracking-[-.07em] ${light ? 'text-[#f4f1ed]' : 'text-[#1d2020]'}`}><span className="border border-[#f4773f] px-1.5 py-0.5 leading-none">HE<span className="text-[#f4773f]">TV</span></span><span className="text-[11px] tracking-[.15em] font-medium ml-2 uppercase">Hub</span></div>;
@@ -67,6 +68,7 @@ export function Shell({ children, name, onSignOut, development = false }: { chil
         <div className="flex items-center gap-3 micro text-[#625d58]"><span>HETV HUB</span><ChevronRight size={12}/><span className="text-[#1d2020]">{location.startsWith('/audience/') ? 'AUDIENCE PROFILE' : navigation.find(n=>n.href===location)?.label.toUpperCase() || 'WORKSPACE'}</span></div>
         <div className="flex items-center gap-4"><span className={`micro ${development ? 'text-[#b45024]' : 'hidden sm:block text-[#625d58]'}`}>{development ? crmTestAccessLabel : 'PRIVATE · STAFF ONLY'}</span><button data-testid="button-mobile-sign-out" title="Sign out" aria-label="Sign out" onClick={onSignOut} className="md:hidden"><LogOut size={17}/></button><div className="h-2 w-2 rounded-full bg-[#f4773f]" /></div>
       </header>
+      <EmailHealthBanner />
       <div className="max-w-[1520px] mx-auto px-5 sm:px-9 lg:px-12 py-9 lg:py-12">{children}</div>
     </main>
   </div>;

@@ -2570,6 +2570,8 @@ export const GetCrmAudienceMemberResponse = zod.object({
  */
 export const listCrmCommunicationsResponseRecipientCountMin = 0;
 
+export const listCrmCommunicationsResponseDeferredCountMin = 0;
+
 export const listCrmCommunicationsResponseDeliveryCountsPendingMin = 0;
 
 export const listCrmCommunicationsResponseDeliveryCountsProcessingMin = 0;
@@ -2597,6 +2599,7 @@ export const ListCrmCommunicationsResponseItem = zod.object({
   "testSentAt": zod.coerce.date().nullish(),
   "testProviderReference": zod.string().nullish(),
   "testLastError": zod.string().nullish(),
+  "deferredCount": zod.number().int().min(listCrmCommunicationsResponseDeferredCountMin).optional(),
   "deliveryCounts": zod.object({
   "pending": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsPendingMin),
   "processing": zod.number().int().min(listCrmCommunicationsResponseDeliveryCountsProcessingMin),
@@ -2619,6 +2622,8 @@ export const SendCrmCommunicationTestParams = zod.object({
 })
 
 export const sendCrmCommunicationTestResponseRecipientCountMin = 0;
+
+export const sendCrmCommunicationTestResponseDeferredCountMin = 0;
 
 export const sendCrmCommunicationTestResponseDeliveryCountsPendingMin = 0;
 
@@ -2647,6 +2652,7 @@ export const SendCrmCommunicationTestResponse = zod.object({
   "testSentAt": zod.coerce.date().nullish(),
   "testProviderReference": zod.string().nullish(),
   "testLastError": zod.string().nullish(),
+  "deferredCount": zod.number().int().min(sendCrmCommunicationTestResponseDeferredCountMin).optional(),
   "deliveryCounts": zod.object({
   "pending": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsPendingMin),
   "processing": zod.number().int().min(sendCrmCommunicationTestResponseDeliveryCountsProcessingMin),
@@ -2667,6 +2673,48 @@ export const GetCrmDeliverySettingsResponse = zod.object({
   "testReady": zod.boolean(),
   "liveEnabled": zod.boolean(),
   "trackingReady": zod.boolean()
+})
+
+
+/**
+ * @summary Admin-only account email allowance and delivery health
+ */
+export const getCrmEmailHealthResponseDailyUsedMin = 0;
+
+export const getCrmEmailHealthResponseDailyLimitMin = 0;
+
+export const getCrmEmailHealthResponseDailyRemainingMin = 0;
+
+export const getCrmEmailHealthResponseMonthlyUsedMin = 0;
+
+export const getCrmEmailHealthResponseMonthlyLimitMin = 0;
+
+export const getCrmEmailHealthResponseMonthlyRemainingMin = 0;
+
+export const getCrmEmailHealthResponseDeferredCountMin = 0;
+
+
+
+export const GetCrmEmailHealthResponse = zod.object({
+  "status": zod.enum(['ready', 'warning', 'daily_limit', 'monthly_limit', 'rate_limited', 'unconfigured', 'unavailable', 'stale', 'unknown']),
+  "message": zod.string(),
+  "daily": zod.object({
+  "used": zod.number().int().min(getCrmEmailHealthResponseDailyUsedMin),
+  "limit": zod.number().int().min(getCrmEmailHealthResponseDailyLimitMin).nullable(),
+  "remaining": zod.number().int().min(getCrmEmailHealthResponseDailyRemainingMin).nullable(),
+  "resetsAt": zod.string().nullable()
+}),
+  "monthly": zod.object({
+  "used": zod.number().int().min(getCrmEmailHealthResponseMonthlyUsedMin),
+  "limit": zod.number().int().min(getCrmEmailHealthResponseMonthlyLimitMin).nullable(),
+  "remaining": zod.number().int().min(getCrmEmailHealthResponseMonthlyRemainingMin).nullable(),
+  "resetsAt": zod.string().nullable()
+}),
+  "lastSyncedAt": zod.string().nullable(),
+  "retryAt": zod.string().nullable(),
+  "deferredCount": zod.number().int().min(getCrmEmailHealthResponseDeferredCountMin),
+  "adminNotice": zod.enum(['not_configured', 'waiting', 'accepted', 'unavailable']),
+  "billingUrl": zod.string()
 })
 
 

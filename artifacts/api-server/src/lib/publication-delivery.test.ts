@@ -10,6 +10,7 @@ import {
   publicationMessage, publicationSampleMessage, publicationTestMessage, type DeliveryConfig,
 } from "./publication-delivery";
 import { shouldEnqueueFirstPublication } from "./audience-crm-service";
+import { EmailDeliveryError } from "./resend-errors";
 
 const config: DeliveryConfig = {
   from: "HETV Opportunities Hub <hetv@gentraxtech.com>",
@@ -139,6 +140,67 @@ test("claim completions are fenced to an exact attempt after lease expiry", () =
   const lock = db.select().from(crmCommunicationsTable)
     .where(eq(crmCommunicationsTable.id, id)).for("update").toSQL();
   assert.match(lock.sql.toLowerCase(), /for update/);
+  const versioned = db.update(crmCommunicationOutboxTable).set({ attempts: 0, status: "pending" })
+    .where(claimedDeliveryWhere(id, 1, 3)).toSQL();
+  assert.match(versioned.sql, /"claim_version" =/);
+  assert.ok(versioned.params.includes(3));
+});
+
+test("quota/configuration waits defer without ordinary failure; uncertain acceptance never becomes a quota wait", async () => {
+  const at = new Date("2026-09-26T10:11:00Z");
+  const base = { id: "delivery-1", attempts: 1, firstAttemptAt: at, publication: role, subscriber, matching: match, config, at };
+  for (const code of ["daily_limit", "monthly_limit", "rate_limited", "unconfigured", "stale"] as const) {
+    const outcome = await deliverClaimedPublication(base, async () => { throw new EmailDeliveryError(code, new Date("2026-10-01")); });
+    assert.equal(outcome.kind, "deferred");
+    if (outcome.kind === "deferred") {
+      assert.equal(outcome.reason, code);
+      assert(outcome.nextAttemptAt.getTime() <= at.getTime() + 60_000);
+    }
+  }
+  const uncertain = await deliverClaimedPublication(base, async () => { throw new EmailDeliveryError("unavailable", undefined, true); });
+  assert.equal(uncertain.kind, "failed");
+  const review = await deliverClaimedPublication(base, async () => { throw new EmailDeliveryError("unknown", undefined, true); });
+  assert.equal(review.kind, "failed");
+  if (review.kind === "failed") assert.equal(review.exhausted, true);
+  let sends = 0;
+  assert.equal((await deliverClaimedPublication({ ...base, publication: { ...role, deadline: new Date("2026-09-25") } },
+    async () => { sends++; return "not-sent"; })).kind, "skipped");
+  assert.equal(sends, 0);
+});
+
+test("protected email-health and blocked-send contracts return safe actionable state", async () => {
+  const app = express();
+  app.use(express.json());
+  const health = {
+    status: "daily_limit" as const, message: new EmailDeliveryError("daily_limit").message,
+    daily: { used: 94, limit: 100, remaining: 6, resetsAt: "2026-11-03T00:00:00Z" },
+    monthly: { used: 1000, limit: 3000, remaining: 2000, resetsAt: "2026-12-01T00:00:00Z" },
+    retryAt: "2026-11-03T00:00:00Z", lastSyncedAt: "2026-11-02T16:00:00Z",
+    deferredCount: 9, adminNotice: "accepted" as const, billingUrl: "https://resend.com/settings/billing",
+  };
+  app.use(createAudienceCrmRouter({
+    requireCrmAccess: (req, res, next) => req.headers["x-test-admin"] ? next() : res.status(403).end(),
+    emailHealth: async () => health,
+    sendSampleTest: async () => { throw new EmailDeliveryError("daily_limit", new Date(health.retryAt)); },
+    sendTest: async () => { throw new EmailDeliveryError("monthly_limit"); },
+  }));
+  const server = app.listen(0, "127.0.0.1");
+  await new Promise<void>(resolve => server.once("listening", resolve));
+  try {
+    const root = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
+    assert.equal((await fetch(`${root}/crm/communications/email-health`)).status, 403);
+    const response = await fetch(`${root}/crm/communications/email-health`, { headers: { "x-test-admin": "true" } });
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.deepEqual(await response.json(), health);
+    const blocked = await fetch(`${root}/crm/communications/test-sample`, { method: "POST", headers: { "x-test-admin": "true" } });
+    assert.equal(blocked.status, 503);
+    const body = await blocked.json() as { code: string; error: string };
+    assert.equal(body.code, "daily_limit");
+    assert.match(body.error, /Upgrade your Resend plan/);
+    const blockedTest = await fetch(`${root}/crm/communications/fca8e537-0c7d-4b2f-b693-9f1895e8d070/test-send`,
+      { method: "POST", headers: { "x-test-admin": "true" } });
+    assert.equal((await blockedTest.json() as { code: string }).code, "monthly_limit");
+  } finally { await new Promise<void>(resolve => server.close(() => resolve())); }
 });
 
 test("controlled test endpoint cannot choose a recipient or bypass configuration", async () => {

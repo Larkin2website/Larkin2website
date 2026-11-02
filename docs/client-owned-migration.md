@@ -1,7 +1,7 @@
 # Client-Owned Migration Guide
 
 Prepared: 12 October 2026
-Status: direct Resend email portability is implemented; full hosting/database/auth migration, provider setup, and cutover have not been performed.
+Status: direct Resend email portability, shared quota controls and CRM admin warnings are implemented. Real email verification and full hosting/database/auth migration, provider setup, and cutover remain incomplete.
 
 This guide covers HETV Opportunities Hub, Larkin2 Opportunities Portal, HETV Audience & Engagement CRM, and their shared API, PostgreSQL database, authentication, email, assets, domains, and operational handover. It recommends providers because the client has no preferred stack. Account creation, purchases, code changes, data exports, DNS changes, and retiring services require separate approval.
 
@@ -237,7 +237,7 @@ Rotate destination provider credentials as appropriate. If a signing secret is t
 
 ## 10. Email, webhooks, and existing links
 
-All email paths (contact enquiries, subscription verification, and publication/test delivery) now use direct Resend. Supply runtime credentials, senders, URLs, and webhook secret using [portable email setup](resend-setup.md); no email rebuild is needed when those values change. Explicit failures and neutral subscription-verification responses are preserved; no live provider delivery has been verified by mocked tests.
+All email paths (contact enquiries, subscription verification, and publication/test delivery) now use direct Resend. Supply runtime credentials, account ID, senders, URLs, warning recipient and webhook secret using [portable email setup](resend-setup.md); no email rebuild is needed when those values change. Shared quota protection and CRM warnings are covered in [Email Delivery Operations](email-delivery-operations.md). Explicit failures and neutral subscription-verification responses are preserved; no live provider delivery has been verified by mocked tests.
 
 In the client Resend account:
 - Verify approved sending domains and configure DNS records supplied by Resend. Review SPF, DKIM, and DMARC without breaking existing mail delivery.

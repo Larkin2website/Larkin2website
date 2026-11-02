@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { MailCheck } from 'lucide-react';
 import {
   getCrmDeliverySettings, sendCrmCommunicationTest, sendCrmPublicationSample, useListCrmCommunications,
-  getListCrmCommunicationsQueryKey,
+  getListCrmCommunicationsQueryKey, getGetCrmEmailHealthQueryKey,
 } from '@workspace/api-client-react';
+import { BlockedSendDialog, EmailHealthDetails, extractBlocked, useEmailHealth, type BlockedSend } from '@/components/email-health';
 import { PageHeading, State, Status, date, label, number } from '@/components/crm-ui';
 
 export default function Communications() {
@@ -13,14 +15,26 @@ export default function Communications() {
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [sampleSending, setSampleSending] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [blocked, setBlocked] = useState<BlockedSend | null>(null);
+  const health = useEmailHealth();
+  const qc = useQueryClient();
 
   useEffect(() => {
     let active = true;
-    void getCrmDeliverySettings()
-      .then(value => { if (active) setSettings(value); })
+    const load = () => void getCrmDeliverySettings()
+      .then(value => { if (active) { setSettings(value); setSettingsError(false); } })
       .catch(() => { if (active) setSettingsError(true); });
-    return () => { active = false; };
+    load();
+    const timer = setInterval(load, 60_000);
+    const onFocus = () => load();
+    window.addEventListener('focus', onFocus);
+    return () => { active = false; clearInterval(timer); window.removeEventListener('focus', onFocus); };
   }, []);
+
+  const settle = () => Promise.all([
+    qc.invalidateQueries({ queryKey: getGetCrmEmailHealthQueryKey() }),
+    qc.invalidateQueries({ queryKey: getListCrmCommunicationsQueryKey() }),
+  ]);
 
   async function sendTest(id: string) {
     if (sendingId || !settings?.testReady) return;
@@ -29,12 +43,13 @@ export default function Communications() {
     try {
       await sendCrmCommunicationTest(id);
       setFeedback('Resend accepted the test email for the configured mailbox. No subscribers were emailed. Confirm inbox receipt separately.');
-      await query.refetch();
-    } catch {
-      setFeedback('Test delivery could not be confirmed. Check the test inbox and sender configuration before retrying; no subscribers were targeted.');
-      await query.refetch();
+    } catch (error) {
+      const b = extractBlocked(error);
+      if (b) { setBlocked(b); setFeedback('Test not sent: email sending is currently blocked. No subscribers were targeted.'); }
+      else setFeedback('Test delivery could not be confirmed. Check the test inbox and sender configuration before retrying; no subscribers were targeted.');
     } finally {
       setSendingId(null);
+      void settle();
     }
   }
 
@@ -45,16 +60,21 @@ export default function Communications() {
     try {
       await sendCrmPublicationSample();
       setFeedback('Resend accepted or deduplicated the sample test. Only the configured mailbox was targeted. Confirm inbox receipt separately.');
-    } catch {
-      setFeedback('Sample delivery could not be confirmed. Check the test inbox before retrying; no subscribers were targeted.');
+    } catch (error) {
+      const b = extractBlocked(error);
+      if (b) { setBlocked(b); setFeedback('Sample not sent: email sending is currently blocked. No subscribers were targeted.'); }
+      else setFeedback('Sample delivery could not be confirmed. Check the test inbox before retrying; no subscribers were targeted.');
     } finally {
       setSampleSending(false);
+      void settle();
     }
   }
 
   return <>
     <PageHeading eyebrow="03 / Delivery" title="Communications."
       description="First publications create matched notification batches. Accepted means Resend accepted the message; delivered is confirmed by a provider event, not guaranteed inbox placement. Bounces and complaints stop future alerts. Tests go only to the approved mailbox." />
+    <BlockedSendDialog blocked={blocked} billingUrl={health.data?.billingUrl} onClose={() => setBlocked(null)} />
+    <EmailHealthDetails />
     <div className="surface p-5 mb-5 text-sm space-y-2">
       <p className="font-semibold">{settings?.liveEnabled ? 'Live audience delivery enabled' : 'Live audience delivery disabled'}</p>
       <p>{settings?.testReady
@@ -112,6 +132,7 @@ export default function Communications() {
                   <Status value={item.status} />
                   {item.nextRetryAt && <span className="block mt-2 text-xs text-[#625d58]">Retry scheduled: {date(item.nextRetryAt)}</span>}
                   {item.status === 'failed' && !item.nextRetryAt && <span className="block mt-2 text-xs text-[#625d58]">No automatic retries remain.</span>}
+                  {!!item.deferredCount && <span data-testid={`text-deferred-${item.id}`} className="block mt-2 text-xs text-[#7a3a24]">{number(item.deferredCount)} deferred by email limits</span>}
                   {item.status === 'pending' && item.recipientCount === 0 && <span className="block mt-2 text-xs text-[#625d58]">No eligible recipients remain.</span>}
                 </div>
               </div>,

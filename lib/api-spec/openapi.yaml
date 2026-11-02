@@ -1126,7 +1126,11 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
         "503":
-          $ref: "#/components/responses/ServiceUnavailable"
+          description: Controlled email sending unavailable or deferred
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDeliveryFailure"
   /crm/communications/delivery-settings:
     get:
       operationId: getCrmDeliverySettings
@@ -1141,6 +1145,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CrmDeliverySettings"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /crm/communications/email-health:
+    get:
+      operationId: getCrmEmailHealth
+      tags: [portal-dashboard]
+      summary: Admin-only account email allowance and delivery health
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Sanitized email quota state, never credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrmEmailHealth"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1168,7 +1190,11 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "503":
-          $ref: "#/components/responses/ServiceUnavailable"
+          description: Controlled email sending unavailable or deferred
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailDeliveryFailure"
   /crm/enquiries:
     get:
       operationId: listCrmEnquiries
@@ -2544,6 +2570,7 @@ components:
         testSentAt: { type: ["string", "null"], format: date-time }
         testProviderReference: { type: ["string", "null"] }
         testLastError: { type: ["string", "null"] }
+        deferredCount: { type: integer, minimum: 0 }
         deliveryCounts: { $ref: "#/components/schemas/CrmDeliveryCounts" }
         nextRetryAt: { type: ["string", "null"], format: date-time }
     CrmDeliveryCounts:
@@ -2557,6 +2584,40 @@ components:
         failed: { type: integer, minimum: 0 }
         bounced: { type: integer, minimum: 0 }
         complained: { type: integer, minimum: 0 }
+    EmailDeliveryFailure:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+        code:
+          type: string
+          enum: [daily_limit, monthly_limit, rate_limited, unconfigured, unavailable, stale, unknown]
+        retryAt: { type: string }
+    CrmEmailWindow:
+      type: object
+      required: [used, limit, remaining, resetsAt]
+      properties:
+        used: { type: integer, minimum: 0 }
+        limit: { type: ["integer", "null"], minimum: 0 }
+        remaining: { type: ["integer", "null"], minimum: 0 }
+        resetsAt: { type: ["string", "null"] }
+    CrmEmailHealth:
+      type: object
+      required: [status, message, daily, monthly, lastSyncedAt, retryAt, deferredCount, adminNotice, billingUrl]
+      properties:
+        status:
+          type: string
+          enum: [ready, warning, daily_limit, monthly_limit, rate_limited, unconfigured, unavailable, stale, unknown]
+        message: { type: string }
+        daily: { $ref: "#/components/schemas/CrmEmailWindow" }
+        monthly: { $ref: "#/components/schemas/CrmEmailWindow" }
+        lastSyncedAt: { type: ["string", "null"] }
+        retryAt: { type: ["string", "null"] }
+        deferredCount: { type: integer, minimum: 0 }
+        adminNotice:
+          type: string
+          enum: [not_configured, waiting, accepted, unavailable]
+        billingUrl: { type: string }
     CrmDeliverySettings:
       type: object
       required: [testReady, liveEnabled, trackingReady]

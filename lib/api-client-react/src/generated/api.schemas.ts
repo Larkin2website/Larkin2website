@@ -1522,9 +1522,87 @@ export interface CrmCommunication {
   testProviderReference?: string | null;
   /** @nullable */
   testLastError?: string | null;
+  /** @minimum 0 */
+  deferredCount?: number;
   deliveryCounts?: CrmDeliveryCounts;
   /** @nullable */
   nextRetryAt?: string | null;
+}
+
+export type EmailDeliveryFailureCode = typeof EmailDeliveryFailureCode[keyof typeof EmailDeliveryFailureCode];
+
+
+export const EmailDeliveryFailureCode = {
+  daily_limit: 'daily_limit',
+  monthly_limit: 'monthly_limit',
+  rate_limited: 'rate_limited',
+  unconfigured: 'unconfigured',
+  unavailable: 'unavailable',
+  stale: 'stale',
+  unknown: 'unknown',
+} as const;
+
+export interface EmailDeliveryFailure {
+  error: string;
+  code?: EmailDeliveryFailureCode;
+  retryAt?: string;
+}
+
+export interface CrmEmailWindow {
+  /** @minimum 0 */
+  used: number;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  limit: number | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  remaining: number | null;
+  /** @nullable */
+  resetsAt: string | null;
+}
+
+export type CrmEmailHealthStatus = typeof CrmEmailHealthStatus[keyof typeof CrmEmailHealthStatus];
+
+
+export const CrmEmailHealthStatus = {
+  ready: 'ready',
+  warning: 'warning',
+  daily_limit: 'daily_limit',
+  monthly_limit: 'monthly_limit',
+  rate_limited: 'rate_limited',
+  unconfigured: 'unconfigured',
+  unavailable: 'unavailable',
+  stale: 'stale',
+  unknown: 'unknown',
+} as const;
+
+export type CrmEmailHealthAdminNotice = typeof CrmEmailHealthAdminNotice[keyof typeof CrmEmailHealthAdminNotice];
+
+
+export const CrmEmailHealthAdminNotice = {
+  not_configured: 'not_configured',
+  waiting: 'waiting',
+  accepted: 'accepted',
+  unavailable: 'unavailable',
+} as const;
+
+export interface CrmEmailHealth {
+  status: CrmEmailHealthStatus;
+  message: string;
+  daily: CrmEmailWindow;
+  monthly: CrmEmailWindow;
+  /** @nullable */
+  lastSyncedAt: string | null;
+  /** @nullable */
+  retryAt: string | null;
+  /** @minimum 0 */
+  deferredCount: number;
+  adminNotice: CrmEmailHealthAdminNotice;
+  billingUrl: string;
 }
 
 export interface CrmDeliverySettings {

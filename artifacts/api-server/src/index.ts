@@ -2,6 +2,7 @@ import "./lib/load-env";
 import app from "./app";
 import { logger } from "./lib/logger";
 import { startPublicationDeliveryWorker } from "./lib/publication-delivery";
+import { startEmailQuotaWorker } from "./lib/email-quota";
 
 const rawPort = process.env["PORT"];
 
@@ -28,4 +29,5 @@ app.listen(port, (err) => {
     logger.warn("Direct Resend email is unavailable until RESEND_API_KEY is configured; no connector fallback is used");
   }
   startPublicationDeliveryWorker();
+  startEmailQuotaWorker();
 });

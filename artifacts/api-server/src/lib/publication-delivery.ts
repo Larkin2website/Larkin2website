@@ -10,6 +10,7 @@ import { applyProviderEvents } from "./provider-delivery-events";
 import type { MatchingInput } from "./audience-crm-service";
 import { logger } from "./logger";
 import { isTemporaryTestLoginEnabled } from "./development-session";
+import { EmailDeliveryError } from "./resend-errors";
 
 const MAX_ATTEMPTS = 5;
 const LEASE_MS = 90_000;
@@ -34,7 +35,7 @@ export function publicationDeliveryConfig(env: NodeJS.ProcessEnv = process.env):
   return { test, live };
 }
 
-type Publication = { id: string; kind: "role" | "programme"; title: string; slug: string; status: string };
+type Publication = { id: string; kind: "role" | "programme"; title: string; slug: string; status: string; deadline?: Date | null; applicationStatus?: string };
 type Message = { from: string; to: string; subject: string; text: string; idempotencyKey: string };
 
 export function publicationMessage(
@@ -72,6 +73,7 @@ export async function sendPublicationEmail(message: Message, transport?: ResendT
     { from: message.from, to: [message.to], subject: message.subject, text: message.text },
     message.idempotencyKey,
     transport,
+    message.idempotencyKey.startsWith("publication-test-") || message.idempotencyKey.startsWith("publication-sample-") ? "test" : "publication",
   );
 }
 
@@ -105,13 +107,14 @@ export async function sendPublicationSampleTest(config = publicationDeliveryConf
 async function loadPublication(communication: typeof crmCommunicationsTable.$inferSelect): Promise<Publication | undefined> {
   if (communication.opportunityId) {
     const [row] = await db.select({ id: opportunitiesTable.id, title: opportunitiesTable.title,
-      slug: opportunitiesTable.slug, status: opportunitiesTable.status })
+      slug: opportunitiesTable.slug, status: opportunitiesTable.status, deadline: opportunitiesTable.deadline })
       .from(opportunitiesTable).where(eq(opportunitiesTable.id, communication.opportunityId)).limit(1);
     return row ? { ...row, kind: "role" } : undefined;
   }
   if (communication.programmeId) {
     const [row] = await db.select({ id: programmesTable.id, title: programmesTable.title,
-      slug: programmesTable.slug, status: programmesTable.status })
+      slug: programmesTable.slug, status: programmesTable.status, deadline: programmesTable.deadline,
+      applicationStatus: programmesTable.applicationStatus })
       .from(programmesTable).where(eq(programmesTable.id, communication.programmeId)).limit(1);
     return row ? { ...row, kind: "programme" } : undefined;
   }
@@ -128,9 +131,10 @@ export async function sendPublicationTest(communicationId: string, config = publ
   let reference: string;
   try {
     reference = await sendPublicationEmail(publicationTestMessage(publication, config));
-  } catch {
+  } catch (error) {
     await db.update(crmCommunicationsTable).set({ testLastError: "Test delivery failed" })
       .where(eq(crmCommunicationsTable.id, communicationId));
+    if (error instanceof EmailDeliveryError) throw error;
     throw new Error("TEST_DELIVERY_FAILED");
   }
   try {
@@ -159,14 +163,16 @@ export function canDeliverToSubscriber(
 export type DeliveryOutcome =
   | { kind: "skipped" }
   | { kind: "sent"; reference: string }
+  | { kind: "deferred"; reason: string; nextAttemptAt: Date }
   | { kind: "failed"; exhausted: boolean; nextAttemptAt: Date | null; reason: string };
 
 /** A completion from an expired lease must never overwrite a newer claimant's outcome. */
-export function claimedDeliveryWhere(id: string, attempts: number) {
+export function claimedDeliveryWhere(id: string, attempts: number, claimVersion?: number) {
   return and(
     eq(crmCommunicationOutboxTable.id, id),
     eq(crmCommunicationOutboxTable.status, "processing"),
     eq(crmCommunicationOutboxTable.attempts, attempts),
+    claimVersion === undefined ? undefined : eq(crmCommunicationOutboxTable.claimVersion, claimVersion),
   );
 }
 
@@ -181,7 +187,9 @@ export async function deliverClaimedPublication(input: {
   at: Date;
 }, send: (message: Message) => Promise<string>): Promise<DeliveryOutcome> {
   const { id, attempts, firstAttemptAt, publication, subscriber, matching, config, at } = input;
-  if (!publication || !subscriber || !canDeliverToSubscriber(subscriber, publication, matching)) {
+  if (!publication || !subscriber || !canDeliverToSubscriber(subscriber, publication, matching)
+    || (publication.deadline && publication.deadline <= at)
+    || (publication.kind === "programme" && /closed/i.test(publication.applicationStatus ?? ""))) {
     return { kind: "skipped" };
   }
   if (firstAttemptAt && at.getTime() - firstAttemptAt.getTime() >= IDEMPOTENCY_WINDOW_MS) {
@@ -191,7 +199,18 @@ export async function deliverClaimedPublication(input: {
   try {
     const reference = await send(publicationMessage(publication, config, subscriber.email, `publication-${id}`));
     return { kind: "sent", reference };
-  } catch {
+  } catch (error) {
+    if (error instanceof EmailDeliveryError && !error.uncertain && error.code !== "unknown") {
+      return {
+        kind: "deferred", reason: error.code,
+        // Recheck at most once/minute, even if the provider reset is days away: an upgrade can release capacity.
+        nextAttemptAt: new Date(Math.max(at.getTime() + 30_000,
+          Math.min(error.retryAt?.getTime() ?? at.getTime() + 60_000, at.getTime() + 60_000))),
+      };
+    }
+    if (error instanceof EmailDeliveryError && error.code === "unknown") {
+      return { kind: "failed", exhausted: true, nextAttemptAt: null, reason: "Email acceptance requires staff review" };
+    }
     return {
       kind: "failed", exhausted: attempts >= MAX_ATTEMPTS,
       nextAttemptAt: attempts >= MAX_ATTEMPTS
@@ -226,6 +245,8 @@ export async function processPublicationDeliveries(
     const [delivery] = await db.update(crmCommunicationOutboxTable).set({
       status: "processing", leaseUntil: new Date(at.getTime() + LEASE_MS),
       attempts: sql`${crmCommunicationOutboxTable.attempts} + 1`,
+      claimVersion: sql`${crmCommunicationOutboxTable.claimVersion} + 1`,
+      sendingAccount: sql`case when ${crmCommunicationOutboxTable.firstAttemptAt} is null then ${process.env.RESEND_ACCOUNT_ID ?? null} else ${crmCommunicationOutboxTable.sendingAccount} end`,
       firstAttemptAt: sql`coalesce(${crmCommunicationOutboxTable.firstAttemptAt}, ${at})`,
       nextAttemptAt: null,
     }).where(and(eq(crmCommunicationOutboxTable.id, candidate.id),
@@ -239,6 +260,15 @@ export async function processPublicationDeliveries(
     const [communication] = await db.select().from(crmCommunicationsTable)
       .where(eq(crmCommunicationsTable.id, delivery.communicationId)).limit(1);
     if (!communication || communication.createdAt < config.activatedAt) continue;
+    if (send === sendPublicationEmail && delivery.firstAttemptAt
+      && delivery.attempts > 1 && (!delivery.sendingAccount || delivery.sendingAccount !== process.env.RESEND_ACCOUNT_ID)) {
+      await db.update(crmCommunicationOutboxTable).set({
+        status: "failed", attempts: MAX_ATTEMPTS, leaseUntil: null, deferredReason: null, nextAttemptAt: null,
+        lastError: "Resend account changed or legacy acceptance is uncertain; staff review required",
+      }).where(claimedDeliveryWhere(delivery.id, delivery.attempts, delivery.claimVersion));
+      await refreshPublicationBatch(delivery.communicationId);
+      continue;
+    }
     try {
       const publication = await loadPublication(communication);
       const [subscriber] = await db.select().from(publicSubscriptionsTable)
@@ -255,18 +285,24 @@ export async function processPublicationDeliveries(
       }, send);
       if (result.kind === "skipped") {
         await db.delete(crmCommunicationOutboxTable)
-          .where(claimedDeliveryWhere(delivery.id, delivery.attempts));
+          .where(claimedDeliveryWhere(delivery.id, delivery.attempts, delivery.claimVersion));
+      } else if (result.kind === "deferred") {
+        await db.update(crmCommunicationOutboxTable).set({
+          status: "pending", attempts: Math.max(0, delivery.attempts - 1),
+          firstAttemptAt: delivery.attempts === 1 ? null : delivery.firstAttemptAt,
+          leaseUntil: null, deferredReason: result.reason, lastError: null, nextAttemptAt: result.nextAttemptAt,
+        }).where(claimedDeliveryWhere(delivery.id, delivery.attempts, delivery.claimVersion));
       } else if (result.kind === "failed") {
         logger.warn({ deliveryId: delivery.id }, "Publication delivery attempt failed");
         await db.update(crmCommunicationOutboxTable).set({
           status: "failed", attempts: result.exhausted ? MAX_ATTEMPTS : delivery.attempts,
-          leaseUntil: null, lastError: result.reason, nextAttemptAt: result.nextAttemptAt,
-        }).where(claimedDeliveryWhere(delivery.id, delivery.attempts));
+          leaseUntil: null, deferredReason: null, lastError: result.reason, nextAttemptAt: result.nextAttemptAt,
+        }).where(claimedDeliveryWhere(delivery.id, delivery.attempts, delivery.claimVersion));
       } else {
         const [accepted] = await db.update(crmCommunicationOutboxTable).set({
           status: "sent", sentAt: new Date(), providerReference: result.reference,
-          leaseUntil: null, nextAttemptAt: null, lastError: null,
-        }).where(claimedDeliveryWhere(delivery.id, delivery.attempts)).returning();
+          leaseUntil: null, deferredReason: null, nextAttemptAt: null, lastError: null,
+        }).where(claimedDeliveryWhere(delivery.id, delivery.attempts, delivery.claimVersion)).returning();
         if (accepted) await applyProviderEvents(result.reference);
       }
     } catch {
@@ -275,9 +311,12 @@ export async function processPublicationDeliveries(
         status: "failed", leaseUntil: null, lastError: "Delivery attempt failed",
         nextAttemptAt: delivery.attempts < MAX_ATTEMPTS
           ? new Date(at.getTime() + Math.min(60 * 60_000, 60_000 * 2 ** delivery.attempts)) : null,
-      }).where(claimedDeliveryWhere(delivery.id, delivery.attempts));
+      }).where(claimedDeliveryWhere(delivery.id, delivery.attempts, delivery.claimVersion));
     }
     await refreshPublicationBatch(delivery.communicationId);
+    // Match the shared per-account request spacing instead of immediately
+    // throttling the rest of a subscriber batch into another polling cycle.
+    if (send === sendPublicationEmail) await new Promise(resolve => setTimeout(resolve, 1050));
   }
   return candidates.length;
 }

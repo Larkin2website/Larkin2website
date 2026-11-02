@@ -17,6 +17,7 @@ import {
   SendCrmCommunicationTestResponse,
   SendCrmPublicationSampleResponse,
   GetCrmDeliverySettingsResponse,
+  GetCrmEmailHealthResponse,
   ListCrmEnquiriesResponse,
   RecordPublicEngagementBody,
   RecordPublicEngagementResponse,
@@ -41,9 +42,12 @@ import {
   startDevelopmentSession,
 } from "../lib/development-session";
 import { isPortalDemoMode } from "../lib/portal-demo";
+import { emailQuotaService } from "../lib/email-quota";
+import { EmailDeliveryError } from "../lib/resend-errors";
+import { db, crmCommunicationOutboxTable } from "@workspace/db";
+import { and, count, eq, isNotNull } from "drizzle-orm";
 
 const publicEngagementLimit = createFixedWindowRateLimit({ limit: 60, windowMs: 15 * 60 * 1000 });
-const controlledTestLimit = createFixedWindowRateLimit({ limit: 5, windowMs: 15 * 60 * 1000 });
 const developmentSignInLimit = createFixedWindowRateLimit({ limit: 120, windowMs: 15 * 60_000 });
 const invalid = (res: any, error: unknown) =>
   res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
@@ -61,8 +65,10 @@ export function createAudienceCrmRouter(overrides: {
   sendTest?: typeof sendPublicationTest;
   sendSampleTest?: typeof sendPublicationSampleTest;
   deliveryConfig?: typeof publicationDeliveryConfig;
+  emailHealth?: typeof emailQuotaService.health;
 } = {}) {
 const router = Router();
+const controlledTestLimit = createFixedWindowRateLimit({ limit: 5, windowMs: 15 * 60 * 1000 });
 
 router.post("/crm/demo-session", developmentSignInLimit, async (req, res): Promise<void> => {
   if (!isPortalDemoMode()) { res.status(404).json({ error: "Not found" }); return; }
@@ -110,6 +116,21 @@ router.get("/crm/audience/:id", requireCrmAccess, async (req, res): Promise<void
 router.get("/crm/communications", requireCrmAccess, async (_req, res): Promise<void> => {
   res.json(ListCrmCommunicationsResponse.parse(await audience.listCommunications()));
 });
+router.get("/crm/communications/email-health", overrides.requireCrmAccess ?? requireCrmAccess, async (_req, res): Promise<void> => {
+  res.setHeader("Cache-Control", "no-store");
+  const health = await (overrides.emailHealth ?? emailQuotaService.health)();
+  if (!overrides.emailHealth) {
+    try {
+      const [totals] = await db.select({ count: count() }).from(crmCommunicationOutboxTable).where(and(
+        eq(crmCommunicationOutboxTable.status, "pending"), isNotNull(crmCommunicationOutboxTable.deferredReason),
+      ));
+      health.deferredCount = totals?.count ?? 0;
+    } catch {
+      res.status(503).json({ error: "Email queue status is unavailable", code: "unavailable" }); return;
+    }
+  }
+  res.json(GetCrmEmailHealthResponse.parse(health));
+});
 router.get("/crm/communications/delivery-settings", overrides.requireCrmAccess ?? requireCrmAccess, (req, res): void => {
   const config = (overrides.deliveryConfig ?? publicationDeliveryConfig)();
   res.setHeader("Cache-Control", "no-store");
@@ -127,6 +148,9 @@ router.post("/crm/communications/test-sample", overrides.requireCrmAccess ?? req
   try {
     res.json(SendCrmPublicationSampleResponse.parse(await (overrides.sendSampleTest ?? sendPublicationSampleTest)()));
   } catch (error) {
+    if (error instanceof EmailDeliveryError) {
+      res.status(503).json({ error: error.message, code: error.code, retryAt: error.retryAt?.toISOString() }); return;
+    }
     if (error instanceof Error && error.message === "TEST_NOT_CONFIGURED") {
       res.status(503).json({ error: "An approved test mailbox and sender must be configured" }); return;
     }
@@ -146,6 +170,9 @@ router.post("/crm/communications/:id/test-send", overrides.requireCrmAccess ?? r
     if (!result) { res.status(404).json({ error: "Notification batch not found" }); return; }
     res.json(SendCrmCommunicationTestResponse.parse(result));
   } catch (error) {
+    if (error instanceof EmailDeliveryError) {
+      res.status(503).json({ error: error.message, code: error.code, retryAt: error.retryAt?.toISOString() }); return;
+    }
     if (error instanceof Error && error.message === "NOT_PUBLISHED") {
       res.status(400).json({ error: "Publication is not currently public" }); return;
     }

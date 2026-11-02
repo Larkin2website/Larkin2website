@@ -4,6 +4,7 @@ import { createResendTransport, emailAddress, sendResendEmail, type ResendTransp
 import { createContactDelivery } from "./contact-delivery";
 import { sendSubscriptionCode } from "./subscription-email-verification";
 import { sendPublicationEmail, publicationSampleMessage } from "./publication-delivery";
+import { EmailDeliveryError } from "./resend-errors";
 
 const message = { from: "Hub <sender@example.com>", to: ["recipient@example.com"], subject: "Test", text: "Test body" };
 
@@ -35,7 +36,8 @@ test("missing/invalid keys fail before a network request", async () => {
       env: () => ({ RESEND_API_KEY: key }),
       fetch: (async () => { assert.fail("Must not call provider"); }) as typeof fetch,
     });
-    await assert.rejects(sendResendEmail(message, undefined, transport), /RESEND_API_KEY/);
+    await assert.rejects(sendResendEmail(message, undefined, transport), (error: unknown) =>
+      error instanceof EmailDeliveryError && error.code === "unconfigured");
   }
 });
 
@@ -47,7 +49,8 @@ test("provider rejection, malformed JSON and network errors are sanitized", asyn
   ]) {
     const transport = createResendTransport({ env: () => ({ RESEND_API_KEY: "re_placeholder" }), fetch: fetcher });
     await assert.rejects(sendResendEmail(message, undefined, transport), error => {
-      assert.equal((error as Error).message, "Resend request failed; check configuration, permissions, quota, and connectivity");
+      assert.ok(error instanceof EmailDeliveryError);
+      assert.doesNotMatch((error as Error).message, /private|credential and recipient|re_private/);
       return true;
     });
   }
@@ -62,14 +65,41 @@ test("request timeout aborts a stalled provider", async () => {
         init!.signal!.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
       })) as typeof fetch,
     });
-    await assert.rejects(sendResendEmail(message, undefined, transport), /Resend request failed/);
+    await assert.rejects(sendResendEmail(message, undefined, transport), /unavailable/);
   } finally { clearTimeout(keepAlive); }
+});
+
+test("provider quota and request throttles have distinct safe codes and selected usage headers", async () => {
+  for (const [name, code] of [
+    ["daily_quota_exceeded", "daily_limit"], ["monthly_quota_exceeded", "monthly_limit"], ["rate_limit_exceeded", "rate_limited"],
+  ]) {
+    const transport = createResendTransport({
+      env: () => ({ RESEND_API_KEY: "re_placeholder" }),
+      fetch: async () => Response.json({ name, message: "private data must not escape" }, { status: 429, headers: { "retry-after": "5" } }),
+    });
+    await assert.rejects(sendResendEmail(message, undefined, transport), (error: unknown) => {
+      assert(error instanceof EmailDeliveryError);
+      assert.equal(error.code, code);
+      assert(error.retryAt);
+      assert.doesNotMatch(error.message, /private data/);
+      return true;
+    });
+  }
+  const transport = createResendTransport({
+    env: () => ({ RESEND_API_KEY: "re_placeholder" }),
+    fetch: async () => Response.json({ id: "reference" }, { headers: {
+      "x-resend-daily-quota": "20", "x-resend-monthly-quota": "invalid", "x-private-data": "ignored",
+    } }),
+  });
+  const response = await transport("/emails", { method: "POST" });
+  assert.deepEqual(response.quotaUsed, { daily: 20, monthly: undefined });
+  assert.equal("headers" in response, false);
 });
 
 test("email acceptance requires a nonempty provider reference", async () => {
   for (const body of [null, {}, { id: "" }, { id: " " }, { id: 123 }]) {
     const transport: ResendTransport = async () => ({ ok: true, status: 200, json: async () => body });
-    await assert.rejects(sendResendEmail(message, undefined, transport), /confirm acceptance/);
+    await assert.rejects(sendResendEmail(message, undefined, transport), /uncertain/);
   }
   assert.throws(() => emailAddress("Name <sender@example.com>\r\nBcc: other@example.com", "Sender", true));
   assert.throws(() => emailAddress("bad", "Sender"));

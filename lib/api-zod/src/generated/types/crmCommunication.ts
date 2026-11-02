@@ -25,6 +25,8 @@ export interface CrmCommunication {
   testProviderReference?: string | null;
   /** @nullable */
   testLastError?: string | null;
+  /** @minimum 0 */
+  deferredCount?: number;
   deliveryCounts?: CrmDeliveryCounts;
   /** @nullable */
   nextRetryAt?: Date | null;

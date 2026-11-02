@@ -56,3 +56,17 @@ mtime_ms = 1793637895750
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:1855d08d-cc88-438a-8a7e-143ea6035cf2/b54f7d2d-e681-497e-a389-7d03d9baacde/a786632c-353c-4483-baf6-c9093ba1b8e2"
 storage_version_token = "1793637997597345"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "s-48gtFdvEYCSRhI-zec_"
+uri = "file://docs/email-delivery-operations.md"
+type = "text"
+title = "Email Delivery Operations"
+description = "Shared allowances, reserved capacity, admin warnings, reset and upgrade handling, safe retry recovery, and the live-verification checklist. Live verification is still blocked by account configuration."
+logical_id = "260a7ee2-d21b-4fc6-97b2-0759671454d1"
+content_hash = "sha256:ced0f327960d783940320b90c1d78cb20d2afcde38fb9ff514df4dbcde162e27"
+size = 10583
+mtime_ms = 1793639237996
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:1855d08d-cc88-438a-8a7e-143ea6035cf2/260a7ee2-d21b-4fc6-97b2-0759671454d1/cdf98d01-4cce-4935-8c4f-b3e751d2f94a"
+storage_version_token = "1793639590234754"
+content_type = "text/markdown"

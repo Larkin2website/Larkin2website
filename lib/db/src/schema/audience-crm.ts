@@ -90,6 +90,9 @@ export const crmCommunicationOutboxTable = pgTable("crm_communication_outbox", {
   firstAttemptAt: timestamp("first_attempt_at", { withTimezone: true }),
   nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true }),
   leaseUntil: timestamp("lease_until", { withTimezone: true }),
+  deferredReason: text("deferred_reason"),
+  claimVersion: integer("claim_version").notNull().default(0),
+  sendingAccount: text("sending_account"),
 }, (table) => [
   check("crm_outbox_exactly_one_publication", sql`num_nonnulls(${table.opportunityId}, ${table.programmeId}) = 1`),
   uniqueIndex("crm_outbox_opportunity_subscriber_unique")

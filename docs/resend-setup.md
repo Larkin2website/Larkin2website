@@ -41,6 +41,7 @@ complete deployment environment.
 | Name | Purpose |
 | --- | --- |
 | `RESEND_API_KEY` | Server-only API key from the destination Resend account |
+| `RESEND_ACCOUNT_ID` | Required stable non-secret team/account label; retain on key rotation, change only after reconciling attempted sends on account migration |
 | `RESEND_WEBHOOK_SECRET` | Server-only signing secret for the registered destination webhook |
 | `CONTACT_ENQUIRY_FROM` | Explicit approved bare sender email; required for enquiries |
 | `CONTACT_ENQUIRY_TO` | Bare enquiry recipient email; omitted defaults to the approved `admin@HETVopportunities.com`; explicitly blank/invalid is rejected |
@@ -48,6 +49,11 @@ complete deployment environment.
 | `PUBLICATION_EMAIL_FROM` | Explicit approved sender, bare email or `Name <email>` |
 | `PUBLIC_OPPORTUNITIES_URL` | HTTPS public site root **including** `/larkin2-opportunities/` while that prefix is used |
 | `PUBLICATION_TEST_EMAIL` | The one approved mailbox for CRM controlled tests |
+| `EMAIL_ADMIN_FROM` | Explicit approved warning sender; no warning emails without it |
+| `EMAIL_ADMIN_TO` | Validated warning recipient; omitted defaults to the existing approved admin mailbox |
+| `EMAIL_WARNING_PERCENT` | Early-warning threshold; defaults to 80% |
+| `EMAIL_ADMIN_RESERVE` | Recipient slots protected for admin warnings; defaults to 1 |
+| `EMAIL_TRANSACTIONAL_RESERVE` | Additional slots protected from publications/tests for enquiries and codes; defaults to 5 |
 | `PUBLICATION_EMAIL_MODE` | `off` by default; `live` is necessary but not sufficient for subscriber alerts |
 | `PUBLICATION_EMAIL_APPROVED` | Must be `true` only after explicit approval for live publication delivery |
 | `PUBLICATION_ALERTS_ACTIVATED_AT` | Exact approved ISO activation cutoff; prevents automatic sending of older batches |
@@ -65,7 +71,7 @@ DNS records supplied by Resend. Domain verification, mailbox readiness, and
 sender approval are separate checks. Do not substitute an unapproved sender.
 
 The contact transport retains its `GET /domains` preflight and five-minute cache
-of successful sender-domain verification. The shared key therefore needs domain
+of successful sender-domain verification. The shared key therefore needs domain/usage
 read permission **and** email sending permission; a Resend sending-only key
 cannot satisfy this preflight. Use the account's appropriate Full access key for
 the current implementation, protect it only on the server, and rotate it
@@ -130,11 +136,16 @@ Resend's currently documented free transactional allowance is 100 emails/day
 recipient counts, and enquiries, verification, tests, and publications share
 the allowance. API rate limits still apply even on a paid plan.
 
-This change does not add a global quota scheduler. Provider quota failures
-surface as failures and publication attempts use the existing bounded retry
-policy; there is no guarantee a daily-limit failure waits until tomorrow before
-exhausting retries. Do not enable a large subscriber batch on the free allowance
-without quota-aware scheduling or an approved plan that fits the volume.
+Shared persistent quota protection now reconciles Resend account usage before
+sending. Subscriber publications defer safely instead of exhausting ordinary
+retries on a known quota/configuration wait. The CRM shows persistent warnings
+and blocked-send dialogs; an approved admin warning sender can send an early
+warning within a reserved slot. See [Email Delivery Operations](email-delivery-operations.md)
+for the reserve, reset, upgrade, synchronization and uncertain-acceptance rules.
+
+Other applications sharing the Resend account can still concurrently consume
+the allowance. Provider rejection is the final authority. No plan is purchased
+or upgraded automatically.
 
 ## Verification performed
 
@@ -144,3 +155,8 @@ provider acceptance, all three email paths, idempotency, optional `.env` loading
 and host precedence. Existing subscription-privacy and webhook tests are retained.
 Real provider delivery, sender DNS, and production credentials require a separate
 approved configuration/test; they are not claimed by passing mocked tests.
+
+**Current handover status:** Quota controls, warning UI and automated checks are
+implemented. Direct credentials, account ID, approved senders and confirmed test
+receipt remain required for live verification; subscriber campaigns are not
+enabled by passing automated tests.

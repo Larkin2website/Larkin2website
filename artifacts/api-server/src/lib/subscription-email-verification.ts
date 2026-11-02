@@ -110,18 +110,20 @@ export const drizzleVerificationStore: SubscriptionVerificationStore = {
 };
 
 export async function sendSubscriptionCode(email: string, code: string, options: {
-  env?: NodeJS.ProcessEnv; transport?: ResendTransport;
+  env?: NodeJS.ProcessEnv; transport?: ResendTransport; notAfter?: Date;
 } = {}): Promise<void> {
   await sendResendEmail({
       from: emailAddress((options.env ?? process.env).SUBSCRIPTION_VERIFICATION_FROM, "SUBSCRIPTION_VERIFICATION_FROM", true),
       to: [email], subject: "Your HETV subscription verification code",
       text: `Your HETV Opportunities Hub verification code is ${code}. It expires in 10 minutes. Use it only to manage your preferences or unsubscribe. If you did not request it, ignore this email. We are not sending opportunity alerts.`,
-  }, undefined, options.transport);
+  }, undefined, async (path, init) => (options.transport ?? (await import("./resend-transport")).resendTransport)(
+    path, { ...init, notAfter: options.notAfter },
+  ));
 }
 
 export function createSubscriptionVerificationService(
   store: SubscriptionVerificationStore,
-  send: (email: string, code: string) => Promise<void>,
+  send: (email: string, code: string, notAfter?: Date) => Promise<void>,
   options: { now?: () => Date; secret?: string; makeCode?: () => string; makeToken?: () => string; requestDelayMs?: number } = {},
 ) {
   const now = options.now ?? (() => new Date());
@@ -139,9 +141,10 @@ export function createSubscriptionVerificationService(
         if (!await store.subscriberId(email)) return;
         const code = options.makeCode?.() ?? randomInt(0, 1_000_000).toString().padStart(6, "0");
         const hash = codeHash(email, code);
-        if (!await store.reserve(email, hash, now())) return;
+        const issuedAt = now();
+        if (!await store.reserve(email, hash, issuedAt)) return;
         try {
-          await send(email, code);
+          await send(email, code, new Date(issuedAt.getTime() + CODE_LIFETIME));
         } catch {
           await store.discard(email, hash);
           logger.warn("Subscription verification delivery unavailable");
@@ -181,5 +184,7 @@ export function createSubscriptionVerificationService(
   };
 }
 
-export const subscriptionVerificationService = createSubscriptionVerificationService(drizzleVerificationStore, sendSubscriptionCode);
+export const subscriptionVerificationService = createSubscriptionVerificationService(
+  drizzleVerificationStore, (email, code, notAfter) => sendSubscriptionCode(email, code, { notAfter }),
+);
 export type SubscriptionVerificationService = typeof subscriptionVerificationService;

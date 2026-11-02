@@ -470,14 +470,16 @@ export async function listCommunications() {
     status: crmCommunicationOutboxTable.status,
     providerFailure: crmCommunicationOutboxTable.providerFailure,
     nextAttemptAt: crmCommunicationOutboxTable.nextAttemptAt,
+    deferredReason: crmCommunicationOutboxTable.deferredReason,
   }).from(crmCommunicationOutboxTable)
     .where(inArray(crmCommunicationOutboxTable.communicationId, communications.map(row => row.id)));
   return communications.map(communication => {
     const rows = deliveries.filter(row => row.communicationId === communication.id);
-    const retryDates = rows.filter(row => row.status === "failed" && row.nextAttemptAt)
+    const retryDates = rows.filter(row => (row.status === "failed" || row.deferredReason) && row.nextAttemptAt)
       .map(row => row.nextAttemptAt!);
     return {
       ...communication,
+      deferredCount: rows.filter(row => row.status === "pending" && row.deferredReason).length,
       deliveryCounts: {
         pending: rows.filter(row => row.status === "pending").length,
         processing: rows.filter(row => row.status === "processing").length,
