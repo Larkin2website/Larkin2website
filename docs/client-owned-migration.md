@@ -3,6 +3,13 @@
 Prepared: 12 October 2026
 Status: direct Resend email portability, shared quota controls and CRM admin warnings are implemented. Real email verification and full hosting/database/auth migration, provider setup, and cutover remain incomplete.
 
+Credential timing confirmed by the user: all key values will be added after
+migration away from Replit. Keep destination secrets out of Replit and tracked
+files; enter them in the client-owned host's environment/secret settings.
+Run the live email acceptance checklist there before enabling subscriber
+campaigns. Until then, missing email configuration intentionally prevents sending;
+no live-delivery verification is claimed.
+
 This guide covers HETV Opportunities Hub, Larkin2 Opportunities Portal, HETV Audience & Engagement CRM, and their shared API, PostgreSQL database, authentication, email, assets, domains, and operational handover. It recommends providers because the client has no preferred stack. Account creation, purchases, code changes, data exports, DNS changes, and retiring services require separate approval.
 
 ## Contents

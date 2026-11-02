@@ -20,3 +20,11 @@ When email limits stop sending, the user wants an admin pop-up or email advising
 **Why:** The user explicitly requested admin notification rather than discovering quota failures later.
 
 **How to apply:** Include actionable admin-facing quota warnings in email-delivery work; do not depend exclusively on sending a warning email through an already-exhausted allowance.
+
+All key values will be added after migration away from Replit.
+
+**Why:** The user explicitly specified this configuration timing.
+
+**How to apply:** Do not request destination credentials in Replit. Keep examples
+blank and document destination-host secret configuration and live verification
+as post-migration steps, without claiming they have already passed.

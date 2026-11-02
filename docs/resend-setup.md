@@ -157,6 +157,9 @@ Real provider delivery, sender DNS, and production credentials require a separat
 approved configuration/test; they are not claimed by passing mocked tests.
 
 **Current handover status:** Quota controls, warning UI and automated checks are
-implemented. Direct credentials, account ID, approved senders and confirmed test
-receipt remain required for live verification; subscriber campaigns are not
-enabled by passing automated tests.
+implemented. The user will add all key values only after migration away from
+Replit, through the destination host's server-side environment/secret settings.
+Do not request destination credentials in Replit. Live verification of credentials,
+account ID, approved senders, signed webhooks and actual test receipt will follow
+on that host before subscriber campaigns are enabled. Passing automated tests
+does not satisfy that post-migration acceptance gate.

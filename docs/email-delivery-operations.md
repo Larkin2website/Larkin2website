@@ -7,11 +7,18 @@ connector. Quota protection is persistent in PostgreSQL and works with all three
 applications' shared backend. There is no automatic plan purchase, campaign
 activation, DNS change, production database change, or traffic cutover.
 
-**Live-delivery verification remains blocked** until the intended account's direct
-API key, webhook secret, verified senders, account identifier, and approved
-test recipient are available. Automated provider mocks and local database checks
-are not proof of a real inbox receipt. Record the actual test results below
-before client handover.
+**Configuration timing:** The user has confirmed that all key values will be
+added after migration away from Replit. Do not request or provision the destination
+credentials in Replit. Keep tracked examples blank; supply real values through
+the client-owned host's server-side environment/secret settings after migration.
+
+**Live-delivery verification is intentionally deferred until after migration.**
+It requires the intended account's direct API key, webhook secret, verified
+senders, account identifier, and approved test recipient. Missing settings safely
+prevent email sending in the meantime. Automated provider mocks and local
+database checks are not proof of a real inbox receipt. Record the actual
+destination-host test results below before enabling subscriber campaigns or
+signing off email delivery.
 
 ## What admins see
 
@@ -160,7 +167,8 @@ deduplication, missing permissions, expired codes, lost responses, stale usage,
 payload conflicts, signed webhooks, deferral outcomes, claim fencing, protected
 health endpoints and sanitized blocked-send responses.
 
-Live checks still to complete, using **only approved test mailboxes**:
+Post-migration live checks still to complete on the client-owned host, using
+**only approved test mailboxes**:
 
 - [ ] Supply direct `RESEND_API_KEY`, stable `RESEND_ACCOUNT_ID` and endpoint's
   `RESEND_WEBHOOK_SECRET` securely; verify actual `GET /usage` permissions.
@@ -176,4 +184,5 @@ Live checks still to complete, using **only approved test mailboxes**:
   account; do not intentionally exhaust the client's live allowance.
 - [ ] Confirm subscriber live mode remains off until separate campaign approval.
 
-These unchecked items are external handover blockers, not successful checks.
+These unchecked items are post-migration acceptance gates, not successful checks
+and not requests to configure credentials in Replit.
