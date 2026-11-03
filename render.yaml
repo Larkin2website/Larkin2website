@@ -1,0 +1,47 @@
+# Preparation only. Applying this Blueprint creates billable resources.
+# Review ownership, region, plans and costs before approving it in Render.
+# Real Clerk/Resend/signing values are entered ONLY on the destination host.
+services:
+  - type: web
+    name: hetv-opportunities
+    runtime: node
+    region: frankfurt
+    plan: 0.5c-512mb
+    numInstances: 1
+    autoDeployTrigger: "off"
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm build:render
+    startCommand: pnpm start
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 24.22.1
+      - key: PNPM_VERSION
+        value: 10.26.1
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hetv-postgres
+          property: connectionString
+      - key: AUTH_PROVIDER
+        value: external
+      - key: SERVE_STATIC_APPS
+        value: "true"
+      - key: EMAIL_WORKERS_ENABLED
+        value: "false"
+      - key: PUBLICATION_EMAIL_MODE
+        value: "off"
+      - key: PUBLICATION_EMAIL_APPROVED
+        value: "false"
+      - key: PUBLIC_TEST_LOGIN_ENABLED
+        value: "false"
+      - key: DEV_DEMO_LOGIN_ENABLED
+        value: "false"
+      - key: PORTAL_DEMO_MODE
+        value: "false"
+databases:
+  - name: hetv-postgres
+    region: frankfurt
+    plan: 0.1c-256mb
+    postgresMajorVersion: "16"
+    ipAllowList: []

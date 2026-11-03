@@ -11,6 +11,7 @@ import type { MatchingInput } from "./audience-crm-service";
 import { logger } from "./logger";
 import { isTemporaryTestLoginEnabled } from "./development-session";
 import { EmailDeliveryError } from "./resend-errors";
+import { externalClerk } from "./clerk-config";
 
 const MAX_ATTEMPTS = 5;
 const LEASE_MS = 90_000;
@@ -323,8 +324,10 @@ export async function processPublicationDeliveries(
 
 let busy = false;
 export function startPublicationDeliveryWorker() {
-  if (isTemporaryTestLoginEnabled()) return;
-  if (!publicationDeliveryConfig().live) return;
+  if (process.env.EMAIL_WORKERS_ENABLED === "false"
+    || (externalClerk() && process.env.EMAIL_WORKERS_ENABLED !== "true") || isTemporaryTestLoginEnabled()
+    || !publicationDeliveryConfig().live) return async () => {};
+  let pending: Promise<void> | undefined;
   const tick = async () => {
     if (busy) return;
     busy = true;
@@ -332,7 +335,9 @@ export function startPublicationDeliveryWorker() {
     catch (error) { logger.error({ err: error }, "Publication delivery worker failed"); }
     finally { busy = false; }
   };
-  const timer = setInterval(() => { void tick(); }, 30_000);
+  const startTick = () => { if (!busy) pending = tick(); };
+  const timer = setInterval(startTick, 30_000);
   timer.unref();
-  void tick();
+  startTick();
+  return async () => { clearInterval(timer); await pending; };
 }

@@ -5,12 +5,13 @@ import { dark } from "@clerk/themes";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 
-const clerkPubKey = publishableKeyFromHost(
+const external = import.meta.env.VITE_AUTH_PROVIDER === "external";
+const clerkPubKey = external ? import.meta.env.VITE_CLERK_PUBLISHABLE_KEY : publishableKeyFromHost(
   window.location.hostname,
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
 );
 
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+const clerkProxyUrl = external ? undefined : import.meta.env.VITE_CLERK_PROXY_URL;
 
 export const clerkBasePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -20,9 +21,6 @@ function stripBase(path: string): string {
     : path;
 }
 
-if (!clerkPubKey) {
-  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY in .env file");
-}
 
 const clerkAppearance = {
   theme: dark,
@@ -102,6 +100,7 @@ function ClerkQueryClientCacheInvalidator() {
 
 export function AppClerkProvider({ children }: { children: ReactNode }) {
   const [, setLocation] = useLocation();
+  if (!clerkPubKey) return <div role="status" className="min-h-screen flex items-center justify-center p-8"><div className="max-w-md"><h1 className="text-2xl mb-4">Staff sign-in is unavailable</h1><p>The destination Clerk publishable key has not been configured. No protected portal data has been loaded.</p></div></div>;
 
   return (
     <ClerkProvider

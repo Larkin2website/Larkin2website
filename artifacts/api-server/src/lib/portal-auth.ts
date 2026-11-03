@@ -7,6 +7,12 @@ import { demoPortalActor, hasDemoPortalSession, isPortalDemoMode } from "./porta
 import { hasDevelopmentSession } from "./development-session";
 import { resolvePortalMembershipFromDatabase } from "./portal-members";
 import type { PortalProfile } from "./portal-members";
+import { clerkConfigured, externalClerk } from "./clerk-config";
+
+function configuredUserId(req: Request) {
+  if (externalClerk() && !clerkConfigured()) return undefined;
+  return getAuth(req).userId;
+}
 
 export type PortalActor = {
   userId: string; displayName: string; email: string; role: PortalRole;
@@ -54,7 +60,7 @@ export function createRequirePortal(
   dependencies: PortalAuthDependencies = {},
 ): (permission?: Permission) => RequestHandler {
   const demoMode = dependencies.demoMode ?? isPortalDemoMode;
-  const userIdForRequest = dependencies.userIdForRequest ?? ((req) => getAuth(req).userId);
+  const userIdForRequest = dependencies.userIdForRequest ?? configuredUserId;
   const demoSession = dependencies.hasDemoSession ?? hasDemoPortalSession;
   const getProfile = dependencies.profileForUser ?? profileFor;
   const getMember = dependencies.memberForUser ?? (async (userId) => {
@@ -121,7 +127,7 @@ export const requireCrmAccess: RequestHandler = async (req, res, next) => {
       next();
       return;
     }
-    const userId = getAuth(req).userId;
+    const userId = configuredUserId(req);
     if (!userId) {
       res.status(401).json({ error: "Authentication required" });
       return;

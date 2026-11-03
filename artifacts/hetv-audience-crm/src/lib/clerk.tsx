@@ -5,8 +5,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 
 export const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const key = publishableKeyFromHost(window.location.hostname, import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
-const proxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+const external = import.meta.env.VITE_AUTH_PROVIDER === 'external';
+const key = external ? import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+  : publishableKeyFromHost(window.location.hostname, import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+const proxyUrl = external ? undefined : import.meta.env.VITE_CLERK_PROXY_URL;
 export const clerkAvailable = Boolean(key);
 
 function CacheGuard() {

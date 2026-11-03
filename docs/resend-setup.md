@@ -1,5 +1,12 @@
 # Portable Resend email setup
 
+For the selected hosting destination, start with the
+[Render Deployment Runbook](render-deployment.md). Add all real key values only
+after migration on the client-owned host. The Render proposal starts with
+`EMAIL_WORKERS_ENABLED=false`; enable workers explicitly for approved monitoring
+and recovery tests, while keeping subscriber publication mode off until its
+separate launch approval. Replit environment defaults are not destination settings.
+
 All application email now uses the server-only direct Resend API. It does not need
 Replit's connector, and it never falls back to that connector when configuration
 is absent. This covers enquiries, subscription verification codes, publication

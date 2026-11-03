@@ -2,6 +2,12 @@
 
 ## Status and ownership
 
+The selected destination is Render; see the
+[Render Deployment Runbook](render-deployment.md). Its proposed environment
+deliberately sets `EMAIL_WORKERS_ENABLED=false`. Set it to `true` only after the
+destination schema, Resend account and approved warning/test settings are ready;
+publication sending still requires its own additional approval flags.
+
 The software uses the client's direct Resend API settings, not a mandatory Replit
 connector. Quota protection is persistent in PostgreSQL and works with all three
 applications' shared backend. There is no automatic plan purchase, campaign
@@ -108,6 +114,11 @@ The worker checks deferred messages at most once per minute. Provider-confirmed
 resets or increased limits allow sending to resume without a code change.
 An existing live-mode approval and activation cutoff are still required, and
 temporary test access still prevents subscriber sending.
+
+On Render, explicit worker enablement is also required. Monitoring does not run
+in the background while `EMAIL_WORKERS_ENABLED=false`, though authenticated CRM
+health requests can still check the configured account. Shutdown drains current
+work with a bounded wait; persistent leases and idempotency handle interruptions.
 
 Before each resumed send, consent, suppression, matching and publication
 availability are rechecked. Closed publications or expired structured deadlines

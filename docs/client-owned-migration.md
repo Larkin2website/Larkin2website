@@ -3,6 +3,12 @@
 Prepared: 12 October 2026
 Status: direct Resend email portability, shared quota controls and CRM admin warnings are implemented. Real email verification and full hosting/database/auth migration, provider setup, and cutover remain incomplete.
 
+Render repository preparation is now implemented. The authoritative executable
+instructions are in [Render Deployment Runbook](render-deployment.md), with the
+Blueprint, supported versions, environment matrix, schema baseline, dependency
+inventory and destination acceptance gates. This guide remains the broader
+ownership, data-transfer and cutover reference.
+
 Credential timing confirmed by the user: all key values will be added after
 migration away from Replit. Keep destination secrets out of Replit and tracked
 files; enter them in the client-owned host's environment/secret settings.
@@ -72,7 +78,9 @@ Recommended deployment:
                   |
        External Clerk and direct Resend
 
-Serve compiled frontend files through Express in production. This static-serving layer needs to be added; the current API does not already replace Replit's frontend routing.
+The production API now serves compiled frontend files through Express when
+`SERVE_STATIC_APPS=true`. The production build sets the individual frontend bases;
+the current Replit development workflows remain separate.
 
 Retain existing path prefixes initially. Each mounted frontend needs its own index-page fallback for valid application routes. API routes must run before frontend fallbacks; unknown API requests must never return a website's index.html. Missing static assets should return an appropriate error rather than unrelated HTML. Set suitable caching for fingerprinted assets and avoid stale index-page caching. Preserve root redirects, public detail URLs, query strings, and canonical-link behavior.
 
@@ -118,38 +126,49 @@ Never commit environment files containing secrets, database dumps, authenticatio
 
 ## 5. Hosting configuration and required changes
 
-The following is a target specification, not a configuration that has already been tested.
+The checked-in Blueprint and local production preparation checks implement this
+specification. No actual Render provisioning/deployment has been performed;
+follow the [Render runbook](render-deployment.md) for exact commands and gates.
 
 | Setting | Proposed value |
 | --- | --- |
 | Render service type | Paid Node web service |
 | Repository root | Repository root, not an individual artifact directory |
-| Runtime | Pin a tested Node 24 release and matching pnpm version |
+| Runtime | Node 24.22.1 and pnpm 10.26.1, pinned in the repository |
 | Runtime environment | NODE_ENV=production |
 | Port | Use Render's injected PORT; bind to the host interfaces needed by Render |
 | API health check | /api/healthz |
-| Start command after builds | node --enable-source-maps artifacts/api-server/dist/index.mjs |
+| Start command after builds | pnpm start, from the repository root |
 | Database | Paid Render PostgreSQL in the same approved region; internal connection where supported |
 | Frontends | Three Vite production outputs mounted at their current base paths |
 
-Build sequence to implement and verify:
-1. Install workspace dependencies using pnpm install --frozen-lockfile.
-2. Build/typecheck shared libraries before application checks.
-3. Build each of the three frontend packages with its own BASE_PATH and correct Vite Clerk publishable key.
-4. Build the API with its existing esbuild script.
-5. Deploy only when checks and all outputs succeed.
+Implemented sequence: frozen install including build dependencies, `pnpm
+build:render`, `pnpm check:render`, and `pnpm test:render`. Build/typechecks cover
+the shared libraries, three frontends and API, excluding the design sandbox.
+The destination Clerk public browser key requires a new frontend build once set.
 
-Current frontend Vite configuration requires both PORT and BASE_PATH even during builds. Refactor that portability restriction so frontend compilation does not need a running frontend port, or supply explicit build-only values until it is changed. One global BASE_PATH cannot represent all three builds; set it per command/package. The current output folders are each artifact's dist/public directory.
+Frontend compilation no longer needs Replit-injected PORT or BASE_PATH.
+Each frontend has a stable default prefix and the production command supplies
+its base separately. Output folders remain each artifact's dist/public.
 
-Remove or isolate Replit-specific Vite development plugins and production reliance on artifact/workflow configuration. Replace managed Clerk host/key inference and proxy assumptions with a supported external Clerk configuration. Email now uses direct runtime-configured Resend; follow [portable email setup](resend-setup.md), configure destination values, restart, and test rather than rewriting it. Add production static serving, fallback routing, trusted-proxy handling appropriate to Render, and safe hostname validation.
+Replit Vite tooling is development-only; external Clerk uses explicit destination
+keys instead of managed host inference/proxying. Production static/fallback
+routing, Render proxy trust and optional approved-host validation are implemented.
+Email uses direct runtime-configured Resend; follow [portable email setup](resend-setup.md).
+See the runbook's inventory for removed dependencies and harmless retained metadata.
 
-The existing Replit production startup runs the opportunity-option seed before accepting traffic. Review whether that exact idempotent category setup is still required and perform it as an explicit release operation. Do not replace it with broad opportunity/programme seeding or overwrite editorial records on every boot.
+The Render start command performs no seeds or schema mutations. If category
+initialization is required for a deliberately new installation, approve it as a
+separate operation; a full existing-data restore should retain editorial data.
 
 Keep OpenAPI as the API contract source of truth. Regenerate generated hooks/validators if an API contract changes; never hand-edit generated files.
 
 ## 6. Background delivery and scaling
 
-The API starts a periodic publication-delivery worker. A paid always-running service is recommended so processing is not tied to incoming web requests. Initially, retaining it in the API process is the smallest change, provided restart/deploy overlap is safe.
+The API can start periodic delivery/quota workers, but the Render proposal leaves
+`EMAIL_WORKERS_ENABLED=false`. External mode requires explicit worker enablement;
+publication activation has its own additional approval gates. Use one paid
+always-running instance initially and rehearse interruption recovery before launch.
 
 Before enabling production email:
 - Verify database claim/lease behavior under simultaneous old/new instances and deploy overlap.
@@ -208,7 +227,15 @@ Exclude or invalidate temporary test-login sessions deliberately; do not migrate
 
 Rehearsal verification should compare table counts and representative records, sequence/identity behavior, constraints, date-only values, and application reads/writes. Opening a page is not a restore test.
 
-The repository has historical SQL files and development Drizzle push commands, but this does not prove a complete production migration chain. Build and validate a baseline from the restored schema, identify already-applied changes, and adopt a reviewed versioned migration workflow. Do not replay all historical SQL blindly or use push-force against production. Database migrations should run as a controlled release step, with a backup and compatibility checks; not on every API request or boot.
+The repository now includes an offline 21-table baseline at
+`lib/db/migrations/0000_render_baseline.sql`, generated from the current schema.
+Apply it only to a reviewed, deliberately empty installation. A full production
+schema+data restore is a different path: compare the restored schema against the
+baseline and apply only reviewed differences, rather than replaying the baseline.
+Historical SQL and development Drizzle push commands do not establish a complete
+production migration chain. Do not use push-force against production. Future
+migrations need backups and compatibility checks as controlled release steps,
+not automatic boot/request mutations; see the Render runbook.
 
 ## 9. Secrets and environment configuration
 
@@ -220,7 +247,7 @@ Store actual values in the client-owned hosting/provider secret managers. Only t
 | CLERK_SECRET_KEY | Backend only | New client-owned Clerk production secret |
 | CLERK_PUBLISHABLE_KEY | Backend auth configuration | Match the client-owned instance |
 | VITE_CLERK_PUBLISHABLE_KEY | Portal/CRM build-time public key | Correct environment-specific key; rebuilding is required when changed |
-| VITE_CLERK_PROXY_URL | Existing managed proxy config | Remove or deliberately replace for external Clerk; do not keep a broken Replit dependency |
+| VITE_CLERK_PROXY_URL | Existing managed proxy config | Cleared by Render build; retained only for the current managed Replit path |
 | SESSION_SECRET | Backend verification/signing | Secure destination value; explicitly decide code invalidation/compatibility |
 | RESEND_API_KEY | Direct-email backend secret | Implemented for all three email flows; configure at runtime and restart, no connector required |
 | RESEND_WEBHOOK_SECRET | Backend event verification | Store the destination Resend endpoint's signing secret; never reuse blindly across endpoints |

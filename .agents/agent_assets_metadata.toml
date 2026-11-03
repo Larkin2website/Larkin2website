@@ -70,3 +70,17 @@ mtime_ms = 1793639237996
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:1855d08d-cc88-438a-8a7e-143ea6035cf2/260a7ee2-d21b-4fc6-97b2-0759671454d1/cdf98d01-4cce-4935-8c4f-b3e751d2f94a"
 storage_version_token = "1793639590234754"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "SbVao4abwt788Xg2sgkiO"
+uri = "file://docs/render-deployment.md"
+type = "text"
+title = "Render migration runbook"
+description = "Complete client-owned hosting setup, environment matrix, database paths, verification gates, cutover and rollback instructions."
+logical_id = "99873dd3-c285-4cd4-8885-718d9bc1a152"
+content_hash = "sha256:301d5652e15f5ed1c1590aec98c5989a2183900be5640c1e8796de581be2520c"
+size = 19666
+mtime_ms = 1793729026971
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:1855d08d-cc88-438a-8a7e-143ea6035cf2/99873dd3-c285-4cd4-8885-718d9bc1a152/390d5da4-f5c9-4510-8869-95d0ffaac898"
+storage_version_token = "1793729103919858"
+content_type = "text/markdown"

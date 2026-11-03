@@ -19,6 +19,7 @@ export function getCustomDomainDestination(
 }
 
 export const customDomainRedirect: RequestHandler = (req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
   const forwardedHostname = req.get("x-forwarded-host")?.split(",")[0]?.trim();
   const destination = getCustomDomainDestination(
     forwardedHostname ?? req.hostname,

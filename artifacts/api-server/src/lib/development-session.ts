@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { CreatePortalDemoSessionBody as DevelopmentCredentials } from "@workspace/api-zod";
 import { and, eq, lte } from "drizzle-orm";
 import { db, temporaryTestSessionsTable } from "@workspace/db";
+import { externalClerk } from "./clerk-config";
 
 export { DevelopmentCredentials };
 
@@ -16,10 +17,11 @@ const lifetimeMs = 8 * 60 * 60 * 1000;
 const maxSessions = 2_000;
 
 export function isDevelopmentDemoEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
-  return env.NODE_ENV !== "production" && env.DEV_DEMO_LOGIN_ENABLED === "true";
+  return !externalClerk(env) && env.NODE_ENV !== "production" && env.DEV_DEMO_LOGIN_ENABLED === "true";
 }
 
 export function isTemporaryTestLoginEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  if (externalClerk(env)) return false;
   return env.NODE_ENV === "production"
     ? env.PUBLIC_TEST_LOGIN_ENABLED === "true"
     : env.DEV_DEMO_LOGIN_ENABLED === "true";
