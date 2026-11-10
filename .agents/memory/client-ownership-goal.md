@@ -61,3 +61,15 @@ preparation incorrectly retained Clerk.
 choose a provider again. The first administrator's email and approved sender are
 destination configuration inputs; keep their values out of tracked documents
 and do not request them before the agreed post-migration configuration stage.
+
+Treat all migration and authentication work as preparation for an actual
+production launch, not merely host portability or production-looking wording.
+
+**Why:** The user explicitly said secure invitation-only authentication “was the
+whole point of replacing clerk” and that everything should be treated as getting
+ready for production launch.
+
+**How to apply:** Complete the functional authentication journey and identify
+other launch blockers proactively. Distinguish verified implementation from
+destination-only acceptance gates; neither scaffolding nor a successful build
+justifies declaring the project production-ready.
