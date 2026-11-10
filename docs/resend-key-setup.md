@@ -22,8 +22,10 @@ The repository-root `.env.example` records these non-secret settings.
 
 ## Saving a key is not delivery approval
 
-Verify `hetvopportunities.com` and its required DNS records in the intended Resend
-account. The API key must have the permissions required by the application's email,
+The owner has confirmed that `hetvopportunities.com` is verified in Resend.
+This is owner-reported confirmation, not an independent API or delivery check.
+If switching Resend accounts during migration, confirm verification in the destination
+account as well. The API key must have the permissions required by the application's email,
 domain, and usage checks. Configure the actual endpoint's `RESEND_WEBHOOK_SECRET`
 separately; it is not the API key.
 
