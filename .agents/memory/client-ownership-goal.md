@@ -36,3 +36,16 @@ All key values will be added after migration away from Replit.
 **How to apply:** Do not request destination credentials in Replit. Keep examples
 blank and document destination-host secret configuration and live verification
 as post-migration steps, without claiming they have already passed.
+
+The user explicitly requested: “we can forego clerk an just use the standard auth
+we have set up.” Do not treat migration to client-owned external Clerk as
+fulfillment of that request.
+
+**Why:** The client's budget concerns motivated avoiding Clerk. The initial
+Render preparation missed this instruction and retained Clerk.
+
+**How to apply:** Treat replacing Clerk with standard application-managed
+authentication as the intended direction. Verify the proposed replacement is
+production-safe; arbitrary-credential testing access is not real authentication.
+Distinguish implemented authentication from migration recommendations, and update
+the provider inventory and handover documentation when the replacement is made.
