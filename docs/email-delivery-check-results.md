@@ -8,13 +8,20 @@ the developer mailbox, plus one message to the administrator mailbox.
 Resend independently confirmed `hetvopportunities.com` as verified. Its usage API
 confirmed limits of 100 daily / 3,000 monthly, with zero used before this check.
 All nine controlled messages were accepted by Resend through the application's
-direct transport and persistent shared-quota controls. Acceptance is not inbox
-receipt or webhook confirmation.
+direct transport and persistent shared-quota controls. A subsequent read of each
+provider message confirmed `last_event: delivered` for all nine. This means the
+recipient mail server accepted them, not that the owner has confirmed inbox
+placement or that the application received the signed callbacks.
 
 After the run, the provider confirmed 9 used / 91 remaining daily and 9 used /
 2,991 remaining monthly. The unconfigured webhook correctly returned HTTP 503,
 not false acceptance. The API restarted successfully, and backend type checking
 passed.
+
+After saving the webhook secret, one additional controlled developer-mailbox
+message was sent with reference `01a1c67e-5c7f-78a3-8187-62e1c509f769`. Resend
+also reports this message as delivered. No additional administrator test was sent.
+The API now correctly returns HTTP 401 for an unsigned callback.
 
 The campaign, outbox, and staff-mail queues were inspected before activation:
 all were empty. No subscribers, staff accounts, access grants, or publications
@@ -47,18 +54,29 @@ preference changes, or the quota-warning trigger end to end.
 ## Unfinished checks and activation
 
 - Inbox/spam receipt: waiting for owner confirmation.
-- Signed provider callbacks: **blocked** because `RESEND_WEBHOOK_SECRET` is absent.
-  Mail receipt cannot substitute for a signed callback.
+- `RESEND_WEBHOOK_SECRET` is saved and the API has restarted.
+- Signed provider callbacks: **blocked by the private preview**, not by a missing
+  secret. An external fetch of `/api/healthz` returned Replit's
+  “Log in to access a private app” page. No event for the fresh callback-check
+  message was found in the application's provider-event table. Internal shell
+  requests reaching the API do not prove external accessibility.
+- The existing Resend webhook was updated to subscribe to all three consumed
+  events: `email.delivered`, `email.bounced`, and `email.complained`. Its endpoint
+  was left unchanged; its signing secret was not rotated.
 - There is no published deployment currently registered. The running development
   endpoint is temporary and must be accessible to Resend before testing callbacks.
   Do not call it a permanent production endpoint.
-- Register `/api/webhooks/resend` on the intended externally reachable host for
-  `email.delivered`, `email.bounced`, and `email.complained`; save that endpoint's
-  signing secret securely as `RESEND_WEBHOOK_SECRET` and restart the API.
+- To finish on Replit, the owner must approve temporary public preview access
+  and switch off **Private preview** in the Networking tool. This exposes all
+  preview routes to the internet; existing application authentication still
+  protects staff routes. Do not change preview visibility without that approval.
+  Alternatively, finish callback verification on the public Render host.
+- For Render, register `/api/webhooks/resend` on that host and save the actual
+  destination endpoint's secret privately; preview configuration does not transfer.
 - Verify an actual signed delivered event and its recorded provider reference,
   unsigned rejection, and bounce/complaint handling using safe test fixtures.
-- Live campaign approval has been given, but activation is held until callback
-  verification is configured. Set a fresh `PUBLICATION_ALERTS_ACTIVATED_AT`
+- Live campaign approval has been given, but activation is held until a real
+  callback is verified. Set a fresh `PUBLICATION_ALERTS_ACTIVATED_AT`
   cutoff on activation to exclude older batches, then enable the approved live
   mode and workers. Do not start both source and destination workers.
 - Staff mail additionally requires a valid canonical `STAFF_AUTH_ORIGIN`; this
