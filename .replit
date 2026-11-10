@@ -27,7 +27,6 @@ channel = "stable-25_05"
 [userenv.development]
 PORTAL_DEMO_MODE = "true"
 VITE_PORTAL_DEMO_MODE = "true"
-PUBLICATION_TEST_EMAIL = "n.o.lamptey12@gmail.com"
 DEV_DEMO_LOGIN_ENABLED = "true"
 VITE_DEV_DEMO_LOGIN_ENABLED = "true"
 
@@ -45,3 +44,4 @@ PUBLICATION_EMAIL_FROM = "admin@hetvopportunities.com"
 RESEND_ACCOUNT_ID = "hetv-primary-resend"
 STAFF_AUTH_FROM = "admin@hetvopportunities.com"
 SUBSCRIPTION_VERIFICATION_FROM = "admin@hetvopportunities.com"
+PUBLICATION_TEST_EMAIL = "dev@gentraxtech.com"

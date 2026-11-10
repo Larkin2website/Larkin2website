@@ -22,8 +22,8 @@ The repository-root `.env.example` records these non-secret settings.
 
 ## Saving a key is not delivery approval
 
-The owner has confirmed that `hetvopportunities.com` is verified in Resend.
-This is owner-reported confirmation, not an independent API or delivery check.
+The owner confirmed that `hetvopportunities.com` is verified in Resend; a subsequent
+direct application API check independently confirmed the verified status.
 If switching Resend accounts during migration, confirm verification in the destination
 account as well. The API key must have the permissions required by the application's email,
 domain, and usage checks. Configure the actual endpoint's `RESEND_WEBHOOK_SECRET`
@@ -38,3 +38,5 @@ deployment/readiness runbooks.
 See [Render deployment](render-deployment.md),
 [staff authentication](staff-authentication.md), and
 [production readiness](production-readiness.md) for the full launch checks.
+The [controlled email check results](email-delivery-check-results.md) distinguish
+real provider acceptance from inbox confirmation and outstanding webhook checks.
