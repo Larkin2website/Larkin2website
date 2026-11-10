@@ -6,7 +6,9 @@
 approved or verified.** No client resource provisioning, production data transfer
 or DNS cutover has been performed. Controlled real email and a signed delivery
 callback have since been verified on the temporary public preview, and its
-campaign worker is enabled for new eligible publications only. This is not
+campaign worker is enabled for new eligible publications only. The owner also
+confirmed inbox receipt of all 11 controlled test emails on 10 November 2026.
+This is not
 destination launch approval; see [email check results](email-delivery-check-results.md).
 
 The agreed authentication replacement is implemented: email/password,

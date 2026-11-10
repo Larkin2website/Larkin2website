@@ -9,9 +9,14 @@ Resend independently confirmed `hetvopportunities.com` as verified. Its usage AP
 confirmed limits of 100 daily / 3,000 monthly, with zero used before this check.
 All nine controlled messages were accepted by Resend through the application's
 direct transport and persistent shared-quota controls. A subsequent read of each
-provider message confirmed `last_event: delivered` for all nine. This means the
-recipient mail server accepted them, not that the owner has confirmed inbox
-placement or that the application received the signed callbacks.
+provider message confirmed `last_event: delivered` for all nine. Provider delivery
+status, owner-confirmed inbox placement, and signed application callbacks are
+separate checks; all three now have evidence for this controlled preview check.
+
+**Owner acceptance — 10 November 2026:** The owner confirmed that all 11 test
+emails arrived in the inbox: ten developer-mailbox messages and one
+administrator-mailbox message. Inbox placement for these controlled tests is
+therefore confirmed, not merely inferred from provider acceptance.
 
 After the run, the provider confirmed 9 used / 91 remaining daily and 9 used /
 2,991 remaining monthly. The unconfigured webhook correctly returned HTTP 503,
@@ -84,9 +89,9 @@ preference changes, or the quota-warning trigger end to end.
 
 ## Remaining checks and Render handover
 
-- Inbox/spam placement is still waiting for the owner's confirmation. The two
-  callback-verification tests were additional developer-mailbox messages, making
-  ten developer tests and one administrator test overall.
+- Inbox placement for all 11 controlled messages is confirmed by the owner.
+  This is evidence for the tested mailboxes and current configuration, not a
+  guarantee of inbox placement for every future recipient or destination host.
 - Actual provider delivery was verified; actual bounce/complaint events were not
   deliberately generated. Their subscriptions are configured, and local
   signature/parser/suppression regression coverage is separate evidence.

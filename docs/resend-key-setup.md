@@ -39,5 +39,6 @@ approved and verified separately using the deployment/readiness runbooks.
 See [Render deployment](render-deployment.md),
 [staff authentication](staff-authentication.md), and
 [production readiness](production-readiness.md) for the full launch checks.
-The [controlled email check results](email-delivery-check-results.md) distinguish
-real provider acceptance from inbox confirmation and outstanding webhook checks.
+The [controlled email check results](email-delivery-check-results.md) record real
+provider acceptance, owner-confirmed inbox receipt of all 11 tests, a real signed
+delivery callback, and the remaining destination/lifecycle checks.
