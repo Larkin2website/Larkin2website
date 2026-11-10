@@ -30,10 +30,11 @@ domain, and usage checks. Configure the actual endpoint's `RESEND_WEBHOOK_SECRET
 separately; it is not the API key.
 
 Do not enable background workers or subscriber campaigns merely because a key
-has been saved. Confirm the remaining runtime settings, approved test recipients,
-actual delivery, signed webhook processing, and quota health using the
-deployment/readiness runbooks.
-`EMAIL_WORKERS_ENABLED` and publication approval settings retain their safe defaults.
+has been saved. The current temporary public preview was subsequently enabled
+after explicit owner approval, provider delivery/quota checks and a real signed
+delivery callback. See the linked results for its activation cutoff and limits.
+Repository/Render defaults remain safely disabled; destination settings must be
+approved and verified separately using the deployment/readiness runbooks.
 
 See [Render deployment](render-deployment.md),
 [staff authentication](staff-authentication.md), and

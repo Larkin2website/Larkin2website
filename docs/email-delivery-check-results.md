@@ -51,37 +51,60 @@ authentication links; the quota warning is simulated, not an actual exhaustion
 event. These samples do **not** prove account activation/reset, subscriber
 preference changes, or the quota-warning trigger end to end.
 
-## Unfinished checks and activation
+## Temporary public preview activation — 10 November 2026 UTC
 
-- Inbox/spam receipt: waiting for owner confirmation.
-- `RESEND_WEBHOOK_SECRET` is saved and the API has restarted.
-- Signed provider callbacks: **blocked by the private preview**, not by a missing
-  secret. An external fetch of `/api/healthz` returned Replit's
-  “Log in to access a private app” page. No event for the fresh callback-check
-  message was found in the application's provider-event table. Internal shell
-  requests reaching the API do not prove external accessibility.
+- The owner approved a temporary public preview. An independent external fetch
+  of `/api/healthz` subsequently returned `{"status":"ok"}` rather than the Replit
+  login page. This removed the earlier private-preview blocker.
+- A fresh controlled developer-mailbox test was accepted with reference
+  `01a1c682-b588-726c-904d-2638ffe4bd02`. The application's provider-event table
+  recorded its real, signature-verified `email.delivered` event at
+  `2026-11-10T17:30:20.099Z`. This is a real provider callback, not a locally
+  fabricated signature fixture.
+- `RESEND_WEBHOOK_SECRET` is saved. Unsigned callbacks return HTTP 401.
 - The existing Resend webhook was updated to subscribe to all three consumed
   events: `email.delivered`, `email.bounced`, and `email.complained`. Its endpoint
   was left unchanged; its signing secret was not rotated.
-- There is no published deployment currently registered. The running development
-  endpoint is temporary and must be accessible to Resend before testing callbacks.
-  Do not call it a permanent production endpoint.
-- To finish on Replit, the owner must approve temporary public preview access
-  and switch off **Private preview** in the Networking tool. This exposes all
-  preview routes to the internet; existing application authentication still
-  protects staff routes. Do not change preview visibility without that approval.
-  Alternatively, finish callback verification on the public Render host.
-- For Render, register `/api/webhooks/resend` on that host and save the actual
-  destination endpoint's secret privately; preview configuration does not transfer.
-- Verify an actual signed delivered event and its recorded provider reference,
-  unsigned rejection, and bounce/complaint handling using safe test fixtures.
-- Live campaign approval has been given, but activation is held until a real
-  callback is verified. Set a fresh `PUBLICATION_ALERTS_ACTIVATED_AT`
-  cutoff on activation to exclude older batches, then enable the approved live
-  mode and workers. Do not start both source and destination workers.
-- Staff mail additionally requires a valid canonical `STAFF_AUTH_ORIGIN`; this
-  setting was absent during the smoke check. A sample delivery does not prove
-  that real invitation links can yet be generated.
+- Campaigns and background email workers are now enabled on the current preview.
+  Activation cutoff: **`2026-11-10T17:30:54.952Z`**. Only eligible batches created
+  on or after this cutoff can send; older batches are excluded.
+- Before activation, campaign, outbox and staff-mail queues were empty. The
+  post-activation outbox was also empty; no bulk campaign was triggered as a test.
+- `STAFF_AUTH_ORIGIN` now points to the current preview origin, and
+  `PUBLIC_OPPORTUNITIES_URL` points to its `/larkin2-opportunities/` prefix.
+  Staff/password and public preference links no longer target the old custom host
+  for this preview's runtime.
+- Runtime flags: `EMAIL_WORKERS_ENABLED=true`, `PUBLICATION_EMAIL_MODE=live`,
+  `PUBLICATION_EMAIL_APPROVED=true`. The quota monitor and staff worker also run.
+- API readiness returned HTTP 200 and workers started without reported errors.
+  Provider allowance after all 11 tests: **89 daily / 2,989 monthly remaining**.
+- Preview access remains temporary and public; staff pages still require
+  application authentication. A development workflow is not an always-on
+  production host and can stop when the workspace sleeps.
+
+## Remaining checks and Render handover
+
+- Inbox/spam placement is still waiting for the owner's confirmation. The two
+  callback-verification tests were additional developer-mailbox messages, making
+  ten developer tests and one administrator test overall.
+- Actual provider delivery was verified; actual bounce/complaint events were not
+  deliberately generated. Their subscriptions are configured, and local
+  signature/parser/suppression regression coverage is separate evidence.
+- Inert staff invitation/reset samples do not establish real-account acceptance.
+  Complete the deliberate first-administrator and staff lifecycle acceptance on
+  the destination without treating delivery samples as staff access.
+- There is no permanent published deployment established by this preview check.
+  For Render, replace both origin/URL values with the approved Render/custom host,
+  register its `/api/webhooks/resend` endpoint, and privately save that endpoint's
+  secret. Preview environment values do not transfer automatically.
+- Disable source workers before starting destination workers. Preserve the
+  approved cutoff and delivery/deduplication state unless a separately approved
+  campaign reconciliation changes them; do not silently reset the cutoff and
+  discard pending work. Keep Render's safe worker/campaign defaults until its
+  own callback and migration acceptance checks pass.
+- When preview testing ends, either keep the one intended sender operational or
+  pause the preview workers/campaigns before restoring private preview access.
+  Private preview blocks Resend callbacks; it does not stop outbound workers.
 
 ## Reusable bounded operator check
 

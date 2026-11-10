@@ -203,6 +203,17 @@ DNS rollback does not copy new destination records back; freeze/reconcile data
 before recovery. Retire old hosting/provider access only after acceptance and
 legacy-link continuity.
 
+## Current source email activity
+
+The temporary public Replit preview now runs the approved email workers and new
+publication campaigns. This does **not** change the safe disabled defaults in the
+Render Blueprint. See [email check results](email-delivery-check-results.md) for
+the source activation cutoff and real callback evidence. Before cutover, pause
+source workers, migrate delivery/deduplication state, replace preview origin/URL
+settings, register and verify the Render webhook, then activate only the intended
+destination sender. Do not run both workers or silently replace the approved
+cutoff, which could omit pending eligible alerts.
+
 ## Official references
 
 - https://render.com/docs/blueprint-spec

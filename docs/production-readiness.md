@@ -3,8 +3,11 @@
 ## Overall status
 
 **Repository implementation and local verification are complete. Destination launch is NOT yet
-approved or verified.** No client resource, live data transfer, actual mail
-verification, DNS cutover or subscriber campaign has been performed.
+approved or verified.** No client resource provisioning, production data transfer
+or DNS cutover has been performed. Controlled real email and a signed delivery
+callback have since been verified on the temporary public preview, and its
+campaign worker is enabled for new eligible publications only. This is not
+destination launch approval; see [email check results](email-delivery-check-results.md).
 
 The agreed authentication replacement is implemented: email/password,
 administrator invitations only, no public staff registration, Resend invitations
@@ -54,7 +57,9 @@ The following register separates code evidence from external acceptance.
   screenshot showed the production-facing form. The known Replit-only development
   banner-script 404 does not appear in the tested compiled Render frontends.
 - Only the reviewed additive staff schema was applied to **development**. No
-  production DDL, export, restore, provider call or real email was performed.
+  production DDL, export or restore was performed. The original repository test
+  pass used captured mail; subsequent approved live mail checks are recorded in
+  [email check results](email-delivery-check-results.md).
 
 Reproducible evidence is in
 `artifacts/api-server/src/lib/staff-auth.integration.test.ts`,
