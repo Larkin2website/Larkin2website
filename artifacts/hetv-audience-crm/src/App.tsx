@@ -63,7 +63,7 @@ function DemoRouter() {
   if (query.isLoading) return <div className="min-h-[100dvh] p-8 sm:p-14"><Brand/><div className="max-w-xl mx-auto mt-24"><State kind="loading"/></div></div>;
   if (!query.data) return location.startsWith('/sign-in') ? <SignInPage/> : <Redirect to="/sign-in"/>;
   if (location.startsWith('/sign-in')) return <Redirect to="/"/>;
-  return <Shell name="Testing staff" development onSignOut={signOut}><Switch>
+  return <Shell name="Staff member" development onSignOut={signOut}><Switch>
     <Route path="/" component={Dashboard}/>
     <Route path="/audience" component={Audience}/>
     <Route path="/audience/:id" component={Profile}/>

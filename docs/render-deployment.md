@@ -1,5 +1,16 @@
 # Render deployment and migration runbook
 
+> **Authentication correction:** The confirmed destination requirement is
+> application-managed **email/password**, **administrator invitations only**,
+> **no public registration**, and **Resend for invitation/password-reset emails**,
+> with existing portal/CRM permissions enforced. Clerk is not the approved target.
+> The current code and Clerk-specific instructions below describe the earlier
+> preparation, not a completed replacement. **Do not provision a new Clerk
+> account from those instructions.** Replacing Clerk and updating the executable
+> deployment configuration remain outstanding before launch. The first
+> administrator's email and approved sender are supplied privately at the
+> post-migration configuration stage, not committed here.
+
 ## 1. Status and client ownership
 
 Repository preparation is implemented; **nothing has been provisioned, migrated,

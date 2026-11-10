@@ -1,5 +1,13 @@
 # Client-Owned Migration Guide
 
+> **Authentication correction:** The user confirmed application-managed
+> email/password, administrator invitations only, no public registration, Resend
+> invitation/password-reset emails, and preserved portal/CRM permissions.
+> Earlier Clerk recommendations in this guide are superseded. The implementation
+> still uses Clerk; the replacement has not been completed. Do not create a
+> client-owned Clerk account as a migration step. Supply the first administrator's
+> email and approved sender privately during post-migration configuration.
+
 Prepared: 12 October 2026
 Status: direct Resend email portability, shared quota controls and CRM admin warnings are implemented. Real email verification and full hosting/database/auth migration, provider setup, and cutover remain incomplete.
 

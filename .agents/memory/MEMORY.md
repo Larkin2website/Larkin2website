@@ -27,5 +27,6 @@
 - [Enquiry email](enquiry-recipient.md) — admin@HETVopportunities.com is approved as both sender and recipient; sender setup is still pending.
 - [Role profile intake](role-profile-workflow.md) — People complete the role-profile template before portal entry; extend the existing role form to capture the same information.
 - [Client ownership goal](client-ownership-goal.md) — All three apps should move outside Replit into client-owned services; recommend providers and document the migration in Markdown.
+- [Staff-facing copy](staff-facing-copy.md) — Use neutral production copy in portal/CRM, not testing labels; wording changes do not establish authentication security.
 - [CLI config module context](tool-config-module-context.md) — Modern Node does not guarantee import.meta inside tool-transpiled configuration files.
 - [Resend quota semantics](resend-quota-semantics.md) — Reset timestamps outrank conflicting provider prose; account usage is shared, and exhausted mail needs a non-email warning path.

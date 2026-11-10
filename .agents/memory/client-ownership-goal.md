@@ -49,3 +49,15 @@ authentication as the intended direction. Verify the proposed replacement is
 production-safe; arbitrary-credential testing access is not real authentication.
 Distinguish implemented authentication from migration recommendations, and update
 the provider inventory and handover documentation when the replacement is made.
+
+The confirmed authentication requirements are email/password, administrator
+invitations, no public registration, Resend for invitation and password-reset
+emails, and enforced portal/CRM permissions.
+
+**Why:** The user repeated the specific authentication choices after the Render
+preparation incorrectly retained Clerk.
+
+**How to apply:** Preserve these requirements rather than asking the user to
+choose a provider again. The first administrator's email and approved sender are
+destination configuration inputs; keep their values out of tracked documents
+and do not request them before the agreed post-migration configuration stage.
