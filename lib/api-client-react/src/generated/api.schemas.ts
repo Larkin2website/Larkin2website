@@ -1101,6 +1101,92 @@ export interface PortalDashboard {
   recentActivity: AuditEvent[];
 }
 
+export interface StaffCredentials {
+  /** @maxLength 254 */
+  email: string;
+  /**
+     * @minLength 1
+     * @maxLength 128
+     */
+  password: string;
+}
+
+export interface StaffEmail {
+  /** @maxLength 254 */
+  email: string;
+}
+
+export interface StaffPassword {
+  /**
+     * @minLength 40
+     * @maxLength 128
+     */
+  token: string;
+  /**
+     * @minLength 12
+     * @maxLength 128
+     */
+  password: string;
+}
+
+export interface StaffMessage {
+  message: string;
+}
+
+export interface StaffUser {
+  userId: string;
+  displayName: string;
+  email: string;
+  role: PortalRole;
+  permissions: string[];
+}
+
+export interface StaffSession {
+  authenticated: boolean;
+  user: StaffUser | null;
+}
+
+export interface StaffInvitationInput {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  memberId: string;
+}
+
+export type StaffInvitationStatus = typeof StaffInvitationStatus[keyof typeof StaffInvitationStatus];
+
+
+export const StaffInvitationStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  expired: 'expired',
+  revoked: 'revoked',
+} as const;
+
+export type StaffInvitationDeliveryStatus = typeof StaffInvitationDeliveryStatus[keyof typeof StaffInvitationDeliveryStatus];
+
+
+export const StaffInvitationDeliveryStatus = {
+  queued: 'queued',
+  accepted: 'accepted',
+  deferred: 'deferred',
+  failed: 'failed',
+} as const;
+
+export interface StaffInvitation {
+  id: string;
+  memberId: string;
+  email: string;
+  status: StaffInvitationStatus;
+  deliveryStatus: StaffInvitationDeliveryStatus;
+  expiresAt: string;
+  /** @nullable */
+  providerReference: string | null;
+  /** @nullable */
+  lastError: string | null;
+}
+
 export type PortalMemberStatus = typeof PortalMemberStatus[keyof typeof PortalMemberStatus];
 
 
@@ -1111,6 +1197,8 @@ export const PortalMemberStatus = {
 } as const;
 
 export interface PortalMember {
+  /** True only when the app-managed credential has been established; a legacy user ID is not proof. */
+  hasPassword?: boolean;
   id: string;
   /** @nullable */
   userId: string | null;

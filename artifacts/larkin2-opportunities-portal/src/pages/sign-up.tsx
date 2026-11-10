@@ -1,27 +1,19 @@
-import { SignUp } from "@clerk/react";
-import { clerkBasePath } from "@/lib/clerk";
-import { Larkin2Wordmark } from "@/components/brand";
+import { Link } from "wouter";
+import { AuthHeading, AuthNotice, AuthShell, authLink, authPrimary } from "@/components/auth/auth-shell";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-[#080a0c] p-4 sm:p-6 relative overflow-y-auto py-12">
-      <div className="pointer-events-none fixed inset-0 z-40 opacity-[0.035]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")`
-      }} />
-
-      <div className="mb-10 text-center z-10 animate-in slide-in-from-bottom-4 fade-in duration-700 min-w-0 break-words">
-        <Larkin2Wordmark className="mb-4" />
-        <p className="text-[#85898a] font-mono text-[10px] uppercase tracking-widest mt-3">Internal Operations</p>
+    <AuthShell>
+      <div className="space-y-8">
+        <AuthHeading title="Access is by invitation" detail="Larkin2 portal accounts are not self-registered." />
+        <AuthNotice tone="info" testId="status-invitation-only">
+          Ask a portal super admin to grant you access. You will receive an email with a single-use link to set your password, after which you can sign in.
+        </AuthNotice>
+        <div className="space-y-4">
+          <Link href="/sign-in" className={`${authPrimary} inline-flex items-center justify-center`} data-testid="link-sign-in">Go to sign in</Link>
+          <Link href="/set-password" className={authLink} data-testid="link-have-invitation">I have an invitation link</Link>
+        </div>
       </div>
-
-      <div className="z-10 animate-in slide-in-from-bottom-4 fade-in duration-700 delay-150 max-w-full">
-        <SignUp
-          path={`${clerkBasePath}/sign-up`}
-          routing="path"
-          signInUrl={`${clerkBasePath}/sign-in`}
-          fallbackRedirectUrl={`${clerkBasePath}/dashboard`}
-        />
-      </div>
-    </div>
+    </AuthShell>
   );
 }

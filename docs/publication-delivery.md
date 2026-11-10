@@ -1,6 +1,6 @@
 # Publication notifications
 
-The portal queues matched subscribers only when a real role or programme is first published. Saving, reopening, and demo-mode publishing do not queue a new batch. No publication email is sent by default.
+The portal queues matched subscribers only when a role or programme is first published by authorized staff. Saving and reopening do not queue a new batch. Temporary test authentication has been removed. No publication email is sent by default.
 
 ## Controlled Resend test
 

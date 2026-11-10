@@ -1,23 +1,23 @@
 import { ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-import { Redirect, Route, Switch, useLocation, useParams, Router as WouterRouter } from 'wouter';
-import { AppClerkProvider, clerkBasePath } from '@/lib/clerk';
-import { useAuth, useClerk } from '@clerk/react';
+import { Redirect, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import { getGetPortalSessionQueryKey, useGetPortalSession } from '@workspace/api-client-react';
 import { PortalLayout } from '@/components/layout/portal-layout';
 import { Larkin2Wordmark } from '@/components/brand';
-import { Loader2, ShieldAlert } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { portalDemoMode } from '@/lib/demo-mode';
+import { createStaffQueryClient, errorStatus, useIdentityCacheGuard, useStaffSession, useStaffSignOut } from '@/lib/staff-auth';
 
 // Pages
 import LandingPage from '@/pages/index';
 import SignInPage from '@/pages/sign-in';
 import SignUpPage from '@/pages/sign-up';
+import ForgotPasswordPage from '@/pages/forgot-password';
+import SetPasswordPage from '@/pages/set-password';
 import DashboardPage from '@/pages/dashboard';
 import OpportunitiesPage from '@/pages/opportunities/index';
 import NewOpportunityPage from '@/pages/opportunities/new';
@@ -29,73 +29,51 @@ import DetailProgrammePage from '@/pages/programmes/detail';
 import EditProgrammePage from '@/pages/programmes/edit';
 import SettingsPage from '@/pages/settings';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = createStaffQueryClient();
 
 function PortalAccessGate({ children }: { children: ReactNode }) {
-  const { data: session, isLoading, error } = useGetPortalSession();
-  const status = (error as { status?: number } | null)?.status;
+  const { data: session, isLoading, error, refetch, isFetching } = useGetPortalSession({
+    query: { queryKey: getGetPortalSessionQueryKey(), retry: false, refetchOnWindowFocus: true, staleTime: 60_000 },
+  });
+  const status = errorStatus(error);
+  const { signOut, isPending, isError: signOutFailed } = useStaffSignOut(() => undefined);
 
   if (isLoading) {
-    return (
-      <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 text-foreground">
-        <Larkin2Wordmark className="mb-6 opacity-50" />
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground animate-pulse">
-          Verifying portal access...
-        </p>
-      </div>
-    );
+    return <FullScreenMessage>Verifying portal access...</FullScreenMessage>;
   }
 
   if (!session) {
+    if (status === 401) return <Redirect to="/sign-in" />;
+    const denied = status === 403;
     return (
       <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 text-foreground">
         <div className="w-full max-w-md border border-border bg-[#171b1d] p-6 sm:p-8 md:p-12 text-center break-words">
           <Larkin2Wordmark className="mb-8" />
           <h1 className="font-mono text-2xl font-medium tracking-tight mb-4">
-            {status === 403 ? "Access Awaiting Approval" : "Verification Failed"}
+            {denied ? "Access Not Active" : "Verification Failed"}
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed mb-8">
-            {status === 403
-              ? "A portal administrator must approve your account before you can view role data."
-              : "Please try signing in again. If the problem continues, contact a portal administrator."}
+            {denied
+              ? "Your account is signed in but does not currently have portal access. A super admin can activate or restore it."
+              : "Your portal permissions could not be loaded. Try again, or contact a portal administrator if the problem continues."}
           </p>
-          {portalDemoMode ? (
-            <Button
-              variant="outline"
-              className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider"
-              onClick={() => window.location.reload()}
-            >
-              Retry demo
+          <div className="flex flex-col gap-3">
+            {!denied && (
+              <Button variant="outline" disabled={isFetching} data-testid="button-retry-access" className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider" onClick={() => refetch()}>
+                {isFetching ? "Checking..." : "Try again"}
+              </Button>
+            )}
+            <Button variant="outline" disabled={isPending} data-testid="button-sign-out-access" className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider" onClick={() => void signOut()}>
+              {isPending ? "Signing out..." : "Sign out"}
             </Button>
-          ) : (
-            <ClerkAccessFailureAction />
-          )}
+            {signOutFailed && <p role="alert" className="text-xs text-destructive">Sign-out did not complete. Try again.</p>}
+          </div>
         </div>
       </div>
     );
   }
 
   return children;
-}
-
-function ClerkAccessFailureAction() {
-  const { signOut } = useClerk();
-  return (
-    <Button
-      variant="outline"
-      className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider"
-      onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
-    >
-      Sign out
-    </Button>
-  );
 }
 
 type PortalPermission =
@@ -186,63 +164,55 @@ function AuthenticatedRoutes() {
   );
 }
 
-function ClerkRouter() {
-  const { isLoaded, isSignedIn } = useAuth();
-  
-  if (!isLoaded) return null;
+function StaffRouter() {
+  const { user, isLoading, isUnavailable, refetch } = useStaffSession();
+  useIdentityCacheGuard(isLoading || isUnavailable ? undefined : user ? `${user.userId}:${user.role}` : null);
+  const [location] = useLocation();
+  const isAuthPage = ["/sign-in", "/forgot-password", "/set-password", "/sign-up"].some((p) => location.startsWith(p));
+
+  if (isLoading && !isAuthPage) {
+    return <FullScreenMessage>Checking your session...</FullScreenMessage>;
+  }
+
+  if (isUnavailable && !isAuthPage) {
+    return (
+      <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 text-foreground">
+        <div className="w-full max-w-md border border-border bg-[#171b1d] p-6 sm:p-8 md:p-12 text-center break-words">
+          <Larkin2Wordmark className="mb-8" />
+          <h1 className="font-mono text-2xl font-medium tracking-tight mb-4">Portal Unavailable</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+            We could not reach the staff sign-in service, so you have not been signed in. Check your connection and try again. If this continues, contact a portal administrator.
+          </p>
+          <Button variant="outline" data-testid="button-retry-session" className="w-full h-12 rounded-none font-mono text-xs uppercase tracking-wider" onClick={() => refetch()}>
+            Try again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const signedIn = Boolean(user);
 
   return (
     <RoutedErrorBoundary>
       <Switch>
-        {/* Public auth routes */}
-        <Route path="/sign-in/*?" component={SignInPage} />
-        <Route path="/sign-up/*?" component={SignUpPage} />
-        
-        {/* Root is handled specially based on auth status */}
-        <Route path="/">
-          {!isSignedIn ? <LandingPage /> : <Redirect to="/dashboard" />}
-        </Route>
-        
-        {/* All other routes require auth */}
-        <Route path="/*">
-          {isSignedIn ? <AuthenticatedRoutes /> : <LandingPage />}
-        </Route>
+        <Route path="/sign-in">{signedIn ? <Redirect to="/dashboard" /> : <SignInPage />}</Route>
+        <Route path="/forgot-password">{signedIn ? <Redirect to="/dashboard" /> : <ForgotPasswordPage />}</Route>
+        <Route path="/set-password" component={SetPasswordPage} />
+        <Route path="/sign-up">{signedIn ? <Redirect to="/dashboard" /> : <SignUpPage />}</Route>
+        <Route path="/">{signedIn ? <Redirect to="/dashboard" /> : <LandingPage />}</Route>
+        <Route path="/*">{signedIn ? <AuthenticatedRoutes key={`${user?.userId}:${user?.role}`} /> : <Redirect to="/sign-in" />}</Route>
       </Switch>
     </RoutedErrorBoundary>
   );
 }
 
-function DemoRouter() {
-  const { data, isError, isLoading } = useGetPortalSession({
-    query: { queryKey: getGetPortalSessionQueryKey(), retry: false },
-  });
-  const session = isError ? undefined : data;
-
-  if (isLoading) {
-    return (
-      <div className="min-h-[100dvh] flex items-center justify-center bg-background text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" aria-label="Checking demo session" />
-      </div>
-    );
-  }
-
+function FullScreenMessage({ children }: { children: ReactNode }) {
   return (
-    <RoutedErrorBoundary>
-      <Switch>
-        <Route path="/">
-          {session ? <Redirect to="/dashboard" /> : <LandingPage />}
-        </Route>
-        <Route path="/sign-in/*?">
-          {session ? <Redirect to="/dashboard" /> : <SignInPage />}
-        </Route>
-        <Route path="/sign-up/*?">
-          {session ? <Redirect to="/dashboard" /> : <LandingPage />}
-        </Route>
-        <Route path="/*">
-          {session ? <AuthenticatedRoutes /> : <Redirect to="/sign-in" />}
-        </Route>
-      </Switch>
-    </RoutedErrorBoundary>
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center bg-background px-4 sm:px-6 text-foreground">
+      <Larkin2Wordmark className="mb-6 opacity-50" />
+      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground animate-pulse">{children}</p>
+    </div>
   );
 }
 
@@ -255,19 +225,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-        {portalDemoMode ? (
-          <TooltipProvider>
-            <DemoRouter />
-            <Toaster />
-          </TooltipProvider>
-        ) : (
-          <AppClerkProvider>
-            <TooltipProvider>
-              <ClerkRouter />
-              <Toaster />
-            </TooltipProvider>
-          </AppClerkProvider>
-        )}
+        <TooltipProvider>
+          <StaffRouter />
+          <Toaster />
+        </TooltipProvider>
       </WouterRouter>
     </QueryClientProvider>
   );

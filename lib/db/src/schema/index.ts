@@ -25,3 +25,4 @@ export * from "./subscription-verification";
 export * from "./audience-crm";
 export * from "./temporary-test-sessions";
 export * from "./email-quota";
+export * from "./staff-auth";

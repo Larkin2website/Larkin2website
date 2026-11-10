@@ -8,9 +8,7 @@ import { request } from "node:http";
 import express from "express";
 import { mountProductionFrontends, frontendNames } from "./production-frontends";
 import { allowedProductionHosts } from "./production-hosts";
-import { externalClerk, clerkConfigured } from "./clerk-config";
-import { isTemporaryTestLoginEnabled, isDevelopmentDemoEnabled } from "./development-session";
-import { isPortalDemoMode } from "./portal-demo";
+import { staffConfig } from "./staff-security";
 import { customDomainRedirect } from "../middlewares/custom-domain-redirect";
 
 // fetch follows the URL's Host in this Node version; use HTTP for host-routing cases.
@@ -79,17 +77,14 @@ test("missing builds fail explicitly instead of a production blank page", () => 
   assert.throws(() => mountProductionFrontends(express(), "/nonexistent/hetv-build"), /Missing production frontend/);
 });
 
-test("external auth rejects every test flag in both development and production", () => {
+test("legacy test flags cannot provide staff authentication configuration", () => {
   for (const NODE_ENV of ["development", "production"]) {
     for (const mode of [{ AUTH_PROVIDER: "external" }, { RENDER: "true" }]) {
       const env = { ...mode, NODE_ENV, PUBLIC_TEST_LOGIN_ENABLED: "true", DEV_DEMO_LOGIN_ENABLED: "true", PORTAL_DEMO_MODE: "true" };
-      assert(externalClerk(env));
-      assert.equal(isTemporaryTestLoginEnabled(env), false);
-      assert.equal(isDevelopmentDemoEnabled(env), false);
-      assert.equal(isPortalDemoMode(env), false);
+      assert.throws(() => staffConfig(env), /not configured/);
     }
   }
-  assert.equal(clerkConfigured({}), false);
+  assert.throws(() => staffConfig({}), /not configured/);
 });
 
 test("production allowlist ignores a spoofed forwarded hostname", async () => {

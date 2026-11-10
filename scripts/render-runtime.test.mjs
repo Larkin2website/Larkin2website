@@ -10,13 +10,16 @@ test("built Render server boots without auth/mail keys, serves three apps, rejec
   const port = probe.address().port;
   await new Promise(resolve => probe.close(resolve));
   const env = { ...process.env, NODE_ENV: "production", PORT: String(port), RENDER: "true",
-    AUTH_PROVIDER: "external", SERVE_STATIC_APPS: "true", EMAIL_WORKERS_ENABLED: "false",
+    SERVE_STATIC_APPS: "true", EMAIL_WORKERS_ENABLED: "false",
     RENDER_EXTERNAL_HOSTNAME: "127.0.0.1", ALLOWED_HOSTS: "",
     // Deliberately unusable, non-secret fixture. No startup DDL/DB calls are allowed.
     DATABASE_URL: "postgresql://fixture:fixture@127.0.0.1:1/unused",
     PUBLIC_TEST_LOGIN_ENABLED: "true", DEV_DEMO_LOGIN_ENABLED: "true", PORTAL_DEMO_MODE: "true",
   };
   for (const key of ["CLERK_PUBLISHABLE_KEY", "CLERK_SECRET_KEY", "RESEND_API_KEY", "RESEND_WEBHOOK_SECRET"]) delete env[key];
+  delete env.STAFF_AUTH_ORIGIN;
+  delete env.STAFF_AUTH_FROM;
+  delete env.SESSION_SECRET;
   const child = spawn(process.execPath, ["artifacts/api-server/dist/index.mjs"], { env, stdio: ["ignore", "pipe", "pipe"] });
   const exited = once(child, "exit");
   // Drain output, but do not emit environment values or application records.
@@ -31,6 +34,15 @@ test("built Render server boots without auth/mail keys, serves three apps, rejec
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     assert(ready, "production server did not start");
+    const secured = await fetch(`${origin}/api/healthz`, { headers: { "x-forwarded-proto": "https" } });
+    assert.equal(secured.headers.get("x-content-type-options"), "nosniff");
+    assert.equal(secured.headers.get("x-frame-options"), "DENY");
+    assert.match(secured.headers.get("content-security-policy"), /frame-ancestors 'none'/);
+    assert.match(secured.headers.get("strict-transport-security"), /max-age=31536000/);
+    assert.equal((await fetch(`${origin}/api/readyz`)).status, 503);
+    assert.deepEqual(await (await fetch(`${origin}/api/auth/session`)).json(), { authenticated: false, user: null });
+    assert.equal((await fetch(`${origin}/api/auth/login`, { method: "POST", headers: { "content-type": "application/json", origin },
+      body: JSON.stringify({ email: "any@example.invalid", password: "anything" }) })).status, 503);
     for (const app of ["larkin2-opportunities", "larkin2-opportunities-portal", "hetv-audience-crm"]) {
       const response = await fetch(`${origin}/${app}/sign-in/callback`);
       assert.equal(response.status, 200);

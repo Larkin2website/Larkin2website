@@ -2,18 +2,20 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { randomUUID } from "node:crypto";
 import { and, eq, inArray } from "drizzle-orm";
-import { auditEventsTable, crmCommunicationsTable, db, opportunitiesTable, pool } from "@workspace/db";
+import { auditEventsTable, db, opportunitiesTable, pool } from "@workspace/db";
 import { createOpportunity, getOpportunity, updateOpportunity, transitionOpportunity, auditList } from "./opportunity-service";
 import { permissionsForRole } from "./permissions";
 import type { PortalActor } from "./portal-auth";
+import { createAuthFixture } from "../fixtures/staff-auth-fixture";
 
-// Explicit opt-in, development only. Own test rows are removed; no existing roles are touched.
+// Explicit opt-in, isolated schema only. No source audience can ever be queued.
 test("development persistence: profile round-trip, clearing, audit and lifecycle without emails", {
   skip: process.env.RUN_ROLE_PROFILE_DB_TEST !== "1" || process.env.NODE_ENV === "production",
 }, async () => {
+  const fixture = await createAuthFixture("http://127.0.0.1:4323");
   const actor: PortalActor = {
     userId: `profile-test-${randomUUID()}`, displayName: "Profile test", email: "profile-test@example.com",
-    role: "super_admin", permissions: permissionsForRole("super_admin"), demo: true,
+    role: "super_admin", permissions: permissionsForRole("super_admin"),
   };
   const ids: string[] = [];
   const legacy = {
@@ -26,6 +28,8 @@ test("development persistence: profile round-trip, clearing, audit and lifecycle
     details: [{ position: 0, label: "Location", value: "London" }, { position: 1, label: "Custom", value: "Retain me" }],
   };
   try {
+    await pool.query(`INSERT INTO opportunity_options(kind,label,normalized_label,created_by)
+      VALUES('department','CAMERA','camera',$1),('role_type','full time','full time',$1)`, [actor.userId]);
     const created = await createOpportunity(legacy, actor);
     ids.push(created.id);
     const profile = {
@@ -49,7 +53,8 @@ test("development persistence: profile round-trip, clearing, audit and lifecycle
     assert.deepEqual(switched?.details.map(({ label, value }) => ({ label, value })), legacy.details.map(({ label, value }) => ({ label, value })));
     assert.equal((await transitionOpportunity(created.id, "published", actor))?.status, "published");
     assert.equal((await transitionOpportunity(created.id, "closed", actor))?.status, "closed");
-    assert.deepEqual(await db.select().from(crmCommunicationsTable).where(eq(crmCommunicationsTable.opportunityId, created.id)), []);
+    const { rows: [outbox] } = await pool.query("SELECT count(*)::int AS count FROM crm_communication_outbox");
+    assert.equal(outbox.count, 0, "isolated authoring must never queue a real subscriber");
     const cleared = await updateOpportunity(created.id, {
       ...profile, accountableTo: null, contractDatesHours: null, workArrangement: null,
       worksCloselyWith: [], additionalInformation: null, applicationEmail: null,
@@ -76,6 +81,6 @@ test("development persistence: profile round-trip, clearing, audit and lifecycle
       await db.delete(auditEventsTable).where(and(inArray(auditEventsTable.opportunityId, ids), eq(auditEventsTable.actorUserId, actor.userId)));
       await db.delete(opportunitiesTable).where(and(inArray(opportunitiesTable.id, ids), eq(opportunitiesTable.createdBy, actor.userId)));
     }
-    await pool.end();
+    await fixture.cleanup();
   }
 });

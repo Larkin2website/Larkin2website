@@ -103,14 +103,9 @@ export async function resolvePortalMembership(
     return claimed;
   }
 
-  const bootstrap = await store.countMemberships() === 0;
-  return store.createMembership({
-    userId,
-    displayName: profile.displayName,
-    email: profile.email,
-    role: bootstrap ? "super_admin" : "viewer",
-    active: bootstrap,
-  });
+  // Never promote or enroll an uninvited first visitor. Staff identities are
+  // established only by the single-use invitation acceptance transaction.
+  return undefined;
 }
 
 export async function resolvePortalMembershipFromDatabase(
@@ -248,8 +243,18 @@ export async function updatePortalPerson(
         return Number(total);
       },
       async updateMembership(userId, values) {
+        if (values.active === false || (values.role !== undefined && values.role !== "super_admin")) {
+          const current = await tx.execute(sql`select 1 from staff_credentials c join portal_memberships m on m.user_id=c.user_id
+            where m.user_id=${userId} and m.active=true and m.role='super_admin'`);
+          if (current.rows.length) {
+            const others = await tx.execute(sql`select 1 from staff_credentials c join portal_memberships m on m.user_id=c.user_id
+              where m.user_id<>${userId} and m.active=true and m.role='super_admin' limit 1`);
+            if (!others.rows.length) throw new Error("LAST_ACTIVE_ADMIN");
+          }
+        }
         const [member] = await tx.update(portalMembershipsTable).set(values)
           .where(eq(portalMembershipsTable.userId, userId)).returning();
+        await tx.execute(sql`delete from staff_sessions where user_id=${userId}`);
         return member;
       },
       async updateGrant(id, values) {

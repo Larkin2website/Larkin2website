@@ -1,6 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { useClerk } from "@clerk/react";
-import { getGetPortalSessionQueryKey, useDeletePortalDemoSession, useGetPortalSession } from "@workspace/api-client-react";
+import { useGetPortalSession } from "@workspace/api-client-react";
 import { 
   LayoutDashboard, 
   Briefcase, 
@@ -25,11 +24,8 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { clerkBasePath } from "@/lib/clerk";
 import { Larkin2Wordmark } from "@/components/brand";
-import { portalDemoMode, portalAccessLabel } from "@/lib/demo-mode";
-import { clearDemoSessionCache } from "@/lib/demo-session-cache";
+import { useStaffSession, useStaffSignOut } from "@/lib/staff-auth";
 
 interface PortalLayoutProps {
   children: React.ReactNode;
@@ -37,48 +33,18 @@ interface PortalLayoutProps {
 
 const SIDEBAR_COLLAPSED_KEY = "larkin2-portal-sidebar-collapsed";
 
-function ClerkSignOutAction({ mobile = false }: { mobile?: boolean }) {
-  const { signOut } = useClerk();
-  if (mobile) {
-    return (
-      <Button
-        variant="outline"
-        className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-border rounded-none h-11 text-xs uppercase tracking-wider font-medium"
-        onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
-      >
-        <LogOut className="mr-2 h-4 w-4 shrink-0" />
-        <span>Sign Out</span>
-      </Button>
-    );
-  }
-  return (
-    <DropdownMenuItem
-      onClick={() => signOut({ redirectUrl: clerkBasePath || "/" })}
-      className={mobile
-        ? "text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium"
-        : "text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium"}
-    >
-      <LogOut className="mr-2 h-3.5 w-3.5 shrink-0" />
-      <span>Sign Out</span>
-    </DropdownMenuItem>
-  );
-}
-
 export function PortalLayout({ children }: PortalLayoutProps) {
   const [location, navigate] = useLocation();
   const { data: session } = useGetPortalSession();
-  const displayName = session?.member?.displayName ?? "Larkin2 Demo";
-  const email = session?.member?.email ?? "demo@larkin2.invalid";
+  const { user } = useStaffSession();
+  const displayName = session?.member?.displayName ?? user?.displayName ?? "";
+  const email = session?.member?.email ?? user?.email ?? "";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const endDemoSession = useDeletePortalDemoSession();
-  const signOutDemo = async () => {
-    await endDemoSession.mutateAsync();
-    await clearDemoSessionCache(queryClient, getGetPortalSessionQueryKey());
-    queryClient.clear();
+  const { signOut, isPending: signingOut, isError: signOutFailed } = useStaffSignOut(() => {
     setMobileMenuOpen(false);
-    navigate("/", { replace: true });
-  };
+    navigate("/sign-in", { replace: true });
+  });
+  const handleSignOut = () => { void signOut(); };
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
       return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true";
@@ -200,25 +166,20 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               <DropdownMenuItem disabled className="text-xs break-all">
                 {email}
               </DropdownMenuItem>
-              {portalDemoMode ? (
-                <>
-                  <DropdownMenuItem disabled className="text-primary text-[10px] uppercase tracking-wider">
-                     {portalAccessLabel}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-border" />
-                  <DropdownMenuItem
-                    onClick={signOutDemo}
-                    className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium"
-                  >
-                    <LogOut className="mr-2 h-3.5 w-3.5 shrink-0" />
-                    <span>Sign Out</span>
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <>
-                  <DropdownMenuSeparator className="bg-border" />
-                  <ClerkSignOutAction />
-                </>
+              <DropdownMenuSeparator className="bg-border" />
+              <DropdownMenuItem
+                onSelect={(event) => { event.preventDefault(); handleSignOut(); }}
+                disabled={signingOut}
+                data-testid="button-sign-out"
+                className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-none text-xs uppercase tracking-wider font-medium"
+              >
+                <LogOut className="mr-2 h-3.5 w-3.5 shrink-0" />
+                <span>{signingOut ? "Signing out..." : "Sign Out"}</span>
+              </DropdownMenuItem>
+              {signOutFailed && (
+                <DropdownMenuItem disabled className="text-destructive text-[10px] uppercase tracking-wider">
+                  Sign-out failed. Try again.
+                </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -258,19 +219,17 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground truncate w-full mt-0.5">{session?.member?.role?.replace("_", " ")}</span>
                   </div>
                 </div>
-                {portalDemoMode ? (
-                  <Button
-                    variant="outline"
-                    disabled={endDemoSession.isPending}
-                    className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-border rounded-none h-11 text-xs uppercase tracking-wider font-medium"
-                    onClick={signOutDemo}
-                  >
-                    <LogOut className="mr-2 h-4 w-4 shrink-0" />
-                    <span>Sign Out</span>
-                  </Button>
-                ) : (
-                  <ClerkSignOutAction mobile />
-                )}
+                <Button
+                  variant="outline"
+                  disabled={signingOut}
+                  data-testid="button-mobile-sign-out"
+                  className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive border-border rounded-none h-11 text-xs uppercase tracking-wider font-medium"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="mr-2 h-4 w-4 shrink-0" />
+                  <span>{signingOut ? "Signing out..." : "Sign Out"}</span>
+                </Button>
+                {signOutFailed && <p role="alert" className="mt-2 text-xs text-destructive">Sign-out failed. Try again.</p>}
               </div>
             </SheetContent>
           </Sheet>

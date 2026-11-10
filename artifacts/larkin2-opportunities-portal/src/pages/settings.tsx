@@ -7,6 +7,8 @@ import { format } from "date-fns";
 import { ShieldAlert, ShieldCheck, UserCog, UserX, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/brand";
+import { InvitationHistory, MemberCredentialStatus, useInvitationActions, useStaffInvitations } from "@/components/settings/staff-invitations";
+import { errorMessage } from "@/lib/staff-auth";
 import {
   Select,
   SelectContent,
@@ -46,6 +48,8 @@ export default function SettingsPage() {
   const [grantName, setGrantName] = useState("");
   const [grantEmail, setGrantEmail] = useState("");
   const [grantRole, setGrantRole] = useState<PortalRole>("viewer");
+  const invitations = useStaffInvitations(session?.member?.role === "super_admin");
+  const invitationActions = useInvitationActions();
   
   if (sessionLoading || membersLoading || optionsLoading) {
     return <div className="p-16 text-center text-muted-foreground font-mono text-xs uppercase tracking-wider animate-pulse break-words">Loading settings...</div>;
@@ -182,23 +186,44 @@ export default function SettingsPage() {
 
   const handleGrantAccess = async (event: React.FormEvent) => {
     event.preventDefault();
+    const name = grantName.trim();
+    const email = grantEmail.trim();
+    let member: PortalMember;
     try {
-      await createAccessGrant.mutateAsync({
+      member = await createAccessGrant.mutateAsync({
         data: { displayName: grantName, email: grantEmail, role: grantRole },
       });
-      setGrantName("");
-      setGrantEmail("");
-      setGrantRole("viewer");
-      await queryClient.invalidateQueries({ queryKey: getListPortalMembersQueryKey() });
-      toast({ title: "Access granted", description: `${grantName.trim()} can sign in with ${grantEmail.trim()}.` });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Could not grant access",
-        description: error?.data?.error || "Check the name and email, then try again.",
+        description: errorMessage(error) || "Check the name and email, then try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setGrantName("");
+    setGrantEmail("");
+    setGrantRole("viewer");
+    await queryClient.invalidateQueries({ queryKey: getListPortalMembersQueryKey() });
+    try {
+      await invitationActions.invite(member.id);
+    } catch (error) {
+      toast({
+        title: "Access saved, invitation not sent",
+        description: `${name} (${email}) was added as pending, but the invitation could not be created${errorMessage(error) ? `: ${errorMessage(error)}` : "."} Use Send invitation on their row to try again.`,
         variant: "destructive",
       });
     }
   };
+
+  const renderCredentials = (member: PortalMember) => (
+    <MemberCredentialStatus
+      member={member}
+      latest={invitations.latestByMember.get(member.id)}
+      actions={invitationActions}
+      isSelf={member.id === session.member.id}
+    />
+  );
 
   return (
     <div className="space-y-6 sm:space-y-10 min-w-0">
@@ -210,7 +235,7 @@ export default function SettingsPage() {
       <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0">
         <div className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31] min-w-0">
           <h2 className="font-mono text-lg uppercase tracking-widest font-medium break-words">Team Members</h2>
-          <p className="text-xs text-[#85898a] mt-2 break-words">Approve access requests and manage permissions for production staff.</p>
+          <p className="text-xs text-[#85898a] mt-2 break-words">Grant access, send password invitations and manage permissions for production staff. Members set their own password from a single-use emailed link.</p>
         </div>
 
         <form onSubmit={handleGrantAccess} className="grid gap-4 border-b border-[#2a2f31] p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_minmax(180px,.75fr)_auto] lg:items-end">
@@ -239,8 +264,8 @@ export default function SettingsPage() {
               </SelectContent>
             </Select>
           </div>
-          <Button type="submit" disabled={createAccessGrant.isPending} className="h-11 rounded-none font-mono text-xs uppercase tracking-wider">
-            {createAccessGrant.isPending ? "Granting..." : "Grant access"}
+          <Button type="submit" disabled={createAccessGrant.isPending || invitationActions.busy} className="h-11 rounded-none font-mono text-xs uppercase tracking-wider">
+            {createAccessGrant.isPending ? "Granting..." : invitationActions.busy ? "Inviting..." : "Grant & invite"}
           </Button>
         </form>
 
@@ -270,7 +295,7 @@ export default function SettingsPage() {
                         <span className="text-[10px] uppercase tracking-wider text-[#85898a] font-mono">Role & Status</span>
                         {member.status === "pending" ? (
                           <span className="inline-flex items-center gap-1.5 text-amber-500 text-[10px] uppercase tracking-widest font-bold">
-                            <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pending sign-in
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pending activation
                           </span>
                         ) : member.active ? (
                           <span className="inline-flex items-center gap-1.5 text-emerald-500 text-[10px] uppercase tracking-widest font-bold">
@@ -283,6 +308,10 @@ export default function SettingsPage() {
                         )}
                       </div>
                       {renderRoleSelect(member)}
+                    </div>
+                    <div className="border-t border-[#2a2f31]/50 pt-4 flex flex-col gap-2">
+                      <span className="text-[10px] uppercase tracking-wider text-[#85898a] font-mono">Sign-in credentials</span>
+                      {renderCredentials(member)}
                     </div>
                     <div className="pt-2">
                       {renderAction(member)}
@@ -300,6 +329,7 @@ export default function SettingsPage() {
                       <th className="px-6 py-5 font-normal">Email</th>
                       <th className="px-6 py-5 font-normal">Role</th>
                       <th className="px-6 py-5 font-normal">Status</th>
+                      <th className="px-6 py-5 font-normal">Credentials</th>
                       <th className="px-6 py-5 font-normal">Joined</th>
                       <th className="px-6 py-5 font-normal text-right">Actions</th>
                     </tr>
@@ -322,7 +352,7 @@ export default function SettingsPage() {
                         <td className="px-6 py-5">
                           {member.status === "pending" ? (
                             <span className="inline-flex items-center gap-2 text-amber-500 text-[10px] uppercase tracking-widest font-bold">
-                              <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pending sign-in
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pending activation
                             </span>
                           ) : member.active ? (
                             <span className="inline-flex items-center gap-2 text-emerald-500 text-[10px] uppercase tracking-widest font-bold">
@@ -333,6 +363,9 @@ export default function SettingsPage() {
                               <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Suspended
                             </span>
                           )}
+                        </td>
+                        <td className="px-6 py-5 min-w-[220px] max-w-xs">
+                          {renderCredentials(member)}
                         </td>
                         <td className="px-6 py-5 text-[#85898a] whitespace-nowrap">
                           {format(new Date(member.createdAt), "MMM d, yyyy")}
@@ -349,6 +382,13 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+
+      <InvitationHistory
+        invitations={invitations.data}
+        isLoading={invitations.isLoading}
+        isError={invitations.isError}
+        retry={() => void invitations.refetch()}
+      />
 
       <div className="bg-[#171b1d] border border-[#2a2f31] min-w-0">
         <div className="pb-4 pt-6 px-4 sm:px-6 border-b border-[#2a2f31] min-w-0">

@@ -35,20 +35,12 @@ import { requireCrmAccess, requirePortal } from "../lib/portal-auth";
 import * as audience from "../lib/audience-crm-service";
 import { publicationDeliveryConfig, sendPublicationSampleTest, sendPublicationTest } from "../lib/publication-delivery";
 import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
-import {
-  clearDevelopmentSession,
-  DevelopmentCredentials,
-  isTemporaryTestLoginEnabled,
-  startDevelopmentSession,
-} from "../lib/development-session";
-import { isPortalDemoMode } from "../lib/portal-demo";
 import { emailQuotaService } from "../lib/email-quota";
 import { EmailDeliveryError } from "../lib/resend-errors";
 import { db, crmCommunicationOutboxTable } from "@workspace/db";
 import { and, count, eq, isNotNull } from "drizzle-orm";
 
 const publicEngagementLimit = createFixedWindowRateLimit({ limit: 60, windowMs: 15 * 60 * 1000 });
-const developmentSignInLimit = createFixedWindowRateLimit({ limit: 120, windowMs: 15 * 60_000 });
 const invalid = (res: any, error: unknown) =>
   res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
 const matchingResult = (row: any) => ({
@@ -70,16 +62,6 @@ export function createAudienceCrmRouter(overrides: {
 const router = Router();
 const controlledTestLimit = createFixedWindowRateLimit({ limit: 5, windowMs: 15 * 60 * 1000 });
 
-router.post("/crm/demo-session", developmentSignInLimit, async (req, res): Promise<void> => {
-  if (!isPortalDemoMode()) { res.status(404).json({ error: "Not found" }); return; }
-  if (!DevelopmentCredentials.safeParse(req.body).success) { res.status(400).json({ error: "Enter a valid email address and a password" }); return; }
-  await startDevelopmentSession(res, "crm");
-  res.status(204).send();
-});
-router.delete("/crm/demo-session", async (req, res): Promise<void> => {
-  await clearDevelopmentSession(req, res, "crm");
-  res.status(204).send();
-});
 
 router.post("/public/engagement", publicEngagementLimit, async (req, res): Promise<void> => {
   const parsed = RecordPublicEngagementBody.safeParse(req.body);
@@ -135,13 +117,12 @@ router.get("/crm/communications/delivery-settings", overrides.requireCrmAccess ?
   const config = (overrides.deliveryConfig ?? publicationDeliveryConfig)();
   res.setHeader("Cache-Control", "no-store");
   res.json(GetCrmDeliverySettingsResponse.parse({
-    testReady: !req.portalActor?.demo && !!config.test, liveEnabled: !isTemporaryTestLoginEnabled() && !!config.live,
+    testReady: !!config.test, liveEnabled: !!config.live,
     trackingReady: !!process.env.RESEND_WEBHOOK_SECRET?.startsWith("whsec_"),
   }));
 });
 router.post("/crm/communications/test-sample", overrides.requireCrmAccess ?? requireCrmAccess, controlledTestLimit, async (req, res): Promise<void> => {
   res.setHeader("Cache-Control", "no-store");
-  if (req.portalActor?.demo) { res.status(403).json({ error: "Development access cannot send email" }); return; }
   if (req.body && Object.keys(req.body).length !== 0) {
     res.status(400).json({ error: "Sample test does not accept a recipient or message body" }); return;
   }
@@ -160,7 +141,6 @@ router.post("/crm/communications/test-sample", overrides.requireCrmAccess ?? req
 });
 router.post("/crm/communications/:id/test-send", overrides.requireCrmAccess ?? requireCrmAccess, controlledTestLimit, async (req, res): Promise<void> => {
   res.setHeader("Cache-Control", "no-store");
-  if (req.portalActor?.demo) { res.status(403).json({ error: "Development access cannot send email" }); return; }
   const params = SendCrmCommunicationTestParams.safeParse(req.params);
   if (!params.success || (req.body && Object.keys(req.body).length !== 0)) {
     res.status(400).json({ error: "Invalid test request" }); return;

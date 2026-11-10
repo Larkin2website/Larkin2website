@@ -1,38 +1,45 @@
-import { SignIn } from '@clerk/react';
 import { useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { getGetCrmTaxonomyQueryKey, useCreateCrmDemoSession } from '@workspace/api-client-react';
-import { useLocation } from 'wouter';
-import { Brand } from '@/components/crm-ui';
-import { crmDemoMode, crmAccessLabel } from '@/lib/demo-mode';
-import { basePath } from '@/lib/clerk';
+import { useLoginStaff } from '@workspace/api-client-react';
+import { Link, useLocation } from 'wouter';
+import { AuthShell, Notice } from '@/components/auth-shell';
+import { adoptStaffSession, errorStatus } from '@/lib/staff-auth';
+
+function failure(error: unknown): { title:string; detail:string } {
+  switch (errorStatus(error)) {
+    case 400: case 401: case 403: return { title:'Sign-in unsuccessful', detail:'Those details could not be used to sign in. Check your email and password, or set a password from your invitation email. If the problem continues, contact an administrator.' };
+    case 429: return { title:'Too many attempts', detail:'Sign-in is paused for a short while. Wait a few minutes, then try again.' };
+    case 503: return { title:'Sign-in is unavailable', detail:'The staff sign-in service is not configured or is temporarily offline. Contact your administrator.' };
+    case undefined: return { title:'Cannot reach the service', detail:'Check your connection and try again. Nothing has been signed in.' };
+    default: return { title:'Sign-in failed', detail:'The service returned an unexpected error. Try again shortly.' };
+  }
+}
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const startSession = useCreateCrmDemoSession();
+  const login = useLoginStaff();
   const client = useQueryClient();
   const [, navigate] = useLocation();
   const signIn = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      await startSession.mutateAsync({data:{email,password}});
+      const session = await login.mutateAsync({ data:{ email:email.trim(), password } });
       setPassword('');
-      await client.invalidateQueries({queryKey:getGetCrmTaxonomyQueryKey()});
-      navigate('/', {replace:true});
+      if (!session.authenticated) return;
+      adoptStaffSession(client, session);
+      navigate('/', { replace:true });
     } catch {
       setPassword('');
     }
   };
-  return <div className="min-h-[100dvh] grid lg:grid-cols-[.9fr_1.1fr]">
-    <section className="ink min-h-[340px] lg:min-h-[100dvh] flex flex-col justify-between p-8 sm:p-12 lg:p-16"><Brand light/><div className="my-16 max-w-lg"><div className="micro text-[#f4773f] mb-7">AUDIENCE & ENGAGEMENT / HETV HUB</div><h1 className="display text-5xl sm:text-6xl xl:text-7xl leading-[1.02] font-medium">Closer to<br/>the people<br/><span className="text-[#f4773f]">we serve.</span></h1><p className="text-[#aaaeaa] text-sm leading-7 mt-8 max-w-sm">Audience insight, delivery visibility and subscriber enquiries. Manage your audience and communications in one place.</p></div><div className="border-t border-[#373d3e] pt-5 micro text-[#85898a]">HETV / AUDIENCE & ENGAGEMENT</div></section>
-    <section className="flex items-center justify-center p-6 sm:p-12 lg:p-16"><div className="w-full max-w-[440px]"><div className="micro text-[#b45024] mb-6">{crmDemoMode ? crmAccessLabel : 'STAFF ACCESS'}</div><h2 className="display text-3xl sm:text-4xl font-semibold mb-3">Welcome back.</h2><p className="text-sm leading-6 text-[#625d58] mb-8">Sign in to continue to your audience workspace.</p><div className="border-t rule pt-8">{crmDemoMode ? (
-      <form onSubmit={signIn} className="space-y-5">
-        <div><label htmlFor="crm-demo-email" className="micro block mb-2">Email address</label><input id="crm-demo-email" type="email" autoComplete="email" required value={email} onChange={event => setEmail(event.target.value)} className="w-full h-12 px-3 border rule bg-transparent" /></div>
-        <div><label htmlFor="crm-demo-password" className="micro block mb-2">Password</label><input id="crm-demo-password" type="password" autoComplete="off" required value={password} onChange={event => setPassword(event.target.value)} className="w-full h-12 px-3 border rule bg-transparent" /></div>
-        <button type="submit" disabled={startSession.isPending} className="orange-button w-full justify-center">{startSession.isPending ? 'Signing in…' : 'Sign in'}</button>
-        {startSession.isError && <p role="alert" className="text-sm text-[#b45024]">We couldn’t sign you in. Please try again.</p>}
-      </form>
-    ) : <SignIn routing="path" path={`${basePath}/sign-in`} forceRedirectUrl={`${basePath}/`} signUpUrl={undefined} appearance={{ elements:{rootBox:'!w-full',cardBox:'!w-full !max-w-full !shadow-none !rounded-none !bg-transparent',card:'!p-0 !shadow-none !bg-transparent',header:'!hidden',footer:'!hidden',socialButtons:'!hidden',dividerRow:'!hidden'} }}/>}</div><p className="text-xs leading-5 text-[#625d58] mt-10">Need help accessing your workspace? Contact your administrator.</p></div></section>
-  </div>;
+  const problem = login.isError ? failure(login.error) : null;
+  return <AuthShell title="Welcome back." detail="Sign in to continue to your audience workspace.">
+    <form onSubmit={signIn} className="space-y-5">
+      <div><label htmlFor="crm-email" className="micro block mb-2">Email address</label><input id="crm-email" name="email" type="email" autoComplete="username" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} data-testid="input-email" className="input h-12" /></div>
+      <div><div className="flex items-center justify-between mb-2"><label htmlFor="crm-password" className="micro">Password</label><Link href="/forgot-password" data-testid="link-forgot-password" className="micro text-[#b45024] hover:text-[#1d2020]">Forgot password?</Link></div><input id="crm-password" name="password" type="password" autoComplete="current-password" required maxLength={128} value={password} onChange={e => setPassword(e.target.value)} data-testid="input-password" className="input h-12" /></div>
+      <button type="submit" disabled={login.isPending} data-testid="button-sign-in" className="orange-button w-full justify-center">{login.isPending ? 'Signing in…' : 'Sign in'}</button>
+      {problem && <Notice tone="error" title={problem.title} testId="status-sign-in-error">{problem.detail}</Notice>}
+    </form>
+  </AuthShell>;
 }

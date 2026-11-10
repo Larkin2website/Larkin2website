@@ -336,6 +336,13 @@ export async function customFetch<T = unknown>(
   }
 
   const headers = mergeHeaders(isRequest(input) ? input.headers : undefined, headersInit);
+  // Session cookies are HttpOnly. Only the session-bound anti-CSRF value is
+  // readable by the browser, and it must never be attached to another origin.
+  if (typeof window !== "undefined" && !["GET", "HEAD", "OPTIONS"].includes(method)
+    && new URL(resolveUrl(input), window.location.href).origin === window.location.origin) {
+    const csrf = document.cookie.split("; ").find(value => value.startsWith("hetv_staff_csrf="))?.slice("hetv_staff_csrf=".length);
+    if (csrf) headers.set("x-staff-csrf", decodeURIComponent(csrf));
+  }
 
   if (
     typeof init.body === "string" &&

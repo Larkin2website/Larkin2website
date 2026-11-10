@@ -1,417 +1,218 @@
-# Client-Owned Migration Guide
+# Client-owned migration guide
 
-> **Authentication correction:** The user confirmed application-managed
-> email/password, administrator invitations only, no public registration, Resend
-> invitation/password-reset emails, and preserved portal/CRM permissions.
-> Earlier Clerk recommendations in this guide are superseded. The implementation
-> still uses Clerk; the replacement has not been completed. Do not create a
-> client-owned Clerk account as a migration step. Supply the first administrator's
-> email and approved sender privately during post-migration configuration.
+## Recommended and agreed stack
 
-Prepared: 12 October 2026
-Status: direct Resend email portability, shared quota controls and CRM admin warnings are implemented. Real email verification and full hosting/database/auth migration, provider setup, and cutover remain incomplete.
-
-Render repository preparation is now implemented. The authoritative executable
-instructions are in [Render Deployment Runbook](render-deployment.md), with the
-Blueprint, supported versions, environment matrix, schema baseline, dependency
-inventory and destination acceptance gates. This guide remains the broader
-ownership, data-transfer and cutover reference.
-
-Credential timing confirmed by the user: all key values will be added after
-migration away from Replit. Keep destination secrets out of Replit and tracked
-files; enter them in the client-owned host's environment/secret settings.
-Run the live email acceptance checklist there before enabling subscriber
-campaigns. Until then, missing email configuration intentionally prevents sending;
-no live-delivery verification is claimed.
-
-This guide covers HETV Opportunities Hub, Larkin2 Opportunities Portal, HETV Audience & Engagement CRM, and their shared API, PostgreSQL database, authentication, email, assets, domains, and operational handover. It recommends providers because the client has no preferred stack. Account creation, purchases, code changes, data exports, DNS changes, and retiring services require separate approval.
-
-## Contents
-
-- 1. Executive recommendation
-- 2. Architecture and routing
-- 3. Client ownership checklist
-- 4. GitHub and reproducible releases
-- 5. Hosting configuration and required changes
-- 6. Background delivery and scaling
-- 7. Authentication migration
-- 8. Database migration and future schema releases
-- 9. Secrets and environment configuration
-- 10. Email, webhooks, and existing links
-- 11. Staging and acceptance testing
-- 12. Production cutover runbook
-- 13. Rollback and recovery
-- 14. Ongoing operations and costs
-- 15. Client handover and retirement
-- 16. Decisions still needed
-- 17. Official references
-
-## 1. Executive recommendation
-
-Use the following client-owned services:
-
-| Responsibility | Recommended provider | Reason |
+| Responsibility | Recommendation | Reason |
 | --- | --- | --- |
-| Source code and release history | GitHub organisation and private repository | Standard repository ownership, collaboration, review, and automation |
-| Websites and shared API | One paid, always-running Render Node web service | Fits the existing Express server; can serve all three compiled React apps and their API on the same origin |
-| Persistent data | Paid Render PostgreSQL | Keeps the existing PostgreSQL/Drizzle model; colocates API and database; supports managed recovery on paid plans |
-| Staff authentication | Client-owned Clerk application | Retains the existing auth library rather than replacing authentication technology during migration |
-| Transactional and notification email | Client-owned Resend account, direct API connection | Retains the current email provider but removes reliance on Replit's connector |
-| Domains and DNS | Client-owned registrar; Cloudflare DNS if a new DNS provider is needed | Separates domain control from hosting; do not move an existing working registrar unnecessarily |
-| Operational oversight | Render logs/alerts plus a client-owned uptime monitor | Makes availability and service failures visible to the client |
-| Long-term backup copies | Client-owned encrypted backup destination, such as a restricted S3 bucket | Keeps recovery copies outside the database service; retention must be agreed |
+| Source and releases | Client-owned GitHub organisation/private repository | Portable code, reviewed changes and reproducible releases |
+| All three websites/shared API | One paid always-on Render Node service | Matches Express/Vite and keeps cookies/API same-origin |
+| Database | Paid Render PostgreSQL, same approved region | Preserves PostgreSQL/Drizzle and provides managed recovery options |
+| Staff authentication | App-managed email/password in PostgreSQL | Client's confirmed choice: administrator invitations only, no public staff registration |
+| Invitations, resets, enquiries, verification and alerts | Client-owned Resend account, direct API | Runtime configuration, shared quota controls, no Replit connector |
+| Domains/DNS | Client-owned existing registrar; Cloudflare DNS if needed | Preserve existing domains/links without unnecessary registrar moves |
+| Backups/monitoring | Client-controlled encrypted off-provider backup storage and uptime alerts | Independent recovery and client visibility |
 
-This is account ownership and portability, not ownership of provider infrastructure. Render, Clerk, and Resend remain managed vendors. A VPS or self-hosted identity system would offer more infrastructure control but introduce substantially more patching, security, and operational work. That is not the recommended first migration.
+The Clerk replacement is implemented, not an outstanding provider choice.
+No destination account, paid resource, live data migration, sender verification
+or DNS cutover has been performed. **All real destination values are supplied
+after migration**, in the client-owned host's secret manager. This guide does
+not authorize purchases, exports, restores or traffic changes.
 
-Use paid production compute and database plans. Do not base client production on a sleeping web service or a free database without recovery capabilities. Select actual capacity after measuring traffic, database size, memory usage, and expected email volume.
+Render/Resend remain managed infrastructure providers; client control means
+ownership of accounts, billing, source, data, credentials and operations—not
+ownership of provider infrastructure. A VPS would require additional security
+patching and operations and is not the recommended first move.
 
-## 2. Architecture and routing
+## Architecture and ownership
 
-Keep one GitHub repository containing the three frontends, shared API, shared libraries, and release documentation. The canvas/mockup sandbox is a design tool, not a fourth client production app; it does not need a deployed service.
-
-Recommended deployment:
-
-    Client-owned GitHub repository
+```text
+Client GitHub -> approved Render build/release -> one native Node service
+  /larkin2-opportunities/         Public Opportunities Hub
+  /larkin2-opportunities-portal/  Staff portal
+  /hetv-audience-crm/             Audience & Engagement CRM
+  /api/                          Shared API and signed Resend webhook
                   |
-          approved build/release
-                  |
-       Render Node web service
-          |-- /larkin2-opportunities/         public hub
-          |-- /larkin2-opportunities-portal/  staff portal
-          |-- /hetv-audience-crm/             audience CRM
-          |-- /api/                           shared Express API
-          |-- background publication delivery
-                  |
-       Render PostgreSQL, same region
-                  |
-       External Clerk and direct Resend
-
-The production API now serves compiled frontend files through Express when
-`SERVE_STATIC_APPS=true`. The production build sets the individual frontend bases;
-the current Replit development workflows remain separate.
-
-Retain existing path prefixes initially. Each mounted frontend needs its own index-page fallback for valid application routes. API routes must run before frontend fallbacks; unknown API requests must never return a website's index.html. Missing static assets should return an appropriate error rather than unrelated HTML. Set suitable caching for fingerprinted assets and avoid stale index-page caching. Preserve root redirects, public detail URLs, query strings, and canonical-link behavior.
-
-If multiple existing hostnames are retained, point approved hostnames at the same Render service and make host-based landing redirects explicit. The code contains host-specific redirects, but domain ownership and which hostnames are live must still be confirmed. These are not proof that the client owns the domains.
-
-One shared hostname is the simplest auth arrangement. Multiple hostnames must be validated against Clerk's multi-domain/session configuration; sharing a backend does not automatically share browser sessions. Authenticated API requests should remain same-origin for each website. If frontends are later separated into independent hosting services, deliberately configure credentialed requests, allowed origins, cookies, CSRF protection, and Clerk tokens instead of assuming the current relative requests will work.
-
-Tradeoff: one service shares release timing, scaling, and failure impact across all three apps. It is recommended for migration simplicity; splitting services can be considered later if traffic or availability requirements justify it.
-
-## 3. Client ownership checklist
-
-The client creates or becomes the verified owner of every production account. Do not create production subscriptions under a developer's personal account and assume inviting the client later is equivalent to ownership.
-
-- [ ] Client-owned GitHub organisation and private repository.
-- [ ] Client-owned Render workspace, billing method, recovery details, and administrator access.
-- [ ] Client-owned Clerk application with production instance and recovery access.
-- [ ] Client-owned Resend account, sender domains, billing, and webhook configuration.
-- [ ] Client-controlled domain registrar and DNS administration.
-- [ ] Client-owned encrypted backup destination and monitoring account.
-- [ ] MFA enabled for administrators; recovery codes stored securely.
-- [ ] At least two appropriate recovery/administrative contacts where supported.
-- [ ] Developer invited with a named account and minimum necessary privileges; no shared passwords.
-- [ ] Service ownership, renewal responsibilities, billing, and offboarding procedures recorded.
-
-Confirm where data may be stored, applicable privacy obligations, provider agreements, and retention requirements before creating the production database. Do not infer legal compliance from selecting a region.
-
-## 4. GitHub and reproducible releases
-
-Keep the repository root as Render's build root because the apps import shared workspace libraries. Render documentation warns that files outside a configured root directory are unavailable at build/runtime; setting the root to only the API artifact would exclude shared dependencies.
-
-Repository preparation must include:
-- The application code, shared libraries, pnpm workspace configuration, dependency lockfile, and approved deployment documentation.
-- A pinned, supported Node version compatible with the existing Node 24 project and a pinned pnpm version matching the lockfile.
-- Reviewed dependency versions; avoid unexpected upgrades from unbounded auth package versions during migration.
-- Secret-free environment examples and a documented Render service specification, ideally a reviewed render.yaml without secret values.
-- Explicit production builds for only the three websites and API. Do not deploy or require the design sandbox.
-- GitHub checks for library/application typechecking, focused API tests, and production builds.
-- Protected production branch and a clear approval process. Keep production auto-deploy disabled during cutover preparation; enable an agreed release process afterward.
-
-This guide is stored at docs/client-owned-migration.md and linked from the repository README.md so it is included with the source code in GitHub. The original task-planning copy lives under .local, which is excluded by .gitignore; use this tracked guide as the client handover document. Update it when implementation decisions or provider behavior change.
-
-Never commit environment files containing secrets, database dumps, authentication exports, user records, recovery codes, or backup archives. Inspect repository history as well as current files for accidental secrets. Rotate any exposed credentials. Check that fonts, images, and videos used by the websites are present and licensed; large durable assets may need client-owned object storage and revised URLs instead of Git history. Do not deploy Replit's internal tools or workspace caches.
-
-## 5. Hosting configuration and required changes
-
-The checked-in Blueprint and local production preparation checks implement this
-specification. No actual Render provisioning/deployment has been performed;
-follow the [Render runbook](render-deployment.md) for exact commands and gates.
-
-| Setting | Proposed value |
-| --- | --- |
-| Render service type | Paid Node web service |
-| Repository root | Repository root, not an individual artifact directory |
-| Runtime | Node 24.22.1 and pnpm 10.26.1, pinned in the repository |
-| Runtime environment | NODE_ENV=production |
-| Port | Use Render's injected PORT; bind to the host interfaces needed by Render |
-| API health check | /api/healthz |
-| Start command after builds | pnpm start, from the repository root |
-| Database | Paid Render PostgreSQL in the same approved region; internal connection where supported |
-| Frontends | Three Vite production outputs mounted at their current base paths |
-
-Implemented sequence: frozen install including build dependencies, `pnpm
-build:render`, `pnpm check:render`, and `pnpm test:render`. Build/typechecks cover
-the shared libraries, three frontends and API, excluding the design sandbox.
-The destination Clerk public browser key requires a new frontend build once set.
-
-Frontend compilation no longer needs Replit-injected PORT or BASE_PATH.
-Each frontend has a stable default prefix and the production command supplies
-its base separately. Output folders remain each artifact's dist/public.
-
-Replit Vite tooling is development-only; external Clerk uses explicit destination
-keys instead of managed host inference/proxying. Production static/fallback
-routing, Render proxy trust and optional approved-host validation are implemented.
-Email uses direct runtime-configured Resend; follow [portable email setup](resend-setup.md).
-See the runbook's inventory for removed dependencies and harmless retained metadata.
-
-The Render start command performs no seeds or schema mutations. If category
-initialization is required for a deliberately new installation, approve it as a
-separate operation; a full existing-data restore should retain editorial data.
-
-Keep OpenAPI as the API contract source of truth. Regenerate generated hooks/validators if an API contract changes; never hand-edit generated files.
-
-## 6. Background delivery and scaling
-
-The API can start periodic delivery/quota workers, but the Render proposal leaves
-`EMAIL_WORKERS_ENABLED=false`. External mode requires explicit worker enablement;
-publication activation has its own additional approval gates. Use one paid
-always-running instance initially and rehearse interruption recovery before launch.
-
-Before enabling production email:
-- Verify database claim/lease behavior under simultaneous old/new instances and deploy overlap.
-- Verify retries, timeouts, failure visibility, and graceful shutdown.
-- Use stable provider idempotency keys where supported and appropriate; a database claim alone does not guarantee exactly-once sending if a process dies after sending but before recording success.
-- Make worker enablement and staging suppression explicit, and prove they work.
-- Keep only one intended active deployment processing the production queue during cutover.
-
-If the API scales to multiple replicas or independent email availability is required, extract delivery into a dedicated Render background worker and remove it from API startup. A separate worker needs its own build/start contract and reviewed queue/lease behavior; it is not already configured.
-
-In-memory rate limits are per process and reset on deploy. Assess whether database/shared-store limits are necessary before multi-instance scaling. Do not claim high availability from a single small service.
-
-## 7. Authentication migration
-
-The project currently uses Replit-managed Clerk. The destination is a new client-owned Clerk application, unless an authorized, supported tenant transfer is confirmed.
-
-Do not assume managed-tenant transfer, user-export access, password-hash access, or preservation of Clerk user IDs. The source is a managed tenant. Authorized dashboard/export/transfer access must be confirmed through the source platform before promising continuity; access available to one operator does not establish client ownership.
-
-Preferred process:
-1. Inventory authorized production staff identities and application memberships/roles without placing personal data in this document.
-2. Confirm the supported export/import or transfer path with the source and destination providers. Keep the existing tenant intact.
-3. If supported, import eligible production identities using approved tools and create an explicit old-ID to new-ID mapping.
-4. If export/import is unavailable or unnecessary for the small staff population, re-invite approved staff into the client-owned app and securely reconcile memberships. Tell staff whether re-verification or password setup is required.
-5. Update both portal and CRM providers and API middleware, production domains, allowed redirects, and login methods.
-6. Preserve active/inactive membership state, all roles, access grants, and audit attribution. Where historical actor IDs cannot be replaced safely, preserve them as historical attribution rather than deleting or reassigning history.
-7. Provision the initial client super-admin deliberately. Do not rely on first-login auto-admin behavior after restoring existing membership data.
-8. Test authentication, authorization, account suspension, logout, and unauthenticated API rejection in both apps.
-
-Source development users and source production users are separate. Existing sessions are not assumed portable; plan for staff to sign in again. Subscriber records in PostgreSQL are not automatically staff Clerk accounts and should not be turned into auth users.
-
-Required production flags: PUBLIC_TEST_LOGIN_ENABLED=false and DEV_DEMO_LOGIN_ENABLED=false. Remove or disable frontend testing-login entry points and ensure backend bypasses remain disabled. PORTAL_DEMO_MODE must not grant production access. Test arbitrary credentials and expired temporary sessions as negative cases. The current permissive testing policy was intentional for testing, not appropriate for client production.
-
-## 8. Database migration and future schema releases
-
-Export the actual production database, not the development database. Confirm source PostgreSQL version, extensions, schema objects, database size, connection limits, and target compatibility. Use a compatible pg_dump/pg_restore version and provider-supported secure access.
-
-A safe rehearsal restores into a new empty staging database, not over a populated target. Backups are sensitive: encrypt them, restrict access, keep them out of GitHub, and delete temporary copies under an agreed retention policy.
-
-Example commands for an authorized operator, NOT executed by this guide:
-
-    pg_dump --dbname="$SOURCE_PRODUCTION_DATABASE_URL" --format=custom --no-owner --no-acl --file="$PRIVATE_BACKUP_PATH"
-    pg_restore --dbname="$EMPTY_TARGET_DATABASE_URL" --no-owner --no-acl --exit-on-error "$PRIVATE_BACKUP_PATH"
-
-These variable names are placeholders, not existing project secrets. Supply credentials through an approved secret store; do not paste them into chat, documents, shared shell history, or logs. Verify target identity before every restore. The example deliberately avoids destructive clean/drop flags.
-
-Preserve and reconcile:
-- Opportunities, complete role content, category/options, dates, and publication states.
-- Programmes, sections, registration state, and editorial content.
-- Audience/CRM records, preferences, website-purpose selections, consent and acquisition metadata, and unsubscribe state.
-- Enquiries, communication batches, delivery queues, attempts, and provider event history.
-- Staff memberships, access grants, permission states, and historical audit records.
-- Legacy preference/unsubscribe capability hashes and other link-validation data.
-- IDs, relationships, constraints, indexes, sequence values, and relevant extensions.
-
-Exclude or invalidate temporary test-login sessions deliberately; do not migrate them as valid staff access. Verification challenges and session-signing secrets need a specific decision: either preserve securely for a justified short compatibility period or invalidate in-flight codes and require a fresh request. Do not confuse SESSION_SECRET with legacy management-token hashing; existing legacy management capability hashes must remain unchanged.
-
-Rehearsal verification should compare table counts and representative records, sequence/identity behavior, constraints, date-only values, and application reads/writes. Opening a page is not a restore test.
-
-The repository now includes an offline 21-table baseline at
-`lib/db/migrations/0000_render_baseline.sql`, generated from the current schema.
-Apply it only to a reviewed, deliberately empty installation. A full production
-schema+data restore is a different path: compare the restored schema against the
-baseline and apply only reviewed differences, rather than replaying the baseline.
-Historical SQL and development Drizzle push commands do not establish a complete
-production migration chain. Do not use push-force against production. Future
-migrations need backups and compatibility checks as controlled release steps,
-not automatic boot/request mutations; see the Render runbook.
-
-## 9. Secrets and environment configuration
-
-Store actual values in the client-owned hosting/provider secret managers. Only the Clerk publishable key is intended for browser bundles; database credentials, Clerk secret keys, Resend keys, webhook secrets, and SESSION_SECRET must never use VITE_ variables or appear in frontend output.
-
-| Name | Location/purpose | Migration handling |
-| --- | --- | --- |
-| DATABASE_URL | Backend; PostgreSQL connection | New client database connection, private/internal where possible |
-| CLERK_SECRET_KEY | Backend only | New client-owned Clerk production secret |
-| CLERK_PUBLISHABLE_KEY | Backend auth configuration | Match the client-owned instance |
-| VITE_CLERK_PUBLISHABLE_KEY | Portal/CRM build-time public key | Correct environment-specific key; rebuilding is required when changed |
-| VITE_CLERK_PROXY_URL | Existing managed proxy config | Cleared by Render build; retained only for the current managed Replit path |
-| SESSION_SECRET | Backend verification/signing | Secure destination value; explicitly decide code invalidation/compatibility |
-| RESEND_API_KEY | Direct-email backend secret | Implemented for all three email flows; configure at runtime and restart, no connector required |
-| RESEND_WEBHOOK_SECRET | Backend event verification | Store the destination Resend endpoint's signing secret; never reuse blindly across endpoints |
-| CONTACT_ENQUIRY_FROM | Backend enquiry sender | Explicit approved client sender; verify domain |
-| CONTACT_ENQUIRY_TO | Backend enquiry recipient | Optional validated override; omission retains the existing approved product mailbox |
-| SUBSCRIPTION_VERIFICATION_FROM | Backend verification sender | Explicit client sender; remove reliance on developer-domain fallback |
-| PUBLICATION_EMAIL_FROM | Backend notifications sender | Explicit verified sender |
-| PUBLIC_OPPORTUNITIES_URL | Backend email links | Confirm canonical public URL and current prefixes |
-| PUBLICATION_EMAIL_MODE | Publication controls | No live sending in staging; controlled activation in production |
-| PUBLICATION_EMAIL_APPROVED | Publication approval gate | Enable only after approved sender and tests |
-| PUBLICATION_TEST_EMAIL | Controlled testing | Test inbox only; not a client data export destination |
-| PUBLICATION_ALERTS_ACTIVATED_AT | Alert activation cutoff | Set after reviewing backlog; prevent unintended historical alerts |
-| PUBLIC_TEST_LOGIN_ENABLED | Backend testing bypass | false in client production |
-| DEV_DEMO_LOGIN_ENABLED | Development testing bypass | false in client production |
-| PORT, NODE_ENV | Backend runtime | Render PORT; production environment |
-| BASE_PATH | Individual frontend build | Existing prefix per app; not one shared global value |
-
-Inventory additional domain/auth/runtime settings during hosting migration. The contact recipient now supports the runtime override listed above; confirm mailbox ownership and destination rather than silently substituting a developer mailbox. The optional repository-root `.env` loader preserves injected host values; see `.env.example` and the email setup guide.
-
-Rotate destination provider credentials as appropriate. If a signing secret is temporarily retained for compatibility, record why, restrict access, and schedule rotation. Never document actual secret values in this guide.
-
-## 10. Email, webhooks, and existing links
-
-All email paths (contact enquiries, subscription verification, and publication/test delivery) now use direct Resend. Supply runtime credentials, account ID, senders, URLs, warning recipient and webhook secret using [portable email setup](resend-setup.md); no email rebuild is needed when those values change. Shared quota protection and CRM warnings are covered in [Email Delivery Operations](email-delivery-operations.md). Explicit failures and neutral subscription-verification responses are preserved; no live provider delivery has been verified by mocked tests.
-
-In the client Resend account:
-- Verify approved sending domains and configure DNS records supplied by Resend. Review SPF, DKIM, and DMARC without breaking existing mail delivery.
-- Use the subscriber's address as reply-to where appropriate, not as an unauthorized from address.
-- Configure the destination delivery-event webhook at the approved hostname plus /api/webhooks/resend.
-- Verify signatures against raw request bytes and the new endpoint secret; test replay/duplicate event handling.
-- Coordinate old and new webhook endpoints so in-flight events are not lost and duplicate callbacks do not double-count.
-- Honor unsubscribe/suppression state, bounce/complaint handling, provider limits, and retry backoff.
-- Prove staging cannot send to the restored subscriber population. Redirection to a test inbox or a verified non-sending mode must cover every email code path, not just the publication worker.
-
-Preserve existing public domains and paths wherever possible so previously sent preference/unsubscribe links continue to resolve. If a hostname cannot be retained, obtain control of an approved redirect/compatibility endpoint and verify complete path/query preservation. A generic homepage redirect is not enough for token-bearing links. Never expose these URLs in logs or analytics.
-
-## 11. Staging and acceptance testing
-
-Use a separate database, Clerk environment/application configuration, and controlled email setup. Restrict staging access. Production-derived data should be minimized/anonymized where feasible; maintain equivalent link/permission behavior for testing and protect any real data retained for rehearsal.
-
-Acceptance checklist:
-- [ ] All three websites load, navigate, refresh deep links, and display their assets on desktop/mobile.
-- [ ] Public roles/programmes show correct visible states, links, dates, filters, and content.
-- [ ] Draft and archived content remains protected.
-- [ ] Portal and CRM sign-in, sign-out, redirects, expiry, and permitted multi-host behavior work.
-- [ ] Approved roles behave correctly; suspended/inactive accounts and arbitrary credentials are rejected.
-- [ ] Client super-admin can manage access without accidental first-user promotion.
-- [ ] Create/edit/publish/close/archive flows preserve data and audit history.
-- [ ] Permanent deletion remains permission-gated and confirmation-gated.
-- [ ] Subscriber signup, verification, preferences, and unsubscribe work, including legacy links.
-- [ ] Neutral verification responses preserve privacy and production rate limits remain effective.
-- [ ] Enquiries reach only the approved test mailbox during staging, then the approved client mailbox in production.
-- [ ] Delivery retries, webhook verification, duplicate events, suppression, and worker restart behavior are verified.
-- [ ] No old publication backlog is sent unintentionally.
-- [ ] Database counts, relationships, sequences, editorial dates, and representative records match the approved source.
-- [ ] A backup has been restored successfully and the application checked against it.
-- [ ] Logs exclude credentials, private tokens, full subscriber URLs, and unnecessary personal data.
-- [ ] CI builds from a fresh clone without Replit runtime services.
-- [ ] Alerts and provider access are visible to the client.
-
-Record results, date, responsible person, and outstanding exceptions separately. This document does not assert any checklist item has passed.
-
-## 12. Production cutover runbook
-
-Before the scheduled window:
-1. Obtain client approval for downtime, staff re-login, data migration, and DNS changes.
-2. Complete staging checks, rehearse timing, verify target capacity, and record the approved release identifier.
-3. Back up DNS configuration and confirm domain access, Clerk domain verification, and destination TLS readiness.
-4. Lower DNS TTL ahead of the window if appropriate. Establish a clear rollback decision owner.
-5. Take an initial secure source backup and confirm recoverability. Disable automatic deployments for the window.
-
-During the window:
-1. Pause writes across all apps, including public subscriptions/enquiries; pausing portal edits alone is not sufficient. Display a clear temporary notice rather than claiming submissions were saved.
-2. Stop source email delivery and other mutating background tasks; allow in-flight work to settle. Define how in-flight webhook callbacks are handled before taking the final snapshot.
-3. Create the final production export and restore it into the verified empty destination. Reconcile record counts, delivery state, and approved staff identity mappings.
-4. Apply only reviewed, necessary destination schema changes; keep senders/workers disabled until state is verified.
-5. Start destination services and perform protected smoke checks without sending to subscribers.
-6. Switch approved DNS/routing and verify public, portal, CRM, auth redirects, API, and HTTPS from outside the old environment.
-7. Reopen writes on the destination only. Leave the old deployment read-only or in maintenance so visitors with cached DNS cannot create divergent records.
-8. Activate verified email/webhook processing with approved cutoff and queue state; ensure the source worker remains stopped.
-9. Monitor sign-in, application errors, database connectivity, enquiries, delivery failures, and unsubscribe behavior.
-
-Do not delete the old database, tenant, or deployment during the cutover. A finite rollback/observation window must be agreed with the client; its duration is not assumed by this guide.
-
-## 13. Rollback and recovery
-
-Separate code rollback from database rollback. An older build may not understand a changed schema, and DNS rollback does not copy new data back.
-
-- Before destination writes begin: keep source workers disabled while assessing; restore routing to the intact source only when its auth and sender configuration are still valid, then reopen source writes deliberately.
-- After destination writes begin: freeze both systems, export destination changes, and reconcile against the source before reopening it. Include new subscriptions, opt-outs, editorial changes, audit events, delivery state, and webhook events. Never undo an unsubscribe or resend completed notifications because a backup is older.
-- If auth identities changed: source and destination identity mappings require separate review; staff may need different sign-in instructions during rollback.
-- For code-only failures: prefer a compatible prior build against the current database when safe rather than restoring old data.
-- For data corruption: restore into a new database, validate it, then switch connections under a controlled write freeze. Preserve evidence and logs without exposing personal data.
-
-Success criteria for rollback: one authoritative writable database, correct staff access, preserved subscriber consent/opt-outs, and one intended email processor. Document how duplicates and post-cutover records were reconciled.
-
-## 14. Ongoing operations and costs
-
-Budget categories, not a fixed quote:
-- Always-running Render web compute, build usage, network egress, and any workspace/collaboration charges.
-- Paid PostgreSQL compute, storage, recovery capability, and capacity growth.
-- Staging resources and, if later required, a dedicated email worker.
-- Clerk active-user/features usage and any required paid authentication features.
-- Resend message volume and sending-domain/features charges.
-- Domain renewals, backup object storage, monitoring, and ongoing maintenance.
-
-Verify live provider pricing and included features before purchase. This guide does not promise a total monthly price or that free auth/email tiers satisfy the client. Choose spending alerts and who approves upgrades.
-
-Render's current documented recovery window for paid Postgres depends on workspace plan: Hobby 3 days; Pro or higher 7 days. Logical exports are retained for 7 days. These figures were checked on the preparation date and must be rechecked at purchase. They are not a substitute for agreed retention or restore tests.
-
-Set client-approved recovery objectives: maximum tolerable data loss (RPO) and maximum outage (RTO). A nightly export alone can lose nearly a day of writes; provider PITR and independent exports serve different purposes. Proposed baseline is managed PITR plus encrypted daily off-provider backups, with retention agreed to privacy/business needs and periodic restore drills. Select an appropriate bucket region and restrict access. Do not promise the baseline has been configured.
-
-Operational runbook should cover releases, schema changes, credential rotation, staff offboarding, failed email processing, database restoration, availability incidents, and domain/SSL issues. Assign an operator: managed hosting does not eliminate application maintenance, dependency updates, or response to incidents.
-
-## 15. Client handover and retirement
-
-- [ ] Client signs in independently to GitHub, Render, Clerk, Resend, DNS, backup, and monitoring services.
-- [ ] Client owns billing and recovery, not merely collaborator access.
-- [ ] GitHub contains current deploy/run/environment documentation and this approved migration guide in a tracked docs directory.
-- [ ] Client receives a provider/service inventory with links and responsibilities, without passwords or private keys.
-- [ ] Secure credential/recovery-code access is handed over through an approved password manager/secret store.
-- [ ] Domain renewal, backup retention, alert recipients, and maintenance ownership are confirmed.
-- [ ] Client has demonstrated a basic release/rollback and understands staff-access administration.
-- [ ] Rollback/observation window is closed explicitly after client acceptance.
-- [ ] Retained source backups and private export files follow the agreed retention/deletion policy.
-- [ ] Old Replit hosting, managed integrations, auth, and database are retired only after dependencies and legacy-link continuity are confirmed.
-- [ ] Obsolete developer credentials and unnecessary developer access are revoked with client approval.
-
-## 16. Decisions still needed
-
-The providers are recommended; these implementation details require confirmation:
-1. Who will be the client's primary and backup administrators?
-2. Which existing domains are owned by the client and must remain unchanged?
-3. Is one canonical hostname acceptable, or must all three branded hostnames remain?
-4. Which database region, data-retention policy, and provider agreements are required?
-5. What downtime and recovery objectives are acceptable?
-6. How many real staff identities exist, and is supported identity export/transfer available?
-7. Who owns the sender domain and approved receiving mailbox?
-8. What traffic, data size, email volume, and budget should capacity planning use?
-9. Who will maintain the system after handover?
-
-Do not guess answers or treat absence of a provider preference as approval to buy subscriptions or move live data.
-
-## 17. Official references
-
-Checked or used on 12 October 2026. Recheck provider behavior and pricing at implementation.
-
-- Render Node/Express hosting: https://render.com/docs/deploy-node-express-app
-- Render monorepo roots and build filters: https://render.com/docs/monorepo-support
-- Render PostgreSQL backups/recovery: https://render.com/docs/postgresql-backups
-- Render custom domains/TLS: https://render.com/docs/custom-domains
-- Render pricing: https://render.com/pricing
-- Clerk migration overview: https://clerk.com/docs/guides/development/migrating/overview
-- Clerk documentation: https://clerk.com/docs
-- Resend documentation entry point: https://resend.com/docs
-- Replit production/development database documentation: https://docs.replit.com/features/data-and-storage/development-and-production
-- Replit Clerk documentation: https://docs.replit.com/features/auth-and-identity/clerk-auth
-
-Clerk's generic migration documentation does not establish permission to export or transfer a Replit-managed tenant. Resolve source access separately; never delete the source authentication system as a prerequisite to investigating migration.
+      Client Render PostgreSQL + direct Resend
+```
+
+The mockup sandbox is not a fourth production app. Build from the repository
+root so workspace libraries/assets remain available. Express serves compiled
+SPAs and APIs; production does not run three Vite servers. Preserve paths and
+all approved legacy public preference/unsubscribe links.
+
+Use one canonical HTTPS staff hostname. Approved legacy staff-page hosts redirect
+there; host-only sessions are not automatically shared across domains. Public
+legacy links keep their existing capability semantics. Set `ALLOWED_HOSTS` and
+`STAFF_AUTH_ORIGIN` deliberately; do not use wildcard credentialed CORS.
+
+Before provisioning, the client must own:
+
+- GitHub organisation/repository and protected release branch.
+- Render workspace, billing and recovery; approved capacity/region.
+- Resend account, sender domain, billing and delivery webhook.
+- Registrar/DNS, backup storage and monitoring.
+- Named admin accounts with MFA and securely retained recovery access.
+- A documented maintainer, approval owner, backup admin and offboarding process.
+
+Developer access must be named, least-privilege and removable. Do not put client
+production subscriptions under a developer's personal account. Confirm data
+residency/privacy obligations and agreements; region selection is not a legal
+compliance certificate.
+
+## Migration phases
+
+### 1. Prepare GitHub and destination
+
+The repository includes pinned Node/pnpm, frozen lockfile, `render.yaml`,
+production scripts, a CI workflow, blank `.env.example` and reviewed migration
+SQL. Run the [Render runbook](render-deployment.md) exactly. Protect the production
+branch; keep automatic deployment and subscriber campaigns off during migration.
+Review Git history for accidental credentials and keep dumps/exports outside Git.
+Confirm asset licences and availability; use client-owned object storage if
+future media exceed sensible source-repository limits.
+
+### 2. Rehearse database restoration
+
+Obtain explicit export approval and identify the **actual production database**,
+not development. Check PostgreSQL versions/extensions, tools, size, constraints,
+sequences, connection limits and timezone. Never attempt a major-version downgrade.
+
+For an authorized operator only, with private variables from a secret manager:
+
+```sh
+pg_dump --dbname="$SOURCE_PRODUCTION_DATABASE_URL" --format=custom \
+  --no-owner --no-acl --file="$PRIVATE_BACKUP_PATH"
+pg_restore --dbname="$EMPTY_TARGET_DATABASE_URL" --no-owner --no-acl \
+  --exit-on-error "$PRIVATE_BACKUP_PATH"
+```
+
+Use a new empty isolated target, encrypt and restrict the backup, and verify the
+target before executing. These commands have **not** been run by repository
+preparation. Never combine full restore with blind baseline replay. Apply only
+reviewed missing additive schema changes after comparison with the source.
+
+The original 21-table baseline is followed by the additive three-table staff-auth
+migration. The Render runbook distinguishes empty installation, old full restore,
+and a source that already contains those tables. No schema/seed operation runs
+at application startup; no `push-force` is a production migration strategy.
+
+Preserve:
+
+- Roles, complete role profiles, categories/options, publication states and dates.
+- Programmes/sections and registration state; never overwrite edits with seeds.
+- Subscriber preferences, consent, acquisition, suppression and unsubscribe state.
+- Enquiries, communication/outbox attempts, quotas and signed provider event history.
+- Membership IDs, active/suspended roles, pending grants and security audits.
+- Legacy link hashes, relationships, indexes and sequence values.
+
+Legacy test-session rows are inert, not valid staff access. Source provider
+sessions/passwords are not portable; approved staff establish new passwords.
+Choose whether to preserve the signing secret temporarily for public verification
+continuity or deliberately expire/reissue outstanding challenges. Never rewrite
+legacy management capability hashes. Protect retained source backups and avoid
+exporting personal records into documentation.
+
+Compare table counts, representative records, constraints, sequences and date-only
+values; test reads/writes and a restored backup. A homepage loading is not proof
+of a successful restore.
+
+### 3. Configure authentication and email after migration
+
+Use [staff authentication](staff-authentication.md), [Resend setup](resend-setup.md)
+and [email operations](email-delivery-operations.md). Runtime values need only a
+restart, not a frontend rebuild. There is no new Clerk account or browser auth key.
+
+The first admin is explicitly selected by an operator bootstrap command; nobody
+becomes admin by being the first visitor. Existing membership IDs remain intact.
+The client then invites approved staff and assigns/reviews their existing roles.
+CRM stays active-super-admin only; public subscribers never become staff accounts.
+
+Verify the Resend sender domain/DNS, approved sender and receiving mailboxes.
+An API key alone proves none of these. Configure signed delivery callbacks at
+`/api/webhooks/resend`. Test signatures, duplicate events, actual inbox/spam
+receipt and failure visibility using controlled mailboxes only.
+
+Every recipient consumes the same Resend account allowance, including staff mail,
+admin warnings and other applications on that account. The free allowance is not
+a delivery guarantee. At a limit, mail pauses/defer rules apply and authorized CRM
+admins see a persistent warning. Warning email uses reserved capacity where
+possible but cannot be promised when the provider is exhausted/unavailable.
+Any plan upgrade is the client's manual decision; the application buys nothing.
+
+### 4. Destination acceptance
+
+Complete the [production-readiness register](production-readiness.md) with date,
+operator, release and evidence:
+
+- All three sites/assets and deep-link refresh work on desktop/mobile.
+- Staff invitation, password setup/reset, login/logout/expiry and role boundaries
+  work; arbitrary credentials, old cookies, replay and suspended users fail.
+- CRUD/lifecycle and audits preserve approved data and permissions.
+- Public signup/verification/preferences/unsubscribe, including legacy links,
+  remain functional and private.
+- Sender verification, real test delivery, signed webhooks, quota warnings and
+  controlled worker interruption/recovery succeed.
+- Backup restore, alerts, HTTPS, client ownership and support responsibilities
+  are proved—not merely configured.
+
+Use isolated/anonymized staging data where possible. No smoke test sends to the
+restored subscriber population. Technical `/api/readyz` is not a substitute for
+this operational acceptance or mailbox/domain verification.
+
+### 5. Cutover and rollback
+
+1. Approve timing, downtime, recovery objectives, release, responsible operators
+   and rollback decision owner. Back up DNS; verify TLS and provider access.
+2. Pause **all** source writes, including subscriptions/enquiries and webhooks as
+   coordinated, not just staff editing. Stop source sending and settle in-flight
+   work before the final snapshot.
+3. Securely export/restore final data, reconcile counts and schema, and keep
+   destination campaigns off while performing bounded acceptance.
+4. Switch DNS only after approval. Reopen destination writes only; leave the old
+   site read-only/maintenance to avoid divergent cached-DNS writes.
+5. Enable approved monitoring/staff-email workers. Subscriber campaigns need
+   separate approval, reviewed backlog and activation cutoff. Never run source
+   and destination live publication workers concurrently.
+6. Monitor auth/API errors, database availability, forms, delivery and opt-outs.
+   Keep source services intact for the agreed rollback window.
+
+For a code-only fault, roll back to a schema-compatible release. For data issues,
+freeze writes and reconcile destination-only changes first. DNS rollback alone
+does not copy records back; avoid two writable/sending sites. Use staged additive
+schema changes rather than automatically reversing data-bearing migrations.
+
+## Operations, costs and retirement
+
+Use paid always-on compute/database with client-approved recovery features.
+The Blueprint's initial small tiers are proposals, not capacity guarantees or
+all-inclusive quotes. Recheck current Render/Resend pricing, storage, backups,
+bandwidth, build usage, taxes, domain and monitoring charges before purchase.
+There is no external staff-authentication provider subscription in this setup.
+
+Agree RPO/RTO, encrypted daily off-provider backups, retention and periodic restore
+drills in addition to provider recovery. A nightly dump can lose nearly a day's
+writes; managed backups are not proof of successful restoration. One service is
+simple but shares failure/release/scaling impact across all three sites. Keep one
+instance until distributed rate limits and worker overlap have been reviewed.
+
+Client handover must demonstrate independent provider login, release/rollback,
+backup restoration, staff invitation/offboarding, key rotation and quota handling.
+Record costs, alerts, retention, renewals and maintenance ownership without
+secrets. Retire source Replit hosting/database/integrations and the old source auth
+tenant only after acceptance, recovery window and legacy-link continuity. Never
+delete the source tenant as a prerequisite to password migration.
+
+## References
+
+- Exact commands/configuration: [Render runbook](render-deployment.md).
+- Current verification and outstanding gates: [production readiness](production-readiness.md).
+- https://render.com/docs/deploy-node-express-app
+- https://render.com/docs/monorepo-support
+- https://render.com/docs/postgresql-backups
+- https://render.com/docs/custom-domains
+- https://render.com/docs/blueprint-spec
+- https://render.com/pricing
+- https://resend.com/docs
+
+Recheck provider features/pricing before purchase. No provider preference is
+permission to purchase services or move live data.

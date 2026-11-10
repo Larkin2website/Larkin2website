@@ -95,7 +95,7 @@ export async function transitionOpportunity(id: string, status: Status, actor: P
       status, updatedBy: actor.userId, publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt,
       archivedAt: status === "archived" ? now : null,
     }).where(eq(opportunitiesTable.id, id)).returning();
-    if (shouldEnqueueFirstPublication(before.publishedAt, status, !!actor.demo)) {
+    if (shouldEnqueueFirstPublication(before.publishedAt, status, false)) {
       await enqueuePublication(tx, "role", id, row.title);
     }
     await tx.insert(auditEventsTable).values({

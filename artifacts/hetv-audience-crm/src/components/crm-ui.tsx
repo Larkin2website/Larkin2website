@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { ArrowUpRight, ChartNoAxesCombined, ChevronRight, Inbox, LayoutDashboard, LogOut, MailCheck, PanelLeftClose, PanelLeftOpen, UsersRound } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
-import { crmAccessLabel } from '@/lib/demo-mode';
 import { EmailHealthBanner } from '@/components/email-health';
 
 export function Brand({ light = false }: { light?: boolean }) {
@@ -14,7 +13,7 @@ const navigation = [
   { href:'/enquiries', label:'Enquiries', icon:Inbox, sub:'04' },
 ];
 const sidebarStorageKey = 'hetv-crm-sidebar-collapsed';
-export function Shell({ children, name, onSignOut, development = false }: { children:ReactNode; name?:string; onSignOut:()=>void; development?:boolean }) {
+export function Shell({ children, name, onSignOut }: { children:ReactNode; name?:string; onSignOut:()=>void }) {
   const [location] = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
     try { return window.localStorage.getItem(sidebarStorageKey) === 'true'; }
@@ -66,7 +65,7 @@ export function Shell({ children, name, onSignOut, development = false }: { chil
     <main className="min-w-0 flex-1">
       <header className="h-[68px] border-b rule flex items-center justify-between px-5 sm:px-9 lg:px-12">
         <div className="flex items-center gap-3 micro text-[#625d58]"><span>HETV HUB</span><ChevronRight size={12}/><span className="text-[#1d2020]">{location.startsWith('/audience/') ? 'AUDIENCE PROFILE' : navigation.find(n=>n.href===location)?.label.toUpperCase() || 'WORKSPACE'}</span></div>
-        <div className="flex items-center gap-4"><span className={`micro ${development ? 'text-[#b45024]' : 'hidden sm:block text-[#625d58]'}`}>{development ? crmAccessLabel : 'PRIVATE · STAFF ONLY'}</span><button data-testid="button-mobile-sign-out" title="Sign out" aria-label="Sign out" onClick={onSignOut} className="md:hidden"><LogOut size={17}/></button><div className="h-2 w-2 rounded-full bg-[#f4773f]" /></div>
+        <div className="flex items-center gap-4"><span className="micro hidden sm:block text-[#625d58]">PRIVATE · STAFF ONLY</span><button data-testid="button-mobile-sign-out" title="Sign out" aria-label="Sign out" onClick={onSignOut} className="md:hidden"><LogOut size={17}/></button><div className="h-2 w-2 rounded-full bg-[#f4773f]" /></div>
       </header>
       <EmailHealthBanner />
       <div className="max-w-[1520px] mx-auto px-5 sm:px-9 lg:px-12 py-9 lg:py-12">{children}</div>

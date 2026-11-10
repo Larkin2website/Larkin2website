@@ -9,9 +9,7 @@ import { isEligibleAudienceRecipient, matchingCriteriaFor, refreshPublicationBat
 import { applyProviderEvents } from "./provider-delivery-events";
 import type { MatchingInput } from "./audience-crm-service";
 import { logger } from "./logger";
-import { isTemporaryTestLoginEnabled } from "./development-session";
 import { EmailDeliveryError } from "./resend-errors";
-import { externalClerk } from "./clerk-config";
 
 const MAX_ATTEMPTS = 5;
 const LEASE_MS = 90_000;
@@ -227,7 +225,6 @@ export async function processPublicationDeliveries(
   at = new Date(),
 ): Promise<number> {
   // The default configuration performs no reads or sends, including in published deployments.
-  if (isTemporaryTestLoginEnabled()) return 0;
   if (!config?.activatedAt) return 0;
   const candidates = await db.select({ id: crmCommunicationOutboxTable.id })
     .from(crmCommunicationOutboxTable)
@@ -324,8 +321,7 @@ export async function processPublicationDeliveries(
 
 let busy = false;
 export function startPublicationDeliveryWorker() {
-  if (process.env.EMAIL_WORKERS_ENABLED === "false"
-    || (externalClerk() && process.env.EMAIL_WORKERS_ENABLED !== "true") || isTemporaryTestLoginEnabled()
+  if (process.env.EMAIL_WORKERS_ENABLED !== "true"
     || !publicationDeliveryConfig().live) return async () => {};
   let pending: Promise<void> | undefined;
   const tick = async () => {

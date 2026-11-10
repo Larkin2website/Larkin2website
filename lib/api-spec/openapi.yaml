@@ -20,6 +20,129 @@ tags:
   - name: portal-programmes
   - name: public-contact
 paths:
+  /auth/session:
+    get:
+      operationId: getStaffSession
+      tags: [portal-session]
+      responses:
+        "200":
+          description: Current staff session
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffSession" }
+  /auth/login:
+    post:
+      operationId: loginStaff
+      tags: [portal-session]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StaffCredentials" }
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffSession" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /auth/logout:
+    post:
+      operationId: logoutStaff
+      tags: [portal-session]
+      responses:
+        "204": { description: Session revoked }
+  /auth/password-reset:
+    post:
+      operationId: requestStaffPasswordReset
+      tags: [portal-session]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StaffEmail" }
+      responses:
+        "200":
+          description: Neutral response regardless of account existence
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffMessage" }
+  /auth/set-password:
+    post:
+      operationId: setStaffPassword
+      tags: [portal-session]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StaffPassword" }
+      responses:
+        "200":
+          description: Password established; sign in to continue
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffMessage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /auth/invitations:
+    get:
+      operationId: listStaffInvitations
+      tags: [portal-members]
+      responses:
+        "200":
+          description: Invitation history and delivery status
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/StaffInvitation" }
+    post:
+      operationId: createStaffInvitation
+      tags: [portal-members]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StaffInvitationInput" }
+      responses:
+        "201":
+          description: Invitation queued, not verified inbox delivery
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffInvitation" }
+  /auth/invitations/{id}/resend:
+    post:
+      operationId: resendStaffInvitation
+      tags: [portal-members]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "201":
+          description: Replacement invitation queued; previous token revoked
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffInvitation" }
+  /auth/invitations/{id}:
+    delete:
+      operationId: revokeStaffInvitation
+      tags: [portal-members]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "204": { description: Invitation revoked }
+  /readyz:
+    get:
+      operationId: readinessCheck
+      tags: [health]
+      responses:
+        "200":
+          description: Dependency readiness, no provider network probes
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffMessage" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /public/contact:
     post:
       operationId: submitContactEnquiry
@@ -292,62 +415,6 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
-  /portal/demo-session:
-    post:
-      operationId: createPortalDemoSession
-      tags: [portal-session]
-      summary: Start a temporary portal testing session
-      description: |
-        Available only when temporary test sign-in is explicitly enabled for the
-        current environment. Any valid email and non-empty password are accepted;
-        these credentials do not verify identity. The session grants full portal
-        testing access and must not be used for secure staff authentication.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DevelopmentSignInInput"
-      responses:
-        "204":
-          description: Demo session started
-        "404":
-          $ref: "#/components/responses/NotFound"
-    delete:
-      operationId: deletePortalDemoSession
-      tags: [portal-session]
-      summary: End the browser-scoped demo portal session
-      responses:
-        "204":
-          description: Demo session ended
-  /crm/demo-session:
-    post:
-      operationId: createCrmDemoSession
-      tags: [crm]
-      summary: Start a temporary CRM testing session
-      description: |
-        Available only when temporary test sign-in is explicitly enabled for the
-        current environment. Any valid email and non-empty password are accepted;
-        these credentials do not verify identity. The session grants full CRM
-        testing access and must not be used for secure staff authentication.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DevelopmentSignInInput"
-      responses:
-        "204":
-          description: CRM testing session started
-        "404":
-          $ref: "#/components/responses/NotFound"
-    delete:
-      operationId: deleteCrmDemoSession
-      tags: [crm]
-      summary: End a temporary CRM testing session
-      responses:
-        "204":
-          description: CRM testing session ended
   /portal/access-grants:
     post:
       operationId: createPortalAccessGrant
@@ -1393,7 +1460,7 @@ components:
     cookieAuth:
       type: apiKey
       in: cookie
-      name: __session
+      name: hetv_staff_session
   parameters:
     OpportunityId:
       in: path
@@ -2225,10 +2292,74 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AuditEvent"
+    StaffCredentials:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+        password: { type: string, minLength: 1, maxLength: 128 }
+    StaffEmail:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+    StaffPassword:
+      type: object
+      additionalProperties: false
+      required: [token, password]
+      properties:
+        token: { type: string, minLength: 40, maxLength: 128 }
+        password: { type: string, minLength: 12, maxLength: 128 }
+    StaffMessage:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+    StaffSession:
+      type: object
+      required: [authenticated, user]
+      properties:
+        authenticated: { type: boolean }
+        user:
+          oneOf:
+            - { $ref: "#/components/schemas/StaffUser" }
+            - { type: "null" }
+    StaffUser:
+      type: object
+      required: [userId, displayName, email, role, permissions]
+      properties:
+        userId: { type: string }
+        displayName: { type: string }
+        email: { type: string, format: email }
+        role: { $ref: "#/components/schemas/PortalRole" }
+        permissions: { type: array, items: { type: string } }
+    StaffInvitationInput:
+      type: object
+      additionalProperties: false
+      required: [memberId]
+      properties:
+        memberId: { type: string, minLength: 1, maxLength: 200 }
+    StaffInvitation:
+      type: object
+      required: [id, memberId, email, status, deliveryStatus, expiresAt, providerReference, lastError]
+      properties:
+        id: { type: string, format: uuid }
+        memberId: { type: string }
+        email: { type: string, format: email }
+        status: { type: string, enum: [pending, accepted, expired, revoked] }
+        deliveryStatus: { type: string, enum: [queued, accepted, deferred, failed] }
+        expiresAt: { type: string, format: date-time }
+        providerReference: { type: ["string", "null"] }
+        lastError: { type: ["string", "null"] }
     PortalMember:
       type: object
       required: [id, userId, displayName, email, role, active, status, createdAt, updatedAt]
       properties:
+        hasPassword:
+          type: boolean
+          description: True only when the app-managed credential has been established; a legacy user ID is not proof.
         id:
           type: string
         userId:

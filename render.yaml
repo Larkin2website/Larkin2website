@@ -1,6 +1,6 @@
 # Preparation only. Applying this Blueprint creates billable resources.
 # Review ownership, region, plans and costs before approving it in Render.
-# Real Clerk/Resend/signing values are entered ONLY on the destination host.
+# Real Resend/authentication values are entered ONLY on the destination host.
 services:
   - type: web
     name: hetv-opportunities
@@ -23,8 +23,6 @@ services:
         fromDatabase:
           name: hetv-postgres
           property: connectionString
-      - key: AUTH_PROVIDER
-        value: external
       - key: SERVE_STATIC_APPS
         value: "true"
       - key: EMAIL_WORKERS_ENABLED
@@ -32,12 +30,6 @@ services:
       - key: PUBLICATION_EMAIL_MODE
         value: "off"
       - key: PUBLICATION_EMAIL_APPROVED
-        value: "false"
-      - key: PUBLIC_TEST_LOGIN_ENABLED
-        value: "false"
-      - key: DEV_DEMO_LOGIN_ENABLED
-        value: "false"
-      - key: PORTAL_DEMO_MODE
         value: "false"
 databases:
   - name: hetv-postgres

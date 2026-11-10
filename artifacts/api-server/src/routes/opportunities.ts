@@ -14,12 +14,9 @@ import {
   CreatePortalAccessGrantBody, CreatePortalAccessGrantResponse,
   UpdatePortalMemberResponse, UpdatePortalOpportunityBody, UpdatePortalOpportunityParams, UpdatePortalOpportunityResponse,
 } from "@workspace/api-zod";
-import { db, portalAccessGrantsTable, portalMembershipsTable } from "@workspace/db";
+import { db, portalAccessGrantsTable, portalMembershipsTable, staffCredentialsTable } from "@workspace/db";
 import { desc, eq, isNull } from "drizzle-orm";
 import { requirePortal } from "../lib/portal-auth";
-import { clearDemoPortalSession, demoPortalMember, isPortalDemoMode, startDemoPortalSession } from "../lib/portal-demo";
-import { DevelopmentCredentials } from "../lib/development-session";
-import { createFixedWindowRateLimit } from "../middlewares/fixed-window-rate-limit";
 import { canTransition } from "../lib/permissions";
 import { toPublicStatus } from "../lib/opportunity-domain";
 import * as opportunities from "../lib/opportunity-service";
@@ -28,7 +25,6 @@ import { grantPortalAccess, portalGrantResponse, portalMemberResponse, updatePor
 import { roleProfileValidationError } from "../lib/role-profile-validation";
 
 const invalid = (res: any, error: unknown) => res.status(400).json({ error: error instanceof Error ? error.message : "Invalid request" });
-const developmentSignInLimit = createFixedWindowRateLimit({ limit: 120, windowMs: 15 * 60_000 });
 const publicMap = (row: any) => ({
   id: row.id, slug: row.slug, title: row.title,
   status: toPublicStatus(row.status),
@@ -64,16 +60,6 @@ const dependencies: OpportunityRouteDependencies = {
   ...overrides,
 };
 const router: IRouter = Router();
-router.post("/portal/demo-session", developmentSignInLimit, async (req, res): Promise<void> => {
-  if (!isPortalDemoMode()) { res.status(404).json({ error: "Not found" }); return; }
-  if (!DevelopmentCredentials.safeParse(req.body).success) { res.status(400).json({ error: "Enter a valid email address and a password" }); return; }
-  await startDemoPortalSession(res);
-  res.status(204).send();
-});
-router.delete("/portal/demo-session", async (req, res): Promise<void> => {
-  await clearDemoPortalSession(req, res);
-  res.status(204).send();
-});
 
 router.get("/public/opportunities", async (req, res): Promise<void> => {
   const parsed = ListPublicOpportunitiesQueryParams.safeParse(req.query);
@@ -97,13 +83,6 @@ router.get("/public/opportunities/:slug", async (req, res): Promise<void> => {
 
 router.get("/portal/session", dependencies.requirePortal(), async (req, res): Promise<void> => {
   const actor = req.portalActor!;
-  if (actor.demo) {
-    res.json(GetPortalSessionResponse.parse({
-      member: demoPortalMember(),
-      permissions: actor.permissions,
-    }));
-    return;
-  }
   const [member] = await db.select().from(portalMembershipsTable).where(eq(portalMembershipsTable.userId, actor.userId));
   res.json(GetPortalSessionResponse.parse({ member: portalMemberResponse(member), permissions: actor.permissions }));
 });
@@ -255,17 +234,19 @@ router.get("/portal/opportunities/:id/audit", dependencies.requirePortal("opport
   res.json(ListOpportunityAuditEventsResponse.parse(await dependencies.opportunities.auditList(parsed.data.id)));
 });
 router.get("/portal/members", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
-  const [members, grants] = await Promise.all([
+  const [members, grants, credentials] = await Promise.all([
     db.select().from(portalMembershipsTable).orderBy(desc(portalMembershipsTable.createdAt)),
     db.select().from(portalAccessGrantsTable)
       .where(isNull(portalAccessGrantsTable.claimedUserId))
       .orderBy(desc(portalAccessGrantsTable.createdAt)),
+    db.select({ userId: staffCredentialsTable.userId }).from(staffCredentialsTable),
   ]);
+  const credentialed = new Set(credentials.map(person => person.userId));
   const people = [
-    ...members.map(portalMemberResponse),
-    ...grants.map(portalGrantResponse),
+    ...members.map(member => ({ ...portalMemberResponse(member), hasPassword: credentialed.has(member.userId) })),
+    ...grants.map(grant => ({ ...portalGrantResponse(grant), hasPassword: false })),
   ].sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime());
-  res.json(ListPortalMembersResponse.parse(req.portalActor?.demo ? [demoPortalMember(), ...people] : people));
+  res.json(ListPortalMembersResponse.parse(people));
 });
 router.post("/portal/access-grants", dependencies.requirePortal("members:manage"), async (req, res): Promise<void> => {
   const body = CreatePortalAccessGrantBody.safeParse(req.body);

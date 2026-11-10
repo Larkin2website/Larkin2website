@@ -1,10 +1,9 @@
 import { type ReactNode } from 'react';
-import { useAuth, useClerk } from '@clerk/react';
-import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { Link, Redirect, Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import { getGetPortalSessionQueryKey, getGetCrmTaxonomyQueryKey, useGetPortalSession, useGetCrmTaxonomy } from '@workspace/api-client-react';
-import { useDeleteCrmDemoSession } from '@workspace/api-client-react';
-import { StaffClerkProvider, basePath } from '@/lib/clerk';
+import { basePath } from '@/lib/base-path';
+import { createStaffQueryClient, errorStatus, useIdentityCacheGuard, useStaffSession, useStaffSignOut } from '@/lib/staff-auth';
 import { Shell, State, Brand } from '@/components/crm-ui';
 import Dashboard from '@/pages/dashboard';
 import Audience from '@/pages/audience';
@@ -12,24 +11,39 @@ import Profile from '@/pages/profile';
 import Communications from '@/pages/communications';
 import Enquiries from '@/pages/enquiries';
 import SignInPage from '@/pages/sign-in';
-import { crmDemoMode } from '@/lib/demo-mode';
+import ForgotPasswordPage from '@/pages/forgot-password';
+import SetPasswordPage from '@/pages/set-password';
 
-const client = new QueryClient({ defaultOptions:{ queries:{ retry:1, refetchOnWindowFocus:false, staleTime:30_000 } } });
+const client = createStaffQueryClient({ staleTime:30_000 });
 
-function AccessGate({children}:{children:ReactNode}) {
-  const query = useGetPortalSession({query:{queryKey:getGetPortalSessionQueryKey(), retry:false}});
-  const isStaffAdmin = query.data?.member.active && query.data.member.status === 'active' && query.data.member.role === 'super_admin';
-  const access = useGetCrmTaxonomy({query:{queryKey:getGetCrmTaxonomyQueryKey(),enabled:Boolean(isStaffAdmin),retry:false}});
-  const {signOut} = useClerk();
-  if(query.isLoading || (isStaffAdmin && access.isLoading)) return <div className="min-h-[100dvh] p-8 sm:p-14"><Brand/><div className="max-w-xl mx-auto mt-24"><State kind="loading"/></div></div>;
-  if(query.isError || !isStaffAdmin || access.isError || !access.data) {
-    const status = (query.error as {status?:number}|null)?.status;
-    return <div className="min-h-[100dvh] flex items-center justify-center p-6"><div className="surface max-w-lg w-full p-8 sm:p-12"><Brand/><p className="micro text-[#b45024] mt-14 mb-4">ACCESS RESTRICTED</p><h1 className="display text-4xl font-semibold">This workspace is private.</h1><p className="text-sm leading-6 text-[#625d58] mt-5">{status===403 || access.isError || query.data ? 'Your staff account has not been authorised for this workspace. Ask an administrator to review your access.' : 'We could not verify your staff access. Try again or contact an administrator.'}</p><div className="flex gap-3 mt-8"><button data-testid="button-retry-access" onClick={()=>{query.refetch();access.refetch();}} className="quiet-button">Try again</button><button data-testid="button-sign-out-access" onClick={()=>signOut({redirectUrl:`${window.location.origin}${basePath}/sign-in`})} className="orange-button">Sign out</button></div></div></div>;
-  }
-  return <Shell name={query.data!.member.displayName} onSignOut={() => signOut({redirectUrl:`${window.location.origin}${basePath}/sign-in`})}>{children}</Shell>;
+function Loading() {
+  return <div className="min-h-[100dvh] p-8 sm:p-14"><Brand/><div className="max-w-xl mx-auto mt-24"><State kind="loading"/></div></div>;
 }
-function ProtectedRouter() {
-  return <AccessGate><Switch>
+
+function Restricted({ title, detail, onRetry, retrying, onSignOut, signingOut, signOutFailed }: { title:string; detail:string; onRetry?:()=>void; retrying?:boolean; onSignOut?:()=>void; signingOut?:boolean; signOutFailed?:boolean }) {
+  return <div className="min-h-[100dvh] flex items-center justify-center p-6"><div className="surface max-w-lg w-full p-8 sm:p-12"><Brand/><p className="micro text-[#b45024] mt-14 mb-4">ACCESS RESTRICTED</p><h1 className="display text-4xl font-semibold">{title}</h1><p className="text-sm leading-6 text-[#625d58] mt-5">{detail}</p><div className="flex flex-wrap gap-3 mt-8">{onRetry && <button data-testid="button-retry-access" disabled={retrying} onClick={onRetry} className="quiet-button">{retrying ? 'Checking…' : 'Try again'}</button>}{onSignOut && <button data-testid="button-sign-out-access" disabled={signingOut} onClick={onSignOut} className="orange-button">{signingOut ? 'Signing out…' : 'Sign out'}</button>}</div>{signOutFailed && <p role="alert" className="text-sm text-[#b45024] mt-4">Sign-out did not complete. Try again.</p>}</div></div>;
+}
+
+function AccessGate({ displayName, isSuperAdmin, children }: { displayName:string; isSuperAdmin:boolean; children:ReactNode }) {
+  const [, navigate] = useLocation();
+  const { signOut, isPending, isError } = useStaffSignOut(() => navigate('/sign-in', { replace:true }));
+  const portal = useGetPortalSession({ query:{ queryKey:getGetPortalSessionQueryKey(), retry:false, enabled:isSuperAdmin, refetchOnWindowFocus:true } });
+  const member = portal.data?.member;
+  const isStaffAdmin = Boolean(member?.active && member.status === 'active' && member.role === 'super_admin');
+  const access = useGetCrmTaxonomy({ query:{ queryKey:getGetCrmTaxonomyQueryKey(), enabled:isStaffAdmin, retry:false } });
+  const handleSignOut = () => { void signOut(); };
+
+  if (!isSuperAdmin) return <Restricted title="This workspace is private." detail="The audience workspace is limited to active super admins. Your account is signed in but does not have that access. Ask an administrator if you need it." onSignOut={handleSignOut} signingOut={isPending} signOutFailed={isError}/>;
+  if (portal.isLoading || (isStaffAdmin && access.isLoading)) return <Loading/>;
+  const status = errorStatus(portal.error) ?? errorStatus(access.error);
+  if (status === 401) return <Redirect to="/sign-in"/>;
+  if (status === 403 || (portal.data && !isStaffAdmin)) return <Restricted title="This workspace is private." detail="Your staff account has not been authorised for this workspace. Ask an administrator to review your access." onSignOut={handleSignOut} signingOut={isPending} signOutFailed={isError}/>;
+  if (portal.isError || access.isError || !access.data) return <Restricted title="Access could not be verified." detail="We could not confirm your staff access right now. Try again, or contact an administrator if this continues." onRetry={() => { void portal.refetch(); void access.refetch(); }} retrying={portal.isFetching || access.isFetching} onSignOut={handleSignOut} signingOut={isPending} signOutFailed={isError}/>;
+  return <Shell name={member?.displayName ?? displayName} onSignOut={handleSignOut}>{children}</Shell>;
+}
+
+function ProtectedRouter({ displayName, isSuperAdmin }: { displayName:string; isSuperAdmin:boolean }) {
+  return <AccessGate displayName={displayName} isSuperAdmin={isSuperAdmin}><Switch>
     <Route path="/" component={Dashboard}/>
     <Route path="/audience" component={Audience}/>
     <Route path="/audience/:id" component={Profile}/>
@@ -38,41 +52,24 @@ function ProtectedRouter() {
     <Route><div className="surface p-10"><p className="micro text-[#b45024]">404 / NOT FOUND</p><h1 className="display text-3xl mt-5">Nothing at this address.</h1><Link href="/" data-testid="link-back-home" className="quiet-button mt-6">Back to overview</Link></div></Route>
   </Switch></AccessGate>;
 }
+
 function AuthRouter() {
-  const {isLoaded,isSignedIn} = useAuth();
+  const { user, isLoading, isUnavailable, refetch } = useStaffSession();
+  useIdentityCacheGuard(isLoading || isUnavailable ? undefined : user ? `${user.userId}:${user.role}` : null);
   const [location] = useLocation();
-  if(!isLoaded) return <div className="min-h-[100dvh] p-8 sm:p-14"><Brand/><div className="max-w-xl mx-auto mt-24"><State kind="loading"/></div></div>;
-  if(!isSignedIn) return location.startsWith('/sign-in') ? <SignInPage/> : <Redirect to="/sign-in"/>;
-  if(location.startsWith('/sign-in')) return <Redirect to="/"/>;
-  return <ProtectedRouter/>;
+  if (location.startsWith('/set-password')) return <SetPasswordPage/>;
+  const isPublic = location.startsWith('/sign-in') || location.startsWith('/forgot-password');
+  if (isLoading && !isPublic) return <Loading/>;
+  if (isUnavailable && !isPublic) return <Restricted title="Workspace unavailable." detail="We could not reach the staff sign-in service, so you have not been signed in. Check your connection and try again. If this continues, contact an administrator." onRetry={() => { void refetch(); }}/>;
+  if (!user) {
+    if (location.startsWith('/forgot-password')) return <ForgotPasswordPage/>;
+    return location.startsWith('/sign-in') ? <SignInPage/> : <Redirect to="/sign-in"/>;
+  }
+  if (isPublic) return <Redirect to="/"/>;
+  return <ProtectedRouter key={`${user.userId}:${user.role}`} displayName={user.displayName} isSuperAdmin={user.role === 'super_admin'}/>;
 }
-function DemoRouter() {
-  const [location, navigate] = useLocation();
-  const query = useGetCrmTaxonomy({query:{queryKey:getGetCrmTaxonomyQueryKey(),retry:false,staleTime:0}});
-  const client = useQueryClient();
-  const endSession = useDeleteCrmDemoSession();
-  const signOut = async () => {
-    try {
-      await endSession.mutateAsync();
-      client.clear();
-      navigate('/sign-in', {replace:true});
-    } catch {
-      // Keep the protected view until the server confirms that the session ended.
-    }
-  };
-  if (query.isLoading) return <div className="min-h-[100dvh] p-8 sm:p-14"><Brand/><div className="max-w-xl mx-auto mt-24"><State kind="loading"/></div></div>;
-  if (!query.data) return location.startsWith('/sign-in') ? <SignInPage/> : <Redirect to="/sign-in"/>;
-  if (location.startsWith('/sign-in')) return <Redirect to="/"/>;
-  return <Shell name="Staff member" development onSignOut={signOut}><Switch>
-    <Route path="/" component={Dashboard}/>
-    <Route path="/audience" component={Audience}/>
-    <Route path="/audience/:id" component={Profile}/>
-    <Route path="/communications" component={Communications}/>
-    <Route path="/enquiries" component={Enquiries}/>
-    <Route><Redirect to="/"/></Route>
-  </Switch></Shell>;
-}
+
 function App() {
-  return <QueryClientProvider client={client}><WouterRouter base={basePath}>{crmDemoMode ? <DemoRouter/> : <StaffClerkProvider><AuthRouter/></StaffClerkProvider>}</WouterRouter></QueryClientProvider>;
+  return <QueryClientProvider client={client}><WouterRouter base={basePath}><AuthRouter/></WouterRouter></QueryClientProvider>;
 }
 export default App;

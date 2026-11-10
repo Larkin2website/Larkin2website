@@ -9,6 +9,8 @@ import type { PortalMemberStatus } from './portalMemberStatus';
 import type { PortalRole } from './portalRole';
 
 export interface PortalMember {
+  /** True only when the app-managed credential has been established; a legacy user ID is not proof. */
+  hasPassword?: boolean;
   id: string;
   /** @nullable */
   userId: string | null;

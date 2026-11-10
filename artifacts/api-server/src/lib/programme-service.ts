@@ -99,7 +99,7 @@ export async function transitionProgramme(id: string, status: ProgrammeStatus, a
       publishedAt: status === "published" ? (before.publishedAt ?? now) : before.publishedAt,
       archivedAt: status === "archived" ? now : null,
     }).where(eq(programmesTable.id, id)).returning();
-    if (shouldEnqueueFirstPublication(before.publishedAt, status, !!actor.demo)) {
+    if (shouldEnqueueFirstPublication(before.publishedAt, status, false)) {
       await enqueuePublication(tx, "programme", id, row.title);
     }
     await tx.insert(auditEventsTable).values({

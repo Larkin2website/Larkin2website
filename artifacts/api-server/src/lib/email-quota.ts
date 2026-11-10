@@ -5,8 +5,6 @@ import { EmailDeliveryError } from "./resend-errors";
 import { emailAddress, resendApi, type ResendRequest, type ResendResponse, type ResendTransport } from "./resend-transport";
 import { drizzleQuotaStore } from "./email-quota-store";
 import { logger } from "./logger";
-import { isTemporaryTestLoginEnabled } from "./development-session";
-import { externalClerk } from "./clerk-config";
 import type { GetCrmEmailHealthResponse } from "@workspace/api-zod";
 type CrmEmailHealth = (typeof GetCrmEmailHealthResponse)["_output"];
 
@@ -233,8 +231,7 @@ export function createEmailQuotaService(options: {
 
 export const emailQuotaService = createEmailQuotaService({ store: drizzleQuotaStore, transport: resendApi });
 export function startEmailQuotaWorker() {
-  if (process.env.EMAIL_WORKERS_ENABLED === "false"
-    || (externalClerk() && process.env.EMAIL_WORKERS_ENABLED !== "true")) return async () => {};
+  if (process.env.EMAIL_WORKERS_ENABLED !== "true") return async () => {};
   let busy = false;
   let pending: Promise<void> | undefined;
   const tick = async () => {
@@ -242,7 +239,7 @@ export function startEmailQuotaWorker() {
     busy = true;
     try {
       await emailQuotaService.health();
-      if (!isTemporaryTestLoginEnabled()) await emailQuotaService.sendAdminWarning();
+      await emailQuotaService.sendAdminWarning();
     } catch { logger.warn("Email quota monitoring unavailable"); }
     finally { busy = false; }
   };

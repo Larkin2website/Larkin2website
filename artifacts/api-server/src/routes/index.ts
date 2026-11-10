@@ -6,10 +6,12 @@ import publicSubscriptionsRouter from "./public-subscriptions";
 import audienceCrmRouter from "./audience-crm";
 import resendWebhookRouter from "./resend-webhook";
 import contactRouter from "./contact";
+import staffAuthRouter from "./staff-auth";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(staffAuthRouter);
 router.use(opportunitiesRouter);
 router.use(programmesRouter);
 router.use(publicSubscriptionsRouter);

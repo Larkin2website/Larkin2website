@@ -19,15 +19,14 @@ The user's explicit correction, “change the name, but leave the domain for the
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - `pnpm --filter @workspace/scripts run seed:opportunities` — idempotently import the six original public role records
 - `pnpm --filter @workspace/scripts run seed:opportunity-options` — idempotently provision default categories and backfill categories from historical opportunities
-- Required environment names: `DATABASE_URL`, `CLERK_SECRET_KEY`, `CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`
-- Managed Replit production injects `VITE_CLERK_PROXY_URL`. Render/external mode does not use that proxy; `build:render` clears it and requires a destination public-key rebuild after configuration.
+- Runtime configuration: `DATABASE_URL`, strong `SESSION_SECRET`, canonical HTTPS `STAFF_AUTH_ORIGIN`, `STAFF_AUTH_FROM`, and direct Resend settings; see `.env.example`. Values are supplied only after migration. No browser authentication key or provider rebuild is needed.
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - Public and portal frontends: React 19, Vite, Wouter, TanStack Query
-- Authentication: existing Replit-managed Clerk in workspace mode; explicit external Clerk configuration for the prepared Render deployment
-- API: Express 5 with Clerk cookie authentication and role-based authorization
+- Authentication: app-managed email/password, administrator invitations only, no public staff registration; Resend invitations and password resets
+- API: Express 5 with persistent opaque-cookie sessions, origin/CSRF protection and role-based authorization
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
@@ -52,9 +51,9 @@ The user's explicit correction, “change the name, but leave the domain for the
 - OpenAPI is contract-first. Change `lib/api-spec/openapi.yaml`, then regenerate client hooks and server validators.
 - Public reads expose only `published`, `closed`, and `filled` opportunities. Drafts and archived records never leave the protected API.
 - Portal access has three roles: `super_admin`, `opportunity_manager`, and read-only `viewer`.
-- The first authenticated account becomes the initial active Super Admin only when membership storage is empty. Every later first-seen account is inactive until approved by a Super Admin.
+- First administrator setup is an explicit operator command (`auth:bootstrap`), never first-login promotion. Existing IDs, roles, inactive states, grants and audits survive; password setup requires email-link proof.
 - Archive is the normal removal path. Permanent deletion requires a Super Admin, an already archived record, and explicit confirmation.
-- Clerk-specific code is isolated to the provider, proxy middleware, and portal authorization boundary to preserve migration flexibility.
+- CRM access remains active-super-admin only. Membership changes and password resets revoke existing sessions. Public subscriber registration is independent of staff authentication.
 
 ## Product
 
@@ -72,7 +71,7 @@ The user's explicit correction, “change the name, but leave the domain for the
 
 - Use pnpm only.
 - Do not hand-edit generated API client or generated Zod files.
-- Managed Replit Clerk retains hostname-derived keys and `/api/__clerk`. External/Render mode uses explicit keys and no Replit proxy; do not reintroduce managed inference into that path.
+- Clerk SDKs/providers/proxy and arbitrary-credential test routes are retired. Old testing flags and cookies grant no access in any environment; do not reintroduce a runtime bypass.
 - Development schema pushes do not migrate production. Replit's existing production schema uses its Publish flow; future Render schema/restore operations are explicit, reviewed manual steps in the Render runbook.
 - Render startup performs no seeds or DDL. Approve any deliberately empty-install initialization separately; never overwrite restored editorial content on boot.
 - The original hard-coded role array remains only as seed input; the public site must not import it at runtime.

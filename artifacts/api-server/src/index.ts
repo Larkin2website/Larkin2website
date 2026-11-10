@@ -4,6 +4,7 @@ import { logger } from "./lib/logger";
 import { startPublicationDeliveryWorker } from "./lib/publication-delivery";
 import { startEmailQuotaWorker } from "./lib/email-quota";
 import { pool } from "@workspace/db";
+import { startStaffMailWorker } from "./lib/staff-mail";
 
 const rawPort = process.env["PORT"];
 
@@ -25,7 +26,7 @@ const server = app.listen(port, "0.0.0.0", () => {
   if (!process.env.RESEND_API_KEY?.trim()) {
     logger.warn("Direct Resend email is unavailable until RESEND_API_KEY is configured; no connector fallback is used");
   }
-  stops.push(startPublicationDeliveryWorker(), startEmailQuotaWorker());
+  stops.push(startPublicationDeliveryWorker(), startEmailQuotaWorker(), startStaffMailWorker());
 });
 server.on("error", () => { logger.error("Server failed to listen"); process.exit(1); });
 let shuttingDown = false;

@@ -8,6 +8,136 @@
 import * as zod from 'zod';
 
 
+export const GetStaffSessionResponse = zod.object({
+  "authenticated": zod.boolean(),
+  "user": zod.union([zod.object({
+  "userId": zod.string(),
+  "displayName": zod.string(),
+  "email": zod.string().email(),
+  "role": zod.enum(['super_admin', 'opportunity_manager', 'viewer']),
+  "permissions": zod.array(zod.string())
+}),zod.null()])
+})
+
+
+export const loginStaffBodyEmailMax = 254;
+
+export const loginStaffBodyPasswordMax = 128;
+
+
+
+export const LoginStaffBody = zod.object({
+  "email": zod.string().email().max(loginStaffBodyEmailMax),
+  "password": zod.string().min(1).max(loginStaffBodyPasswordMax)
+})
+
+export const LoginStaffResponse = zod.object({
+  "authenticated": zod.boolean(),
+  "user": zod.union([zod.object({
+  "userId": zod.string(),
+  "displayName": zod.string(),
+  "email": zod.string().email(),
+  "role": zod.enum(['super_admin', 'opportunity_manager', 'viewer']),
+  "permissions": zod.array(zod.string())
+}),zod.null()])
+})
+
+
+export const LogoutStaffResponse = zod.void()
+
+
+export const requestStaffPasswordResetBodyEmailMax = 254;
+
+
+
+export const RequestStaffPasswordResetBody = zod.object({
+  "email": zod.string().email().max(requestStaffPasswordResetBodyEmailMax)
+})
+
+export const RequestStaffPasswordResetResponse = zod.object({
+  "message": zod.string()
+})
+
+
+export const setStaffPasswordBodyTokenMin = 40;
+export const setStaffPasswordBodyTokenMax = 128;
+
+export const setStaffPasswordBodyPasswordMin = 12;
+export const setStaffPasswordBodyPasswordMax = 128;
+
+
+
+export const SetStaffPasswordBody = zod.object({
+  "token": zod.string().min(setStaffPasswordBodyTokenMin).max(setStaffPasswordBodyTokenMax),
+  "password": zod.string().min(setStaffPasswordBodyPasswordMin).max(setStaffPasswordBodyPasswordMax)
+})
+
+export const SetStaffPasswordResponse = zod.object({
+  "message": zod.string()
+})
+
+
+export const ListStaffInvitationsResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "memberId": zod.string(),
+  "email": zod.string().email(),
+  "status": zod.enum(['pending', 'accepted', 'expired', 'revoked']),
+  "deliveryStatus": zod.enum(['queued', 'accepted', 'deferred', 'failed']),
+  "expiresAt": zod.coerce.date(),
+  "providerReference": zod.string().nullable(),
+  "lastError": zod.string().nullable()
+})
+export const ListStaffInvitationsResponse = zod.array(ListStaffInvitationsResponseItem)
+
+
+export const createStaffInvitationBodyMemberIdMax = 200;
+
+
+
+export const CreateStaffInvitationBody = zod.object({
+  "memberId": zod.string().min(1).max(createStaffInvitationBodyMemberIdMax)
+})
+
+export const CreateStaffInvitationResponse = zod.object({
+  "id": zod.string().uuid(),
+  "memberId": zod.string(),
+  "email": zod.string().email(),
+  "status": zod.enum(['pending', 'accepted', 'expired', 'revoked']),
+  "deliveryStatus": zod.enum(['queued', 'accepted', 'deferred', 'failed']),
+  "expiresAt": zod.coerce.date(),
+  "providerReference": zod.string().nullable(),
+  "lastError": zod.string().nullable()
+})
+
+
+export const ResendStaffInvitationParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const ResendStaffInvitationResponse = zod.object({
+  "id": zod.string().uuid(),
+  "memberId": zod.string(),
+  "email": zod.string().email(),
+  "status": zod.enum(['pending', 'accepted', 'expired', 'revoked']),
+  "deliveryStatus": zod.enum(['queued', 'accepted', 'deferred', 'failed']),
+  "expiresAt": zod.coerce.date(),
+  "providerReference": zod.string().nullable(),
+  "lastError": zod.string().nullable()
+})
+
+
+export const RevokeStaffInvitationParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const RevokeStaffInvitationResponse = zod.void()
+
+
+export const ReadinessCheckResponse = zod.object({
+  "message": zod.string()
+})
+
+
 /**
  * Does not create a subscription. Success means the provider accepted the enquiry for delivery, not that it reached an inbox.
  * @summary Send a contact enquiry to the HETV team
@@ -486,6 +616,7 @@ export const GetPublicOpportunityResponse = zod.object({
  */
 export const GetPortalSessionResponse = zod.object({
   "member": zod.object({
+  "hasPassword": zod.boolean().optional().describe('True only when the app-managed credential has been established; a legacy user ID is not proof.'),
   "id": zod.string(),
   "userId": zod.string().nullable(),
   "displayName": zod.string(),
@@ -498,54 +629,6 @@ export const GetPortalSessionResponse = zod.object({
 }),
   "permissions": zod.array(zod.enum(['opportunities:read', 'opportunities:write', 'opportunities:publish', 'opportunities:delete', 'opportunity-options:manage', 'opportunity-options:lifecycle', 'members:manage', 'programmes:read', 'programmes:write', 'programmes:publish', 'programmes:delete']))
 })
-
-
-/**
- * Available only when temporary test sign-in is explicitly enabled for the
- * current environment. Any valid email and non-empty password are accepted;
- * these credentials do not verify identity. The session grants full portal
- * testing access and must not be used for secure staff authentication.
- * @summary Start a temporary portal testing session
- */
-
-
-
-export const CreatePortalDemoSessionBody = zod.object({
-  "email": zod.string().email(),
-  "password": zod.string().min(1)
-})
-
-export const CreatePortalDemoSessionResponse = zod.void()
-
-
-/**
- * @summary End the browser-scoped demo portal session
- */
-export const DeletePortalDemoSessionResponse = zod.void()
-
-
-/**
- * Available only when temporary test sign-in is explicitly enabled for the
- * current environment. Any valid email and non-empty password are accepted;
- * these credentials do not verify identity. The session grants full CRM
- * testing access and must not be used for secure staff authentication.
- * @summary Start a temporary CRM testing session
- */
-
-
-
-export const CreateCrmDemoSessionBody = zod.object({
-  "email": zod.string().email(),
-  "password": zod.string().min(1)
-})
-
-export const CreateCrmDemoSessionResponse = zod.void()
-
-
-/**
- * @summary End a temporary CRM testing session
- */
-export const DeleteCrmDemoSessionResponse = zod.void()
 
 
 /**
@@ -565,6 +648,7 @@ export const CreatePortalAccessGrantBody = zod.object({
 })
 
 export const CreatePortalAccessGrantResponse = zod.object({
+  "hasPassword": zod.boolean().optional().describe('True only when the app-managed credential has been established; a legacy user ID is not proof.'),
   "id": zod.string(),
   "userId": zod.string().nullable(),
   "displayName": zod.string(),
@@ -2200,6 +2284,7 @@ export const ListProgrammeAuditEventsResponse = zod.array(ListProgrammeAuditEven
  * @summary List portal memberships
  */
 export const ListPortalMembersResponseItem = zod.object({
+  "hasPassword": zod.boolean().optional().describe('True only when the app-managed credential has been established; a legacy user ID is not proof.'),
   "id": zod.string(),
   "userId": zod.string().nullable(),
   "displayName": zod.string(),
@@ -2230,6 +2315,7 @@ export const UpdatePortalMemberBody = zod.object({
 })
 
 export const UpdatePortalMemberResponse = zod.object({
+  "hasPassword": zod.boolean().optional().describe('True only when the app-managed credential has been established; a legacy user ID is not proof.'),
   "id": zod.string(),
   "userId": zod.string().nullable(),
   "displayName": zod.string(),

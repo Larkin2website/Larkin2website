@@ -67,8 +67,9 @@ Provider acceptance is not a promise of delivery or inbox placement.
   Repeated page visits, worker ticks and rejected requests do not create repeated
   accepted notices. If the provider allowance is already exhausted, the warning
   email cannot be promised; the persistent CRM warning remains authoritative.
-- Warning mail is disabled by the existing temporary-test-login restriction.
-  The current test login is not a substitute for an authorized production admin.
+- Warning mail runs only with explicit worker enablement and an approved sender.
+  CRM warnings require a real active-super-admin session. Temporary test access
+  has been removed and old testing flags/cookies do not grant access.
 
 ## Persistent safety and synchronization
 
@@ -113,7 +114,8 @@ version fences late completions even when an attempt count is restored.
 The worker checks deferred messages at most once per minute. Provider-confirmed
 resets or increased limits allow sending to resume without a code change.
 An existing live-mode approval and activation cutoff are still required, and
-temporary test access still prevents subscriber sending.
+publication approval and activation-cutoff checks remain required. Staff invitation
+and reset emails share the transactional allowance and do not enable campaigns.
 
 On Render, explicit worker enablement is also required. Monitoring does not run
 in the background while `EMAIL_WORKERS_ENABLED=false`, though authenticated CRM

@@ -68,8 +68,10 @@ complete deployment environment.
 
 Private values must never be added to `VITE_*` settings, browser bundles, tracked
 files, screenshots, or logs. Publication sender/recipient/URL settings are server
-runtime values, not Vite build settings. This does **not** make unrelated Clerk
-frontend keys, frontend base paths, database, or hosting portable automatically.
+runtime values, not Vite build settings. Staff invitation/recovery settings
+`STAFF_AUTH_FROM` and `STAFF_AUTH_ORIGIN` are also server runtime values; see
+[staff authentication](staff-authentication.md). Database restoration, hostnames,
+DNS and actual sender verification still require destination acceptance.
 
 ## Sender verification and key permissions
 
