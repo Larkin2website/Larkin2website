@@ -1,12 +1,29 @@
 import assert from "node:assert/strict";
-import test, { after } from "node:test";
+import test, { after, before } from "node:test";
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { eq } from "drizzle-orm";
 import { db, pool, emailQuotaAccountsTable, emailReservationsTable } from "@workspace/db";
 import { drizzleQuotaStore } from "./email-quota-store";
 import { createEmailQuotaService } from "./email-quota";
 
-after(async () => { await pool.end(); });
+// Run against an isolated schema built from the tracked baseline migration, so the
+// test needs no pre-existing tables (fresh CI database) and never touches client data.
+// The test uses concurrent connections, so every pooled connection gets the schema.
+const schema = `quota_fixture_${randomUUID().replaceAll("-", "")}`;
+if (process.env.NODE_ENV === "production") throw new Error("Fixtures cannot run in production");
+(pool.options as { options?: string }).options = `-c search_path=${schema}`;
+
+before(async () => {
+  await pool.query(`CREATE SCHEMA "${schema}"`);
+  const sql = await readFile(new URL("../../../../lib/db/migrations/0000_render_baseline.sql", import.meta.url), "utf8");
+  await pool.query(sql.replaceAll('"public".', `"${schema}".`));
+});
+
+after(async () => {
+  await pool.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
+  await pool.end();
+});
 
 test("PostgreSQL account locks fence simultaneous reservations and acceptance survives a service restart", async () => {
   const account = `quota-test-${randomUUID()}`;
