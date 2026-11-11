@@ -52,3 +52,6 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Replit workspace tool caches (VS Code server, Chromium, npm)
+/.config/
