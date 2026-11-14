@@ -91,10 +91,17 @@ test("production allowlist ignores a spoofed forwarded hostname", async () => {
   const app = express();
   app.use(allowedProductionHosts({ RENDER_EXTERNAL_HOSTNAME: "hetv.onrender.com", ALLOWED_HOSTS: "client.example" }));
   app.get("/", (_req, res) => { res.sendStatus(204); });
+  app.get("/api/healthz", (_req, res) => { res.sendStatus(200); });
+  app.get("/api/readyz", (_req, res) => { res.sendStatus(200); });
   const server = app.listen(0, "127.0.0.1");
   await new Promise<void>(resolve => server.once("listening", resolve));
   const origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
   try {
+    // Render's internal health checker uses a private address as Host.
+    assert.equal((await requestHost(`${origin}/api/healthz`, "10.0.0.5:10000")).status, 200);
+    assert.equal((await requestHost(`${origin}/api/healthz`, "10.0.0.5:10000", {}, "POST")).status, 400);
+    assert.equal((await requestHost(`${origin}/api/readyz`, "10.0.0.5:10000")).status, 400);
+    assert.equal((await requestHost(origin, "10.0.0.5:10000")).status, 400);
     assert.equal((await requestHost(origin, "hetv.onrender.com")).status, 204);
     assert.equal((await requestHost(origin, "client.example")).status, 204);
     assert.equal((await requestHost(origin, "evil.example", { "x-forwarded-host": "client.example" })).status, 400);
