@@ -5,7 +5,14 @@ const apps = ["larkin2-opportunities", "larkin2-opportunities-portal", "hetv-aud
 const env = {
   ...process.env, NODE_ENV: "production",
 };
-const run = (args, extra = {}) => execFileSync("pnpm", args, {
+// Reuse the exact pnpm that launched this script (pnpm sets npm_execpath). A bare
+// "pnpm" lookup can find a different host-installed version first on PATH (Render
+// ships its own pnpm beside Node), which the pinned engines.pnpm then rejects.
+const pnpmEntry = process.env.npm_execpath;
+const [command, prefix] = pnpmEntry && /\.[cm]?js$/.test(pnpmEntry)
+  ? [process.execPath, [pnpmEntry]]
+  : [pnpmEntry || "pnpm", []];
+const run = (args, extra = {}) => execFileSync(command, [...prefix, ...args], {
   stdio: "inherit", env: { ...env, ...extra },
 });
 run(["run", "typecheck:libs"]);
