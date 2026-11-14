@@ -55,3 +55,6 @@ Thumbs.db
 
 # Replit workspace tool caches (VS Code server, Chromium, npm)
 /.config/
+
+# Render build-time pnpm shim (see render.yaml)
+/.render-bin/

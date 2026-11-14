@@ -27,6 +27,11 @@ pnpm test:render
 pnpm --filter @workspace/api-server test
 ```
 
+On Render itself, `/usr/bin` is read-only and a plain `corepack enable` fails with
+`EROFS`. The Blueprint build command therefore installs the pinned pnpm shim into
+a project-local `.render-bin` folder on `PATH`, and the start command runs
+`node artifacts/api-server/dist/index.mjs` directly (identical to `pnpm start`).
+
 The focused build typechecks shared libraries/four deployable packages, compiles
 the three SPAs with their distinct bases and bundles the API. It excludes the
 design sandbox/seeds and does not read real database/auth/mail values. PostgreSQL

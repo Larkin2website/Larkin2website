@@ -9,8 +9,12 @@ services:
     plan: 0.5c-512mb
     numInstances: 1
     autoDeployTrigger: "off"
-    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm build:render
-    startCommand: pnpm start
+    # Render's /usr/bin is read-only, so a plain `corepack enable` fails (EROFS).
+    # Install the pinned pnpm shim into a writable project folder and put it first
+    # on PATH so nested pnpm calls in build-render.mjs use the same version.
+    buildCommand: mkdir -p .render-bin && corepack enable --install-directory "$PWD/.render-bin" pnpm && export PATH="$PWD/.render-bin:$PATH" COREPACK_ENABLE_DOWNLOAD_PROMPT=0 && pnpm install --frozen-lockfile --prod=false && pnpm build:render
+    # Same as `pnpm start`, without needing pnpm at runtime.
+    startCommand: node artifacts/api-server/dist/index.mjs
     healthCheckPath: /api/healthz
     envVars:
       - key: NODE_VERSION
